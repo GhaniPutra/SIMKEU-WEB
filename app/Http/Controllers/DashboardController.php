@@ -340,6 +340,7 @@ class DashboardController extends Controller
                 'type'      => 'revenue',                                 // Tipe untuk pewarnaan badge
                 'label'     => 'Pemasukan',                               // Label yang ditampilkan
                 'amount'    => $sale->total,                              // Nominal transaksi
+                'url'       => route('pemasukan.show', $sale->id),       // Link ke detail pemasukan
             ]);
         }
 
@@ -351,6 +352,7 @@ class DashboardController extends Controller
                 'type'      => 'expense',                                               // Tipe untuk pewarnaan badge
                 'label'     => 'Pengeluaran',                                          // Label yang ditampilkan
                 'amount'    => $expense->amount,                                        // Nominal pengeluaran
+                'url'       => route('pengeluaran.show', $expense->id),               // Link ke detail pengeluaran
             ]);
         }
 

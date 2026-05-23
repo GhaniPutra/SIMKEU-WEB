@@ -221,7 +221,11 @@
                                     <td>{{ $transaction['date'] }}</td>
                                     <td><span class="type-badge type-{{ $transaction['type'] }}">{{ $transaction['label'] }}</span></td>
                                     <td>Rp {{ number_format($transaction['amount'], 0, ',', '.') }}</td>
-                                    <td><button class="btn-detail">Detail</button></td>
+                                    <td>
+                                        <a href="{{ $transaction['url'] }}" class="btn-detail">
+                                            <i class="fas fa-eye fa-xs me-1"></i> Detail
+                                        </a>
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
