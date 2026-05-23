@@ -24,8 +24,8 @@
     ============================================================ */
     .kpi-grid {
         display: grid;
-        /* Auto-fill kolom minimal 200px, maksimal 1fr */
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        /* Tetapkan 4 kolom tetap untuk halaman Pemasukan */
+        grid-template-columns: repeat(4, 1fr);
         gap: 18px;          /* Jarak antar kartu */
         margin-bottom: 28px; /* Margin bawah grid */
     }

@@ -8,9 +8,24 @@
 ============================================================ */
 .kpi-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Buat grid responsif */
+    /* Tetap default 5 kolom pada dashboard besar, responsif turun pada breakpoints */
+    grid-template-columns: repeat(5, 1fr);
     gap: 18px;
     margin-bottom: 28px;
+}
+
+/* Responsif: sesuaikan jumlah kolom di layar lebih kecil */
+@media (max-width: 1400px) {
+    .kpi-grid { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 1100px) {
+    .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+    .kpi-grid { grid-template-columns: 1fr; }
 }
 
 .kpi-card {

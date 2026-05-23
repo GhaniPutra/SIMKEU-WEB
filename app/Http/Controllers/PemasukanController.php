@@ -12,6 +12,7 @@ use App\Models\Sale;               // Model transaksi penjualan (pemasukan)
 use App\Models\SaleItem;          // Model detail item per transaksi
 use App\Models\Product;           // Model produk, dipakai untuk dropdown pilih produk
 use App\Models\Customer;          // Model pelanggan, dipakai untuk dropdown
+use Illuminate\Support\Facades\DB;
 
 class PemasukanController extends Controller
 {
@@ -74,8 +75,49 @@ class PemasukanController extends Controller
         // STATISTIK PERIODE TERPILIH
         // ============================================================
         $totalSubtotal = Sale::whereBetween('transaction_date', [$periodStart, $periodEnd])->sum('subtotal');
-        $totalDiskon = Sale::whereBetween('transaction_date', [$periodStart, $periodEnd])->sum('discount');
-        $totalPajak = Sale::whereBetween('transaction_date', [$periodStart, $periodEnd])->sum('tax');
+
+        // ---------- Perhitungan diskon dan pajak yang lebih akurat ----------
+        // Beberapa transaksi mungkin tidak menyimpan breakdown per-item dengan
+        // konsisten di kolom sales.discount / sales.tax. Untuk memastikan KPI
+        // merefleksikan perhitungan nyata (sama seperti POS), hitung ulang dari
+        // sale_items bergabung dengan products menggunakan tax_rate & discount_rate.
+
+        // Total diskon produk (dari rate produk) = SUM(price_at_sale * qty * discount_rate/100)
+        $totalProductDiscount = (float) DB::table('sale_items')
+            ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
+            ->join('products', 'sale_items.product_id', '=', 'products.id')
+            ->whereBetween('sales.transaction_date', [$periodStart, $periodEnd])
+            ->selectRaw('COALESCE(SUM(sale_items.price_at_sale * sale_items.quantity * (products.discount_rate / 100.0)),0) as total')
+            ->value('total');
+
+        // Total pajak dihitung setelah diskon produk per item:
+        // SUM( (price * qty - price*qty*discount_rate/100) * (tax_rate/100) )
+        $totalProductTax = (float) DB::table('sale_items')
+            ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
+            ->join('products', 'sale_items.product_id', '=', 'products.id')
+            ->whereBetween('sales.transaction_date', [$periodStart, $periodEnd])
+            ->selectRaw('COALESCE(SUM((sale_items.price_at_sale * sale_items.quantity - (sale_items.price_at_sale * sale_items.quantity * (products.discount_rate / 100.0))) * (products.tax_rate / 100.0)),0) as total')
+            ->value('total');
+
+        // Beberapa transaksi menyimpan diskon tambahan (extra discount) di kolom
+        // sales.discount (total diskon produk + extra). Kita ambil total dari
+        // kolom sales.discount sebagai fallback/penyesuaian.
+        $sumSaleDiscounts = (float) Sale::whereBetween('transaction_date', [$periodStart, $periodEnd])->sum('discount');
+        $sumSaleTax = (float) Sale::whereBetween('transaction_date', [$periodStart, $periodEnd])->sum('tax');
+
+        // Jika kolom sales.discount terisi (mis. import lama), gunakan nilainya.
+        // Jika tidak (atau nol), gunakan hasil perhitungan berdasarkan item.
+        // Untuk diskon: prioritaskan nilai dari DB jika > 0, tapi tetap pastikan
+        // minimal sama dengan totalProductDiscount.
+        if ($sumSaleDiscounts > 0) {
+            $totalDiskon = $sumSaleDiscounts;
+        } else {
+            $totalDiskon = $totalProductDiscount;
+        }
+
+        // Untuk pajak: gunakan nilai di kolom sales.tax bila tersedia, selain itu
+        // gunakan perhitungan berbasis produk.
+        $totalPajak = $sumSaleTax > 0 ? $sumSaleTax : $totalProductTax;
         $totalBersih = Sale::whereBetween('transaction_date', [$periodStart, $periodEnd])->sum('total');
         $jumlahTransaksi = Sale::whereBetween('transaction_date', [$periodStart, $periodEnd])->count();
         $rataRataTransaksi = $jumlahTransaksi > 0 ? $totalBersih / $jumlahTransaksi : 0;

@@ -1,0 +1,373 @@
+/* =============================================================
+   File: public/css/products/index.css
+   Deskripsi: Gaya khusus untuk halaman Daftar Produk & Stok
+   Catatan: File ini diekstrak dari resources/views/products/index.blade.php
+   Semua komentar menggunakan Bahasa Indonesia untuk menjelaskan tiap blok
+   ============================================================= */
+
+/* ============================================================
+   KPI CARDS — Kartu ringkasan statistik stok
+   ============================================================ */
+.kpi-grid { /* Wadah grid untuk 4 kartu KPI */
+    display: grid; /* Gunakan CSS Grid */
+    grid-template-columns: repeat(4, 1fr); /* 4 kolom seimbang */
+    gap: 18px; /* Jarak antar kartu */
+    margin-bottom: 28px; /* Jarak bawah grid */
+}
+
+.kpi-card { /* Gaya dasar tiap kartu KPI */
+    background: var(--card-bg); /* Warna latar kartu */
+    border-radius: var(--radius); /* Sudut melengkung */
+    padding: 22px 20px; /* Ruang dalam kartu */
+    box-shadow: var(--shadow-sm); /* Bayangan halus */
+    border: 1px solid var(--border); /* Border tipis */
+    position: relative; /* Untuk pseudo-element aksen */
+    overflow: hidden; /* Potong isi yang meluap */
+    transition: transform 0.25s ease, box-shadow 0.25s ease; /* Animasi hover */
+}
+
+.kpi-card:hover { /* Efek saat kursor di atas kartu */
+    transform: translateY(-3px); /* Angkat sedikit */
+    box-shadow: var(--shadow-md); /* Bayangan lebih besar */
+}
+
+.kpi-card::before { /* Garis aksen di bagian atas kartu */
+    content: ''; /* Pseudo-element kosong */
+    position: absolute; /* Posisi absolut di dalam kartu */
+    top: 0; left: 0; right: 0; /* Menempel ke atas */
+    height: 3px; /* Ketebalan garis */
+    border-radius: var(--radius) var(--radius) 0 0; /* Bulat sudut atas */
+}
+
+.kpi-card.primary::before { background: var(--primary); } /* Warna aksen primary */
+.kpi-card.success::before { background: var(--success); } /* Warna aksen success */
+.kpi-card.warning::before { background: var(--warning); } /* Warna aksen warning */
+.kpi-card.danger::before  { background: var(--danger);  } /* Warna aksen danger */
+
+.kpi-top { /* Bar atas di dalam kartu yang berisi label dan ikon */
+    display: flex; /* Gunakan flex untuk layout */
+    justify-content: space-between; /* Sebelah kiri-kanan */
+    align-items: flex-start; /* Rata atas */
+    margin-bottom: 14px; /* Jarak bawah */
+}
+
+.kpi-label { /* Label kecil di atas kartu */
+    font-size: 0.75rem; /* Ukuran font kecil */
+    font-weight: 600; /* Tebal sedang */
+    text-transform: uppercase; /* Huruf kapital */
+    letter-spacing: 0.7px; /* Spasi antar huruf */
+    color: var(--text-muted); /* Warna teks sekunder */
+}
+
+.kpi-icon { /* Kotak ikon di sudut kanan atas kartu */
+    width: 38px; /* Lebar kotak */
+    height: 38px; /* Tinggi kotak */
+    border-radius: 10px; /* Sudut membulat */
+    display: flex; /* Flex untuk centering */
+    align-items: center; /* Vertikal center */
+    justify-content: center; /* Horizontal center */
+    font-size: 1rem; /* Ukuran ikon */
+}
+
+.kpi-card.primary .kpi-icon { background: rgba(79,70,229,.12); color: var(--primary); }
+.kpi-card.success .kpi-icon { background: rgba(16,185,129,.12); color: var(--success); }
+.kpi-card.warning .kpi-icon { background: rgba(245,158,11,.12); color: var(--warning); }
+.kpi-card.danger .kpi-icon  { background: rgba(239,68,68,.12);  color: var(--danger);  }
+
+.kpi-value { /* Angka utama pada kartu */
+    font-size: 1.5rem; /* Ukuran besar */
+    font-weight: 800; /* Sangat tebal */
+    color: var(--text-primary); /* Warna teks utama */
+    line-height: 1; /* Tinggi baris */
+    margin-bottom: 6px; /* Jarak bawah */
+}
+
+.kpi-sub { /* Teks penjelas kecil di bawah angka */
+    font-size: 0.75rem; /* Ukuran kecil */
+    color: var(--text-muted); /* Warna sekunder */
+}
+
+/* ============================================================
+   SECTION TITLE — Judul bagian dengan garis pemisah
+   ============================================================ */
+.section-title { /* Gaya judul seksi */
+    font-size: 0.95rem; /* Ukuran font */
+    font-weight: 700; /* Tebal */
+    color: var(--text-primary); /* Warna teks utama */
+    margin-bottom: 16px; /* Jarak bawah */
+    display: flex; /* Flex agar icon dan teks sejajar */
+    align-items: center; /* Rata tengah vertikal */
+    gap: 8px; /* Jarak antara icon dan teks */
+}
+
+.section-title::after { /* Garis memanjang di samping judul */
+    content: ''; /* Pseudo element kosong */
+    flex: 1; /* Ambil sisa ruang */
+    height: 1px; /* Ketebalan garis */
+    background: var(--border); /* Warna garis */
+}
+
+/* ============================================================
+   CONTENT CARD — Kartu konten untuk tabel dan filter
+   ============================================================ */
+.content-card { /* Kartu yang membungkus tabel */
+    background: var(--card-bg); /* Latar kartu */
+    border-radius: var(--radius); /* Sudut membulat */
+    border: 1px solid var(--border); /* Border tipis */
+    box-shadow: var(--shadow-sm); /* Bayangan */
+    overflow: hidden; /* Potong yang meluap */
+}
+
+.content-card-header { /* Header kartu berisi judul + tombol */
+    padding: 16px 20px; /* Jarak dalam */
+    border-bottom: 1px solid var(--border); /* Garis bawah */
+    display: flex; /* Flex layout */
+    align-items: center; /* Rata tengah */
+    justify-content: space-between; /* Sebelah kiri-kanan */
+    flex-wrap: wrap; /* Bungkus jika perlu */
+    gap: 12px; /* Jarak antar elemen */
+}
+
+.content-card-title { /* Judul kecil di header kartu */
+    font-size: 0.875rem; /* Ukuran font */
+    font-weight: 700; /* Tebal */
+    color: var(--text-primary); /* Warna utama */
+    display: flex; /* Agar icon + teks sejajar */
+    align-items: center; /* Rata tengah */
+    gap: 8px; /* Jarak icon-teks */
+}
+
+.content-card-title i { color: var(--primary); } /* Ikon berwarna primary */
+
+.content-card-body { padding: 0; } /* Badan kartu tanpa padding ekstra */
+
+/* ============================================================
+   TOOLBAR — Area pencarian dan tombol aksi
+   ============================================================ */
+.toolbar { /* Bar alat di atas tabel */
+    display: flex; /* Flex layout */
+    gap: 10px; /* Jarak antar elemen */
+    flex-wrap: wrap; /* Bungkus pada layar kecil */
+    align-items: center; /* Rata tengah */
+    padding: 14px 20px; /* Padding bar */
+    border-bottom: 1px solid var(--border); /* Garis bawah */
+    background: #f8fafc; /* Latar sedikit abu */
+}
+
+.toolbar-search { /* Wadah input pencarian */
+    flex: 1; /* Mengisi ruang tersedia */
+    min-width: 200px; /* Lebar minimum */
+    position: relative; /* Untuk posisi ikon di dalam */
+}
+
+.toolbar-search input { /* Gaya input pencarian */
+    width: 100%; /* Penuhi wadah */
+    padding: 8px 12px 8px 36px; /* Padding kiri untuk ikon */
+    border: 1px solid var(--border); /* Border input */
+    border-radius: 9px; /* Bulat */
+    font-size: 0.82rem; /* Ukuran font */
+    font-family: inherit; /* Gunakan font induk */
+    color: var(--text-primary); /* Warna teks */
+    background: white; /* Latar putih */
+    transition: border-color 0.2s; /* Animasi fokus */
+}
+
+.toolbar-search input:focus { /* Fokus input */
+    outline: none; /* Hilangkan outline default */
+    border-color: var(--primary); /* Border primary */
+    box-shadow: 0 0 0 3px rgba(79,70,229,0.08); /* Glow */
+}
+
+.toolbar-search .search-icon { /* Ikon di dalam input */
+    position: absolute; /* Posisi absolut */
+    left: 12px; /* Jarak dari kiri */
+    top: 50%; /* Vertikal center */
+    transform: translateY(-50%); /* Koreksi center */
+    color: var(--text-muted); /* Warna sekunder */
+    font-size: 0.8rem; /* Ukuran kecil */
+    pointer-events: none; /* Tidak menangkap klik */
+}
+
+.toolbar select { /* Dropdown kategori */
+    padding: 8px 12px; /* Padding */
+    border: 1px solid var(--border); /* Border */
+    border-radius: 9px; /* Bulat */
+    font-size: 0.82rem; /* Ukuran font */
+    font-family: inherit; /* Warna font */
+    color: var(--text-primary); /* Warna */
+    background: white; /* Latar */
+    cursor: pointer; /* Kursor pointer */
+}
+
+/* ============================================================
+   TOMBOL AKSI — Warna dan gaya tombol
+   ============================================================ */
+.btn-add { /* Tombol tambah produk */
+    display: inline-flex; /* Flex untuk icon+teks */
+    align-items: center; /* Rata tengah */
+    gap: 7px; /* Jarak icon-teks */
+    padding: 8px 16px; /* Padding tombol */
+    background: var(--primary); /* Latar primary */
+    color: white; /* Teks putih */
+    border: none; /* Tanpa border */
+    border-radius: 9px; /* Bulat */
+    font-size: 0.82rem; /* Ukuran font */
+    font-weight: 600; /* Tebal */
+    text-decoration: none; /* Hilangkan underline */
+    cursor: pointer; /* Kursor pointer */
+    transition: background 0.2s; /* Animasi hover */
+    white-space: nowrap; /* Jangan pecah teks */
+}
+
+.btn-add:hover { background: var(--primary-dark); color: white; } /* Hover */
+
+/* ============================================================
+   TABEL DATA PRODUK
+   ============================================================ */
+.data-table { /* Tabel utama */
+    width: 100%; /* Lebar penuh */
+    border-collapse: collapse; /* Satukan border */
+    font-size: 0.82rem; /* Ukuran font */
+}
+
+.data-table thead th { /* Header tabel */
+    padding: 11px 14px; /* Padding header */
+    background: #f8fafc; /* Latar header */
+    color: var(--text-muted); /* Warna teks */
+    font-weight: 600; /* Tebal */
+    font-size: 0.72rem; /* Ukuran kecil */
+    text-transform: uppercase; /* Kapital */
+    letter-spacing: 0.5px; /* Spasi huruf */
+    border-bottom: 1px solid var(--border); /* Garis bawah */
+    white-space: nowrap; /* Jangan wrap */
+}
+
+.data-table tbody td { /* Sel tabel */
+    padding: 13px 14px; /* Padding sel */
+    border-bottom: 1px solid var(--border); /* Garis bawah */
+    color: var(--text-primary); /* Warna teks */
+    font-weight: 500; /* Berat font */
+    vertical-align: middle; /* Rata tengah vertikal */
+}
+
+.data-table tbody tr:last-child td { border-bottom: none; } /* Baris terakhir */
+
+.data-table tbody tr:hover { background: #f8fafc; } /* Hover baris */
+
+/* ============================================================
+   BADGE STATUS STOK
+   ============================================================ */
+.stock-badge { /* Gaya dasar badge stok */
+    display: inline-flex; /* Flex untuk icon+teks */
+    align-items: center; /* Rata tengah */
+    gap: 4px; /* Jarak */
+    padding: 3px 10px; /* Padding */
+    border-radius: 20px; /* Bulat */
+    font-size: 0.72rem; /* Ukuran kecil */
+    font-weight: 700; /* Tebal */
+}
+
+.stock-ok { background: rgba(16,185,129,.12); color: var(--success); } /* Normal */
+.stock-low { background: rgba(239,68,68,.12); color: var(--danger); } /* Rendah */
+.stock-empty { background: rgba(100,116,139,.12); color: var(--text-muted); } /* Habis */
+
+/* ============================================================
+   TOMBOL AKSI TABEL (Edit, Hapus, Stok)
+   ============================================================ */
+.btn-action { /* Tombol kecil di tabel */
+    width: 30px; /* Lebar */
+    height: 30px; /* Tinggi */
+    border-radius: 7px; /* Bundar */
+    border: 1px solid var(--border); /* Border */
+    background: white; /* Latar */
+    display: inline-flex; /* Flex centering */
+    align-items: center; /* Rata tengah */
+    justify-content: center; /* Center */
+    color: var(--text-muted); /* Warna ikon */
+    font-size: 0.8rem; /* Ukuran ikon */
+    cursor: pointer; /* Kursor */
+    transition: all 0.2s; /* Animasi */
+    text-decoration: none; /* Hilangkan underline */
+}
+
+.btn-action.edit:hover  { background: var(--primary); color: white; border-color: var(--primary); }
+.btn-action.delete:hover{ background: var(--danger);  color: white; border-color: var(--danger);  }
+.btn-action.stock:hover { background: var(--success); color: white; border-color: var(--success); }
+
+/* ============================================================
+   MODAL PENYESUAIAN STOK
+   ============================================================ */
+.modal-overlay { /* Latar overlay modal */
+    display: none; /* Tersembunyi default */
+    position: fixed; /* Tetap di layar */
+    inset: 0; /* Menutupi seluruh layar */
+    background: rgba(15,23,42,0.55); /* Gelap semi-transparan */
+    z-index: 2000; /* Di atas konten */
+    align-items: center; /* Center vertikal */
+    justify-content: center; /* Center horizontal */
+    backdrop-filter: blur(3px); /* Blur latar */
+}
+
+.modal-overlay.open { display: flex; animation: fadeIn 0.2s ease; } /* Tampil saat open */
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } /* Animasi fade */
+
+.modal-box { /* Kotak modal */
+    background: white; /* Latar putih */
+    border-radius: var(--radius); /* Bulat */
+    padding: 28px 28px 24px; /* Padding */
+    width: 100%; /* Lebar maksimal */
+    max-width: 400px; /* Batas lebar */
+    box-shadow: var(--shadow-lg); /* Bayangan */
+    animation: slideUp 0.25s ease; /* Animasi naik */
+}
+
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.modal-title { font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+.modal-sub { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px; }
+
+.modal-input { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 9px; font-size: 0.9rem; font-family: inherit; color: var(--text-primary); margin-bottom: 16px; transition: border-color 0.2s; }
+.modal-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.08); }
+
+.modal-actions { display:flex; gap:10px; justify-content:flex-end; }
+.btn-modal-cancel { padding:8px 18px; border:1px solid var(--border); border-radius:8px; background:white; color:var(--text-muted); font-size:0.82rem; font-weight:600; cursor:pointer; transition:all 0.2s; }
+.btn-modal-cancel:hover { background:#f1f5f9; }
+.btn-modal-save { padding:8px 18px; border:none; border-radius:8px; background:var(--primary); color:white; font-size:0.82rem; font-weight:600; cursor:pointer; transition:background 0.2s; }
+.btn-modal-save:hover { background:var(--primary-dark); }
+.modal-hint { font-size:0.75rem; color:var(--text-muted); margin-top:-10px; margin-bottom:14px; }
+
+/* ============================================================
+   NAMA PRODUK — Avatar berwarna otomatis
+   ============================================================ */
+.product-avatar { width:34px; height:34px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem; color:white; flex-shrink:0; background: linear-gradient(135deg, var(--primary), var(--accent)); }
+.product-name-cell { display:flex; align-items:center; gap:10px; }
+.product-name-text { font-weight:600; color:var(--text-primary); }
+.product-unit-text { font-size:0.72rem; color:var(--text-muted); margin-top:1px; }
+
+/* ============================================================
+   ANIMASI FADE-UP
+   ============================================================ */
+.fade-up { opacity:0; transform:translateY(18px); transition: opacity 0.45s ease, transform 0.45s ease; }
+.fade-up.visible { opacity:1; transform:translateY(0); }
+
+/* ============================================================
+   PAGINATION
+   ============================================================ */
+.pagination-wrapper { padding:14px 20px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+.pagination-info { font-size:0.78rem; color:var(--text-muted); }
+.pagination .page-link { border-radius:7px !important; border:1px solid var(--border); color:var(--text-primary); font-size:0.8rem; padding:5px 11px; margin:0 2px; }
+.pagination .page-item.active .page-link { background:var(--primary); border-color:var(--primary); color:white; }
+
+/* ============================================================
+   RESPONSIF
+   ============================================================ */
+@media (max-width: 768px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .toolbar { flex-direction: column; align-items: stretch; }
+    .toolbar-search { min-width: unset; }
+}
+
+@media (max-width: 480px) {
+    .kpi-grid { grid-template-columns: 1fr; }
+}

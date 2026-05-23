@@ -24,7 +24,8 @@
     ============================================================ */
     .kpi-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); /* Responsif otomatis */
+        /* Tetapkan 4 kolom tetap untuk halaman Pengeluaran */
+        grid-template-columns: repeat(4, 1fr);
         gap: 18px;
         margin-bottom: 28px;
     }
