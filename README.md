@@ -52,9 +52,6 @@ npm install
 npm run build
 ```
 
-> ⚠️ Jika build gagal dengan error `[@laravel/vite-plugin-wayfinder] Error generating types`,
-> lihat bagian **Troubleshooting** di bawah.
-
 ### 7. Jalankan server lokal
 
 ```bash
