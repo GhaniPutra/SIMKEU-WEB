@@ -112,7 +112,7 @@
         {{-- ============================================================
         QUICK ACTIONS — Tombol akses cepat ke POS
         ============================================================ --}}
-        <div class="fade-up" style="margin-bottom: 24px;">
+        <div class="fade-up" style="margin-bottom: 24px; display: none">
             <div class="content-card">
                 <div class="content-card-body" style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;">
                     <div>
@@ -152,11 +152,6 @@
                 </div>
             </div>
         </div>
-
-        {{-- ============================================================
-        BRANCH CHART + PROFIT HIGHLIGHT
-        ============================================================ --}}
-        <!-- Bagian Performa Cabang dihapus -->
 
         {{-- ============================================================
         ACTIVITY LOG + DATA TABLE

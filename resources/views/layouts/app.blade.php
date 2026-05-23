@@ -594,7 +594,7 @@
                         <span class="nav-label">Pemasukan</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" style="display: none;">
                     <a href="{{ route('pos.index') }}"
                        class="nav-link {{ request()->routeIs('pos.*') ? 'active' : '' }}">
                         <span class="nav-icon"><i class="fas fa-cash-register"></i></span>
