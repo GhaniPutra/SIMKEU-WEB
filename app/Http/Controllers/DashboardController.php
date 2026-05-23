@@ -148,21 +148,15 @@ class DashboardController extends Controller
 
         if ($period === 'month') {
             // ---- BULANAN: 12 bulan dalam tahun berjalan ----
-            $yearStart = $now->copy()->startOfYear();
+            $revenueTrendQuery = Sale::whereYear('transaction_date', $now->year)
+                ->get(['transaction_date', 'total'])
+                ->groupBy(fn ($sale) => (int) Carbon::parse($sale->transaction_date)->format('n'))
+                ->map(fn ($items) => $items->sum('total'));
 
-            // Query pendapatan per bulan (GROUP BY bulan)
-            $revenueTrendQuery = Sale::selectRaw('MONTH(transaction_date) as m, SUM(total) as amount')
-                ->whereYear('transaction_date', $now->year)
-                ->groupBy('m')
-                ->orderBy('m')
-                ->pluck('amount', 'm');
-
-            // Query pengeluaran per bulan (GROUP BY bulan)
-            $expenseTrendQuery = Expense::selectRaw('MONTH(expense_date) as m, SUM(amount) as amount')
-                ->whereYear('expense_date', $now->year)
-                ->groupBy('m')
-                ->orderBy('m')
-                ->pluck('amount', 'm');
+            $expenseTrendQuery = Expense::whereYear('expense_date', $now->year)
+                ->get(['expense_date', 'amount'])
+                ->groupBy(fn ($expense) => (int) Carbon::parse($expense->expense_date)->format('n'))
+                ->map(fn ($items) => $items->sum('amount'));
 
             // Nama bulan dalam Bahasa Indonesia
             $namaBulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
@@ -177,21 +171,17 @@ class DashboardController extends Controller
             // ---- MINGGUAN: 7 hari (Senin–Minggu) minggu ini ----
             $weekStart = $now->copy()->startOfWeek(); // Senin minggu ini
 
-            // Query pendapatan per hari dalam minggu ini
-            $revenueTrendQuery = Sale::selectRaw('DATE(transaction_date) as date, SUM(total) as amount')
-                ->where('transaction_date', '>=', $weekStart)
+            $revenueTrendQuery = Sale::where('transaction_date', '>=', $weekStart)
                 ->where('transaction_date', '<=', $now->copy()->endOfWeek())
-                ->groupBy('date')
-                ->orderBy('date')
-                ->pluck('amount', 'date');
+                ->get(['transaction_date', 'total'])
+                ->groupBy(fn ($sale) => Carbon::parse($sale->transaction_date)->toDateString())
+                ->map(fn ($items) => $items->sum('total'));
 
-            // Query pengeluaran per hari dalam minggu ini
-            $expenseTrendQuery = Expense::selectRaw('expense_date as date, SUM(amount) as amount')
-                ->where('expense_date', '>=', $weekStart->toDateString())
+            $expenseTrendQuery = Expense::where('expense_date', '>=', $weekStart->toDateString())
                 ->where('expense_date', '<=', $now->copy()->endOfWeek()->toDateString())
-                ->groupBy('date')
-                ->orderBy('date')
-                ->pluck('amount', 'date');
+                ->get(['expense_date', 'amount'])
+                ->groupBy(fn ($expense) => $expense->expense_date)
+                ->map(fn ($items) => $items->sum('amount'));
 
             // Nama hari dalam Bahasa Indonesia
             $namaHari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
@@ -209,18 +199,13 @@ class DashboardController extends Controller
             // ---- HARIAN: 24 jam (00:00–23:00) hari ini ----
             $dayStart = $now->copy()->startOfDay();
 
-            // Query pendapatan per jam hari ini (GROUP BY jam)
-            $revenueTrendQuery = Sale::selectRaw('HOUR(transaction_date) as h, SUM(total) as amount')
-                ->where('transaction_date', '>=', $dayStart)
+            $revenueTrendQuery = Sale::where('transaction_date', '>=', $dayStart)
                 ->where('transaction_date', '<=', $now->copy()->endOfDay())
-                ->groupBy('h')
-                ->orderBy('h')
-                ->pluck('amount', 'h');
+                ->get(['transaction_date', 'total'])
+                ->groupBy(fn ($sale) => (int) Carbon::parse($sale->transaction_date)->format('G'))
+                ->map(fn ($items) => $items->sum('total'));
 
-            // Query pengeluaran per jam hari ini
-            // Catatan: expense_date adalah tipe DATE, jadi semua pengeluaran hari ini
-            // dimasukkan ke jam 00. Untuk granulasi per jam perlu kolom datetime.
-            // Saat ini kita tampilkan total hari di jam 00, sisanya 0.
+            // Query pengeluaran hari ini berdasarkan kolom tanggal
             $expenseTodayTotal = Expense::where('expense_date', $dayStart->toDateString())
                 ->sum('amount');
 
@@ -228,7 +213,6 @@ class DashboardController extends Controller
             for ($h = 0; $h < 24; $h++) {
                 $trendLabels[]      = str_pad($h, 2, '0', STR_PAD_LEFT) . ':00';
                 $revenueTrendData[] = (float) ($revenueTrendQuery[$h] ?? 0);
-                // Pengeluaran: karena expense_date hanya DATE, taruh semua di jam 00
                 $expenseTrendData[] = $h === 0 ? (float) $expenseTodayTotal : 0;
             }
         }

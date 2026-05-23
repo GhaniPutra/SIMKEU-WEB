@@ -26,13 +26,15 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     
     // Route proses login (POST)
-    Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+    Route::post('/login', [AuthController::class, 'login'])
+        ->middleware('throttle:login')
+        ->name('login.store');
 
     // Route menampilkan form register
     Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
     
     // Route proses register (POST)
-    Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+    Route::post('/register', [AuthController::class, 'register'])->name('register.store');
 });
 
 // ====================================

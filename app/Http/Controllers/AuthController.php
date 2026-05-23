@@ -162,7 +162,7 @@ class AuthController extends Controller
         // Regenerate CSRF token untuk keamanan
         $request->session()->regenerateToken();
 
-        // Redirect ke halaman login dengan pesan sukses
-        return redirect()->route('login')->with('success', 'Anda telah logout');
+        // Redirect ke halaman utama setelah logout
+        return redirect()->route('home')->with('success', 'Anda telah logout');
     }
 }
