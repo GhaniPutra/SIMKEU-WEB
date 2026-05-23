@@ -1,0 +1,488 @@
+{{-- ====================================================================
+Halaman: Tambah Produk Baru — SIMKEU
+Deskripsi: Form untuk menambahkan produk baru ke dalam sistem
+manajemen stok SIMKEU.
+Extends: layouts.app (layout utama SIMKEU)
+==================================================================== --}}
+@extends('layouts.app')
+
+@section('title', 'Tambah Produk — SIMKEU')
+@section('page-title', 'Tambah Produk')
+@section('breadcrumb', 'Manajemen / Produk & Stok / Tambah')
+
+@section('css')
+    <style>
+        /* ============================================================
+           FORM CARD — Kartu pembungkus form
+        ============================================================ */
+        .form-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            max-width: 720px;
+            /* Batasi lebar agar mudah dibaca */
+            margin: 0 auto;
+        }
+
+        /* Header bagian form */
+        .form-card-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f8fafc;
+        }
+
+        .form-card-header i {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .form-card-header h2 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .form-card-body {
+            padding: 28px 24px;
+        }
+
+        /* ============================================================
+           FORM GROUP — Label dan input per baris
+        ============================================================ */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        /* Label input */
+        .form-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 7px;
+        }
+
+        /* Tanda bintang untuk field wajib */
+        .required-mark {
+            color: var(--danger);
+            margin-left: 3px;
+        }
+
+        /* Gaya umum untuk semua input form */
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            font-size: 0.875rem;
+            font-family: inherit;
+            color: var(--text-primary);
+            background: white;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        /* Gaya fokus: highlight border dengan warna primary */
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08);
+        }
+
+        /* Tampilan jika validasi gagal */
+        .form-input.is-invalid,
+        .form-select.is-invalid {
+            border-color: var(--danger);
+        }
+
+        /* Pesan error validasi */
+        .field-error {
+            font-size: 0.75rem;
+            color: var(--danger);
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* ============================================================
+           GRID DUA KOLOM — Untuk field yang bisa berdampingan
+        ============================================================ */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 600px) {
+
+            /* Di layar kecil, tampilkan satu kolom */
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ============================================================
+           AREA TOMBOL SUBMIT & BATAL
+        ============================================================ */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Tombol simpan / submit */
+        .btn-submit {
+            padding: 10px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 9px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Tombol batal: kembali ke daftar produk */
+        .btn-cancel {
+            padding: 10px 24px;
+            background: white;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background: #f1f5f9;
+            color: var(--text-primary);
+        }
+
+        /* ============================================================
+           PREVIEW GAMBAR PRODUK
+        ============================================================ */
+        .image-preview-box {
+            /* Kotak preview sebelum gambar diunggah */
+            width: 100%;
+            height: 140px;
+            border: 2px dashed var(--border);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: border-color 0.2s;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+
+        .image-preview-box:hover {
+            border-color: var(--primary);
+        }
+
+        /* Gambar yang sudah dipilih, ditampilkan dalam kotak preview */
+        .image-preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        /* Petunjuk teks di bawah input file */
+        .image-hint {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+    </style>
+@endsection
+
+@section('content')
+
+    {{-- ============================================================
+    FORM TAMBAH PRODUK
+    ============================================================ --}}
+    <div class="form-card">
+
+        {{-- Header kartu —— judul form --}}
+        <div class="form-card-header">
+            <i class="fas fa-plus-circle"></i>
+            <h2>Tambah Produk Baru</h2>
+        </div>
+
+        <div class="form-card-body">
+
+            {{-- Form dikirim via POST ke route products.store --}}
+            <form method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data">
+                @csrf {{-- Token CSRF wajib ada untuk keamanan form --}}
+
+                {{-- ================================================
+                FIELD: Nama Produk
+                ================================================ --}}
+                <div class="form-group">
+                    <label for="name" class="form-label">
+                        Nama Produk <span class="required-mark">*</span>
+                    </label>
+                    <input type="text" id="name" name="name"
+                        class="form-input {{ $errors->has('name') ? 'is-invalid' : '' }}"
+                        placeholder="Contoh: Beras Premium 5kg" value="{{ old('name') }}" {{-- Pertahankan nilai jika
+                        validasi gagal --}} required maxlength="200" autofocus>
+                    {{-- Tampilkan pesan error validasi jika ada --}}
+                    @error('name')
+                        <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- ================================================
+                FIELD: Kategori Produk
+                ================================================ --}}
+                <div class="form-group">
+                    <label for="category_id" class="form-label">Kategori</label>
+                    <select id="category_id" name="category_id" class="form-select">
+                        <option value="">— Tidak Ada Kategori —</option>
+                        {{-- Iterasi semua kategori yang tersedia dari database --}}
+                        @forelse($categories as $category)
+                            <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @empty
+                            <option disabled>Belum ada kategori — tambahkan dulu</option>
+                        @endforelse
+                    </select>
+                    {{-- Shortcut: link ke halaman Kategori untuk menambah kategori baru --}}
+                    <p style="font-size:0.74rem;color:var(--text-muted);margin-top:5px;">
+                        <i class="fas fa-circle-info" style="color:var(--accent);"></i>
+                        Kategori belum ada?
+                        <a href="{{ route('categories.index') }}" target="_blank"
+                            style="color:var(--primary);font-weight:600;text-decoration:none;">
+                            Tambah kategori di sini <i class="fas fa-arrow-up-right-from-square"
+                                style="font-size:0.65rem;"></i>
+                        </a>
+                    </p>
+                    @error('category_id')
+                        <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- ================================================
+                FIELD: Harga Beli & Harga Jual (dua kolom)
+                ================================================ --}}
+                <div class="form-row">
+
+                    {{-- Harga Beli: harga modal pembelian produk --}}
+                    <div class="form-group">
+                        <label for="buy_price" class="form-label">
+                            Harga Beli (Rp) <span class="required-mark">*</span>
+                        </label>
+                        <input type="number" id="buy_price" name="buy_price"
+                            class="form-input {{ $errors->has('buy_price') ? 'is-invalid' : '' }}" placeholder="0"
+                            value="{{ old('buy_price', 0) }}" min="0" step="100" required>
+                        @error('buy_price')
+                            <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Harga Jual: harga yang ditawarkan kepada pembeli --}}
+                    <div class="form-group">
+                        <label for="sell_price" class="form-label">
+                            Harga Jual (Rp) <span class="required-mark">*</span>
+                        </label>
+                        <input type="number" id="sell_price" name="sell_price"
+                            class="form-input {{ $errors->has('sell_price') ? 'is-invalid' : '' }}" placeholder="0"
+                            value="{{ old('sell_price', 0) }}" min="0" step="100" required>
+                        @error('sell_price')
+                            <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ $message }}</p>
+                        @enderror
+                    </div>
+
+                </div>
+
+                {{-- ================================================
+                FIELD: Pajak & Diskon (dua kolom)
+                ================================================ --}}
+                <div class="form-row">
+
+                    {{-- Tarif Pajak: persentase pajak untuk produk ini --}}
+                    <div class="form-group">
+                        <label for="tax_rate" class="form-label">
+                            Pajak (%) <span style="color:var(--text-muted);font-weight:400;">(opsional)</span>
+                        </label>
+                        <input type="number" id="tax_rate" name="tax_rate"
+                            class="form-input {{ $errors->has('tax_rate') ? 'is-invalid' : '' }}"
+                            placeholder="0"
+                            value="{{ old('tax_rate', 0) }}"
+                            min="0" max="100" step="0.01">
+                        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">
+                            <i class="fas fa-circle-info"></i> Tarif pajak dalam persen. Contoh: 10 = PPN 10%.
+                        </p>
+                        @error('tax_rate')
+                            <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Tarif Diskon: persentase diskon default untuk produk ini --}}
+                    <div class="form-group">
+                        <label for="discount_rate" class="form-label">
+                            Diskon (%) <span style="color:var(--text-muted);font-weight:400;">(opsional)</span>
+                        </label>
+                        <input type="number" id="discount_rate" name="discount_rate"
+                            class="form-input {{ $errors->has('discount_rate') ? 'is-invalid' : '' }}"
+                            placeholder="0"
+                            value="{{ old('discount_rate', 0) }}"
+                            min="0" max="100" step="0.01">
+                        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">
+                            <i class="fas fa-circle-info"></i> Diskon default produk. Contoh: 5 = diskon 5%.
+                        </p>
+                        @error('discount_rate')
+                            <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ $message }}</p>
+                        @enderror
+                    </div>
+
+                </div>
+
+                {{-- ================================================
+                FIELD: Stok Awal & Satuan (dua kolom)
+                ================================================ --}}
+                <div class="form-row">
+
+                    {{-- Stok Awal: jumlah unit saat produk pertama kali ditambahkan --}}
+                    <div class="form-group">
+                        <label for="stock" class="form-label">
+                            Stok Awal <span class="required-mark">*</span>
+                        </label>
+                        <input type="number" id="stock" name="stock"
+                            class="form-input {{ $errors->has('stock') ? 'is-invalid' : '' }}" placeholder="0"
+                            value="{{ old('stock', 0) }}" min="0" required>
+                        @error('stock')
+                            <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Satuan: unit ukuran produk --}}
+                    <div class="form-group">
+                        <label for="unit" class="form-label">
+                            Satuan <span class="required-mark">*</span>
+                        </label>
+                        <select id="unit" name="unit" class="form-select {{ $errors->has('unit') ? 'is-invalid' : '' }}">
+                            {{-- Opsi satuan yang umum digunakan --}}
+                            <option value="pcs" {{ old('unit', 'pcs') == 'pcs' ? 'selected' : '' }}>pcs (unit)</option>
+                            <option value="kg" {{ old('unit') == 'kg' ? 'selected' : '' }}>kg (kilogram)</option>
+                            <option value="gram" {{ old('unit') == 'gram' ? 'selected' : '' }}>gram</option>
+                            <option value="liter" {{ old('unit') == 'liter' ? 'selected' : '' }}>liter</option>
+                            <option value="ml" {{ old('unit') == 'ml' ? 'selected' : '' }}>ml (mililiter)</option>
+                            <option value="dus" {{ old('unit') == 'dus' ? 'selected' : '' }}>dus (kotak)</option>
+                            <option value="lusin" {{ old('unit') == 'lusin' ? 'selected' : '' }}>lusin</option>
+                            <option value="pack" {{ old('unit') == 'pack' ? 'selected' : '' }}>pack</option>
+                            <option value="botol" {{ old('unit') == 'botol' ? 'selected' : '' }}>botol</option>
+                            <option value="porsi" {{ old('unit') == 'porsi' ? 'selected' : '' }}>porsi</option>
+                        </select>
+                        @error('unit')
+                            <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ $message }}</p>
+                        @enderror
+                    </div>
+
+                </div>
+
+                {{-- ================================================
+                FIELD: Gambar Produk (opsional)
+                ================================================ --}}
+                <div class="form-group">
+                    <label class="form-label">Gambar Produk <span
+                            style="color:var(--text-muted);font-weight:400;">(opsional)</span></label>
+
+                    {{-- Kotak preview gambar: klik untuk pilih file --}}
+                    <div class="image-preview-box" id="imagePreviewBox"
+                        onclick="document.getElementById('imageInput').click()">
+                        <i class="fas fa-image" style="font-size:1.8rem;opacity:.35;"></i>
+                        <span>Klik untuk memilih gambar</span>
+                        <span style="font-size:0.7rem;opacity:.6;">JPEG, PNG, WEBP — Maks. 2MB</span>
+                    </div>
+
+                    {{-- Input file tersembunyi, diakses via klik pada preview box --}}
+                    <input type="file" id="imageInput" name="image" accept="image/jpeg,image/png,image/jpg,image/webp"
+                        style="display:none;" onchange="previewImage(this)">
+                    <p class="image-hint"><i class="fas fa-circle-info"></i> Gambar akan digunakan sebagai thumbnail produk.
+                    </p>
+                    @error('image')
+                        <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- ================================================
+                TOMBOL AKSI
+                ================================================ --}}
+                <div class="form-actions">
+                    {{-- Tombol batal: kembali ke halaman daftar produk --}}
+                    <a href="{{ route('products.index') }}" class="btn-cancel">
+                        <i class="fas fa-arrow-left"></i> Batal
+                    </a>
+                    {{-- Tombol simpan: submit form --}}
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-floppy-disk"></i> Simpan Produk
+                    </button>
+                </div>
+
+            </form>
+        </div>{{-- /.form-card-body --}}
+    </div>{{-- /.form-card --}}
+
+@endsection
+
+@section('js')
+    <script>
+        /**
+         * Menampilkan preview gambar yang dipilih user sebelum diunggah.
+         * Saat user memilih file, gambar akan langsung ditampilkan di kotak preview.
+         *
+         * @param {HTMLInputElement} input - Elemen input file yang berisi gambar
+         */
+        function previewImage(input) {
+            // Pastikan ada file yang dipilih
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                // Setelah file selesai dibaca, tampilkan sebagai gambar
+                reader.onload = function (e) {
+                    const box = document.getElementById('imagePreviewBox');
+
+                    // Bersihkan isi kotak preview dan ganti dengan gambar
+                    box.innerHTML = '<img src="' + e.target.result + '" alt="Preview Gambar Produk">';
+                };
+
+                // Mulai membaca file sebagai URL data
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+@endsection

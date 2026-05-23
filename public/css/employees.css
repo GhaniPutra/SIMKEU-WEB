@@ -1,0 +1,374 @@
+/* ==========================================
+   CSS untuk halaman pegawai (employees)
+   Semua gaya dipisahkan dari Blade agar lebih terstruktur
+   ========================================== */
+
+/* Header dan tombol utama halaman pegawai */
+.employees-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.employees-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.employees-icon,
+.form-icon {
+    color: var(--primary);
+    font-size: 1.8rem;
+}
+
+.employees-title h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.btn-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-add:hover {
+    background: var(--primary-dark, #4338ca);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+/* Statistik ringkas pegawai */
+.employees-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 18px 16px;
+    border: 1px solid var(--border);
+    text-align: center;
+}
+
+.stat-card-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 4px;
+}
+
+.stat-card-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Tabel daftar pegawai */
+.table-scroll {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.825rem;
+}
+
+.data-table thead th {
+    padding: 12px 16px;
+    background: #f8fafc;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--border);
+    text-align: left;
+}
+
+.data-table tbody td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-primary);
+}
+
+.data-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.data-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.table-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.employee-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.employee-link:hover {
+    text-decoration: underline;
+}
+
+.inline-form {
+    display: inline-block;
+    margin: 0;
+}
+
+.btn-stock {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, var(--primary) 0%, #6366f1 100%);
+    color: white;
+    border: 1px solid transparent;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 1px 4px rgba(79,70,229,0.18);
+}
+
+.btn-stock:hover {
+    background: linear-gradient(135deg, var(--primary-dark, #4338ca) 0%, var(--primary) 100%);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+    color: white;
+}
+
+.pagination-wrapper {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+
+.empty-state-text {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+}
+
+/* Tombol aksi tabel */
+.btn-edit,
+.btn-delete {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-edit {
+    background: white;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+}
+
+.btn-edit:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-delete {
+    background: white;
+    color: var(--danger, #ef4444);
+    border: 1px solid var(--danger, #ef4444);
+}
+
+.btn-delete:hover {
+    background: var(--danger, #ef4444);
+    color: white;
+}
+
+.role-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.role-pegawai {
+    background: rgba(59, 130, 246, 0.12);
+    color: #3b82f6;
+}
+
+.role-admin {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+}
+
+/* Form tambah/edit pegawai */
+.form-container {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.form-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.form-card-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    justify-content: flex-end;
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark, #4338ca);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+.btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: white;
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+    background: #f8fafc;
+    border-color: var(--primary);
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    background: var(--card-bg);
+    transition: all 0.2s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.08);
+}
+
+.form-error {
+    color: #ef4444;
+    font-size: 0.8rem;
+    margin-top: 4px;
+    display: block;
+}
+
+.validation-errors {
+    background: rgba(239, 68, 68, 0.12);
+    border-left: 4px solid #ef4444;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.validation-errors p {
+    color: #ef4444;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+}
+
+.validation-errors ul {
+    margin: 0;
+    padding-left: 20px;
+    color: #dc2626;
+}
+
+.validation-errors li {
+    margin-bottom: 4px;
+}

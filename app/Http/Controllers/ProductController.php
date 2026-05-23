@@ -1,0 +1,262 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Category; // Model kategori produk
+use App\Models\Product;  // Model produk utama
+use Illuminate\Http\Request;
+
+/**
+ * ProductController
+ *
+ * Controller untuk manajemen produk / stok utama pada aplikasi SIMKEU.
+ * Admin dapat menambah, mengedit, menghapus, dan menyesuaikan stok produk
+ * sebelum stok didistribusikan ke karyawan.
+ */
+class ProductController extends Controller
+{
+    // =====================================================================
+    // INDEX — Menampilkan daftar seluruh produk beserta ringkasan KPI stok
+    // =====================================================================
+
+    /**
+     * Menampilkan halaman daftar produk beserta statistik stok.
+     *
+     * @param  \Illuminate\Http\Request  $request  Request dari client (bisa berisi query pencarian)
+     * @return \Illuminate\View\View
+     */
+    public function index(Request $request)
+    {
+        // Ambil kata kunci pencarian dari query string (opsional)
+        $search = $request->input('search');
+
+        // Ambil filter kategori dari query string (opsional)
+        $categoryFilter = $request->input('category_id');
+
+        // Query produk dengan eager loading kategori agar tidak N+1 query
+        $query = Product::with('category')->orderBy('name', 'asc');
+
+        // Terapkan filter pencarian jika ada input dari user
+        if ($search) {
+            // Cari produk berdasarkan nama (case-insensitive)
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        // Terapkan filter kategori jika dipilih user
+        if ($categoryFilter) {
+            $query->where('category_id', $categoryFilter);
+        }
+
+        // Paginate hasil query: 15 produk per halaman
+        $products = $query->paginate(15)->withQueryString();
+
+        // ---- KPI / Statistik ----
+
+        // Total jumlah produk yang ada di sistem
+        $totalProducts = Product::count();
+
+        // Total keseluruhan stok dari semua produk
+        $totalStock = Product::sum('stock');
+
+        // Jumlah produk dengan stok rendah (≤ 10 unit)
+        $lowStockCount = Product::where('stock', '<=', 10)->count();
+
+        // Nilai total inventori: SUM(harga_beli × stok) untuk semua produk
+        $inventoryValue = Product::selectRaw('SUM(buy_price * stock) as total')->value('total') ?? 0;
+
+        // Ambil semua kategori untuk dropdown filter
+        $categories = Category::orderBy('name')->get();
+
+        // Kirim semua data ke view halaman produk
+        return view('products.index', compact(
+            'products',
+            'totalProducts',
+            'totalStock',
+            'lowStockCount',
+            'inventoryValue',
+            'categories',
+            'search',
+            'categoryFilter'
+        ));
+    }
+
+    // =====================================================================
+    // CREATE — Menampilkan form tambah produk baru
+    // =====================================================================
+
+    /**
+     * Menampilkan form untuk membuat produk baru.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function create()
+    {
+        // Ambil semua kategori untuk ditampilkan di dropdown form
+        $categories = Category::orderBy('name')->get();
+
+        return view('products.create', compact('categories'));
+    }
+
+    // =====================================================================
+    // STORE — Menyimpan produk baru ke database
+    // =====================================================================
+
+    /**
+     * Menyimpan data produk baru ke database setelah validasi.
+     *
+     * @param  \Illuminate\Http\Request  $request  Data form yang dikirim user
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function store(Request $request)
+    {
+        // Validasi input form sebelum menyimpan ke database
+        $data = $request->validate([
+            'name' => 'required|string|max:200',           // Nama produk wajib diisi, maks 200 karakter
+            'category_id' => 'nullable|exists:categories,id',     // Kategori opsional, harus ada di tabel categories
+            'buy_price' => 'required|numeric|min:0',            // Harga beli wajib, angka, tidak boleh negatif
+            'sell_price' => 'required|numeric|min:0',            // Harga jual wajib, angka, tidak boleh negatif
+            'tax_rate' => 'nullable|numeric|min:0|max:100',   // Tarif pajak opsional, 0–100%
+            'discount_rate' => 'nullable|numeric|min:0|max:100',   // Tarif diskon opsional, 0–100%
+            'stock' => 'required|integer|min:0',            // Stok wajib, bilangan bulat, tidak boleh negatif
+            'unit' => 'required|string|max:20',            // Satuan wajib diisi (pcs, kg, dll)
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048', // Gambar opsional, maks 2MB
+        ]);
+
+        // Pastikan tax_rate dan discount_rate memiliki nilai default 0 jika kosong
+        $data['tax_rate'] = $data['tax_rate'] ?? 0;
+        $data['discount_rate'] = $data['discount_rate'] ?? 0;
+
+        // Proses upload gambar jika ada file yang dikirim
+        if ($request->hasFile('image')) {
+            // Simpan gambar di folder public/products dan simpan path-nya
+            $data['image'] = $request->file('image')->store('products', 'public');
+        }
+
+        // Buat produk baru di database dengan data yang sudah divalidasi
+        Product::create($data);
+
+        // Redirect ke halaman daftar produk dengan pesan sukses
+        return redirect()->route('products.index')->with('success', 'Produk berhasil ditambahkan.');
+    }
+
+    // =====================================================================
+    // EDIT — Menampilkan form edit produk
+    // =====================================================================
+
+    /**
+     * Menampilkan form untuk mengedit produk yang sudah ada.
+     *
+     * @param  \App\Models\Product  $product  Produk yang akan diedit (route model binding)
+     * @return \Illuminate\View\View
+     */
+    public function edit(Product $product)
+    {
+        // Ambil semua kategori untuk dropdown
+        $categories = Category::orderBy('name')->get();
+
+        return view('products.edit', compact('product', 'categories'));
+    }
+
+    // =====================================================================
+    // UPDATE — Menyimpan perubahan data produk
+    // =====================================================================
+
+    /**
+     * Menyimpan perubahan data produk yang sudah diedit.
+     *
+     * @param  \Illuminate\Http\Request  $request  Data form yang dikirim user
+     * @param  \App\Models\Product       $product  Produk yang akan diupdate (route model binding)
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update(Request $request, Product $product)
+    {
+        // Validasi input form (sama seperti store, tapi image opsional)
+        $data = $request->validate([
+            'name' => 'required|string|max:200',
+            'category_id' => 'nullable|exists:categories,id',
+            'buy_price' => 'required|numeric|min:0',
+            'sell_price' => 'required|numeric|min:0',
+            'tax_rate' => 'nullable|numeric|min:0|max:100',   // Tarif pajak opsional, 0–100%
+            'discount_rate' => 'nullable|numeric|min:0|max:100',   // Tarif diskon opsional, 0–100%
+            'stock' => 'required|integer|min:0',
+            'unit' => 'required|string|max:20',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        ]);
+
+        // Pastikan tax_rate dan discount_rate memiliki nilai default 0 jika kosong
+        $data['tax_rate'] = $data['tax_rate'] ?? 0;
+        $data['discount_rate'] = $data['discount_rate'] ?? 0;
+
+        // Proses upload gambar baru jika ada file yang dikirim
+        if ($request->hasFile('image')) {
+            // Simpan gambar baru dan ganti path lama dengan yang baru
+            $data['image'] = $request->file('image')->store('products', 'public');
+        }
+
+        // Update data produk di database dengan data yang sudah divalidasi
+        $product->update($data);
+
+        // Redirect ke halaman daftar produk dengan pesan sukses
+        return redirect()->route('products.index')->with('success', 'Produk berhasil diperbarui.');
+    }
+
+    // =====================================================================
+    // DESTROY — Menghapus produk dari database
+    // =====================================================================
+
+    /**
+     * Menghapus produk dari database secara permanen.
+     *
+     * @param  \App\Models\Product  $product  Produk yang akan dihapus (route model binding)
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy(Product $product)
+    {
+        // Hapus produk dari database
+        $product->delete();
+
+        // Redirect kembali ke halaman daftar produk dengan pesan sukses
+        return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus.');
+    }
+
+    // =====================================================================
+    // ADJUST STOCK — Menyesuaikan stok produk (tambah atau kurangi)
+    // =====================================================================
+
+    /**
+     * Menyesuaikan jumlah stok produk (tambah atau kurangi) secara instan.
+     * Digunakan ketika admin ingin mengontrol stok tanpa membuka form edit penuh.
+     *
+     * @param  \Illuminate\Http\Request  $request  Berisi 'adjustment' (angka + atau -)
+     * @param  \App\Models\Product       $product  Produk yang stoknya disesuaikan
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function adjustStock(Request $request, Product $product)
+    {
+        // Validasi input penyesuaian stok
+        $data = $request->validate([
+            // Angka penyesuaian: boleh positif (tambah) atau negatif (kurangi)
+            'adjustment' => 'required|integer|not_in:0',
+        ]);
+
+        // Hitung stok baru: stok saat ini + nilai penyesuaian
+        $newStock = $product->stock + $data['adjustment'];
+
+        // Pastikan stok tidak sampai negatif (tidak boleh kurang dari 0)
+        if ($newStock < 0) {
+            return redirect()->back()->with('error', 'Stok tidak mencukupi. Pengurangan melebihi stok yang tersedia.');
+        }
+
+        // Simpan stok baru ke database
+        $product->update(['stock' => $newStock]);
+
+        // Tentukan keterangan aksi: penambahan atau pengurangan
+        $action = $data['adjustment'] > 0
+            ? 'ditambah ' . $data['adjustment']
+            : 'dikurangi ' . abs($data['adjustment']);
+
+        // Redirect ke halaman produk dengan pesan sukses
+        return redirect()->route('products.index')
+            ->with('success', "Stok produk \"{$product->name}\" berhasil {$action}. Stok sekarang: {$newStock}.");
+    }
+}
