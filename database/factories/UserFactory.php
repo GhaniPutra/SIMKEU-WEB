@@ -40,14 +40,5 @@ class UserFactory extends Factory
             // Email verification is disabled in this project.
         ]);
     }
-
-    /**
-     * Indicate that the model has two-factor authentication configured.
-     */
-    public function withTwoFactor(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            // Two-factor authentication is disabled in this project.
-        ]);
-    }
 }
+
