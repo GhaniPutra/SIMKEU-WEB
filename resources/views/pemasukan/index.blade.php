@@ -539,7 +539,13 @@
 
         {{-- Form filter — method GET agar URL mengandung parameter filter --}}
         <form method="GET" action="{{ route('pemasukan.index') }}" class="filter-bar" id="filterForm">
-            <input type="hidden" name="period" value="{{ request('period', 'month') }}">
+            {{-- Dropdown filter periode seperti dashboard --}}
+            <select name="period" class="form-select" style="width:140px;margin-right:12px;"
+                    onchange="document.getElementById('filterForm').submit()">
+                <option value="today" {{ $period === 'today' ? 'selected' : '' }}>Hari Ini</option>
+                <option value="week" {{ $period === 'week' ? 'selected' : '' }}>Minggu Ini</option>
+                <option value="month" {{ $period === 'month' ? 'selected' : '' }}>Bulan Ini</option>
+            </select>
 
             {{-- Dropdown filter metode pembayaran --}}
             <select name="metode" class="form-select" style="width:130px;"

@@ -107,12 +107,11 @@ class PemasukanController extends Controller
         $chartData = [];
 
         if ($period === 'month') {
-            // 12 bulan (Jan-Des tahun ini)
-            $trendQuery = Sale::selectRaw('MONTH(transaction_date) as m, SUM(total) as amount')
-                ->whereYear('transaction_date', $now->year)
-                ->groupBy('m')
-                ->orderBy('m')
-                ->pluck('amount', 'm');
+            // 12 bulan (Jan-Des tahun ini) dengan grouping di PHP untuk kompatibilitas SQLite
+            $trendQuery = Sale::whereYear('transaction_date', $now->year)
+                ->get(['transaction_date', 'total'])
+                ->groupBy(fn ($sale) => (int) Carbon::parse($sale->transaction_date)->format('n'))
+                ->map(fn ($items) => $items->sum('total'));
 
             $namaBulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
             for ($m = 1; $m <= 12; $m++) {
@@ -122,12 +121,11 @@ class PemasukanController extends Controller
         } elseif ($period === 'week') {
             // 7 hari (Senin-Minggu minggu ini)
             $weekStart = $now->copy()->startOfWeek();
-            $trendQuery = Sale::selectRaw('DATE(transaction_date) as date, SUM(total) as amount')
-                ->where('transaction_date', '>=', $weekStart)
+            $trendQuery = Sale::where('transaction_date', '>=', $weekStart)
                 ->where('transaction_date', '<=', $now->copy()->endOfWeek())
-                ->groupBy('date')
-                ->orderBy('date')
-                ->pluck('amount', 'date');
+                ->get(['transaction_date', 'total'])
+                ->groupBy(fn ($sale) => Carbon::parse($sale->transaction_date)->toDateString())
+                ->map(fn ($items) => $items->sum('total'));
 
             $namaHari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
             for ($d = 0; $d < 7; $d++) {
@@ -138,12 +136,11 @@ class PemasukanController extends Controller
         } else {
             // 24 jam (00:00-23:00 hari ini)
             $dayStart = $now->copy()->startOfDay();
-            $trendQuery = Sale::selectRaw('HOUR(transaction_date) as h, SUM(total) as amount')
-                ->where('transaction_date', '>=', $dayStart)
+            $trendQuery = Sale::where('transaction_date', '>=', $dayStart)
                 ->where('transaction_date', '<=', $now->copy()->endOfDay())
-                ->groupBy('h')
-                ->orderBy('h')
-                ->pluck('amount', 'h');
+                ->get(['transaction_date', 'total'])
+                ->groupBy(fn ($sale) => (int) Carbon::parse($sale->transaction_date)->format('G'))
+                ->map(fn ($items) => $items->sum('total'));
 
             for ($h = 0; $h < 24; $h++) {
                 $chartLabels[] = str_pad($h, 2, '0', STR_PAD_LEFT) . ':00';
