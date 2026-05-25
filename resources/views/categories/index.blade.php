@@ -18,55 +18,85 @@
     ============================================================ */
     .kpi-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 16px;
-        margin-bottom: 24px;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 18px;
+        margin-bottom: 28px;
     }
 
     .kpi-card {
         background: var(--card-bg);
         border-radius: var(--radius);
-        border: 1px solid var(--border);
-        padding: 20px;
-        display: flex;
-        align-items: center;
-        gap: 16px;
+        padding: 22px 20px;
         box-shadow: var(--shadow-sm);
-        transition: box-shadow 0.2s, transform 0.2s;
+        border: 1px solid var(--border);
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
 
     .kpi-card:hover {
+        transform: translateY(-3px);
         box-shadow: var(--shadow-md);
-        transform: translateY(-2px);
     }
 
-    .kpi-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
+    .kpi-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        border-radius: var(--radius) var(--radius) 0 0;
+    }
+
+    .kpi-card.primary::before { background: var(--primary); }
+    .kpi-card.success::before { background: var(--success); }
+    .kpi-card.warning::before { background: var(--warning); }
+    .kpi-card.danger::before { background: var(--danger); }
+    .kpi-card.accent::before  { background: var(--accent); }
+
+    .kpi-top {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.3rem;
-        flex-shrink: 0;
-    }
-
-    .kpi-icon.purple { background: rgba(79,70,229,.12); color: var(--primary); }
-    .kpi-icon.teal   { background: rgba(6,182,212,.12);  color: var(--accent); }
-    .kpi-icon.green  { background: rgba(16,185,129,.12); color: var(--success); }
-
-    .kpi-value {
-        font-size: 1.8rem;
-        font-weight: 800;
-        color: var(--text-primary);
-        line-height: 1;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 14px;
     }
 
     .kpi-label {
-        font-size: 0.78rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
         color: var(--text-muted);
-        margin-top: 4px;
-        font-weight: 500;
+    }
+
+    .kpi-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+
+    .kpi-card.primary .kpi-icon { background: rgba(79,70,229,.12); color: var(--primary); }
+    .kpi-card.success .kpi-icon { background: rgba(16,185,129,.12); color: var(--success); }
+    .kpi-card.warning .kpi-icon { background: rgba(245,158,11,.12); color: var(--warning); }
+    .kpi-card.danger .kpi-icon  { background: rgba(239,68,68,.12);  color: var(--danger);  }
+    .kpi-card.accent .kpi-icon  { background: rgba(6,182,212,.12);  color: var(--accent);  }
+
+    .kpi-value {
+        font-size: 1.55rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        line-height: 1;
+        margin-bottom: 6px;
+    }
+
+    .kpi-sub {
+        font-size: 0.75rem;
+        color: var(--text-muted);
     }
 
     /* ============================================================
@@ -619,36 +649,33 @@
 ============================================================ --}}
 <div class="kpi-grid">
     {{-- Total Kategori --}}
-    <div class="kpi-card">
-        <div class="kpi-icon purple">
-            <i class="fas fa-tags"></i>
+    <div class="kpi-card primary fade-up">
+        <div class="kpi-top">
+            <span class="kpi-label">Total Kategori</span>
+            <div class="kpi-icon"><i class="fas fa-tags"></i></div>
         </div>
-        <div>
-            <div class="kpi-value">{{ $totalCategories }}</div>
-            <div class="kpi-label">Total Kategori</div>
-        </div>
+        <div class="kpi-value">{{ $totalCategories }}</div>
+        <div class="kpi-sub">Jumlah kategori produk saat ini</div>
     </div>
 
     {{-- Kategori dengan Produk --}}
-    <div class="kpi-card">
-        <div class="kpi-icon teal">
-            <i class="fas fa-box-open"></i>
+    <div class="kpi-card success fade-up">
+        <div class="kpi-top">
+            <span class="kpi-label">Kategori Berisi Produk</span>
+            <div class="kpi-icon"><i class="fas fa-box-open"></i></div>
         </div>
-        <div>
-            <div class="kpi-value">{{ $totalCategorized }}</div>
-            <div class="kpi-label">Kategori Berisi Produk</div>
-        </div>
+        <div class="kpi-value">{{ $totalCategorized }}</div>
+        <div class="kpi-sub">Kategori dengan setidaknya satu produk</div>
     </div>
 
     {{-- Kategori Kosong --}}
-    <div class="kpi-card">
-        <div class="kpi-icon green">
-            <i class="fas fa-folder-open"></i>
+    <div class="kpi-card warning fade-up">
+        <div class="kpi-top">
+            <span class="kpi-label">Kategori Kosong</span>
+            <div class="kpi-icon"><i class="fas fa-folder-open"></i></div>
         </div>
-        <div>
-            <div class="kpi-value">{{ $totalCategories - $totalCategorized }}</div>
-            <div class="kpi-label">Kategori Kosong</div>
-        </div>
+        <div class="kpi-value">{{ $totalCategories - $totalCategorized }}</div>
+        <div class="kpi-sub">Kategori tanpa produk saat ini</div>
     </div>
 </div>
 

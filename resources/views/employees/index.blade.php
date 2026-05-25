@@ -10,38 +10,72 @@
 @endsection
 
 @section('content')
-{{-- Header halaman pegawai dan tombol aksi utama --}}
-<div class="employees-header">
-    <div class="employees-title">
-        <i class="fas fa-users employees-icon"></i>
-        <h1>Manajemen Pegawai</h1>
+{{-- Statistik ringkas pegawai --}}
+<div class="kpi-grid">
+    <div class="kpi-card primary fade-up">
+        <div class="kpi-top">
+            <span class="kpi-label">Total User</span>
+            <div class="kpi-icon"><i class="fas fa-users"></i></div>
+        </div>
+        <div class="kpi-value">{{ $totalUsers }}</div>
+        <div class="kpi-sub">Jumlah total akun terdaftar</div>
     </div>
-    <a href="{{ route('employees.create') }}" class="btn-add">
-        <i class="fas fa-plus"></i> Tambah Pegawai
-    </a>
+    <div class="kpi-card success fade-up">
+        <div class="kpi-top">
+            <span class="kpi-label">Pegawai</span>
+            <div class="kpi-icon"><i class="fas fa-user-tie"></i></div>
+        </div>
+        <div class="kpi-value">{{ $totalPegawai }}</div>
+        <div class="kpi-sub">Jumlah pegawai aktif</div>
+    </div>
+    <div class="kpi-card danger fade-up">
+        <div class="kpi-top">
+            <span class="kpi-label">Admin</span>
+            <div class="kpi-icon"><i class="fas fa-user-shield"></i></div>
+        </div>
+        <div class="kpi-value">{{ $totalAdmin }}</div>
+        <div class="kpi-sub">Jumlah akun admin</div>
+    </div>
 </div>
 
-{{-- Statistik ringkas pegawai --}}
-<div class="employees-stats">
-    <div class="stat-card">
-        <div class="stat-card-value">{{ $totalUsers }}</div>
-        <div class="stat-card-label">Total User</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-card-value">{{ $totalPegawai }}</div>
-        <div class="stat-card-label">Pegawai</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-card-value">{{ $totalAdmin }}</div>
-        <div class="stat-card-label">Admin</div>
-    </div>
-</div>
+<p class="section-title"><i class="fas fa-table-list" style="color:var(--primary)"></i> Daftar Pegawai</p>
 
 <div class="content-card">
     <div class="content-card-header">
         <div class="content-card-title"><i class="fas fa-table-list"></i> Daftar Pegawai</div>
+        <a href="{{ route('employees.create') }}" class="btn-add">
+            <i class="fas fa-plus"></i> Tambah Pegawai
+        </a>
     </div>
     <div class="content-card-body">
+        <form method="GET" action="{{ route('employees.index') }}" class="toolbar">
+            <div class="toolbar-search">
+                <i class="fas fa-magnifying-glass search-icon"></i>
+                <input
+                    type="text"
+                    name="search"
+                    placeholder="Cari nama atau email pegawai..."
+                    value="{{ $search ?? '' }}"
+                >
+            </div>
+
+            <select name="role">
+                <option value="">Semua Role</option>
+                <option value="pegawai" {{ (isset($roleFilter) && $roleFilter === 'pegawai') ? 'selected' : '' }}>Pegawai</option>
+                <option value="admin" {{ (isset($roleFilter) && $roleFilter === 'admin') ? 'selected' : '' }}>Admin</option>
+            </select>
+
+            <button type="submit" class="btn-add">
+                <i class="fas fa-filter"></i> Filter
+            </button>
+
+            @if(!empty($search) || !empty($roleFilter))
+                <a href="{{ route('employees.index') }}" class="btn-add" style="background:#e2e8f0;color:var(--text-primary);">
+                    <i class="fas fa-xmark"></i> Reset
+                </a>
+            @endif
+        </form>
+
         @if($employees->count() > 0)
             <div class="table-scroll">
                 <table class="data-table">

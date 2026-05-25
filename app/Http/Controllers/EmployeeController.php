@@ -8,13 +8,30 @@ use Illuminate\Support\Facades\Hash;
 
 class EmployeeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $employees = User::whereIn('role', ['pegawai', 'admin'])->orderBy('id', 'desc')->paginate(15);
+        $search = $request->query('search', '');
+        $roleFilter = $request->query('role', '');
+
+        $employeesQuery = User::whereIn('role', ['pegawai', 'admin']);
+
+        if (!empty($search)) {
+            $employeesQuery->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        if (in_array($roleFilter, ['pegawai', 'admin'], true)) {
+            $employeesQuery->where('role', $roleFilter);
+        }
+
+        $employees = $employeesQuery->orderBy('id', 'desc')->paginate(15)->withQueryString();
         $totalUsers = User::whereIn('role', ['pegawai', 'admin'])->count();
         $totalPegawai = User::where('role', 'pegawai')->count();
         $totalAdmin = User::where('role', 'admin')->count();
-        return view('employees.index', compact('employees', 'totalUsers', 'totalPegawai', 'totalAdmin'));
+
+        return view('employees.index', compact('employees', 'totalUsers', 'totalPegawai', 'totalAdmin', 'search', 'roleFilter'));
     }
 
     public function create()
