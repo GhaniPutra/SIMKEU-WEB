@@ -14,9 +14,23 @@ Dashboard Penjualan Pegawai - SIMKEU
         ============================================================ */
         .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(4, 1fr); /* Grid 4 kolom untuk desktop */
             gap: 18px;
             margin-bottom: 28px;
+        }
+
+        /* Responsif untuk layar tablet */
+        @media (max-width: 1200px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr); /* 2 kolom di tablet */
+            }
+        }
+
+        /* Responsif untuk layar mobile */
+        @media (max-width: 768px) {
+            .kpi-grid {
+                grid-template-columns: 1fr; /* 1 kolom di mobile */
+            }
         }
 
         .kpi-card {

@@ -1,0 +1,454 @@
+/* CSS khusus untuk halaman daftar pegawai di folder employees */
+
+/* Grid ringkasan KPI atas halaman pegawai */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 28px;
+}
+
+/* Responsif untuk KPI grid ketika layar kecil */
+@media (max-width: 900px) {
+    .kpi-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+}
+
+/* Kartu KPI umum */
+.kpi-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 22px 20px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Efek hover untuk kartu KPI */
+.kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Garis warna di atas kartu KPI */
+.kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: var(--radius) var(--radius) 0 0;
+}
+
+/* Warna garis atas untuk varian kartu */
+.kpi-card.primary::before { background: var(--primary); }
+.kpi-card.success::before { background: var(--success); }
+.kpi-card.danger::before { background: var(--danger); }
+.kpi-card.accent::before { background: var(--accent); }
+
+/* Baris atas di dalam kartu KPI */
+.kpi-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+}
+
+/* Label KPI */
+.kpi-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--text-muted);
+}
+
+/* Ikon KPI */
+.kpi-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+/* Warna ikon KPI untuk tiap varian */
+.kpi-card.primary .kpi-icon { background: rgba(79,70,229,.12); color: var(--primary); }
+.kpi-card.success .kpi-icon { background: rgba(16,185,129,.12); color: var(--success); }
+.kpi-card.danger .kpi-icon { background: rgba(239,68,68,.12); color: var(--danger); }
+.kpi-card.accent .kpi-icon { background: rgba(6,182,212,.12); color: var(--accent); }
+
+/* Nilai utama pada kartu KPI */
+.kpi-value {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1;
+    margin-bottom: 6px;
+}
+
+/* Subteks KPI */
+.kpi-sub {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Judul section daftar pegawai */
+.section-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Garis pembatas bawah judul section */
+.section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+/* Kartu konten wrapper */
+.content-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+/* Header dalam kartu konten */
+.content-card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+/* Judul kecil dalam kartu konten */
+.content-card-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Ikon pada judul konten */
+.content-card-title i {
+    color: var(--primary);
+}
+
+/* Badan konten di dalam kartunya */
+.content-card-body {
+    padding: 0px;
+}
+
+/* Toolbar pencarian dan filter */
+.toolbar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    background: #f8fafc;
+}
+
+/* Wrapper input pencarian */
+.toolbar-search {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+}
+
+/* Input pencarian */
+.toolbar-search input {
+    width: 100%;
+    padding: 8px 12px 8px 36px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    font-size: 0.82rem;
+    font-family: inherit;
+    color: var(--text-primary);
+    background: white;
+    transition: border-color 0.2s;
+}
+
+/* Fokus pada input pencarian */
+.toolbar-search input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79,70,229,0.08);
+}
+
+/* Ikon pencarian di dalam input */
+.toolbar-search .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    pointer-events: none;
+}
+
+/* Select role filter */
+.toolbar select {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    font-size: 0.82rem;
+    font-family: inherit;
+    color: var(--text-primary);
+    background: white;
+    cursor: pointer;
+    text-align: left;
+    text-align-last: left;
+}
+
+/* Opsi select role */
+.toolbar select option {
+    text-align: left;
+}
+
+/* Responsif toolbar untuk layar kecil */
+@media (max-width: 900px) {
+    .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .toolbar-search {
+        min-width: unset;
+    }
+}
+
+/* Wrapper tabel agar dapat digulir horizontal */
+.table-scroll {
+    overflow-x: auto;
+}
+
+/* Tabel daftar pegawai */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.825rem;
+}
+
+/* Header tabel daftar pegawai */
+.data-table thead th {
+    padding: 12px 16px;
+    background: #f8fafc;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--border);
+    text-align: left;
+}
+
+/* Sel tabel body */
+.data-table tbody td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-primary);
+}
+
+/* Hover pada baris tabel */
+.data-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+/* Hapus border bawah pada baris terakhir */
+.data-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Wrapper aksi tombol dalam tabel */
+.table-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Link nama pegawai */
+.employee-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* Hover link nama pegawai */
+.employee-link:hover {
+    text-decoration: underline;
+}
+
+/* Form inline untuk tombol hapus */
+.inline-form {
+    display: inline-block;
+    margin: 0;
+}
+
+/* Tombol atur stok pegawai */
+.btn-stock {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 6px;
+    background: white;
+    color: var(--success);
+    border: 1px solid var(--success);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+/* Hover tombol atur stok */
+.btn-stock:hover {
+    background: var(--success);
+    color: white;
+    border-color: var(--success);
+}
+
+/* Tombol edit */
+.btn-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 6px;
+    background: white;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+/* Hover tombol edit */
+.btn-edit:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* Tombol hapus */
+.btn-delete {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 6px;
+    background: white;
+    color: var(--danger, #ef4444);
+    border: 1px solid var(--danger, #ef4444);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+/* Hover tombol hapus */
+.btn-delete:hover {
+    background: var(--danger, #ef4444);
+    color: white;
+}
+
+/* Wrapper pagination */
+.pagination-wrapper {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+/* Tampilan kosong bila belum ada data pegawai */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+/* Ikon state kosong */
+.empty-state-icon {
+    font-size: 3rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+
+/* Teks state kosong */
+.empty-state-text {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+}
+
+/* Tombol tambah pegawai ketika kosong */
+.btn-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 16px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 9px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+/* Hover tombol tambah pegawai */
+.btn-add:hover {
+    background: var(--primary-dark);
+    color: white;
+}
+
+/* Styling dasar untuk badge role */
+.role-badge {
+    display: inline-flex; /* Menjaga ukuran badge sesuai isi */
+    align-items: center; /* Rata vertikal teks */
+    justify-content: center; /* Tengah teks */
+    gap: 6px; /* Jarak ikon / teks jika ada */
+    padding: 5px 10px; /* Jarak dalam badge */
+    border-radius: 999px; /* Bentuk pill */
+    font-size: 0.78rem; /* Ukuran teks kecil */
+    font-weight: 700; /* Teks tebal */
+    text-transform: capitalize; /* Kapitalisasi huruf pertama */
+    letter-spacing: 0.02em; /* Spasi huruf halus */
+    border: 1px solid transparent; /* Untuk menjaga ukuran stabil */
+    white-space: nowrap; /* Jangan membungkus teks */
+}
+
+/* Badge role pegawai */
+.role-pegawai {
+    background: rgba(59, 130, 246, 0.12);
+    color: #3b82f6;
+    border-color: rgba(59, 130, 246, 0.2);
+}
+
+/* Badge role admin */
+.role-admin {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.2);
+}

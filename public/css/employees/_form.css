@@ -1,0 +1,74 @@
+/* CSS khusus komponen form pegawai */
+/* Gaya ini hanya digunakan oleh partial employees._form */
+
+.validation-errors {
+    background: rgba(239, 68, 68, 0.12); /* Latar peringatan merah muda */
+    border-left: 4px solid #ef4444; /* Garis tepi merah */
+    padding: 12px 16px; /* Ruang dalam kotak error */
+    border-radius: 6px; /* Sudut melengkung */
+    margin-bottom: 20px; /* Jarak bawah ke form */
+}
+
+.validation-errors p {
+    color: #ef4444; /* Warna teks judul error */
+    font-weight: 600; /* Tebal teks */
+    margin: 0 0 8px 0; /* Jarak bawah */
+}
+
+.validation-errors ul {
+    margin: 0; /* Hilangkan margin default */
+    padding-left: 20px; /* Indentasi daftar */
+    color: #dc2626; /* Warna teks daftar */
+}
+
+.validation-errors li {
+    margin-bottom: 4px; /* Ruang antar item error */
+}
+
+.form-group {
+    margin-bottom: 18px; /* Jarak antar field */
+}
+
+.form-label {
+    display: block; /* Label tampil di baris baru */
+    font-size: 0.875rem; /* Ukuran teks label */
+    font-weight: 600; /* Tebal teks label */
+    color: var(--text-primary); /* Warna teks label */
+    margin-bottom: 8px; /* Jarak ke input */
+}
+
+.form-control {
+    width: 100%; /* Lebar penuh dalam grup */
+    min-height: 44px; /* Tinggi minimum input */
+    padding: 11px 14px; /* Ruang dalam input */
+    border: 1px solid var(--border); /* Border input */
+    border-radius: 10px; /* Sudut input */
+    font-size: 0.95rem; /* Ukuran teks input */
+    color: var(--text-primary); /* Warna teks input */
+    background: var(--card-bg); /* Latar input */
+    transition: all 0.2s; /* Transisi halus */
+    text-align: left; /* Rata kiri teks */
+}
+
+select.form-control {
+    text-align: left; /* Rata kiri teks pada select */
+    text-align-last: left; /* Rata pilihan terakhir */
+    appearance: none; /* Hapus tampilan default browser */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%236b7280' stroke-width='1.8'/%3E%3C/svg%3E"); /* Ikon panah*/
+    background-repeat: no-repeat; /* Hapus pengulangan */
+    background-position: right 14px center; /* Posisi ikon */
+    background-size: 12px 8px; /* Ukuran ikon */
+}
+
+.form-control:focus {
+    outline: none; /* Hapus outline default */
+    border-color: var(--primary); /* Border biru saat fokus */
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.08); /* Bayangan fokus */
+}
+
+.form-error {
+    color: #ef4444; /* Warna pesan error */
+    font-size: 0.8rem; /* Ukuran teks error */
+    margin-top: 4px; /* Jarak ke atas */
+    display: block; /* Tampilkan sebagai block */
+}

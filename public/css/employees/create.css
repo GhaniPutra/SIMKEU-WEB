@@ -1,0 +1,102 @@
+/* CSS khusus halaman tambah pegawai */
+/* Semua gaya di sini hanya untuk tampilan create pegawai */
+
+.form-container {
+    max-width: 620px; /* Lebar maksimum container form agar tidak terlalu melebar */
+    margin: 24px auto 0; /* Jarak atas otomatis dan simetris kiri kanan */
+    padding: 0 16px; /* Jarak horizontal dalam container */
+}
+
+.form-card-header {
+    display: flex; /* Gunakan flexbox untuk ikon dan judul */
+    align-items: center; /* Rata vertikal tengah */
+    gap: 12px; /* Jarak antar elemen */
+    margin-bottom: 24px; /* Jarak bawah header */
+}
+
+.form-icon {
+    color: var(--primary); /* Warna ikon utama */
+    font-size: 1.8rem; /* Ukuran ikon */
+}
+
+.form-card-header h1 {
+    font-size: 1.5rem; /* Ukuran judul halaman */
+    font-weight: 700; /* Tebal tulisan */
+    color: var(--text-primary); /* Warna teks judul */
+    margin: 0; /* Hilangkan margin default */
+}
+
+.content-card {
+    background: var(--card-bg); /* Latar card */
+    border-radius: var(--radius); /* Sudut membulat */
+    border: 1px solid var(--border); /* Garis batas card */
+    box-shadow: var(--shadow-sm); /* Bayangan ringan */
+    overflow: hidden; /* Potong konten berlebih */
+}
+
+.content-card-body {
+    padding: 24px; /* Ruang dalam content card */
+}
+
+.form-actions {
+    display: flex; /* Flex container untuk tombol aksi */
+    flex-wrap: wrap; /* Bungkus bila ruang tidak cukup */
+    gap: 12px; /* Jarak antar tombol */
+    margin-top: 24px; /* Jarak atas area aksi */
+    justify-content: flex-end; /* Letakkan tombol di kanan */
+}
+
+.btn-primary {
+    display: inline-flex; /* Flex untuk ikon dan teks */
+    align-items: center; /* Rata vertikal tengah */
+    gap: 8px; /* Jarak ikon dengan teks */
+    padding: 12px 24px; /* Ruang dalam tombol */
+    background: var(--primary); /* Warna tombol utama */
+    color: white; /* Warna teks tombol */
+    border: none; /* Hilangkan border default */
+    border-radius: 8px; /* Sudut tombol */
+    font-size: 0.9rem; /* Ukuran teks tombol */
+    font-weight: 600; /* Ketebalan teks */
+    cursor: pointer; /* Kursor klik */
+    transition: all 0.2s; /* Transisi halus */
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark, #4338ca); /* Warna hover tombol */
+    box-shadow: var(--shadow-md); /* Bayangan hover */
+    transform: translateY(-1px); /* Efek naik kecil */
+}
+
+.btn-cancel {
+    display: inline-flex; /* Flex untuk ikon dan teks */
+    align-items: center; /* Rata vertikal tengah */
+    gap: 8px; /* Jarak ikon dengan teks */
+    padding: 12px 24px; /* Ruang dalam tombol */
+    background: white; /* Latar tombol */
+    color: var(--text-primary); /* Warna teks */
+    border: 1px solid var(--border); /* Border tombol */
+    border-radius: 8px; /* Sudut tombol */
+    font-size: 0.9rem; /* Ukuran teks tombol */
+    font-weight: 600; /* Ketebalan teks */
+    text-decoration: none; /* Hilangkan garis bawah link */
+    cursor: pointer; /* Kursor klik */
+    transition: all 0.2s; /* Transisi halus */
+}
+
+.btn-cancel:hover {
+    background: #f8fafc; /* Latar hover */
+    border-color: var(--primary); /* Border hover */
+}
+
+@media (max-width: 768px) {
+    .form-actions {
+        flex-direction: column; /* Susun tombol vertikal */
+        align-items: stretch; /* Lebar tombol penuh */
+    }
+
+    .btn-cancel,
+    .btn-primary {
+        width: 100%; /* Tombol lebarnya penuh */
+        justify-content: center; /* Tengah teks dalam tombol */
+    }
+}
