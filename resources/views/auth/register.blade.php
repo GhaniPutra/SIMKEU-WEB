@@ -148,6 +148,42 @@
             text-decoration: underline;
         }
 
+        /* Password view/hide toggle wrapper */
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        .password-wrapper .form-control {
+            padding-right: 52px;
+            width: 100%;
+        }
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            font-size: 1.15rem;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        .password-toggle:hover {
+            color: var(--primary);
+            transform: translateY(-50%) scale(1.08);
+        }
+        .password-toggle:focus {
+            outline: none;
+        }
+
         /* Container override */
         main .container { padding: 0; max-width: 100%; }
 
@@ -248,13 +284,18 @@
                             <i class="fas fa-key"></i> Password
                         </label>
 
-                        {{-- Input password --}}
-                        <input type="password" 
-                               class="form-control @error('password') is-invalid @enderror" 
-                               id="password" 
-                               name="password" 
-                               placeholder="Masukkan password"
-                               required>
+                        {{-- Input password dengan toggle lihat password --}}
+                        <div class="password-wrapper">
+                            <input type="password" 
+                                   class="form-control @error('password') is-invalid @enderror" 
+                                   id="password" 
+                                   name="password" 
+                                   placeholder="Masukkan password"
+                                   required>
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('password', this)" title="Lihat/Sembunyikan password">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
 
                         {{-- Tampilkan error password jika ada --}}
                         @error('password')
@@ -274,13 +315,18 @@
                             <i class="fas fa-check-circle"></i> Konfirmasi Password
                         </label>
 
-                        {{-- Input konfirmasi password --}}
-                        <input type="password" 
-                               class="form-control @error('password_confirmation') is-invalid @enderror" 
-                               id="password_confirmation" 
-                               name="password_confirmation" 
-                               placeholder="Ketik ulang password Anda"
-                               required>
+                        {{-- Input konfirmasi password dengan toggle lihat password --}}
+                        <div class="password-wrapper">
+                            <input type="password" 
+                                   class="form-control @error('password_confirmation') is-invalid @enderror" 
+                                   id="password_confirmation" 
+                                   name="password_confirmation" 
+                                   placeholder="Ketik ulang password Anda"
+                                   required>
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('password_confirmation', this)" title="Lihat/Sembunyikan password">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
 
                         {{-- Tampilkan error password_confirmation jika ada --}}
                         @error('password_confirmation')
@@ -313,4 +359,23 @@
             }
         </style>
     @endauth
+@endsection
+
+@section('js')
+    <script>
+        function togglePasswordVisibility(inputId, toggleBtn) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = toggleBtn.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
 @endsection

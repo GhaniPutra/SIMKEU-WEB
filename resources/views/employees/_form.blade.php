@@ -54,15 +54,20 @@
     <label for="password" class="form-label">
         Password {{ isset($employee) ? '(kosongkan jika tidak ingin mengubah)' : '' }}
     </label>
-    <input
-        id="password"
-        type="password"
-        name="password"
-        placeholder="Minimal 8 karakter"
-        class="form-control @error('password') is-invalid @enderror"
-        {{ isset($employee) ? '' : 'required' }}
-        autocomplete="new-password"
-    >
+    <div class="password-wrapper">
+        <input
+            id="password"
+            type="password"
+            name="password"
+            placeholder="Minimal 8 karakter"
+            class="form-control @error('password') is-invalid @enderror"
+            {{ isset($employee) ? '' : 'required' }}
+            autocomplete="new-password"
+        >
+        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('password', this)" title="Lihat/Sembunyikan password">
+            <i class="fas fa-eye"></i>
+        </button>
+    </div>
     @error('password')
         <span class="form-error">{{ $message }}</span>
     @enderror
@@ -71,15 +76,20 @@
 {{-- Field konfirmasi password untuk memastikan input benar --}}
 <div class="form-group">
     <label for="password_confirmation" class="form-label">Konfirmasi Password</label>
-    <input
-        id="password_confirmation"
-        type="password"
-        name="password_confirmation"
-        placeholder="Ulangi password"
-        class="form-control @error('password_confirmation') is-invalid @enderror"
-        {{ isset($employee) ? '' : 'required' }}
-        autocomplete="new-password"
-    >
+    <div class="password-wrapper">
+        <input
+            id="password_confirmation"
+            type="password"
+            name="password_confirmation"
+            placeholder="Ulangi password"
+            class="form-control @error('password_confirmation') is-invalid @enderror"
+            {{ isset($employee) ? '' : 'required' }}
+            autocomplete="new-password"
+        >
+        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('password_confirmation', this)" title="Lihat/Sembunyikan password">
+            <i class="fas fa-eye"></i>
+        </button>
+    </div>
     @error('password_confirmation')
         <span class="form-error">{{ $message }}</span>
     @enderror

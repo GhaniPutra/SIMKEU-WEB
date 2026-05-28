@@ -72,3 +72,39 @@ select.form-control {
     margin-top: 4px; /* Jarak ke atas */
     display: block; /* Tampilkan sebagai block */
 }
+
+/* Password view/hide toggle wrapper */
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+.password-wrapper .form-control {
+    padding-right: 52px;
+    width: 100%;
+}
+.password-toggle {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted, #64748b);
+    cursor: pointer;
+    padding: 4px;
+    font-size: 1.1rem;
+    transition: all var(--transition, 0.25s ease);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+.password-toggle:hover {
+    color: var(--primary, #4f46e5);
+    transform: translateY(-50%) scale(1.08);
+}
+.password-toggle:focus {
+    outline: none;
+}
