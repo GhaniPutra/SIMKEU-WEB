@@ -16,8 +16,15 @@
 <div class="form-container">
     {{-- Header halaman dengan ikon dan judul --}}
     <div class="form-card-header">
-        <i class="fas fa-user-edit form-icon"></i>
-        <h1>Edit Pegawai</h1>
+        <div class="form-header-title">
+            <div class="form-icon-wrapper">
+                <i class="fas fa-user-gear"></i>
+            </div>
+            <div>
+                <h1>Edit Pegawai</h1>
+                <p>Perbarui informasi akun, profil, dan hak akses pegawai</p>
+            </div>
+        </div>
     </div>
 
     {{-- Kontainer utama card form --}}

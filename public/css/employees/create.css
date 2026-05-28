@@ -2,101 +2,163 @@
 /* Semua gaya di sini hanya untuk tampilan create pegawai */
 
 .form-container {
-    max-width: 620px; /* Lebar maksimum container form agar tidak terlalu melebar */
-    margin: 24px auto 0; /* Jarak atas otomatis dan simetris kiri kanan */
-    padding: 0 16px; /* Jarak horizontal dalam container */
+    max-width: 960px; /* Expand maximum width for side-by-side grid */
+    margin: 24px auto 40px;
+    padding: 0 24px;
+    animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .form-card-header {
-    display: flex; /* Gunakan flexbox untuk ikon dan judul */
-    align-items: center; /* Rata vertikal tengah */
-    gap: 12px; /* Jarak antar elemen */
-    margin-bottom: 24px; /* Jarak bawah header */
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Space out header and actions if needed */
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--border, #e2e8f0);
+    padding-bottom: 16px;
 }
 
-.form-icon {
-    color: var(--primary); /* Warna ikon utama */
-    font-size: 1.8rem; /* Ukuran ikon */
+.form-header-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.form-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary, #4f46e5);
+    font-size: 1.4rem;
 }
 
 .form-card-header h1 {
-    font-size: 1.5rem; /* Ukuran judul halaman */
-    font-weight: 700; /* Tebal tulisan */
-    color: var(--text-primary); /* Warna teks judul */
-    margin: 0; /* Hilangkan margin default */
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary, #1e293b);
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.form-card-header p {
+    margin: 4px 0 0 0;
+    font-size: 0.875rem;
+    color: var(--text-muted, #64748b);
 }
 
 .content-card {
-    background: var(--card-bg); /* Latar card */
-    border-radius: var(--radius); /* Sudut membulat */
-    border: 1px solid var(--border); /* Garis batas card */
-    box-shadow: var(--shadow-sm); /* Bayangan ringan */
-    overflow: hidden; /* Potong konten berlebih */
+    background: var(--card-bg, #ffffff);
+    border-radius: var(--radius, 12px);
+    border: 1px solid var(--border, #e2e8f0);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.01);
+    overflow: visible; /* Ensure focus rings and wrappers aren't cut off */
 }
 
 .content-card-body {
-    padding: 24px; /* Ruang dalam content card */
+    padding: 32px;
 }
 
 .form-actions {
-    display: flex; /* Flex container untuk tombol aksi */
-    flex-wrap: wrap; /* Bungkus bila ruang tidak cukup */
-    gap: 12px; /* Jarak antar tombol */
-    margin-top: 24px; /* Jarak atas area aksi */
-    justify-content: flex-end; /* Letakkan tombol di kanan */
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 32px;
+    border-top: 1px solid var(--border, #e2e8f0);
+    padding-top: 24px;
 }
 
+/* Button Upgrades */
 .btn-primary {
-    display: inline-flex; /* Flex untuk ikon dan teks */
-    align-items: center; /* Rata vertikal tengah */
-    gap: 8px; /* Jarak ikon dengan teks */
-    padding: 12px 24px; /* Ruang dalam tombol */
-    background: var(--primary); /* Warna tombol utama */
-    color: white; /* Warna teks tombol */
-    border: none; /* Hilangkan border default */
-    border-radius: 8px; /* Sudut tombol */
-    font-size: 0.9rem; /* Ukuran teks tombol */
-    font-weight: 600; /* Ketebalan teks */
-    cursor: pointer; /* Kursor klik */
-    transition: all 0.2s; /* Transisi halus */
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, var(--primary, #4f46e5), var(--primary-light, #818cf8));
+    color: white;
+    border: none;
+    border-radius: var(--radius, 12px);
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-primary:hover {
-    background: var(--primary-dark, #4338ca); /* Warna hover tombol */
-    box-shadow: var(--shadow-md); /* Bayangan hover */
-    transform: translateY(-1px); /* Efek naik kecil */
+    background: linear-gradient(135deg, var(--primary-dark, #3730a3), var(--primary, #4f46e5));
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
+    transform: translateY(-2px);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
 }
 
 .btn-cancel {
-    display: inline-flex; /* Flex untuk ikon dan teks */
-    align-items: center; /* Rata vertikal tengah */
-    gap: 8px; /* Jarak ikon dengan teks */
-    padding: 12px 24px; /* Ruang dalam tombol */
-    background: white; /* Latar tombol */
-    color: var(--text-primary); /* Warna teks */
-    border: 1px solid var(--border); /* Border tombol */
-    border-radius: 8px; /* Sudut tombol */
-    font-size: 0.9rem; /* Ukuran teks tombol */
-    font-weight: 600; /* Ketebalan teks */
-    text-decoration: none; /* Hilangkan garis bawah link */
-    cursor: pointer; /* Kursor klik */
-    transition: all 0.2s; /* Transisi halus */
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    background: #ffffff;
+    color: var(--text-primary, #1e293b);
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: var(--radius, 12px);
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
 }
 
 .btn-cancel:hover {
-    background: #f8fafc; /* Latar hover */
-    border-color: var(--primary); /* Border hover */
+    background: #f8fafc;
+    border-color: var(--text-muted, #64748b);
+    color: var(--text-primary, #1e293b);
 }
 
+/* Animations */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive breakpoint adjustments */
 @media (max-width: 768px) {
+    .form-container {
+        padding: 0 16px;
+        margin-top: 16px;
+    }
+
+    .content-card-body {
+        padding: 20px;
+    }
+
+    .form-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
     .form-actions {
-        flex-direction: column; /* Susun tombol vertikal */
-        align-items: stretch; /* Lebar tombol penuh */
+        flex-direction: column-reverse;
+        align-items: stretch;
+        gap: 12px;
     }
 
     .btn-cancel,
     .btn-primary {
-        width: 100%; /* Tombol lebarnya penuh */
-        justify-content: center; /* Tengah teks dalam tombol */
+        width: 100%;
+        justify-content: center;
+        padding: 14px;
     }
 }

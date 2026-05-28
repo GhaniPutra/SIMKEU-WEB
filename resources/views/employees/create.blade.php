@@ -16,8 +16,15 @@
 <div class="form-container">
     {{-- Header halaman dengan ikon dan judul --}}
     <div class="form-card-header">
-        <i class="fas fa-user-plus form-icon"></i>
-        <h1>Tambah Pegawai Baru</h1>
+        <div class="form-header-title">
+            <div class="form-icon-wrapper">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <div>
+                <h1>Tambah Pegawai</h1>
+                <p>Daftarkan akun pegawai baru ke dalam sistem keuangan SIMKEU</p>
+            </div>
+        </div>
     </div>
 
     {{-- Kontainer utama card form --}}

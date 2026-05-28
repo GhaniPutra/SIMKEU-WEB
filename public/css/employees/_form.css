@@ -2,88 +2,178 @@
 /* Gaya ini hanya digunakan oleh partial employees._form */
 
 .validation-errors {
-    background: rgba(239, 68, 68, 0.12); /* Latar peringatan merah muda */
-    border-left: 4px solid #ef4444; /* Garis tepi merah */
-    padding: 12px 16px; /* Ruang dalam kotak error */
-    border-radius: 6px; /* Sudut melengkung */
-    margin-bottom: 20px; /* Jarak bawah ke form */
+    background: rgba(239, 68, 68, 0.04);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-left: 4px solid #ef4444;
+    padding: 16px 20px;
+    border-radius: var(--radius, 12px);
+    margin-bottom: 28px;
+    animation: slideIn 0.3s ease;
 }
 
-.validation-errors p {
-    color: #ef4444; /* Warna teks judul error */
-    font-weight: 600; /* Tebal teks */
-    margin: 0 0 8px 0; /* Jarak bawah */
+.errors-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ef4444;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+}
+
+.errors-header i {
+    font-size: 1.1rem;
+}
+
+.error-pulse {
+    animation: errorPulse 2s infinite;
 }
 
 .validation-errors ul {
-    margin: 0; /* Hilangkan margin default */
-    padding-left: 20px; /* Indentasi daftar */
-    color: #dc2626; /* Warna teks daftar */
+    margin: 0;
+    padding-left: 20px;
+    color: #dc2626;
+    font-size: 0.9rem;
+    line-height: 1.6;
 }
 
 .validation-errors li {
-    margin-bottom: 4px; /* Ruang antar item error */
+    margin-bottom: 4px;
 }
 
+/* Layout Form Grid */
+.form-sections-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+}
+
+@media (min-width: 992px) {
+    .form-sections-container {
+        grid-template-columns: 1.2fr 1fr; /* Make personal details slightly wider than security */
+        gap: 32px;
+    }
+}
+
+.form-card-section {
+    background: rgba(248, 250, 252, 0.5);
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: var(--radius, 12px);
+    padding: 24px;
+    transition: all 0.3s ease;
+}
+
+.form-card-section:hover {
+    border-color: rgba(79, 70, 229, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.form-card-section.bg-gradient-subtle {
+    background: linear-gradient(135deg, rgba(248, 250, 252, 0.5) 0%, rgba(79, 70, 229, 0.02) 100%);
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary, #1e293b);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 8px 0;
+}
+
+.section-subtitle i {
+    color: var(--primary, #4f46e5);
+}
+
+.section-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted, #64748b);
+    line-height: 1.5;
+    margin: 0 0 20px 0;
+}
+
+/* Form Group & Controls */
 .form-group {
-    margin-bottom: 18px; /* Jarak antar field */
+    margin-bottom: 20px;
 }
 
 .form-label {
-    display: block; /* Label tampil di baris baru */
-    font-size: 0.875rem; /* Ukuran teks label */
-    font-weight: 600; /* Tebal teks label */
-    color: var(--text-primary); /* Warna teks label */
-    margin-bottom: 8px; /* Jarak ke input */
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary, #1e293b);
+    margin-bottom: 8px;
+    transition: color 0.25s ease;
 }
 
-.form-control {
-    width: 100%; /* Lebar penuh dalam grup */
-    min-height: 44px; /* Tinggi minimum input */
-    padding: 11px 14px; /* Ruang dalam input */
-    border: 1px solid var(--border); /* Border input */
-    border-radius: 10px; /* Sudut input */
-    font-size: 0.95rem; /* Ukuran teks input */
-    color: var(--text-primary); /* Warna teks input */
-    background: var(--card-bg); /* Latar input */
-    transition: all 0.2s; /* Transisi halus */
-    text-align: left; /* Rata kiri teks */
+/* Focus highlighting label */
+.form-group:focus-within .form-label {
+    color: var(--primary, #4f46e5);
 }
 
-select.form-control {
-    text-align: left; /* Rata kiri teks pada select */
-    text-align-last: left; /* Rata pilihan terakhir */
-    appearance: none; /* Hapus tampilan default browser */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%236b7280' stroke-width='1.8'/%3E%3C/svg%3E"); /* Ikon panah*/
-    background-repeat: no-repeat; /* Hapus pengulangan */
-    background-position: right 14px center; /* Posisi ikon */
-    background-size: 12px 8px; /* Ukuran ikon */
-}
-
-.form-control:focus {
-    outline: none; /* Hapus outline default */
-    border-color: var(--primary); /* Border biru saat fokus */
-    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.08); /* Bayangan fokus */
-}
-
-.form-error {
-    color: #ef4444; /* Warna pesan error */
-    font-size: 0.8rem; /* Ukuran teks error */
-    margin-top: 4px; /* Jarak ke atas */
-    display: block; /* Tampilkan sebagai block */
-}
-
-/* Password view/hide toggle wrapper */
-.password-wrapper {
+/* Input Wrapper & Icon Styling */
+.input-with-icon {
     position: relative;
     display: flex;
     align-items: center;
     width: 100%;
 }
+
+.input-with-icon i.field-icon {
+    position: absolute;
+    left: 16px;
+    color: var(--text-muted, #64748b);
+    font-size: 1rem;
+    transition: color 0.25s ease;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.input-with-icon .form-control {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 16px;
+    padding-left: 46px; /* Space for left icon */
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-primary, #1e293b);
+    background: var(--card-bg, #ffffff);
+    transition: all 0.25s ease;
+}
+
+.input-with-icon:focus-within i.field-icon {
+    color: var(--primary, #4f46e5);
+}
+
+.input-with-icon .form-control:focus {
+    outline: none;
+    border-color: var(--primary, #4f46e5);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.08);
+    background: #ffffff;
+}
+
+/* Specific styling for select dropdown */
+select.form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%236b7280' stroke-width='1.8'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 12px 8px;
+    cursor: pointer;
+}
+
+select.form-control:focus {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%234f46e5' stroke-width='1.8'/%3E%3C/svg%3E");
+}
+
+/* Password Toggle Wrapper Integration */
 .password-wrapper .form-control {
     padding-right: 52px;
-    width: 100%;
 }
+
 .password-toggle {
     position: absolute;
     right: 16px;
@@ -93,18 +183,56 @@ select.form-control {
     border: none;
     color: var(--text-muted, #64748b);
     cursor: pointer;
-    padding: 4px;
-    font-size: 1.1rem;
-    transition: all var(--transition, 0.25s ease);
+    padding: 6px;
+    font-size: 1.15rem;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 10;
 }
+
 .password-toggle:hover {
     color: var(--primary, #4f46e5);
-    transform: translateY(-50%) scale(1.08);
+    transform: translateY(-50%) scale(1.1);
 }
+
 .password-toggle:focus {
     outline: none;
+}
+
+/* Error & Info Helper Styles */
+.form-error {
+    color: #ef4444;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    animation: fadeIn 0.2s ease;
+}
+
+.form-text-info {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted, #64748b);
+    margin-top: 6px;
+    font-style: normal;
+}
+
+/* Animations */
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes errorPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
 }
