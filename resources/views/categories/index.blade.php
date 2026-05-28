@@ -758,16 +758,20 @@
                         {{-- Tombol edit & hapus --}}
                         <div class="category-actions">
                             <button
-                                class="btn-icon edit"
+                                class="btn-icon edit btn-edit-category"
                                 title="Edit Kategori"
-                                onclick="openEditModal({{ $category->id }}, '{{ addslashes($category->name) }}', '{{ addslashes($category->description ?? '') }}')"
+                                data-id="{{ $category->id }}"
+                                data-name="{{ $category->name }}"
+                                data-description="{{ $category->description ?? '' }}"
                             >
                                 <i class="fas fa-pen"></i>
                             </button>
                             <button
-                                class="btn-icon delete"
+                                class="btn-icon delete btn-delete-category"
                                 title="Hapus Kategori"
-                                onclick="openDeleteModal({{ $category->id }}, '{{ addslashes($category->name) }}', {{ $category->products_count }})"
+                                data-id="{{ $category->id }}"
+                                data-name="{{ $category->name }}"
+                                data-products-count="{{ $category->products_count }}"
                             >
                                 <i class="fas fa-trash"></i>
                             </button>
@@ -1007,6 +1011,16 @@
     </div>
 </div>
 
+{{-- Metadata sesi untuk JavaScript --}}
+<div id="session-metadata"
+     data-modal="{{ session('modal') }}"
+     data-errors="{{ $errors->any() ? 'true' : 'false' }}"
+     data-edit-id="{{ session('edit_id') }}"
+     data-old-name="{{ old('name', '') }}"
+     data-old-description="{{ old('description', '') }}"
+     style="display: none;">
+</div>
+
 @endsection
 
 @section('js')
@@ -1049,6 +1063,25 @@
                 closeModal(m.id);
             });
         }
+    });
+
+    // Bind event listeners untuk tombol edit dan hapus kategori
+    document.querySelectorAll('.btn-edit-category').forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const name = this.getAttribute('data-name');
+            const description = this.getAttribute('data-description');
+            openEditModal(id, name, description);
+        });
+    });
+
+    document.querySelectorAll('.btn-delete-category').forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const name = this.getAttribute('data-name');
+            const productsCount = parseInt(this.getAttribute('data-products-count')) || 0;
+            openDeleteModal(id, name, productsCount);
+        });
     });
 
     // ============================================================
@@ -1115,19 +1148,19 @@
     // ============================================================
     // AUTO-BUKA MODAL jika ada validasi error (setelah submit)
     // ============================================================
-    @if(session('modal') === 'add' && $errors->any())
-        openAddModal();
-    @endif
+    const metadata = document.getElementById('session-metadata');
+    if (metadata) {
+        const modal = metadata.getAttribute('data-modal');
+        const hasErrors = metadata.getAttribute('data-errors') === 'true';
+        const editId = metadata.getAttribute('data-edit-id');
+        const oldName = metadata.getAttribute('data-old-name');
+        const oldDescription = metadata.getAttribute('data-old-description');
 
-    @if(session('modal') === 'edit' && $errors->any())
-        // Data edit diambil dari session jika ada
-        @if(session('edit_id'))
-            openEditModal(
-                {{ session('edit_id') }},
-                '{{ addslashes(old("name", "")) }}',
-                '{{ addslashes(old("description", "")) }}'
-            );
-        @endif
-    @endif
+        if (modal === 'add' && hasErrors) {
+            openAddModal();
+        } else if (modal === 'edit' && hasErrors && editId) {
+            openEditModal(editId, oldName, oldDescription);
+        }
+    }
 </script>
 @endsection

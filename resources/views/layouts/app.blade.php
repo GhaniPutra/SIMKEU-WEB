@@ -571,7 +571,7 @@
         <!-- Brand -->
         <a class="sidebar-brand" href="{{ route('home') }}">
             <div class="brand-icon"><i class="fas fa-chart-line"></i></div>
-            <span class="brand-text">SIMKEU</span>
+            <span class="brand-text">{{ strtoupper(Auth::check() && Auth::user()->store ? Auth::user()->store->name : 'SIMKEU') }}</span>
         </a>
 
         <!-- Navigation -->
