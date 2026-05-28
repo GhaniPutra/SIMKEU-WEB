@@ -129,9 +129,6 @@
                 </table>
             </div>
 
-            <div class="pagination-wrapper"> {{-- Navigasi pagination --}}
-                {{ $employees->links() }}
-            </div>
         @else {{-- Jika tidak ada pegawai, tampilkan state kosong --}}
             <div class="empty-state">
                 <div class="empty-state-icon"><i class="fas fa-inbox"></i></div>
@@ -142,7 +139,18 @@
             </div>
         @endif
     </div>
+
+    @if($employees->hasPages())
+        <div class="pagination-wrapper"> {{-- Navigasi pagination --}}
+            <span class="pagination-info">
+                Menampilkan {{ $employees->firstItem() }}–{{ $employees->lastItem() }}
+                dari {{ $employees->total() }} pegawai
+            </span>
+            {{ $employees->links('pagination::bootstrap-5') }}
+        </div>
+    @endif
 </div>
+
 @endsection
 
 @section('js')

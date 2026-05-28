@@ -374,10 +374,32 @@
 
 /* Wrapper pagination */
 .pagination-wrapper {
-    margin-top: 20px;
+    padding: 14px 20px;
+    border-top: 1px solid var(--border);
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
 }
+.pagination-info {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+.pagination .page-link {
+    border-radius: 7px !important;
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    padding: 5px 11px;
+    margin: 0 2px;
+}
+.pagination .page-item.active .page-link {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
 
 /* Tampilan kosong bila belum ada data pegawai */
 .empty-state {

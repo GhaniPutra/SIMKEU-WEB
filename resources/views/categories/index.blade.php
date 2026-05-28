@@ -621,23 +621,38 @@
     /* ============================================================
        PAGINATION
     ============================================================ */
-    .pagination-wrap {
+    .pagination-wrapper {
+        margin-top: 24px;
+        padding: 14px 20px;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-sm);
         display: flex;
-        justify-content: center;
-        margin-top: 8px;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .pagination-info {
+        font-size: 0.78rem;
+        color: var(--text-muted);
     }
 
     .pagination .page-link {
-        border-radius: 8px;
-        font-size: 0.85rem;
-        color: var(--primary);
-        border-color: var(--border);
+        border-radius: 7px !important;
+        border: 1px solid var(--border);
+        color: var(--text-primary);
+        font-size: 0.8rem;
+        padding: 5px 11px;
         margin: 0 2px;
     }
 
     .pagination .page-item.active .page-link {
         background: var(--primary);
         border-color: var(--primary);
+        color: white;
     }
 </style>
 @endsection
@@ -785,10 +800,15 @@
 
     {{-- Pagination --}}
     @if($categories->hasPages())
-        <div class="pagination-wrap">
-            {{ $categories->links() }}
+        <div class="pagination-wrapper">
+            <span class="pagination-info">
+                Menampilkan {{ $categories->firstItem() }}–{{ $categories->lastItem() }}
+                dari {{ $categories->total() }} kategori
+            </span>
+            {{ $categories->links('pagination::bootstrap-5') }}
         </div>
     @endif
+
 
 @else
     {{-- Empty State --}}

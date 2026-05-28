@@ -36,7 +36,8 @@ DB_PASSWORD=password_db
 ### 4. Jalankan migrasi & seeder *(opsional)*
 
 ```bash
-php artisan migrate --seed
+php artisan migrate
+php artisan db:seed
 ```
 
 ### 5. Instal dependensi frontend
