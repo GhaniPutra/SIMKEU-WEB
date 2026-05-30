@@ -13,9 +13,7 @@ use App\Http\Controllers\PengeluaranController;  // Controller untuk halaman pen
 // ====================================
 // Route untuk halaman utama
 // ====================================
-Route::inertia('/', 'welcome', [
-    'canRegister' => Features::enabled(Features::registration()),
-])->name('home');
+Route::redirect('/', '/dashboard')->name('home');
 
 // ====================================
 // Route untuk Authentication (Login & Register)

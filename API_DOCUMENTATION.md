@@ -9,7 +9,7 @@ Aplikasi SIMKEU sekarang dilengkapi dengan REST API yang menggunakan **Laravel S
 ## Base URL
 
 ```
-http://localhost:8000/api
+http://127.0.0.1:8000/api
 ```
 
 ---
@@ -109,7 +109,7 @@ Response:
 | GET | `/api/products` | Daftar semua produk (paginated) |
 | POST | `/api/products` | Tambah produk baru |
 | GET | `/api/products/{id}` | Detail satu produk |
-| PUT | `/api/products/{id}` | Update produk |
+| PUT/PATCH | `/api/products/{id}` | Update produk |
 | DELETE | `/api/products/{id}` | Hapus produk |
 | GET | `/api/products/search/{query}` | Cari produk |
 | PUT | `/api/products/{id}/stock` | Update stok produk |
@@ -121,7 +121,7 @@ Response:
 | GET | `/api/categories` | Daftar semua kategori |
 | POST | `/api/categories` | Tambah kategori baru |
 | GET | `/api/categories/{id}` | Detail satu kategori |
-| PUT | `/api/categories/{id}` | Update kategori |
+| PUT/PATCH | `/api/categories/{id}` | Update kategori |
 | DELETE | `/api/categories/{id}` | Hapus kategori |
 
 ### Sales (Penjualan/Pemasukan)
@@ -141,7 +141,7 @@ Response:
 | GET | `/api/expenses` | Daftar pengeluaran (paginated) |
 | POST | `/api/expenses` | Catat pengeluaran baru |
 | GET | `/api/expenses/{id}` | Detail satu pengeluaran |
-| PUT | `/api/expenses/{id}` | Update pengeluaran |
+| PUT/PATCH | `/api/expenses/{id}` | Update pengeluaran |
 | DELETE | `/api/expenses/{id}` | Hapus pengeluaran |
 | GET | `/api/expenses/report/period` | Laporan per periode |
 | GET | `/api/expenses/report/category` | Laporan per kategori |
@@ -163,7 +163,7 @@ Response:
 | GET | `/api/employees` | Daftar karyawan |
 | POST | `/api/employees` | Tambah karyawan baru |
 | GET | `/api/employees/{id}` | Detail karyawan |
-| PUT | `/api/employees/{id}` | Update karyawan |
+| PUT/PATCH | `/api/employees/{id}` | Update karyawan |
 | DELETE | `/api/employees/{id}` | Hapus karyawan |
 | GET | `/api/employees/{id}/sales` | Data penjualan karyawan |
 
@@ -175,7 +175,7 @@ Response:
 
 ```bash
 # Register
-curl -X POST http://localhost:8000/api/register \
+curl -X POST http://127.0.0.1:8000/api/register \
   -H "Content-Type: application/json" \
   -d '{
     "name": "John Doe",
@@ -185,7 +185,7 @@ curl -X POST http://localhost:8000/api/register \
   }'
 
 # Login
-curl -X POST http://localhost:8000/api/login \
+curl -X POST http://127.0.0.1:8000/api/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "john@example.com",
@@ -197,12 +197,12 @@ curl -X POST http://localhost:8000/api/login \
 
 ```bash
 # Ambil data user yang sedang login
-curl -X GET http://localhost:8000/api/user \
+curl -X GET http://127.0.0.1:8000/api/user \
   -H "Authorization: Bearer YOUR_TOKEN_HERE" \
   -H "Content-Type: application/json"
 
 # Daftar produk
-curl -X GET "http://localhost:8000/api/products?per_page=10" \
+curl -X GET "http://127.0.0.1:8000/api/products?per_page=10" \
   -H "Authorization: Bearer YOUR_TOKEN_HERE" \
   -H "Content-Type: application/json"
 ```
@@ -210,7 +210,7 @@ curl -X GET "http://localhost:8000/api/products?per_page=10" \
 ### 3. Menambah Produk
 
 ```bash
-curl -X POST http://localhost:8000/api/products \
+curl -X POST http://127.0.0.1:8000/api/products \
   -H "Authorization: Bearer YOUR_TOKEN_HERE" \
   -H "Content-Type: application/json" \
   -d '{
@@ -226,7 +226,7 @@ curl -X POST http://localhost:8000/api/products \
 ### 4. Membuat Transaksi Penjualan
 
 ```bash
-curl -X POST http://localhost:8000/api/sales \
+curl -X POST http://127.0.0.1:8000/api/sales \
   -H "Authorization: Bearer YOUR_TOKEN_HERE" \
   -H "Content-Type: application/json" \
   -d '{
