@@ -694,6 +694,7 @@
                 <option value="today">Hari Ini</option>
                 <option value="week">Minggu Ini</option>
                 <option value="month">Bulan Ini</option>
+                <option value="all">Semua Periode</option>
             </select>
 
             {{-- Pemisah visual antara filter dan info user --}}
@@ -836,12 +837,9 @@
         // Mengelola filter periode global di topbar
         //
         // Cara kerja:
-        //   1. Saat halaman dimuat, select diisi dari parameter URL (?period=...).
-        //      Jika tidak ada di URL, gunakan nilai dari localStorage (default: 'month').
-        //   2. Saat user mengubah nilai select:
-        //      a. Simpan nilai ke localStorage agar persisten.
-        //      b. Jika halaman saat ini adalah '/dashboard', reload dengan ?period=<nilai>.
-        //      c. Jika bukan halaman dashboard, cukup simpan ke localStorage saja.
+        //   1. Periode URL menjadi state aktif; localStorage dipakai saat halaman
+        //      relevan dibuka dari halaman yang tidak memakai filter periode.
+        //   2. Pilihan navbar diteruskan ke semua halaman yang memiliki data temporal.
         // ============================================================
 
         (function initPeriodFilter() {
@@ -856,47 +854,82 @@
             // Prioritas 3: default 'month'
             // -------------------------------------------------------
             const urlParams    = new URLSearchParams(window.location.search); // Parse query string URL
-            const periodFromUrl = urlParams.get('period');                     // Coba ambil dari URL
-            const savedPeriod  = localStorage.getItem('dashboardPeriod') || 'month'; // Fallback localStorage
-            const activePeriod = periodFromUrl || savedPeriod;                 // Gunakan URL jika ada
+            const supportedPeriods = ['all', 'today', 'week', 'month'];
+            const periodFromUrl = urlParams.get('period');
+            const savedPeriod = localStorage.getItem('dashboardPeriod') || 'month';
+            let activePeriod = supportedPeriods.includes(periodFromUrl)
+                ? periodFromUrl
+                : supportedPeriods.includes(savedPeriod) ? savedPeriod : 'month';
 
             // Setel nilai awal select sesuai periode aktif
             periodSelect.value = activePeriod;
 
             // Simpan ke localStorage agar konsisten di semua halaman
-            if (periodFromUrl) {
-                localStorage.setItem('dashboardPeriod', periodFromUrl);
+            localStorage.setItem('dashboardPeriod', activePeriod);
+
+            function supportsPeriod(path) {
+                return path === '/' || path === '/dashboard'
+                    || path === '/pemasukan' || path.startsWith('/pemasukan/')
+                    || path === '/pengeluaran' || path.startsWith('/pengeluaran/')
+                    || /^\/employees\/[^/]+\/(manage|sales-dashboard)$/.test(path);
             }
+
+            if (supportsPeriod(window.location.pathname) && !supportedPeriods.includes(periodFromUrl)) {
+                urlParams.set('period', activePeriod);
+                window.location.replace(`${window.location.pathname}?${urlParams.toString()}`);
+                return;
+            }
+
+            document.addEventListener('click', (event) => {
+                if (event.defaultPrevented || event.button !== 0
+                    || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+                const link = event.target instanceof Element ? event.target.closest('a[href]') : null;
+                if (!link || link.target && link.target.toLowerCase() !== '_self'
+                    || link.hasAttribute('download')) return;
+
+                const destination = new URL(link.href, window.location.href);
+                if (destination.origin === window.location.origin && supportsPeriod(destination.pathname)) {
+                    destination.searchParams.set('period', activePeriod);
+                    link.href = destination.toString();
+                }
+            }, true);
+
+            document.addEventListener('submit', (event) => {
+                const form = event.target;
+                if (!(form instanceof HTMLFormElement) || form.method.toLowerCase() !== 'get') return;
+
+                const destination = new URL(form.action, window.location.href);
+                if (!supportsPeriod(destination.pathname)) return;
+
+                let periodInput = form.querySelector('input[name="period"]');
+                if (!periodInput) {
+                    periodInput = document.createElement('input');
+                    periodInput.type = 'hidden';
+                    periodInput.name = 'period';
+                    form.appendChild(periodInput);
+                }
+                periodInput.value = activePeriod;
+            }, true);
 
             // -------------------------------------------------------
             // Event listener: saat user mengubah pilihan periode
             // -------------------------------------------------------
             periodSelect.addEventListener('change', function () {
                 const selectedPeriod = this.value; // Nilai periode yang baru dipilih
+                activePeriod = selectedPeriod;
 
                 // Simpan nilai yang dipilih ke localStorage untuk persistensi
                 localStorage.setItem('dashboardPeriod', selectedPeriod);
 
                 // Periksa apakah halaman saat ini adalah halaman dashboard
                 // (path '/dashboard' atau root '/')
-                const currentPath = window.location.pathname;
-                const isDashboard = currentPath === '/dashboard' || currentPath === '/';
-                const isPemasukanIndex = currentPath === '/pemasukan';
-                const isPengeluaranIndex = currentPath === '/pengeluaran';
-
-                if (isDashboard) {
-                    // Jika berada di halaman dashboard, reload dengan query param ?period=<nilai>
-                    // Ini akan memicu DashboardController untuk memfilter data berdasarkan periode
-                    window.location.href = '/dashboard?period=' + encodeURIComponent(selectedPeriod);
-                } else if (isPemasukanIndex || isPengeluaranIndex) {
-                    // Jika berada di halaman index pemasukan atau pengeluaran, perbarui URL
+                if (supportsPeriod(window.location.pathname)) {
                     const url = new URL(window.location.href);
                     url.searchParams.set('period', selectedPeriod);
-                    url.searchParams.delete('page'); // Reset halaman ke 1
+                    ['page', 'sales_page', 'products_page'].forEach((page) => url.searchParams.delete(page));
                     window.location.href = url.toString();
                 }
-                // Jika bukan halaman dashboard/pemasukan/pengeluaran, filter disimpan di localStorage saja
-                // dan akan diterapkan otomatis saat user berpindah ke sana
             });
         })();
     </script>

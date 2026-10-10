@@ -341,46 +341,46 @@ Dashboard Penjualan Pegawai - SIMKEU
 <div class="kpi-grid">
     <div class="kpi-card primary">
         <div class="kpi-top">
-            <div class="kpi-label">Total Penjualan</div>
+            <div class="kpi-label">Penjualan {{ $periodLabel }}</div>
             <div class="kpi-icon">
                 <i class="fas fa-shopping-cart"></i>
             </div>
         </div>
         <div class="kpi-value">{{ number_format($totalSales) }}</div>
-        <div class="kpi-sub">Transaksi</div>
+        <div class="kpi-sub">Transaksi pegawai ini</div>
     </div>
 
     <div class="kpi-card success">
         <div class="kpi-top">
-            <div class="kpi-label">Total Pendapatan</div>
+            <div class="kpi-label">Pendapatan {{ $periodLabel }}</div>
             <div class="kpi-icon">
                 <i class="fas fa-dollar-sign"></i>
             </div>
         </div>
         <div class="kpi-value">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</div>
-        <div class="kpi-sub">Keseluruhan</div>
+        <div class="kpi-sub">Transaksi pegawai ini</div>
     </div>
 
     <div class="kpi-card warning">
         <div class="kpi-top">
-            <div class="kpi-label">Item Terjual</div>
+            <div class="kpi-label">Item terjual {{ $periodLabel }}</div>
             <div class="kpi-icon">
                 <i class="fas fa-boxes"></i>
             </div>
         </div>
         <div class="kpi-value">{{ number_format($totalItemsSold) }}</div>
-        <div class="kpi-sub">Unit</div>
+        <div class="kpi-sub">Detail transaksi pegawai ini</div>
     </div>
 
     <div class="kpi-card accent">
         <div class="kpi-top">
-            <div class="kpi-label">Penjualan Bulan Ini</div>
+            <div class="kpi-label">Periode Aktif</div>
             <div class="kpi-icon">
                 <i class="fas fa-calendar-alt"></i>
             </div>
         </div>
-        <div class="kpi-value">Rp {{ number_format($currentMonthSales, 0, ',', '.') }}</div>
-        <div class="kpi-sub">{{ now()->format('F Y') }}</div>
+        <div class="kpi-value">{{ $periodLabel }}</div>
+        <div class="kpi-sub">{{ $periodStart && $periodEnd ? $periodStart->format('d/m/Y') . '–' . $periodEnd->format('d/m/Y') : 'Seluruh riwayat transaksi' }}</div>
     </div>
 </div>
 
@@ -388,7 +388,7 @@ Dashboard Penjualan Pegawai - SIMKEU
 <div class="content-card">
     <div class="content-card-header">
         <div class="content-card-title">
-            <i class="fas fa-table-list"></i> Riwayat Penjualan
+            <i class="fas fa-table-list"></i> Riwayat Penjualan · {{ $periodLabel }}
         </div>
     </div>
     <div class="content-card-body">
@@ -410,7 +410,7 @@ Dashboard Penjualan Pegawai - SIMKEU
                         @foreach($sales as $sale)
                             <tr>
                                 <td>{{ $loop->iteration + ($sales->currentPage()-1)*$sales->perPage() }}</td>
-                                <td>{{ $sale->created_at->format('d/m/Y H:i') }}</td>
+                                <td>{{ $sale->transaction_date?->format('d/m/Y H:i') ?? '—' }}</td>
                                 <td>{{ $sale->customer ? $sale->customer->name : 'N/A' }}</td>
                                 <td>
                                     @if($sale->saleItems->count() > 0)

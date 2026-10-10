@@ -13,6 +13,7 @@ use App\Models\SaleItem;          // Model detail item per transaksi
 use App\Models\Product;           // Model produk, dipakai untuk dropdown pilih produk
 use App\Models\Customer;          // Model pelanggan, dipakai untuk dropdown
 use Illuminate\Support\Facades\DB;
+use App\Support\PeriodFilter;
 
 class PemasukanController extends Controller
 {
@@ -25,33 +26,18 @@ class PemasukanController extends Controller
         // ----------------------------------------------------------
         // Ambil parameter filter period (default: 'month')
         // ----------------------------------------------------------
-        $period = $request->input('period', 'month');
+        $period = $request->query('period', 'month');
         $search = $request->input('search', '');
         $metode = $request->input('metode', '');
 
         $now = Carbon::now();
-
-        // Tentukan rentang tanggal dan label berdasarkan period
-        if ($period === 'today') {
-            $periodStart = $now->copy()->startOfDay();
-            $periodEnd = $now->copy()->endOfDay();
-            $periodLabel = 'Hari Ini';
-        } elseif ($period === 'week') {
-            $periodStart = $now->copy()->startOfWeek();
-            $periodEnd = $now->copy()->endOfWeek();
-            $periodLabel = 'Minggu Ini';
-        } else {
-            $period = 'month';
-            $periodStart = $now->copy()->startOfMonth();
-            $periodEnd = $now->copy()->endOfMonth();
-            $periodLabel = 'Bulan Ini';
-        }
+        ['period' => $period, 'periodLabel' => $periodLabel, 'periodStart' => $periodStart, 'periodEnd' => $periodEnd]
+            = PeriodFilter::resolve($period, $now);
 
         // ----------------------------------------------------------
         // Query dasar: ambil semua penjualan dalam rentang periode terpilih
         // ----------------------------------------------------------
-        $query = Sale::with(['user', 'customer'])
-            ->whereBetween('transaction_date', [$periodStart, $periodEnd]);
+        $query = PeriodFilter::apply(Sale::with(['user', 'customer']), 'transaction_date', $periodStart, $periodEnd);
 
         // Filter pencarian
         if ($search !== '') {
@@ -74,7 +60,8 @@ class PemasukanController extends Controller
         // ============================================================
         // STATISTIK PERIODE TERPILIH
         // ============================================================
-        $totalSubtotal = Sale::whereBetween('transaction_date', [$periodStart, $periodEnd])->sum('subtotal');
+        $periodSales = fn () => PeriodFilter::apply(Sale::query(), 'transaction_date', $periodStart, $periodEnd);
+        $totalSubtotal = $periodSales()->sum('subtotal');
 
         // ---------- Perhitungan diskon dan pajak yang lebih akurat ----------
         // Beberapa transaksi mungkin tidak menyimpan breakdown per-item dengan
@@ -83,27 +70,25 @@ class PemasukanController extends Controller
         // sale_items bergabung dengan products menggunakan tax_rate & discount_rate.
 
         // Total diskon produk (dari rate produk) = SUM(price_at_sale * qty * discount_rate/100)
-        $totalProductDiscount = (float) DB::table('sale_items')
+        $totalProductDiscount = (float) PeriodFilter::apply(DB::table('sale_items')
             ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
-            ->join('products', 'sale_items.product_id', '=', 'products.id')
-            ->whereBetween('sales.transaction_date', [$periodStart, $periodEnd])
+            ->join('products', 'sale_items.product_id', '=', 'products.id'), 'sales.transaction_date', $periodStart, $periodEnd)
             ->selectRaw('COALESCE(SUM(sale_items.price_at_sale * sale_items.quantity * (products.discount_rate / 100.0)),0) as total')
             ->value('total');
 
         // Total pajak dihitung setelah diskon produk per item:
         // SUM( (price * qty - price*qty*discount_rate/100) * (tax_rate/100) )
-        $totalProductTax = (float) DB::table('sale_items')
+        $totalProductTax = (float) PeriodFilter::apply(DB::table('sale_items')
             ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
-            ->join('products', 'sale_items.product_id', '=', 'products.id')
-            ->whereBetween('sales.transaction_date', [$periodStart, $periodEnd])
+            ->join('products', 'sale_items.product_id', '=', 'products.id'), 'sales.transaction_date', $periodStart, $periodEnd)
             ->selectRaw('COALESCE(SUM((sale_items.price_at_sale * sale_items.quantity - (sale_items.price_at_sale * sale_items.quantity * (products.discount_rate / 100.0))) * (products.tax_rate / 100.0)),0) as total')
             ->value('total');
 
         // Beberapa transaksi menyimpan diskon tambahan (extra discount) di kolom
         // sales.discount (total diskon produk + extra). Kita ambil total dari
         // kolom sales.discount sebagai fallback/penyesuaian.
-        $sumSaleDiscounts = (float) Sale::whereBetween('transaction_date', [$periodStart, $periodEnd])->sum('discount');
-        $sumSaleTax = (float) Sale::whereBetween('transaction_date', [$periodStart, $periodEnd])->sum('tax');
+        $sumSaleDiscounts = (float) $periodSales()->sum('discount');
+        $sumSaleTax = (float) $periodSales()->sum('tax');
 
         // Jika kolom sales.discount terisi (mis. import lama), gunakan nilainya.
         // Jika tidak (atau nol), gunakan hasil perhitungan berdasarkan item.
@@ -118,14 +103,16 @@ class PemasukanController extends Controller
         // Untuk pajak: gunakan nilai di kolom sales.tax bila tersedia, selain itu
         // gunakan perhitungan berbasis produk.
         $totalPajak = $sumSaleTax > 0 ? $sumSaleTax : $totalProductTax;
-        $totalBersih = Sale::whereBetween('transaction_date', [$periodStart, $periodEnd])->sum('total');
-        $jumlahTransaksi = Sale::whereBetween('transaction_date', [$periodStart, $periodEnd])->count();
+        $totalBersih = $periodSales()->sum('total');
+        $jumlahTransaksi = $periodSales()->count();
         $rataRataTransaksi = $jumlahTransaksi > 0 ? $totalBersih / $jumlahTransaksi : 0;
 
         // ============================================================
         // PERSENTASE PERUBAHAN vs PERIODE SEBELUMNYA
         // ============================================================
-        if ($period === 'today') {
+        if ($period === 'all') {
+            $periodLaluStart = $periodLaluEnd = null;
+        } elseif ($period === 'today') {
             $periodLaluStart = $now->copy()->subDay()->startOfDay();
             $periodLaluEnd = $now->copy()->subDay()->endOfDay();
         } elseif ($period === 'week') {
@@ -136,11 +123,13 @@ class PemasukanController extends Controller
             $periodLaluEnd = $now->copy()->subMonth()->endOfMonth();
         }
 
-        $totalPeriodLalu = Sale::whereBetween('transaction_date', [$periodLaluStart, $periodLaluEnd])->sum('total');
+        $totalPeriodLalu = $periodLaluStart
+            ? Sale::whereBetween('transaction_date', [$periodLaluStart, $periodLaluEnd])->sum('total')
+            : null;
 
-        $persentasePerubahan = $totalPeriodLalu > 0
+        $persentasePerubahan = $totalPeriodLalu !== null && $totalPeriodLalu > 0
             ? (($totalBersih - $totalPeriodLalu) / $totalPeriodLalu) * 100
-            : ($totalBersih > 0 ? 100 : 0);
+            : ($totalPeriodLalu !== null && $totalBersih > 0 ? 100 : 0);
 
         // ============================================================
         // DATA CHART — Sesuai periode (seperti dashboard)
@@ -148,53 +137,49 @@ class PemasukanController extends Controller
         $chartLabels = [];
         $chartData = [];
 
-        if ($period === 'month') {
-            // 12 bulan (Jan-Des tahun ini) dengan grouping di PHP untuk kompatibilitas SQLite
-            $trendQuery = Sale::whereYear('transaction_date', $now->year)
-                ->get(['transaction_date', 'total'])
-                ->groupBy(fn ($sale) => (int) Carbon::parse($sale->transaction_date)->format('n'))
-                ->map(fn ($items) => $items->sum('total'));
+        if ($period === 'all') {
+            $monthlyTotals = DB::table('sales')
+                ->selectRaw('SUBSTR(transaction_date, 1, 7) as sale_month, SUM(total) as total')
+                ->groupByRaw('SUBSTR(transaction_date, 1, 7)')
+                ->orderBy('sale_month')
+                ->pluck('total', 'sale_month');
 
-            $namaBulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-            for ($m = 1; $m <= 12; $m++) {
-                $chartLabels[] = $namaBulan[$m - 1];
-                $chartData[] = (float) ($trendQuery[$m] ?? 0);
+            foreach ($monthlyTotals as $month => $total) {
+                $chartLabels[] = Carbon::createFromFormat('!Y-m', $month)->format('m/Y');
+                $chartData[] = (float) $total;
             }
-        } elseif ($period === 'week') {
-            // 7 hari (Senin-Minggu minggu ini)
-            $weekStart = $now->copy()->startOfWeek();
-            $trendQuery = Sale::where('transaction_date', '>=', $weekStart)
-                ->where('transaction_date', '<=', $now->copy()->endOfWeek())
+        } elseif ($period === 'today') {
+            $hourlyTotals = $periodSales()
                 ->get(['transaction_date', 'total'])
-                ->groupBy(fn ($sale) => Carbon::parse($sale->transaction_date)->toDateString())
-                ->map(fn ($items) => $items->sum('total'));
+                ->groupBy(fn ($sale) => Carbon::parse($sale->transaction_date)->format('G'))
+                ->map(fn ($sales) => $sales->sum('total'));
 
-            $namaHari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
-            for ($d = 0; $d < 7; $d++) {
-                $date = $weekStart->copy()->addDays($d)->toDateString();
-                $chartLabels[] = $namaHari[$d];
-                $chartData[] = (float) ($trendQuery[$date] ?? 0);
+            for ($hour = 0; $hour < 24; $hour++) {
+                $chartLabels[] = str_pad((string) $hour, 2, '0', STR_PAD_LEFT) . ':00';
+                $chartData[] = (float) ($hourlyTotals[$hour] ?? 0);
             }
         } else {
-            // 24 jam (00:00-23:00 hari ini)
-            $dayStart = $now->copy()->startOfDay();
-            $trendQuery = Sale::where('transaction_date', '>=', $dayStart)
-                ->where('transaction_date', '<=', $now->copy()->endOfDay())
-                ->get(['transaction_date', 'total'])
-                ->groupBy(fn ($sale) => (int) Carbon::parse($sale->transaction_date)->format('G'))
-                ->map(fn ($items) => $items->sum('total'));
+            $dailyTotals = $periodSales()
+                ->selectRaw('DATE(transaction_date) as sale_date, SUM(total) as total')
+                ->groupByRaw('DATE(transaction_date)')
+                ->orderBy('sale_date')
+                ->pluck('total', 'sale_date');
 
-            for ($h = 0; $h < 24; $h++) {
-                $chartLabels[] = str_pad($h, 2, '0', STR_PAD_LEFT) . ':00';
-                $chartData[] = (float) ($trendQuery[$h] ?? 0);
+            for ($date = $periodStart->copy(); $date->lte($periodEnd); $date->addDay()) {
+                $chartLabels[] = $date->format('d/m');
+                $chartData[] = (float) ($dailyTotals[$date->toDateString()] ?? 0);
             }
         }
 
         // ============================================================
         // DATA PIE CHART — Distribusi metode pembayaran
         // ============================================================
-        $distribusiMetode = Sale::selectRaw('payment_method, SUM(total) as total, COUNT(*) as jumlah')
-            ->whereBetween('transaction_date', [$periodStart, $periodEnd])
+        $distribusiMetode = PeriodFilter::apply(
+            Sale::selectRaw('payment_method, SUM(total) as total, COUNT(*) as jumlah'),
+            'transaction_date',
+            $periodStart,
+            $periodEnd
+        )
             ->groupBy('payment_method')
             ->get()
             ->keyBy('payment_method');

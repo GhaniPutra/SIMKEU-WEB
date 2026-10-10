@@ -4,9 +4,10 @@
 // File ini bertanggung jawab untuk:
 //   1. Menginisialisasi grafik tren pendapatan vs pengeluaran
 //      dengan tampilan yang berbeda sesuai periode filter:
-//      - 'month' → 12 bulan (Jan–Des), total per bulan
-//      - 'week'  → 7 hari (Senin–Minggu), total per hari
-//      - 'today' → 24 jam (00:00–23:00), total per jam
+//      - 'all'   → seluruh riwayat, agregat per bulan
+//      - 'month' → bulan berjalan, total per hari
+//      - 'week'  → minggu berjalan, total per hari
+//      - 'today' → 24 jam (pengeluaran tercatat pada jam 00)
 //
 // Data grafik dikirim dari Blade view melalui variabel global
 // window.dashboardData yang didefinisikan di dashboard.blade.php.
@@ -18,7 +19,7 @@
 // sebagai nilai default agar tidak terjadi error JavaScript
 // ============================================================
 const {
-    period,       // Periode aktif: 'today', 'week', atau 'month'
+    period,       // Periode aktif: 'all', 'today', 'week', atau 'month'
     periodLabel,  // Label periode: 'Hari Ini', 'Minggu Ini', 'Bulan Ini'
     trendLabels,  // Array label untuk sumbu X grafik
     revenueData,  // Array angka pendapatan
@@ -45,9 +46,10 @@ function formatRupiah(value) {
 // ============================================================
 function getChartTitle() {
     switch (period) {
-        case 'today': return 'Per Jam — Hari Ini';
+        case 'all':   return 'Per Bulan — Seluruh Riwayat';
+        case 'today': return 'Total Hari Ini';
         case 'week':  return 'Per Hari — Minggu Ini';
-        case 'month': return 'Per Bulan — Tahun Ini';
+        case 'month': return 'Per Hari — Bulan Ini';
         default:      return periodLabel;
     }
 }
@@ -59,165 +61,95 @@ function getChartTitle() {
 //         Konfigurasi disesuaikan dengan periode filter aktif.
 // ============================================================
 function createChartDefaults() {
-    const gridLine = '#e2e8f0'; // Warna garis grid grafik (abu-abu muda)
+    const gridLine = 'rgba(148, 163, 184, .18)';
+    const moneyTick = (value) => {
+        if (value >= 1000000) return `Rp ${(value / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 })} jt`;
+        if (value >= 1000) return `Rp ${(value / 1000).toLocaleString('id-ID', { maximumFractionDigits: 0 })} rb`;
+        return `Rp ${value.toLocaleString('id-ID')}`;
+    };
 
     return {
-        responsive        : true,  // Grafik menyesuaikan lebar container-nya
-        maintainAspectRatio: false, // Tinggi grafik dikontrol oleh CSS, bukan rasio aspek
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
 
         plugins: {
-            // Sub-judul grafik: menampilkan info periode
             subtitle: {
-                display : true,
-                text    : getChartTitle(),
-                font    : { size: 12, family: 'Inter', weight: '500' },
-                color   : '#64748b',
-                padding : { bottom: 12 }
+                display: true,
+                text: getChartTitle(),
+                font: { size: 12, family: 'Inter', weight: '500' },
+                color: '#64748b',
+                padding: { bottom: 12 }
             },
-
-            // Konfigurasi legenda grafik (label dataset di bawah grafik)
             legend: {
-                position: 'bottom', // Legenda ditempatkan di bawah grafik
-                labels  : {
-                    boxWidth: 10,                          // Lebar kotak warna pada legenda
-                    font    : { size: 11, family: 'Inter' }, // Font legenda: Inter 11px
-                    padding : 14                           // Jarak antar item legenda
-                }
+                position: 'bottom',
+                labels: { font: { size: 11, family: 'Inter' } }
             },
-
-            // Konfigurasi tooltip (popup info saat hover pada data point)
             tooltip: {
-                mode           : 'index',     // Tampilkan semua dataset pada titik X yang sama
-                intersect      : false,        // Tooltip muncul meski kursor tidak tepat di titik
-                backgroundColor: '#1e293b',   // Warna latar tooltip: dark navy
-                titleFont      : { family: 'Inter', size: 12 }, // Font judul tooltip
-                bodyFont       : { family: 'Inter', size: 11 }, // Font isi tooltip
-                padding        : 10,           // Padding dalam tooltip
-                cornerRadius   : 8,           // Sudut rounded pada kotak tooltip
-
-                // Format nilai tooltip menjadi Rupiah
+                mode: 'index',
+                intersect: false,
                 callbacks: {
-                    label: function (context) {
-                        const label = context.dataset.label || '';
-                        const value = context.parsed.y || 0;
-                        return label + ': ' + formatRupiah(value);
-                    }
+                    label: (context) => `${context.dataset.label}: ${formatRupiah(context.parsed.y ?? 0)}`
                 }
             }
         },
-
         scales: {
-            // Konfigurasi sumbu X (horizontal)
             x: {
-                grid : { color: gridLine, drawBorder: false },
-                ticks: {
-                    font    : { size: 10, family: 'Inter' },
-                    // Untuk periode harian (24 jam), tampilkan hanya setiap 3 jam
-                    // agar label tidak terlalu rapat
-                    maxTicksLimit: period === 'today' ? 9 : undefined
-                }
+                grid: { display: false },
+                ticks: { font: { size: 10, family: 'Inter' }, maxTicksLimit: period === 'today' ? 9 : 12, autoSkip: true }
             },
-
-            // Konfigurasi sumbu Y (vertikal — nilai rupiah)
             y: {
-                grid : { color: gridLine, drawBorder: false },
-                ticks: {
-                    font    : { size: 10, family: 'Inter' },
-                    // Format label Y menjadi singkatan (ribuan/jutaan)
-                    callback: function (value) {
-                        if (value >= 1000000) return (value / 1000000).toFixed(1) + ' jt';
-                        if (value >= 1000)    return (value / 1000).toFixed(0) + ' rb';
-                        return value;
-                    }
-                },
-                beginAtZero: true // Mulai dari 0 agar proporsi terlihat jelas
+                grid: { color: gridLine },
+                ticks: { font: { size: 10, family: 'Inter' }, callback: moneyTick },
+                beginAtZero: true,
+                grace: '5%'
             }
         }
     };
 }
 
 // ============================================================
-// Fungsi: getChartType
-// Tujuan: Menentukan tipe grafik sesuai periode
-//   - 'today' → line chart (area)
-//   - 'week'  → line chart (area)
-//   - 'month' → line chart (area)
-// ============================================================
-function getChartType() {
-    return 'line';
-}
-
-// ============================================================
 // Fungsi: initTrendChart
 // Tujuan: Menginisialisasi grafik tren keuangan yang
-//         menampilkan perbandingan pendapatan vs pengeluaran.
-//
-// Tipe grafik dan konfigurasi disesuaikan dengan periode:
-//   - 'month' → Line chart, 12 bulan
-//   - 'week'  → Bar chart, 7 hari
-//   - 'today' → Bar chart, 24 jam
+//         membandingkan pendapatan vs pengeluaran per periode.
 // ============================================================
 function initTrendChart() {
-    // Cari elemen canvas dengan id="trendChart" di DOM
     const trendCanvas = document.getElementById('trendChart');
+    if (!trendCanvas) return;
 
-    // Jika elemen canvas tidak ditemukan (misalnya user belum login),
-    // hentikan eksekusi fungsi ini untuk mencegah error
-    if (!trendCanvas) {
+    const labels = trendLabels;
+    const revenue = revenueData;
+    const expenses = expenseData;
+
+    if (!revenue.some((value) => value > 0) && !expenses.some((value) => value > 0)) {
+        trendCanvas.insertAdjacentHTML('afterend', '<p class="chart-empty-state">Belum ada data pada periode ini.</p>');
+        trendCanvas.remove();
         return;
     }
 
-    const chartType = getChartType();
-    const isLineChart = chartType === 'line';
-
-    // Buat instance grafik baru menggunakan Chart.js
     new Chart(trendCanvas, {
-        type: chartType, // Tipe grafik disesuaikan dengan periode
+        type: 'bar',
 
         data: {
-            labels  : trendLabels, // Label sumbu X sesuai periode
-
+            labels,
             datasets: [
-                // Dataset 1: Pendapatan
                 {
-                    label          : 'Pendapatan',
-                    borderColor    : '#4f46e5',                  // Warna garis/border: biru indigo
-                    backgroundColor: isLineChart
-                        ? 'rgba(79,70,229,.12)'                  // Line: area transparan
-                        : 'rgba(79,70,229,.75)',                 // Bar: warna solid
-                    data           : revenueData,
-                    fill           : isLineChart,                // Isi area hanya untuk line chart
-                    tension        : isLineChart ? 0.4 : 0,      // Kelengkungan hanya untuk line
-                    borderWidth    : isLineChart ? 2 : 0,
-                    borderRadius   : isLineChart ? 0 : 6,        // Sudut bulat untuk bar
-                    pointRadius    : isLineChart ? 3 : 0,
-                    pointBorderWidth    : isLineChart ? 2 : 0,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor    : '#4f46e5'
+                    label: 'Pendapatan',
+                    backgroundColor: 'rgba(79,70,229,.78)',
+                    data: revenue,
+                    borderRadius: 4,
+                    maxBarThickness: 28
                 },
-
-                // Dataset 2: Pengeluaran
                 {
-                    label          : 'Pengeluaran',
-                    borderColor    : '#ef4444',                  // Warna garis/border: merah
-                    backgroundColor: isLineChart
-                        ? 'rgba(239,68,68,.08)'                  // Line: area sangat transparan
-                        : 'rgba(239,68,68,.65)',                 // Bar: warna solid
-                    data           : expenseData,
-                    fill           : isLineChart,
-                    tension        : isLineChart ? 0.4 : 0,
-                    borderWidth    : isLineChart ? 2 : 0,
-                    borderRadius   : isLineChart ? 0 : 6,
-                    pointRadius    : isLineChart ? 3 : 0,
-                    pointBorderWidth    : isLineChart ? 2 : 0,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor    : '#ef4444'
+                    label: 'Pengeluaran',
+                    backgroundColor: 'rgba(239,68,68,.72)',
+                    data: expenses,
+                    borderRadius: 4,
+                    maxBarThickness: 28
                 }
             ]
         },
-
-        // Gunakan konfigurasi default yang sudah didefinisikan di createChartDefaults()
-        options: createChartDefaults()
+        options: { ...createChartDefaults(), datasets: { bar: { categoryPercentage: .72, barPercentage: .82 } } }
     });
 }
 

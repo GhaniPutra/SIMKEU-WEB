@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Sale;
+use App\Support\PeriodFilter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class EmployeeSalesController extends Controller
 {
-    public function dashboard(User $employee)
+    public function dashboard(Request $request, User $employee)
     {
         // Pastikan hanya admin yang bisa akses
         if (Auth::user()->role !== 'admin') {
@@ -17,34 +19,40 @@ class EmployeeSalesController extends Controller
         }
 
         // Ambil data penjualan untuk pegawai ini
-        $sales = Sale::where('user_id', $employee->id)
+        $now = now();
+        [
+            'period' => $period,
+            'periodLabel' => $periodLabel,
+            'periodStart' => $periodStart,
+            'periodEnd' => $periodEnd,
+        ] = PeriodFilter::resolve($request->query('period', 'month'), $now);
+        $employeeSales = Sale::where('user_id', $employee->id);
+        $periodSales = PeriodFilter::apply(clone $employeeSales, 'transaction_date', $periodStart, $periodEnd);
+
+        $sales = (clone $periodSales)
             ->with(['saleItems.product', 'customer'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
+            ->orderByDesc('transaction_date')
+            ->paginate(15)
+            ->withQueryString();
 
-        // Hitung statistik
-        $totalSales = Sale::where('user_id', $employee->id)->count();
-        $totalRevenue = Sale::where('user_id', $employee->id)->sum('total');
-        $totalItemsSold = Sale::where('user_id', $employee->id)
-            ->with('saleItems')
-            ->get()
-            ->sum(function ($sale) {
-                return $sale->saleItems->sum('quantity');
-            });
-
-        // Penjualan bulan ini
-        $currentMonthSales = Sale::where('user_id', $employee->id)
-            ->whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
-            ->sum('total');
+        $totalSales = (clone $periodSales)->count();
+        $totalRevenue = (clone $periodSales)->sum('total');
+        $itemSales = DB::table('sale_items')
+            ->join('sales', 'sales.id', '=', 'sale_items.sale_id')
+            ->where('sales.user_id', $employee->id);
+        PeriodFilter::apply($itemSales, 'sales.transaction_date', $periodStart, $periodEnd);
+        $totalItemsSold = $itemSales->sum('sale_items.quantity');
 
         return view('employee_sales.dashboard', compact(
             'employee',
             'sales',
+            'period',
+            'periodLabel',
+            'periodStart',
+            'periodEnd',
             'totalSales',
             'totalRevenue',
-            'totalItemsSold',
-            'currentMonthSales'
+            'totalItemsSold'
         ));
     }
 }

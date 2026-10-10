@@ -436,12 +436,15 @@
         {{-- Total nominal pengeluaran bulan ini --}}
         <div class="kpi-value">Rp {{ number_format($totalBulanIni, 0, ',', '.') }}</div>
         <div class="kpi-sub">
-            vs Periode Lalu: <strong>Rp {{ number_format($totalPeriodLalu, 0, ',', '.') }}</strong>
-            {{-- Badge: naik = merah (buruk), turun = hijau (baik) --}}
-            <span class="kpi-trend {{ $persentasePerubahan >= 0 ? 'trend-naik' : 'trend-turun' }}">
-                <i class="fas fa-caret-{{ $persentasePerubahan >= 0 ? 'up' : 'down' }}"></i>
-                {{ number_format(abs($persentasePerubahan), 1, ',', '.') }}%
-            </span>
+            @if($totalPeriodLalu !== null)
+                vs Periode Lalu: <strong>Rp {{ number_format($totalPeriodLalu, 0, ',', '.') }}</strong>
+                <span class="kpi-trend {{ $persentasePerubahan >= 0 ? 'trend-naik' : 'trend-turun' }}">
+                    <i class="fas fa-caret-{{ $persentasePerubahan >= 0 ? 'up' : 'down' }}"></i>
+                    {{ number_format(abs($persentasePerubahan), 1, ',', '.') }}%
+                </span>
+            @else
+                Seluruh riwayat transaksi
+            @endif
         </div>
     </div>
 
@@ -699,7 +702,7 @@
 
                     {{-- Tombol lihat detail --}}
                     <td class="text-center">
-                        <a href="{{ route('pengeluaran.show', $expense->id) }}" class="btn-detail">
+                        <a href="{{ route('pengeluaran.show', array_merge(request()->query(), ['expense' => $expense->id, 'period' => $period])) }}" class="btn-detail">
                             <i class="fas fa-eye fa-xs me-1"></i> Detail
                         </a>
                     </td>
@@ -739,7 +742,7 @@
 
 </div>{{-- /content-card tabel --}}
 
-<div id="pengeluaran-chart-data" style="display:none"
+<div id="pengeluaran-chart-data" style="display:none" data-period="{{ $period }}"
      data-chart-labels='{{ json_encode($chartLabels) }}'
      data-chart-data='{{ json_encode($chartData) }}'
      data-kategori-labels='{{ json_encode($kategoriChartLabels) }}'
@@ -772,13 +775,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // ============================================================
     // PALET WARNA — Konsisten dengan tema SIMKEU
     // ============================================================
-    const danger   = '#ef4444'; // Merah = pengeluaran
-    const gridLine = '#e2e8f0'; // Warna garis grid chart
-
     // ============================================================
     // DATA DARI HTML — Ambil nilai JSON dari atribut data
     // ============================================================
     const pengeluaranChartData = document.getElementById('pengeluaran-chart-data');
+    const period = pengeluaranChartData?.dataset.period;
     const chartLabels        = pengeluaranChartData ? JSON.parse(pengeluaranChartData.dataset.chartLabels || '[]') : [];
     const chartData          = pengeluaranChartData ? JSON.parse(pengeluaranChartData.dataset.chartData || '[]') : [];
     const kategoriLabels     = pengeluaranChartData ? JSON.parse(pengeluaranChartData.dataset.kategoriLabels || '[]') : [];
@@ -797,62 +798,67 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // ============================================================
-    // LINE CHART — Tren pengeluaran harian
+    // BAR CHART — Pengeluaran per periode.
     // ============================================================
     const trendCtx = document.getElementById('trendHarianChart');
     if (trendCtx) {
+        const trendLabels = period === 'today' ? ['Hari ini'] : chartLabels;
+        const trendValues = period === 'today'
+            ? [chartData.reduce((sum, value) => sum + value, 0)]
+            : chartData;
+
+        if (!trendValues.some((value) => value > 0)) {
+            trendCtx.insertAdjacentHTML('afterend', '<p class="chart-empty-state">Belum ada pengeluaran pada periode ini.</p>');
+            trendCtx.remove();
+        } else {
         new Chart(trendCtx, {
-            type: 'line', // Grafik garis
+            type: 'bar',
             data: {
-                labels: chartLabels, // Tanggal di sumbu X
+                labels: trendLabels,
                 datasets: [{
                     label: 'Pengeluaran',
-                    borderColor: danger,                      // Garis merah
-                    backgroundColor: 'rgba(239,68,68,.09)',   // Area transparan merah
-                    data: chartData,                          // Data per hari
-                    fill: true,        // Isi area di bawah garis
-                    tension: 0.4,      // Kelengkungan garis
-                    borderWidth: 2,
-                    pointRadius: 3,
-                    pointBorderWidth: 2,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: danger,
+                    backgroundColor: 'rgba(239,68,68,.72)',
+                    data: trendValues,
+                    borderRadius: 4,
+                    maxBarThickness: 28,
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false }, // Sembunyikan legend (1 dataset)
+                    legend: { display: false },
                     tooltip: {
                         ...tooltipDefaults,
                         callbacks: {
-                            // Format nilai tooltip nominal rupiah
-                            label: ctx => ' Rp ' + ctx.parsed.y.toLocaleString('id-ID')
+                            title: (items) => trendLabels[items[0].dataIndex],
+                            label: (ctx) => `Pengeluaran: Rp ${ctx.parsed.y.toLocaleString('id-ID')}`
                         }
                     }
                 },
                 scales: {
                     x: {
-                        grid: { color: gridLine, drawBorder: false },
+                        grid: { display: false },
                         ticks: {
                             font: { size: 10, family: 'Inter' },
-                            maxTicksLimit: 16, // Batasi jumlah label agar tidak sesak
+                            maxTicksLimit: trendValues.length > 12 ? 8 : undefined,
+                            autoSkip: true,
                         }
                     },
                     y: {
-                        grid: { color: gridLine, drawBorder: false },
+                        beginAtZero: true,
+                        grid: { color: 'rgba(148, 163, 184, .18)' },
                         ticks: {
                             font: { size: 10, family: 'Inter' },
-                            // Format nilai sumbu Y sebagai rupiah singkat
-                            callback: v => 'Rp ' + (v >= 1000000
-                                ? (v / 1000000).toFixed(1) + 'jt'
-                                : v.toLocaleString('id-ID'))
+                            callback: (value) => value >= 1000000
+                                ? `Rp ${(value / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 })} jt`
+                                : `Rp ${value.toLocaleString('id-ID')}`
                         }
                     }
                 }
             }
         });
+        }
     }
 
     // ============================================================
@@ -860,17 +866,29 @@ document.addEventListener('DOMContentLoaded', function () {
     // ============================================================
     const kategoriCtx = document.getElementById('kategoriChart');
     if (kategoriCtx) {
+        const categories = kategoriLabels.map((label, index) => ({
+            label,
+            value: kategoriData[index] ?? 0,
+            color: kategoriColors[index],
+        })).filter((category) => category.value > 0)
+            .sort((a, b) => b.value - a.value);
+
+        if (!categories.length) {
+            kategoriCtx.insertAdjacentHTML('afterend', '<p class="chart-empty-state">Belum ada pengeluaran per kategori pada periode ini.</p>');
+            kategoriCtx.remove();
+        } else {
         new Chart(kategoriCtx, {
             type: 'bar', // Chart batang
             data: {
-                labels: kategoriLabels, // Nama kategori di sumbu Y (horizontal)
+                labels: categories.map((category) => category.label),
                 datasets: [{
                     label: 'Total Pengeluaran',
-                    data: kategoriData,            // Nilai per kategori
-                    backgroundColor: kategoriColors.map(c => c + 'cc'), // Warna semi-transparan
-                    borderColor: kategoriColors,   // Warna tepi solid
-                    borderWidth: 1.5,
-                    borderRadius: 5,               // Sudut melengkung pada batang
+                    data: categories.map((category) => category.value),
+                    backgroundColor: categories.map((category) => `${category.color}cc`),
+                    borderColor: categories.map((category) => category.color),
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    maxBarThickness: 20,
                 }]
             },
             options: {
@@ -888,21 +906,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
                 scales: {
                     x: {
-                        grid: { color: gridLine, drawBorder: false },
+                        beginAtZero: true,
+                        grid: { color: 'rgba(148, 163, 184, .18)' },
                         ticks: {
                             font: { size: 9, family: 'Inter' },
-                            callback: v => v >= 1000000
-                                ? (v / 1000000).toFixed(1) + 'jt'
-                                : v.toLocaleString('id-ID')
+                            callback: (value) => value >= 1000000
+                                ? `Rp ${(value / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 })} jt`
+                                : `Rp ${value.toLocaleString('id-ID')}`
                         }
                     },
                     y: {
-                        grid: { display: false }, // Sembunyikan grid sumbu Y
+                        grid: { display: false },
                         ticks: { font: { size: 10, family: 'Inter' } }
                     }
                 }
             }
         });
+        }
     }
 
 }); // DOMContentLoaded

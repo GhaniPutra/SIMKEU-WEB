@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\User;
+use App\Support\PeriodFilter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -99,37 +100,24 @@ class EmployeeController extends Controller
             return redirect()->route('employees.index')->with('error', 'Hanya dapat mengelola data pegawai.');
         }
 
-        $requestedPeriod = $request->query('analytics_period', 7);
-        $analyticsPeriod = is_numeric($requestedPeriod) ? (int) $requestedPeriod : 7;
-        if (!in_array($analyticsPeriod, [7, 30, 90], true)) {
-            $analyticsPeriod = 7;
-        }
-
         $now = now();
-        $periodStart = $now->copy()->startOfDay()->subDays($analyticsPeriod - 1);
-        $periodEnd = $now->copy();
+        [
+            'period' => $analyticsPeriod,
+            'periodLabel' => $periodLabel,
+            'periodStart' => $periodStart,
+            'periodEnd' => $periodEnd,
+        ] = PeriodFilter::resolve($request->query('period', 'month'), $now);
         $employeeSales = Sale::query()->where('user_id', $employee->id);
-        $periodSales = (clone $employeeSales)->whereBetween('transaction_date', [$periodStart, $periodEnd]);
-
-        $salesTotals = (clone $employeeSales)
-            ->selectRaw('COUNT(*) as transactions, COALESCE(SUM(total), 0) as revenue')
-            ->first();
-        $totalItemsSold = DB::table('sale_items')
-            ->join('sales', 'sales.id', '=', 'sale_items.sale_id')
-            ->where('sales.user_id', $employee->id)
-            ->sum('sale_items.quantity');
+        $periodSales = PeriodFilter::apply(clone $employeeSales, 'transaction_date', $periodStart, $periodEnd);
 
         $periodTotals = (clone $periodSales)
             ->selectRaw('COUNT(*) as transactions, COALESCE(SUM(total), 0) as revenue')
             ->first();
-        $periodItemsSold = DB::table('sale_items')
+        $periodItemsQuery = DB::table('sale_items')
             ->join('sales', 'sales.id', '=', 'sale_items.sale_id')
-            ->where('sales.user_id', $employee->id)
-            ->whereBetween('sales.transaction_date', [$periodStart, $periodEnd])
-            ->sum('sale_items.quantity');
-        $currentMonthSales = (float) (clone $employeeSales)
-            ->whereBetween('transaction_date', [$now->copy()->startOfMonth(), $periodEnd])
-            ->sum('total');
+            ->where('sales.user_id', $employee->id);
+        PeriodFilter::apply($periodItemsQuery, 'sales.transaction_date', $periodStart, $periodEnd);
+        $periodItemsSold = $periodItemsQuery->sum('sale_items.quantity');
 
         $dailySales = (clone $periodSales)
             ->selectRaw('DATE(transaction_date) as sale_date, COUNT(*) as transaction_count, COALESCE(SUM(total), 0) as revenue')
@@ -141,12 +129,40 @@ class EmployeeController extends Controller
         $trendLabels = [];
         $trendFullLabels = [];
         $trendRevenue = [];
-        for ($dayIndex = 0; $dayIndex < $analyticsPeriod; $dayIndex++) {
-            $date = $periodStart->copy()->addDays($dayIndex);
-            $dailySale = $dailySales->get($date->toDateString());
-            $trendLabels[] = $date->format('d/m');
-            $trendFullLabels[] = $date->format('d/m/Y');
-            $trendRevenue[] = (float) ($dailySale->revenue ?? 0);
+        if ($analyticsPeriod === 'all') {
+            $driver = DB::connection()->getDriverName();
+            $monthExpression = match ($driver) {
+                'mysql', 'mariadb' => "DATE_FORMAT(transaction_date, '%Y-%m')",
+                'pgsql' => "TO_CHAR(transaction_date, 'YYYY-MM')",
+                default => "strftime('%Y-%m', transaction_date)",
+            };
+            $monthlySales = (clone $employeeSales)
+                ->selectRaw("$monthExpression as month_key, COUNT(*) as transaction_count, COALESCE(SUM(total), 0) as revenue")
+                ->groupByRaw($monthExpression)
+                ->orderBy('month_key')
+                ->get()
+                ->keyBy('month_key');
+            $firstMonth = $monthlySales->keys()->first();
+            if ($firstMonth !== null) {
+                $lastMonth = $monthlySales->keys()->last();
+                for ($date = \Carbon\Carbon::createFromFormat('!Y-m', $firstMonth);
+                    $date->lte(\Carbon\Carbon::createFromFormat('!Y-m', $lastMonth));
+                    $date->addMonth()) {
+                    $key = $date->format('Y-m');
+                    $sale = $monthlySales->get($key);
+                    $trendLabels[] = $date->format('m/Y');
+                    $trendFullLabels[] = $date->translatedFormat('F Y');
+                    $trendRevenue[] = (float) ($sale->revenue ?? 0);
+                }
+            }
+        } else {
+            $chartEnd = $periodEnd;
+            for ($date = $periodStart->copy()->startOfDay(); $date->lte($chartEnd); $date->addDay()) {
+                $dailySale = $dailySales->get($date->toDateString());
+                $trendLabels[] = $date->format('d/m');
+                $trendFullLabels[] = $date->format('d/m/Y');
+                $trendRevenue[] = (float) ($dailySale->revenue ?? 0);
+            }
         }
         $trendHasTransactions = $dailySales->sum('transaction_count') > 0;
 
@@ -154,9 +170,10 @@ class EmployeeController extends Controller
             ->join('sales', 'sales.id', '=', 'sale_items.sale_id')
             ->join('products', 'products.id', '=', 'sale_items.product_id')
             ->where('sales.user_id', $employee->id)
-            ->whereBetween('sales.transaction_date', [$periodStart, $periodEnd])
             ->select('products.id', 'products.name', 'products.unit')
-            ->selectRaw('SUM(sale_items.quantity) as units_sold')
+            ->selectRaw('SUM(sale_items.quantity) as units_sold');
+        PeriodFilter::apply($topProducts, 'sales.transaction_date', $periodStart, $periodEnd);
+        $topProducts = $topProducts
             ->groupBy('products.id', 'products.name', 'products.unit')
             ->orderByDesc('units_sold')
             ->orderBy('products.name')
@@ -243,7 +260,7 @@ class EmployeeController extends Controller
             ->withQueryString()
             ->appends(['tab' => 'sales']);
 
-        $recentSales = (clone $employeeSales)
+        $recentSales = (clone $periodSales)
             ->with('customer')
             ->withSum('saleItems', 'quantity')
             ->orderByDesc('transaction_date')
@@ -260,6 +277,7 @@ class EmployeeController extends Controller
             'employee',
             'products',
             'analyticsPeriod',
+            'periodLabel',
             'periodStart',
             'periodEnd',
             'trendLabels',
@@ -272,11 +290,8 @@ class EmployeeController extends Controller
             'stockSearch',
             'stockStatus',
             'sales',
-            'salesTotals',
-            'totalItemsSold',
             'periodTotals',
             'periodItemsSold',
-            'currentMonthSales',
             'recentSales',
             'lowStockThreshold',
             'activeTab'

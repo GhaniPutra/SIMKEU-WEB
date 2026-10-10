@@ -211,7 +211,7 @@
 
 {{-- Tombol kembali ke daftar pengeluaran --}}
 <div style="margin-bottom:20px;" class="fade-up">
-    <a href="{{ route('pengeluaran.index') }}" class="btn-back">
+    <a href="{{ route('pengeluaran.index', request()->query()) }}" class="btn-back">
         <i class="fas fa-arrow-left fa-xs"></i> Kembali ke Pengeluaran
     </a>
 </div>

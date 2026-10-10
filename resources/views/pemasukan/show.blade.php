@@ -197,7 +197,7 @@
 
 {{-- Tombol kembali ke daftar pemasukan --}}
 <div style="margin-bottom:20px;" class="fade-up">
-    <a href="{{ route('pemasukan.index') }}" class="btn-back">
+    <a href="{{ route('pemasukan.index', request()->query()) }}" class="btn-back">
         <i class="fas fa-arrow-left fa-xs"></i> Kembali ke Pemasukan
     </a>
 </div>

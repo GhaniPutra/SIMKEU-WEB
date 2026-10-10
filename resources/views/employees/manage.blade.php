@@ -56,23 +56,23 @@
         <div class="employee-kpis">
             <article class="employee-kpi kpi-revenue">
                 <div class="employee-kpi-icon"><i class="fas fa-wallet"></i></div>
-                <div class="employee-kpi-label">Total Pendapatan</div>
-                <div class="employee-kpi-value">Rp {{ number_format((float) $salesTotals->revenue, 0, ',', '.') }}</div>
-                <div class="employee-kpi-note">Sepanjang waktu · transaksi pegawai ini</div>
+                <div class="employee-kpi-label">Pendapatan {{ $periodLabel }}</div>
+                <div class="employee-kpi-value">Rp {{ number_format((float) $periodTotals->revenue, 0, ',', '.') }}</div>
+                <div class="employee-kpi-note">Transaksi pegawai ini</div>
             </article>
             <article class="employee-kpi kpi-transactions">
                 <div class="employee-kpi-icon"><i class="fas fa-receipt"></i></div>
-                <div class="employee-kpi-label">Total Transaksi</div>
-                <div class="employee-kpi-value">{{ number_format((int) $salesTotals->transactions) }}</div>
-                <div class="employee-kpi-note">Sepanjang waktu</div>
+                <div class="employee-kpi-label">Transaksi {{ $periodLabel }}</div>
+                <div class="employee-kpi-value">{{ number_format((int) $periodTotals->transactions) }}</div>
+                <div class="employee-kpi-note">Transaksi pegawai ini</div>
             </article>
             <article class="employee-kpi kpi-units">
                 <div class="employee-kpi-icon"><i class="fas fa-cubes"></i></div>
-                <div class="employee-kpi-label">Total Unit Terjual</div>
-                <div class="employee-kpi-value">{{ number_format((int) $totalItemsSold) }}</div>
-                <div class="employee-kpi-note">Akumulasi kuantitas detail transaksi</div>
+                <div class="employee-kpi-label">Unit terjual {{ $periodLabel }}</div>
+                <div class="employee-kpi-value">{{ number_format((int) $periodItemsSold) }}</div>
+                <div class="employee-kpi-note">Dari detail transaksi pegawai ini</div>
             </article>
-            <a class="employee-kpi kpi-attention" href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock']) }}">
+            <a class="employee-kpi kpi-attention" href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock', 'period' => $analyticsPeriod]) }}">
                 <div class="employee-kpi-icon"><i class="fas fa-triangle-exclamation"></i></div>
                 <div class="employee-kpi-label">Stok Perlu Perhatian</div>
                 <div class="employee-kpi-value">{{ number_format($stockSummary->empty_stock_count + $stockSummary->low_stock_count) }}</div>
@@ -87,16 +87,7 @@
                         <h2><i class="fas fa-chart-area"></i> Tren Pendapatan</h2>
                         <p>Nilai transaksi berdasarkan tanggal transaksi</p>
                     </div>
-                    <form method="GET" action="{{ route('employees.manage', $employee) }}" class="period-filter">
-                        <input type="hidden" name="tab" value="overview">
-                        <label class="visually-hidden" for="overview-period">Periode grafik</label>
-                        <select id="overview-period" name="analytics_period">
-                            <option value="7" {{ $analyticsPeriod === 7 ? 'selected' : '' }}>7 hari</option>
-                            <option value="30" {{ $analyticsPeriod === 30 ? 'selected' : '' }}>30 hari</option>
-                            <option value="90" {{ $analyticsPeriod === 90 ? 'selected' : '' }}>90 hari</option>
-                        </select>
-                        <button type="submit">Terapkan</button>
-                    </form>
+                    <span class="employee-period-label">{{ $periodLabel }}</span>
                 </div>
                 <div class="employee-card-body">
                     @include('employees._trend-chart', ['chartId' => 'overview-sales-chart'])
@@ -107,7 +98,7 @@
                 <div class="employee-card-header">
                     <div>
                         <h2><i class="fas fa-ranking-star"></i> Produk Terlaris</h2>
-                        <p>Periode {{ $analyticsPeriod }} hari terakhir · berdasarkan unit</p>
+                        <p>{{ $periodLabel }} · berdasarkan unit</p>
                     </div>
                 </div>
                 <div class="employee-card-body compact-card-body">
@@ -124,7 +115,7 @@
                         <div class="employee-empty compact-empty">
                             <i class="fas fa-basket-shopping"></i>
                             <strong>Belum ada penjualan pada periode ini</strong>
-                            <span>Pilih periode lain atau periksa kembali setelah transaksi tercatat.</span>
+                            <span>Coba periode lain atau periksa kembali setelah transaksi tercatat.</span>
                         </div>
                     @endforelse
                 </div>
@@ -136,7 +127,7 @@
                         <h2><i class="fas fa-box-open"></i> Kondisi Stok Pegawai</h2>
                         <p>Stok kosong = 0 · rendah 1–{{ $lowStockThreshold }}</p>
                     </div>
-                    <a class="employee-card-link" href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock']) }}">Kelola <i class="fas fa-arrow-right"></i></a>
+                    <a class="employee-card-link" href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock', 'period' => $analyticsPeriod]) }}">Kelola <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="employee-card-body compact-card-body">
                     @forelse($stockAttention as $product)
@@ -217,7 +208,7 @@
             </div>
             <form method="GET" action="{{ route('employees.manage', $employee) }}" class="stock-toolbar">
                 <input type="hidden" name="tab" value="stock">
-                <input type="hidden" name="analytics_period" value="{{ $analyticsPeriod }}">
+                <input type="hidden" name="period" value="{{ $analyticsPeriod }}">
                 <label class="stock-search">
                     <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
                     <span class="visually-hidden">Cari produk atau kategori</span>
@@ -235,7 +226,7 @@
                 </label>
                 <button type="submit" class="btn-add"><i class="fas fa-filter"></i> Terapkan</button>
                 @if($stockSearch !== '' || $stockStatus !== '')
-                    <a href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock', 'analytics_period' => $analyticsPeriod]) }}" class="stock-reset">Reset</a>
+                    <a href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock', 'period' => $analyticsPeriod]) }}" class="stock-reset">Reset</a>
                 @endif
             </form>
 
@@ -314,50 +305,40 @@
         <div class="sales-period-heading">
             <div>
                 <h2>Analisis Penjualan</h2>
-                <p>{{ $periodStart->format('d/m/Y') }}–{{ $periodEnd->format('d/m/Y') }} · tanggal transaksi</p>
+                <p>{{ $periodLabel }}{{ $periodStart && $periodEnd ? ' · ' . $periodStart->format('d/m/Y') . '–' . $periodEnd->format('d/m/Y') : '' }} · tanggal transaksi pegawai ini</p>
             </div>
-            <form method="GET" action="{{ route('employees.manage', $employee) }}" class="period-filter">
-                <input type="hidden" name="tab" value="sales">
-                <label class="visually-hidden" for="sales-period">Periode analisis</label>
-                <select id="sales-period" name="analytics_period">
-                    <option value="7" {{ $analyticsPeriod === 7 ? 'selected' : '' }}>7 hari</option>
-                    <option value="30" {{ $analyticsPeriod === 30 ? 'selected' : '' }}>30 hari</option>
-                    <option value="90" {{ $analyticsPeriod === 90 ? 'selected' : '' }}>90 hari</option>
-                </select>
-                <button type="submit">Terapkan</button>
-            </form>
         </div>
 
         <div class="employee-kpis sales-kpis">
             <article class="employee-kpi kpi-revenue">
                 <div class="employee-kpi-icon"><i class="fas fa-wallet"></i></div>
-                <div class="employee-kpi-label">Pendapatan periode</div>
+                <div class="employee-kpi-label">Pendapatan {{ $periodLabel }}</div>
                 <div class="employee-kpi-value">Rp {{ number_format((float) $periodTotals->revenue, 0, ',', '.') }}</div>
-                <div class="employee-kpi-note">Periode {{ $analyticsPeriod }} hari</div>
+                <div class="employee-kpi-note">Transaksi pegawai ini</div>
             </article>
             <article class="employee-kpi kpi-transactions">
                 <div class="employee-kpi-icon"><i class="fas fa-receipt"></i></div>
-                <div class="employee-kpi-label">Transaksi periode</div>
+                <div class="employee-kpi-label">Transaksi {{ $periodLabel }}</div>
                 <div class="employee-kpi-value">{{ number_format((int) $periodTotals->transactions) }}</div>
-                <div class="employee-kpi-note">Periode {{ $analyticsPeriod }} hari</div>
+                <div class="employee-kpi-note">Transaksi pegawai ini</div>
             </article>
             <article class="employee-kpi kpi-units">
                 <div class="employee-kpi-icon"><i class="fas fa-cubes"></i></div>
-                <div class="employee-kpi-label">Unit terjual periode</div>
+                <div class="employee-kpi-label">Unit terjual {{ $periodLabel }}</div>
                 <div class="employee-kpi-value">{{ number_format((int) $periodItemsSold) }}</div>
-                <div class="employee-kpi-note">Dari detail transaksi</div>
+                <div class="employee-kpi-note">Detail transaksi pegawai ini</div>
             </article>
             <article class="employee-kpi kpi-month">
                 <div class="employee-kpi-icon"><i class="fas fa-calendar-check"></i></div>
-                <div class="employee-kpi-label">Pendapatan bulan berjalan</div>
-                <div class="employee-kpi-value">Rp {{ number_format($currentMonthSales, 0, ',', '.') }}</div>
-                <div class="employee-kpi-note">Bulan ini hingga saat ini</div>
+                <div class="employee-kpi-label">Cakupan analisis</div>
+                <div class="employee-kpi-value">{{ $periodLabel }}</div>
+                <div class="employee-kpi-note">Filter global navbar</div>
             </article>
         </div>
 
         <div class="employee-card sales-trend-card">
             <div class="employee-card-header">
-                <div><h2><i class="fas fa-chart-area"></i> Tren Pendapatan Harian</h2><p>Periode {{ $analyticsPeriod }} hari · transaksi pegawai ini</p></div>
+                <div><h2><i class="fas fa-chart-area"></i> Tren Pendapatan</h2><p>{{ $periodLabel }} · transaksi pegawai ini</p></div>
             </div>
             <div class="employee-card-body">
                 @include('employees._trend-chart', ['chartId' => 'sales-tab-chart'])
@@ -392,7 +373,7 @@
                     <div class="employee-empty">
                         <i class="fas fa-chart-line"></i>
                         <strong>Tidak ada transaksi pada periode ini</strong>
-                        <span>Pilih periode yang lebih panjang atau kembali setelah penjualan tercatat.</span>
+                        <span>Coba periode lain atau kembali setelah penjualan tercatat.</span>
                     </div>
                 @endif
             </div>
@@ -466,12 +447,12 @@
                             label: 'Pendapatan',
                             data: trendRevenue,
                             borderColor: '#4f46e5',
-                            backgroundColor: 'rgba(79, 70, 229, .12)',
+                            backgroundColor: 'transparent',
                             pointBackgroundColor: '#4f46e5',
-                            pointRadius: 3,
-                            pointHoverRadius: 5,
-                            fill: true,
-                            tension: .3
+                            pointRadius: 2,
+                            pointHoverRadius: 4,
+                            fill: false,
+                            tension: 0
                         }]
                     },
                     options: {
@@ -488,10 +469,17 @@
                             }
                         },
                         scales: {
-                            x: { grid: { display: false }, ticks: { maxTicksLimit: 10, color: '#64748b' } },
+                            x: { grid: { display: false }, ticks: { maxTicksLimit: 8, autoSkip: true, color: '#64748b' } },
                             y: {
                                 beginAtZero: true,
-                                ticks: { color: '#64748b', callback: (value) => currency.format(value) },
+                                ticks: {
+                                    color: '#64748b',
+                                    callback: (value) => value >= 1000000
+                                        ? `Rp ${(value / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 })} jt`
+                                        : value >= 1000
+                                            ? `Rp ${(value / 1000).toLocaleString('id-ID', { maximumFractionDigits: 0 })} rb`
+                                            : currency.format(value)
+                                },
                                 grid: { color: 'rgba(148, 163, 184, .18)' }
                             }
                         }

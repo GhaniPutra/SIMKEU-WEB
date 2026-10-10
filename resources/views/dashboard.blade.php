@@ -44,11 +44,15 @@
                 </div>
                 <div class="kpi-value">Rp {{ number_format($totalRevenueMonth, 0, ',', '.') }}</div>
                 <div class="kpi-sub">
-                    Hari ini: <strong>Rp {{ number_format($totalRevenueToday, 0, ',', '.') }}</strong>
-                    <span class="kpi-trend {{ $revenueTrendLabel }}">
-                        <i class="fas fa-caret-{{ $revenueTrendLabel === 'trend-up' ? 'up' : 'down' }}"></i>
-                        {{ $revenueTrendText }}
-                    </span>
+                    @if($period === 'today')
+                        Hari ini dibanding kemarin
+                        <span class="kpi-trend {{ $revenueTrendLabel }}">
+                            <i class="fas fa-caret-{{ $revenueTrendLabel === 'trend-up' ? 'up' : 'down' }}"></i>
+                            {{ $revenueTrendText }}
+                        </span>
+                    @else
+                        {{ $periodLabel }}
+                    @endif
                 </div>
             </div>
 
@@ -60,11 +64,15 @@
                 </div>
                 <div class="kpi-value">Rp {{ number_format($totalExpenseMonth, 0, ',', '.') }}</div>
                 <div class="kpi-sub">
-                    Hari ini: <strong>Rp {{ number_format($totalExpenseToday, 0, ',', '.') }}</strong>
-                    <span class="kpi-trend {{ $expenseTrendLabel }}">
-                        <i class="fas fa-caret-{{ $expenseTrendLabel === 'trend-up' ? 'up' : 'down' }}"></i>
-                        {{ $expenseTrendText }}
-                    </span>
+                    @if($period === 'today')
+                        Hari ini dibanding kemarin
+                        <span class="kpi-trend {{ $expenseTrendLabel }}">
+                            <i class="fas fa-caret-{{ $expenseTrendLabel === 'trend-up' ? 'up' : 'down' }}"></i>
+                            {{ $expenseTrendText }}
+                        </span>
+                    @else
+                        {{ $periodLabel }}
+                    @endif
                 </div>
             </div>
 
@@ -88,11 +96,15 @@
                 </div>
                 <div class="kpi-value">{{ $transactionsPeriod }}</div>
                 <div class="kpi-sub">
-                    Hari ini: <strong>{{ $transactionsToday }}</strong>
-                    <span class="kpi-trend {{ $transactionsTrendLabel }}">
-                        <i class="fas fa-caret-{{ $transactionsTrendLabel === 'trend-up' ? 'up' : 'down' }}"></i>
-                        {{ $transactionsTrendText }}
-                    </span>
+                    @if($period === 'today')
+                        Hari ini dibanding kemarin
+                        <span class="kpi-trend {{ $transactionsTrendLabel }}">
+                            <i class="fas fa-caret-{{ $transactionsTrendLabel === 'trend-up' ? 'up' : 'down' }}"></i>
+                            {{ $transactionsTrendText }}
+                        </span>
+                    @else
+                        {{ $periodLabel }}
+                    @endif
                 </div>
             </div>
 

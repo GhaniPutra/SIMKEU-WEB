@@ -9,6 +9,7 @@ use Illuminate\Http\Request;          // Untuk membaca data dari request (query 
 use Illuminate\Support\Facades\Auth;  // Untuk mendapatkan user yang sedang login
 use Carbon\Carbon;                    // Untuk manipulasi dan format tanggal/waktu
 use App\Models\Expense;               // Model pengeluaran operasional
+use App\Support\PeriodFilter;
 
 class PengeluaranController extends Controller
 {
@@ -36,37 +37,26 @@ class PengeluaranController extends Controller
         // Ambil parameter filter dari URL query string
         // Default: 'month'
         // ----------------------------------------------------------
-        $period    = $request->input('period', 'month');
+        $period    = $request->query('period', 'month');
         $search    = $request->input('search', '');
         $kategori  = $request->input('kategori', '');
 
         $now = Carbon::now();
 
-        // Tentukan rentang tanggal dan label berdasarkan period
-        if ($period === 'today') {
-            $periodStart = $now->copy()->startOfDay();
-            $periodEnd = $now->copy()->endOfDay();
-            $periodLabel = 'Hari Ini';
-        } elseif ($period === 'week') {
-            $periodStart = $now->copy()->startOfWeek();
-            $periodEnd = $now->copy()->endOfWeek();
-            $periodLabel = 'Minggu Ini';
-        } else {
-            $period = 'month';
-            $periodStart = $now->copy()->startOfMonth();
-            $periodEnd = $now->copy()->endOfMonth();
-            $periodLabel = 'Bulan Ini';
-        }
+        ['period' => $period, 'periodLabel' => $periodLabel, 'periodStart' => $periodStart, 'periodEnd' => $periodEnd]
+            = PeriodFilter::resolve($period, $now);
 
         // ----------------------------------------------------------
         // Query dasar: ambil semua pengeluaran dalam rentang periode
         // Sertakan relasi user (yang mencatat)
         // ----------------------------------------------------------
-        $query = Expense::with('user')
-            ->whereBetween('expense_date', [
-                $periodStart->toDateString(),
-                $periodEnd->toDateString(),
-            ]);
+        $periodExpenses = fn () => PeriodFilter::apply(
+            Expense::query(),
+            'expense_date',
+            $periodStart?->toDateString(),
+            $periodEnd?->toDateString()
+        );
+        $query = $periodExpenses()->with('user');
 
         // Filter pencarian pada kolom deskripsi
         if ($search !== '') {
@@ -87,27 +77,19 @@ class PengeluaranController extends Controller
         // ============================================================
         // STATISTIK KESELURUHAN PERIODE TERPILIH
         // ============================================================
-        $totalBulanIni = Expense::whereBetween('expense_date', [
-            $periodStart->toDateString(),
-            $periodEnd->toDateString(),
-        ])->sum('amount');
-
-        $jumlahEntri = Expense::whereBetween('expense_date', [
-            $periodStart->toDateString(),
-            $periodEnd->toDateString(),
-        ])->count();
+        $totalBulanIni = $periodExpenses()->sum('amount');
+        $jumlahEntri = $periodExpenses()->count();
 
         $rataRata = $jumlahEntri > 0 ? $totalBulanIni / $jumlahEntri : 0;
 
-        $terbesarAmount = Expense::whereBetween('expense_date', [
-            $periodStart->toDateString(),
-            $periodEnd->toDateString(),
-        ])->max('amount') ?? 0;
+        $terbesarAmount = $periodExpenses()->max('amount') ?? 0;
 
         // ============================================================
         // PERBANDINGAN VS PERIODE SEBELUMNYA
         // ============================================================
-        if ($period === 'today') {
+        if ($period === 'all') {
+            $periodLaluStart = $periodLaluEnd = null;
+        } elseif ($period === 'today') {
             $periodLaluStart = $now->copy()->subDay()->startOfDay();
             $periodLaluEnd = $now->copy()->subDay()->endOfDay();
         } elseif ($period === 'week') {
@@ -118,14 +100,13 @@ class PengeluaranController extends Controller
             $periodLaluEnd = $now->copy()->subMonth()->endOfMonth();
         }
 
-        $totalPeriodLalu = Expense::whereBetween('expense_date', [
-            $periodLaluStart->toDateString(),
-            $periodLaluEnd->toDateString(),
-        ])->sum('amount');
+        $totalPeriodLalu = $periodLaluStart
+            ? Expense::whereBetween('expense_date', [$periodLaluStart->toDateString(), $periodLaluEnd->toDateString()])->sum('amount')
+            : null;
 
-        $persentasePerubahan = $totalPeriodLalu > 0
+        $persentasePerubahan = $totalPeriodLalu !== null && $totalPeriodLalu > 0
             ? (($totalBulanIni - $totalPeriodLalu) / $totalPeriodLalu) * 100
-            : ($totalBulanIni > 0 ? 100 : 0);
+            : ($totalPeriodLalu !== null && $totalBulanIni > 0 ? 100 : 0);
 
         // ============================================================
         // DATA CHART — Sesuai periode (seperti dashboard)
@@ -133,57 +114,46 @@ class PengeluaranController extends Controller
         $chartLabels = [];
         $chartData = [];
 
-        if ($period === 'month') {
-            // 12 bulan (Jan-Des tahun ini)
-            $trendQuery = Expense::selectRaw('MONTH(expense_date) as m, SUM(amount) as amount')
-                ->whereYear('expense_date', $now->year)
-                ->groupBy('m')
-                ->orderBy('m')
-                ->pluck('amount', 'm');
+        if ($period === 'all') {
+            $monthlyTotals = Expense::selectRaw('SUBSTR(expense_date, 1, 7) as expense_month, SUM(amount) as amount')
+                ->groupByRaw('SUBSTR(expense_date, 1, 7)')
+                ->orderBy('expense_month')
+                ->pluck('amount', 'expense_month');
 
-            $namaBulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-            for ($m = 1; $m <= 12; $m++) {
-                $chartLabels[] = $namaBulan[$m - 1];
-                $chartData[] = (float) ($trendQuery[$m] ?? 0);
+            foreach ($monthlyTotals as $month => $total) {
+                $chartLabels[] = Carbon::createFromFormat('!Y-m', $month)->format('m/Y');
+                $chartData[] = (float) $total;
             }
+        } elseif ($period === 'today') {
+            $chartLabels[] = 'Hari ini';
+            $chartData[] = (float) $totalBulanIni;
         } elseif ($period === 'week') {
-            // 7 hari (Senin-Minggu minggu ini)
-            $weekStart = $now->copy()->startOfWeek();
-            $trendQuery = Expense::selectRaw('expense_date as date, SUM(amount) as amount')
-                ->where('expense_date', '>=', $weekStart->toDateString())
-                ->where('expense_date', '<=', $now->copy()->endOfWeek()->toDateString())
-                ->groupBy('date')
-                ->orderBy('date')
-                ->pluck('amount', 'date');
-
-            $namaHari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
-            for ($d = 0; $d < 7; $d++) {
-                $date = $weekStart->copy()->addDays($d)->toDateString();
-                $chartLabels[] = $namaHari[$d];
-                $chartData[] = (float) ($trendQuery[$date] ?? 0);
-            }
+            $dailyTotals = $periodExpenses()
+                ->selectRaw('expense_date, SUM(amount) as amount')
+                ->groupBy('expense_date')
+                ->orderBy('expense_date')
+                ->pluck('amount', 'expense_date');
         } else {
-            // 24 jam (00:00-23:00 hari ini)
-            // Karena expense_date saat ini tipe DATE, semua data ada di hari tersebut tanpa jam.
-            // Kita tampilkan seluruh jumlah hari di jam 00:00.
-            $dayStart = $now->copy()->startOfDay();
-            $totalToday = Expense::where('expense_date', $dayStart->toDateString())->sum('amount');
+            $dailyTotals = $periodExpenses()
+                ->selectRaw('expense_date, SUM(amount) as amount')
+                ->groupBy('expense_date')
+                ->orderBy('expense_date')
+                ->pluck('amount', 'expense_date');
+        }
 
-            for ($h = 0; $h < 24; $h++) {
-                $chartLabels[] = str_pad($h, 2, '0', STR_PAD_LEFT) . ':00';
-                // Masukkan ke jam 00 saja karena tidak punya data waktu detail
-                $chartData[] = $h === 0 ? (float) $totalToday : 0;
+        if (in_array($period, ['week', 'month'], true)) {
+            for ($date = $periodStart->copy()->startOfDay(); $date->lte($periodEnd->copy()->startOfDay()); $date->addDay()) {
+                $key = $date->toDateString();
+                $chartLabels[] = $period === 'week' ? $date->translatedFormat('D') : $date->format('d/m');
+                $chartData[] = (float) ($dailyTotals[$key] ?? 0);
             }
         }
 
         // ============================================================
         // DATA CHART — Distribusi per kategori (bar chart)
         // ============================================================
-        $distribusiKategori = Expense::selectRaw('category, SUM(amount) as total, COUNT(*) as jumlah')
-            ->whereBetween('expense_date', [
-                $periodStart->toDateString(),
-                $periodEnd->toDateString(),
-            ])
+        $distribusiKategori = $periodExpenses()
+            ->selectRaw('category, SUM(amount) as total, COUNT(*) as jumlah')
             ->groupBy('category')
             ->get()
             ->keyBy('category'); // Berindeks nama kategori
@@ -240,8 +210,8 @@ class PengeluaranController extends Controller
             'periodLabel',           // Label periode aktif filter
             'search',                // Kata kunci pencarian
             'kategori',              // Kategori aktif filter
-            'totalBulanIni',         // Total nominal semua pengeluaran bulan ini
-            'jumlahEntri',           // Jumlah baris pengeluaran bulan ini
+            'totalBulanIni',         // Total nominal semua pengeluaran dalam periode
+            'jumlahEntri',           // Jumlah baris pengeluaran dalam periode
             'rataRata',              // Rata-rata nilai per entry
             'terbesarAmount',        // Nilai pengeluaran terbesar
             'totalPeriodLalu',       // Total bulan lalu untuk pembanding

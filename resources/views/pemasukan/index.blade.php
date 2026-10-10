@@ -407,12 +407,15 @@
         {{-- Tampilkan total bersih dengan format rupiah --}}
         <div class="kpi-value">Rp {{ number_format($totalBersih, 0, ',', '.') }}</div>
         <div class="kpi-sub">
-            vs Periode Lalu: <strong>Rp {{ number_format($totalPeriodLalu, 0, ',', '.') }}</strong>
-            {{-- Badge tren naik (hijau) atau turun (merah) --}}
-            <span class="kpi-trend {{ $persentasePerubahan >= 0 ? 'trend-up' : 'trend-down' }}">
-                <i class="fas fa-caret-{{ $persentasePerubahan >= 0 ? 'up' : 'down' }}"></i>
-                {{ number_format(abs($persentasePerubahan), 1, ',', '.') }}%
-            </span>
+            @if($totalPeriodLalu !== null)
+                vs Periode Lalu: <strong>Rp {{ number_format($totalPeriodLalu, 0, ',', '.') }}</strong>
+                <span class="kpi-trend {{ $persentasePerubahan >= 0 ? 'trend-up' : 'trend-down' }}">
+                    <i class="fas fa-caret-{{ $persentasePerubahan >= 0 ? 'up' : 'down' }}"></i>
+                    {{ number_format(abs($persentasePerubahan), 1, ',', '.') }}%
+                </span>
+            @else
+                Seluruh riwayat transaksi
+            @endif
         </div>
     </div>
 
@@ -494,14 +497,17 @@
             </div>
             {{-- Legend warna per metode --}}
             <div>
-                @foreach([['Tunai', 'var(--success)', $metodeData[0]], ['Transfer', 'var(--primary)', $metodeData[1]], ['QRIS', 'var(--accent)', $metodeData[2]]] as [$namaMetode, $warna, $nilai])
-                <div class="legend-item">
-                    <div class="legend-dot" data-bg="{{ $warna }}"></div>
-                    <span class="legend-name">{{ $namaMetode }}</span>
-                    {{-- Format rupiah nilai per metode --}}
-                    <span class="legend-value">Rp {{ number_format($nilai, 0, ',', '.') }}</span>
-                </div>
-                @endforeach
+                @if(array_sum($metodeData) > 0)
+                    @foreach([['Tunai', 'var(--success)', $metodeData[0]], ['Transfer', 'var(--primary)', $metodeData[1]], ['QRIS', 'var(--accent)', $metodeData[2]]] as [$namaMetode, $warna, $nilai])
+                        @if($nilai > 0)
+                            <div class="legend-item">
+                                <div class="legend-dot" data-bg="{{ $warna }}"></div>
+                                <span class="legend-name">{{ $namaMetode }}</span>
+                                <span class="legend-value">Rp {{ number_format($nilai, 0, ',', '.') }}</span>
+                            </div>
+                        @endif
+                    @endforeach
+                @endif
             </div>
         </div>
     </div>
@@ -526,13 +532,7 @@
 
         {{-- Form filter — method GET agar URL mengandung parameter filter --}}
         <form method="GET" action="{{ route('pemasukan.index') }}" class="filter-bar" id="filterForm">
-            {{-- Dropdown filter periode seperti dashboard --}}
-            <select name="period" class="form-select" style="width:140px;margin-right:12px;"
-                    onchange="document.getElementById('filterForm').submit()">
-                <option value="today" {{ $period === 'today' ? 'selected' : '' }}>Hari Ini</option>
-                <option value="week" {{ $period === 'week' ? 'selected' : '' }}>Minggu Ini</option>
-                <option value="month" {{ $period === 'month' ? 'selected' : '' }}>Bulan Ini</option>
-            </select>
+            <input type="hidden" name="period" value="{{ $period }}">
 
             {{-- Dropdown filter metode pembayaran --}}
             <select name="metode" class="form-select" style="width:130px;"
@@ -642,7 +642,7 @@
 
                     {{-- Tombol lihat detail transaksi --}}
                     <td class="text-center">
-                        <a href="{{ route('pemasukan.show', $sale->id) }}" class="btn-detail">
+                        <a href="{{ route('pemasukan.show', array_merge(request()->query(), ['sale' => $sale->id, 'period' => $period])) }}" class="btn-detail">
                             <i class="fas fa-eye fa-xs me-1"></i> Detail
                         </a>
                     </td>
@@ -680,7 +680,7 @@
 
 </div>{{-- /content-card tabel --}}
 
-<div id="pemasukan-chart-data" style="display:none"
+<div id="pemasukan-chart-data" style="display:none" data-period="{{ $period }}"
      data-chart-labels='{{ json_encode($chartLabels) }}'
      data-chart-data='{{ json_encode($chartData) }}'
      data-metode-labels='{{ json_encode($metodeLabels) }}'
@@ -714,9 +714,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // ============================================================
     const primary = '#4f46e5';   // Ungu (warna utama)
     const success = '#10b981';   // Hijau (pemasukan / tunai)
-    const danger  = '#ef4444';   // Merah (diskon / pengeluaran)
     const accent  = '#06b6d4';   // Biru muda (QRIS / aksen)
-    const gridLine = '#e2e8f0';  // Warna garis grid chart
 
     // ============================================================
     // DATA DARI HTML — Ambil nilai JSON dari atribut data
@@ -740,63 +738,62 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // ============================================================
-    // LINE CHART — Tren pemasukan harian
+    // BAR CHART — Perbandingan pemasukan per periode
     // ============================================================
     const trendCtx = document.getElementById('trendHarianChart');
     if (trendCtx) {
+        if (!chartData.some((value) => value > 0)) {
+            trendCtx.insertAdjacentHTML('afterend', '<p class="chart-empty-state">Belum ada pemasukan pada periode ini.</p>');
+            trendCtx.remove();
+        } else {
         new Chart(trendCtx, {
-            type: 'line', // Tipe chart garis
+            type: 'bar',
             data: {
-                labels: chartLabels, // Label sumbu X (hari)
+                labels: chartLabels,
                 datasets: [{
                     label: 'Pemasukan',
-                    borderColor: primary,                   // Warna garis
-                    backgroundColor: 'rgba(79,70,229,.10)', // Area di bawah garis
-                    data: chartData,                        // Nilai per hari
-                    fill: true,          // Isi area di bawah garis
-                    tension: 0.4,        // Kelengkungan garis (0 = lurus, 1 = sangat melengkung)
-                    borderWidth: 2,
-                    pointRadius: 3,
-                    pointBorderWidth: 2,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: primary,
+                    backgroundColor: 'rgba(79,70,229,.78)',
+                    data: chartData,
+                    borderRadius: 4,
+                    maxBarThickness: 28,
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false }, // Sembunyikan legend (hanya 1 dataset)
+                    legend: { display: false },
                     tooltip: {
                         ...tooltipDefaults,
                         callbacks: {
-                            // Format nilai tooltip sebagai rupiah
-                            label: ctx => ' Rp ' + ctx.parsed.y.toLocaleString('id-ID')
+                            title: (items) => chartLabels[items[0].dataIndex],
+                            label: (ctx) => 'Pemasukan: Rp ' + ctx.parsed.y.toLocaleString('id-ID')
                         }
                     }
                 },
                 scales: {
                     x: {
-                        grid: { color: gridLine, drawBorder: false },
+                        grid: { display: false },
                         ticks: {
                             font: { size: 10, family: 'Inter' },
-                            // Tampilkan setiap 2 hari agar tidak sesak
-                            maxTicksLimit: 16,
+                            maxTicksLimit: chartData.length > 12 ? 8 : undefined,
+                            autoSkip: true,
                         }
                     },
                     y: {
-                        grid: { color: gridLine, drawBorder: false },
+                        beginAtZero: true,
+                        grid: { color: 'rgba(148, 163, 184, .18)' },
                         ticks: {
                             font: { size: 10, family: 'Inter' },
-                            // Format nilai sumbu Y sebagai rupiah singkat
-                            callback: v => 'Rp ' + (v >= 1000000
-                                ? (v / 1000000).toFixed(1) + 'jt'
-                                : v.toLocaleString('id-ID'))
+                            callback: (value) => value >= 1000000
+                                ? `Rp ${(value / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 })} jt`
+                                : `Rp ${value.toLocaleString('id-ID')}`
                         }
                     }
                 }
             }
         });
+        }
     }
 
     // ============================================================
@@ -804,16 +801,26 @@ document.addEventListener('DOMContentLoaded', function () {
     // ============================================================
     const metodeCtx = document.getElementById('metodeChart');
     if (metodeCtx) {
-        new Chart(metodeCtx, {
+        const methodColors = [success, primary, accent];
+        const methods = metodeLabels.map((label, index) => ({
+            label,
+            value: metodeData[index] ?? 0,
+            color: methodColors[index]
+        })).filter((method) => method.value > 0);
+
+        if (!methods.length) {
+            metodeCtx.insertAdjacentHTML('afterend', '<p class="chart-empty-state">Belum ada transaksi pada periode ini.</p>');
+            metodeCtx.remove();
+        } else new Chart(metodeCtx, {
             type: 'doughnut', // Tipe chart donut
             data: {
-                labels: metodeLabels, // Nama metode
+                labels: methods.map((method) => method.label),
                 datasets: [{
-                    data: metodeData,                         // Nilai per metode
-                    backgroundColor: [success, primary, accent], // Warna per slice
+                    data: methods.map((method) => method.value),
+                    backgroundColor: methods.map((method) => method.color),
                     borderWidth: 2,
-                    borderColor: '#fff',
-                    hoverOffset: 6, // Geser slice saat hover
+                    borderColor: getComputedStyle(metodeCtx.closest('.content-card')).backgroundColor,
+                    hoverOffset: 4,
                 }]
             },
             options: {
@@ -826,7 +833,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         ...tooltipDefaults,
                         callbacks: {
                             // Format tooltip sebagai rupiah
-                            label: ctx => ' Rp ' + ctx.parsed.toLocaleString('id-ID')
+                            label: (ctx) => `${ctx.label}: Rp ${ctx.parsed.toLocaleString('id-ID')}`
                         }
                     }
                 }

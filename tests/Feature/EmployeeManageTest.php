@@ -33,10 +33,8 @@ class EmployeeManageTest extends TestCase
         $foreignSale = $this->createSale($otherEmployee, 900, now()->subDay());
         SaleItem::create(['sale_id' => $foreignSale->id, 'product_id' => $product->id, 'quantity' => 20, 'price_at_sale' => 25, 'subtotal' => 500]);
 
-        $response = $this->get(route('employees.manage', ['employee' => $employee, 'analytics_period' => 7]));
+        $response = $this->get(route('employees.manage', ['employee' => $employee, 'period' => 'month']));
         $response->assertOk()
-            ->assertViewHas('salesTotals', fn ($totals) => (int) $totals->transactions === 2 && (float) $totals->revenue === 225.0)
-            ->assertViewHas('totalItemsSold', 9)
             ->assertViewHas('periodTotals', fn ($totals) => (int) $totals->transactions === 2 && (float) $totals->revenue === 225.0)
             ->assertViewHas('periodItemsSold', 9)
             ->assertViewHas('trendHasTransactions', true)
@@ -121,8 +119,8 @@ class EmployeeManageTest extends TestCase
 
         $this->get(route('employees.manage', $employee))
             ->assertOk()
-            ->assertViewHas('salesTotals', fn ($totals) => (int) $totals->transactions === 0 && (float) $totals->revenue === 0.0)
-            ->assertViewHas('totalItemsSold', 0)
+            ->assertViewHas('periodTotals', fn ($totals) => (int) $totals->transactions === 0 && (float) $totals->revenue === 0.0)
+            ->assertViewHas('periodItemsSold', 0)
             ->assertViewHas('trendHasTransactions', false)
             ->assertViewHas('topProducts', fn ($products) => $products->isEmpty())
             ->assertSee('Belum ada transaksi penjualan');
@@ -139,12 +137,49 @@ class EmployeeManageTest extends TestCase
         $this->get(route('employees.manage', [
             'employee' => $employee,
             'tab' => 'sales',
-            'analytics_period' => 7,
+            'period' => 'month',
             'sales_page' => 2,
         ]))
             ->assertOk()
             ->assertViewHas('sales', fn ($sales) => $sales->total() === 16 && $sales->currentPage() === 2 && $sales->getPageName() === 'sales_page')
             ->assertViewHas('products', fn ($products) => $products->getPageName() === 'products_page');
+    }
+
+    public function test_global_all_period_includes_employee_history_without_mixing_other_employees(): void
+    {
+        $this->actAsConfiguredAdmin();
+        $employee = User::factory()->create(['role' => 'pegawai']);
+        $otherEmployee = User::factory()->create(['role' => 'pegawai']);
+        $historicalSale = $this->createSale($employee, 125, now()->subMonths(8));
+        $recentSale = $this->createSale($employee, 75, now()->subDay());
+        $foreignSale = $this->createSale($otherEmployee, 900, now()->subMonths(8));
+
+        $this->get(route('employees.manage', [
+            'employee' => $employee,
+            'period' => 'all',
+            'tab' => 'sales',
+        ]))
+            ->assertOk()
+            ->assertViewHas('periodTotals', fn ($totals) => (int) $totals->transactions === 2 && (float) $totals->revenue === 200.0)
+            ->assertViewHas('sales', fn ($sales) => $sales->total() === 2
+                && $sales->pluck('id')->all() === [$recentSale->id, $historicalSale->id])
+            ->assertViewHas('analyticsPeriod', 'all')
+            ->assertSee('Semua Periode')
+            ->assertDontSee($foreignSale->invoice_number);
+    }
+
+    public function test_global_month_period_excludes_employee_sales_outside_this_month(): void
+    {
+        $this->actAsConfiguredAdmin();
+        $employee = User::factory()->create(['role' => 'pegawai']);
+        $this->createSale($employee, 125, now()->subMonths(8));
+        $this->createSale($employee, 75, now()->subDay());
+
+        $this->get(route('employees.manage', ['employee' => $employee, 'period' => 'month']))
+            ->assertOk()
+            ->assertViewHas('periodTotals', fn ($totals) => (int) $totals->transactions === 1 && (float) $totals->revenue === 75.0)
+            ->assertViewHas('sales', fn ($sales) => $sales->total() === 1)
+            ->assertSee('Bulan Ini');
     }
 
     public function test_stock_transfer_endpoint_updates_real_master_and_employee_balances(): void
