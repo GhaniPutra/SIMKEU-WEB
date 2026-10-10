@@ -95,10 +95,13 @@ function createChartDefaults() {
         },
         scales: {
             x: {
+                type: 'category',
+                stacked: false,
                 grid: { display: false },
                 ticks: { font: { size: 10, family: 'Inter' }, maxTicksLimit: period === 'today' ? 9 : 12, autoSkip: true }
             },
             y: {
+                stacked: false,
                 grid: { color: gridLine },
                 ticks: { font: { size: 10, family: 'Inter' }, callback: moneyTick },
                 beginAtZero: true,
@@ -106,6 +109,20 @@ function createChartDefaults() {
             }
         }
     };
+}
+
+// ============================================================
+// Fungsi: getCategoryPercentage
+// Tujuan: Menyesuaikan proporsi lebar grup kategori berdasarkan
+//         jumlah data pada sumbu X agar batang perbandingan tetap
+//         berdekatan dan proporsional di semua periode.
+// ============================================================
+function getCategoryPercentage(numLabels) {
+    if (numLabels <= 1) return 0.12;
+    if (numLabels <= 3) return 0.28;
+    if (numLabels <= 7) return 0.58;
+    if (numLabels <= 14) return 0.70;
+    return 0.82;
 }
 
 // ============================================================
@@ -127,6 +144,9 @@ function initTrendChart() {
         return;
     }
 
+    const categoryPercentage = getCategoryPercentage(labels.length);
+    const barPercentage = 0.95;
+
     new Chart(trendCanvas, {
         type: 'bar',
 
@@ -138,18 +158,32 @@ function initTrendChart() {
                     backgroundColor: 'rgba(79,70,229,.78)',
                     data: revenue,
                     borderRadius: 4,
-                    maxBarThickness: 28
+                    maxBarThickness: 38,
+                    categoryPercentage,
+                    barPercentage,
+                    grouped: true
                 },
                 {
                     label: 'Pengeluaran',
                     backgroundColor: 'rgba(239,68,68,.72)',
                     data: expenses,
                     borderRadius: 4,
-                    maxBarThickness: 28
+                    maxBarThickness: 38,
+                    categoryPercentage,
+                    barPercentage,
+                    grouped: true
                 }
             ]
         },
-        options: { ...createChartDefaults(), datasets: { bar: { categoryPercentage: .72, barPercentage: .82 } } }
+        options: {
+            ...createChartDefaults(),
+            datasets: {
+                bar: {
+                    categoryPercentage,
+                    barPercentage
+                }
+            }
+        }
     });
 }
 
