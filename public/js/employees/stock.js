@@ -3,8 +3,13 @@
 
 // Ambil ID pegawai dari atribut data di root container.
 function getEmployeeId() {
-    const stockRoot = document.querySelector('.stock-page');
+    const stockRoot = document.querySelector('.stock-page, .employee-manage');
     return stockRoot ? stockRoot.dataset.employeeId : null;
+}
+
+function getTransferUrl(employeeId) {
+    const root = document.querySelector('.stock-page, .employee-manage');
+    return root?.dataset.stockTransferUrl || `/employees/${employeeId}/stock/transfer`;
 }
 
 // Timer untuk toast notification.
@@ -18,7 +23,8 @@ function showToast(type, title, msg) {
     document.getElementById('toast-title').textContent = title; // Set judul toast
     document.getElementById('toast-msg').textContent = msg; // Set pesan toast
 
-    toast.className = type; // Tambahkan kelas berdasarkan tipe ('success' atau 'error')
+    toast.classList.remove('success', 'error');
+    toast.classList.add(type);
     icon.className = type === 'success' ? 'fas fa-check' : 'fas fa-xmark'; // Set ikon
 
     toast.classList.add('show'); // Tampilkan toast
@@ -37,6 +43,10 @@ function setLoading(productId, loading) {
     }
 
     if (loading) {
+        btnGive.dataset.loadingDisabled = String(btnGive.disabled);
+        btnPull.dataset.loadingDisabled = String(btnPull.disabled);
+        btnGive.setAttribute('aria-busy', 'true');
+        btnPull.setAttribute('aria-busy', 'true');
         btnGive.disabled = true; // Nonaktifkan saat loading
         btnPull.disabled = true; // Nonaktifkan saat loading
         btnGive.innerHTML = '<span class="spin"></span>'; // Ganti isi tombol dengan spinner
@@ -44,6 +54,12 @@ function setLoading(productId, loading) {
     } else {
         btnGive.innerHTML = '<i class="fas fa-arrow-right"></i> Berikan'; // Kembalikan teks tombol beri
         btnPull.innerHTML = '<i class="fas fa-arrow-left"></i> Tarik'; // Kembalikan teks tombol tarik
+        btnGive.removeAttribute('aria-busy');
+        btnPull.removeAttribute('aria-busy');
+        btnGive.disabled = btnGive.dataset.loadingDisabled === 'true';
+        btnPull.disabled = btnPull.dataset.loadingDisabled === 'true';
+        delete btnGive.dataset.loadingDisabled;
+        delete btnPull.dataset.loadingDisabled;
     }
 }
 
@@ -66,9 +82,9 @@ async function transferStock(productId, action) {
         return;
     }
 
-    let amount = parseInt(amountInput.value, 10); // Ambil nilai sebagai integer
-    if (isNaN(amount) || amount <= 0) {
-        showToast('error', 'Input Tidak Valid', 'Masukkan jumlah minimal 1.');
+    let amount = Number(amountInput.value); // Ambil nilai transfer
+    if (!Number.isInteger(amount) || amount <= 0) {
+        showToast('error', 'Input Tidak Valid', 'Masukkan jumlah unit bulat minimal 1.');
         return; // Keluar jika nilai tidak valid
     }
 
@@ -85,10 +101,11 @@ async function transferStock(productId, action) {
     setLoading(productId, true); // Set status loading
 
     try {
-        const response = await fetch(`/employees/${employeeId}/stock/transfer`, {
+        const response = await fetch(getTransferUrl(employeeId), {
             method: 'POST', // Metode request
             headers: {
                 'Content-Type': 'application/json', // Tipe konten JSON
+                'Accept': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // Token CSRF
             },
             body: JSON.stringify({ product_id: productId, amount }) // Data kirim
@@ -120,14 +137,19 @@ async function transferStock(productId, action) {
 
             if (btnGive) {
                 btnGive.disabled = result.master_stock <= 0; // Nonaktifkan jika stok master habis
+                btnGive.dataset.loadingDisabled = String(btnGive.disabled);
             }
             if (btnPull) {
                 btnPull.disabled = result.employee_stock <= 0; // Nonaktifkan jika stok pegawai nol
+                btnPull.dataset.loadingDisabled = String(btnPull.disabled);
             }
 
             amountInput.value = 1; // Reset input jumlah
             const dir = action === 'push' ? 'diberikan ke pegawai' : 'ditarik dari pegawai'; // Pesan arah transfer
             showToast('success', 'Transfer Berhasil', `${Math.abs(amount)} unit berhasil ${dir}.`); // Tampilkan toast sukses
+            if (document.querySelector('.employee-manage')) {
+                window.setTimeout(() => window.location.reload(), 1100);
+            }
         } else {
             showToast('error', 'Transfer Gagal', result.message || 'Terjadi kesalahan pada server.'); // Toast error jika gagal
         }
@@ -172,4 +194,3 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeStockBarWidths();
     bindStockTransferButtons();
 });
-

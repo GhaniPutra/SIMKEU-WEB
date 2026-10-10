@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Product extends Model
 {
+    public const LOW_STOCK_THRESHOLD = 10;
+
     /**
      * Kolom yang boleh diisi secara massal (mass assignment).
      * Ini penting untuk keamanan agar tidak semua kolom bisa diisi sembarang.
@@ -74,7 +76,7 @@ class Product extends Model
      */
     public function getLowStockAttribute(): bool
     {
-        return $this->stock <= 10;
+        return $this->stock <= self::LOW_STOCK_THRESHOLD;
     }
 
     /**

@@ -6,483 +6,487 @@
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/employees/index.css') }}">
-    <style>
-        .employee-shell {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .employee-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            flex-wrap: wrap;
-            padding: 24px 28px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            background: linear-gradient(135deg, rgba(79,70,229,0.06), rgba(6,182,212,0.04));
-        }
-
-        .employee-meta {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .employee-avatar {
-            width: 56px;
-            height: 56px;
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            color: white;
-            font-weight: 700;
-            font-size: 1.25rem;
-        }
-
-        .employee-name {
-            margin: 0;
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--text-primary);
-        }
-
-        .employee-sub {
-            margin: 4px 0 0;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-
-        .tab-nav {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 10px;
-        }
-
-        .tab-btn {
-            border: 0;
-            background: transparent;
-            color: var(--text-muted);
-            padding: 10px 16px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            transition: all 0.2s ease;
-        }
-
-        .tab-btn.active {
-            background: rgba(79, 70, 229, 0.12);
-            color: var(--primary);
-        }
-
-        .tab-panel {
-            display: none;
-        }
-
-        .tab-panel.active {
-            display: block;
-        }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 18px;
-        }
-
-        .summary-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 18px 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .summary-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            border-radius: var(--radius) var(--radius) 0 0;
-        }
-
-        .summary-card.primary::before { background: var(--primary); }
-        .summary-card.success::before { background: var(--success); }
-        .summary-card.warning::before { background: var(--warning); }
-        .summary-card.danger::before { background: var(--danger); }
-
-        .sc-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 12px;
-            font-size: 1rem;
-        }
-
-        .summary-card.primary .sc-icon { background: rgba(79,70,229,0.12); color: var(--primary); }
-        .summary-card.success .sc-icon { background: rgba(16,185,129,0.12); color: var(--success); }
-        .summary-card.warning .sc-icon { background: rgba(245,158,11,0.12); color: var(--warning); }
-        .summary-card.danger .sc-icon { background: rgba(239,68,68,0.12); color: var(--danger); }
-
-        .sc-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.7px;
-            color: var(--text-muted);
-            margin-bottom: 10px;
-        }
-
-        .sc-value {
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: var(--text-primary);
-            line-height: 1;
-            margin-bottom: 6px;
-        }
-
-        .sc-note {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .panel-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            overflow: hidden;
-        }
-
-        .panel-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
-            background: #f8fafc;
-        }
-
-        .panel-card-title {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .panel-card-body {
-            padding: 20px;
-        }
-
-        .info-list {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 16px;
-        }
-
-        .info-item {
-            padding: 16px;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            background: #f8fafc;
-        }
-
-        .info-label {
-            color: var(--text-muted);
-            font-size: 0.72rem;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            margin-bottom: 8px;
-        }
-
-        .info-value {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        @media (max-width: 900px) {
-            .summary-grid,
-            .info-list {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        @media (max-width: 640px) {
-            .summary-grid,
-            .info-list {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/employees/manage.css') }}">
 @endsection
 
 @section('content')
-<div class="employee-shell">
-    <div class="employee-header">
-        <div class="employee-meta">
-            <div class="employee-avatar"><i class="fas fa-user-tie"></i></div>
-            <div>
-                <h1 class="employee-name">{{ $employee->name }}</h1>
-                <p class="employee-sub">{{ $employee->email }} · {{ $employee->role }}</p>
+<div class="employee-manage" data-employee-id="{{ $employee->id }}" data-stock-transfer-url="{{ route('employees.stock.transfer', $employee) }}">
+    <header class="employee-manage-header">
+        <div class="employee-identity">
+            <div class="employee-avatar" aria-hidden="true"><i class="fas fa-user-tie"></i></div>
+            <div class="employee-identity-copy">
+                <h1>{{ $employee->name }}</h1>
+                <div class="employee-identity-meta">
+                    <span>{{ $employee->email }}</span>
+                    <span class="employee-role">{{ ucfirst($employee->role) }}</span>
+                    @if($employee->email_verified_at)
+                        <span class="employee-verification is-verified"><i class="fas fa-circle-check"></i> Email terverifikasi</span>
+                    @else
+                        <span class="employee-verification is-unverified"><i class="fas fa-circle-exclamation"></i> Email belum terverifikasi</span>
+                    @endif
+                </div>
             </div>
         </div>
+        <a href="{{ route('employees.index') }}" class="employee-back">
+            <i class="fas fa-arrow-left"></i><span>Kembali</span>
+        </a>
+    </header>
 
-        <div class="d-flex gap-2">
-            <a href="{{ route('employees.index') }}" class="btn-add" style="background:#e2e8f0;color:var(--text-primary);">
-                <i class="fas fa-arrow-left"></i> Kembali
-            </a>
-        </div>
-    </div>
-
-    <nav class="tab-nav" aria-label="Tabs pegawai">
-        <button type="button" class="tab-btn active" data-tab="overview">Ringkasan</button>
-        <button type="button" class="tab-btn" data-tab="stock">Stok</button>
-        <button type="button" class="tab-btn" data-tab="sales">Penjualan</button>
+    <nav class="employee-tabs" role="tablist" aria-label="Operasional pegawai">
+        <button type="button" id="tab-button-overview" class="employee-tab {{ $activeTab === 'overview' ? 'active' : '' }}" role="tab" aria-selected="{{ $activeTab === 'overview' ? 'true' : 'false' }}" aria-controls="tab-overview" data-tab="overview">
+            <i class="fas fa-gauge-high"></i> Ringkasan
+        </button>
+        <button type="button" id="tab-button-stock" class="employee-tab {{ $activeTab === 'stock' ? 'active' : '' }}" role="tab" aria-selected="{{ $activeTab === 'stock' ? 'true' : 'false' }}" aria-controls="tab-stock" data-tab="stock">
+            <i class="fas fa-boxes-stacked"></i> Stok
+            @if($stockSummary->empty_stock_count + $stockSummary->low_stock_count > 0)
+                <span class="tab-count">{{ $stockSummary->empty_stock_count + $stockSummary->low_stock_count }}</span>
+            @endif
+        </button>
+        <button type="button" id="tab-button-sales" class="employee-tab {{ $activeTab === 'sales' ? 'active' : '' }}" role="tab" aria-selected="{{ $activeTab === 'sales' ? 'true' : 'false' }}" aria-controls="tab-sales" data-tab="sales">
+            <i class="fas fa-chart-line"></i> Penjualan
+        </button>
     </nav>
 
-    <section class="tab-panel active" id="tab-overview">
-        <div class="summary-grid">
-            <div class="summary-card primary">
-                <div class="sc-icon"><i class="fas fa-boxes"></i></div>
-                <div class="sc-label">Stok Pegawai</div>
-                <div class="sc-value">{{ $pageEmployeeStock }}</div>
-                <div class="sc-note">Total unit stok yang dimiliki pegawai</div>
-            </div>
-            <div class="summary-card success">
-                <div class="sc-icon"><i class="fas fa-warehouse"></i></div>
-                <div class="sc-label">Stok Gudang</div>
-                <div class="sc-value">{{ $pageMasterStock }}</div>
-                <div class="sc-note">Total stok master yang tersedia</div>
-            </div>
-            <div class="summary-card warning">
-                <div class="sc-icon"><i class="fas fa-triangle-exclamation"></i></div>
-                <div class="sc-label">Stok Rendah</div>
-                <div class="sc-value">{{ $lowStockCount }}</div>
-                <div class="sc-note">Produk dengan stok ≤ 10 unit</div>
-            </div>
-            <div class="summary-card danger">
-                <div class="sc-icon"><i class="fas fa-cash-register"></i></div>
-                <div class="sc-label">Pendapatan Bulan Ini</div>
-                <div class="sc-value">Rp {{ number_format($currentMonthSales, 0, ',', '.') }}</div>
-                <div class="sc-note">Ringkasan penjualan saat ini</div>
-            </div>
+    <section class="employee-tab-panel {{ $activeTab === 'overview' ? 'active' : '' }}" id="tab-overview" role="tabpanel" aria-labelledby="tab-button-overview" tabindex="0">
+        <div class="employee-kpis">
+            <article class="employee-kpi kpi-revenue">
+                <div class="employee-kpi-icon"><i class="fas fa-wallet"></i></div>
+                <div class="employee-kpi-label">Total Pendapatan</div>
+                <div class="employee-kpi-value">Rp {{ number_format((float) $salesTotals->revenue, 0, ',', '.') }}</div>
+                <div class="employee-kpi-note">Sepanjang waktu · transaksi pegawai ini</div>
+            </article>
+            <article class="employee-kpi kpi-transactions">
+                <div class="employee-kpi-icon"><i class="fas fa-receipt"></i></div>
+                <div class="employee-kpi-label">Total Transaksi</div>
+                <div class="employee-kpi-value">{{ number_format((int) $salesTotals->transactions) }}</div>
+                <div class="employee-kpi-note">Sepanjang waktu</div>
+            </article>
+            <article class="employee-kpi kpi-units">
+                <div class="employee-kpi-icon"><i class="fas fa-cubes"></i></div>
+                <div class="employee-kpi-label">Total Unit Terjual</div>
+                <div class="employee-kpi-value">{{ number_format((int) $totalItemsSold) }}</div>
+                <div class="employee-kpi-note">Akumulasi kuantitas detail transaksi</div>
+            </article>
+            <a class="employee-kpi kpi-attention" href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock']) }}">
+                <div class="employee-kpi-icon"><i class="fas fa-triangle-exclamation"></i></div>
+                <div class="employee-kpi-label">Stok Perlu Perhatian</div>
+                <div class="employee-kpi-value">{{ number_format($stockSummary->empty_stock_count + $stockSummary->low_stock_count) }}</div>
+                <div class="employee-kpi-note">{{ $stockSummary->empty_stock_count }} kosong · {{ $stockSummary->low_stock_count }} rendah <span>Lihat stok <i class="fas fa-arrow-right"></i></span></div>
+            </a>
         </div>
 
-        <div class="panel-card">
-            <div class="panel-card-header">
-                <div class="panel-card-title"><i class="fas fa-circle-info"></i> Informasi Pegawai</div>
+        <div class="employee-content-grid overview-grid">
+            <div class="employee-card">
+                <div class="employee-card-header">
+                    <div>
+                        <h2><i class="fas fa-chart-area"></i> Tren Pendapatan</h2>
+                        <p>Nilai transaksi berdasarkan tanggal transaksi</p>
+                    </div>
+                    <form method="GET" action="{{ route('employees.manage', $employee) }}" class="period-filter">
+                        <input type="hidden" name="tab" value="overview">
+                        <label class="visually-hidden" for="overview-period">Periode grafik</label>
+                        <select id="overview-period" name="analytics_period">
+                            <option value="7" {{ $analyticsPeriod === 7 ? 'selected' : '' }}>7 hari</option>
+                            <option value="30" {{ $analyticsPeriod === 30 ? 'selected' : '' }}>30 hari</option>
+                            <option value="90" {{ $analyticsPeriod === 90 ? 'selected' : '' }}>90 hari</option>
+                        </select>
+                        <button type="submit">Terapkan</button>
+                    </form>
+                </div>
+                <div class="employee-card-body">
+                    @include('employees._trend-chart', ['chartId' => 'overview-sales-chart'])
+                </div>
             </div>
-            <div class="panel-card-body">
-                <div class="info-list">
-                    <div class="info-item">
-                        <div class="info-label">Nama</div>
-                        <div class="info-value">{{ $employee->name }}</div>
+
+            <div class="employee-card">
+                <div class="employee-card-header">
+                    <div>
+                        <h2><i class="fas fa-ranking-star"></i> Produk Terlaris</h2>
+                        <p>Periode {{ $analyticsPeriod }} hari terakhir · berdasarkan unit</p>
                     </div>
-                    <div class="info-item">
-                        <div class="info-label">Email</div>
-                        <div class="info-value">{{ $employee->email }}</div>
+                </div>
+                <div class="employee-card-body compact-card-body">
+                    @forelse($topProducts as $index => $product)
+                        <div class="ranked-product">
+                            <span class="product-rank">{{ $index + 1 }}</span>
+                            <div class="ranked-product-copy">
+                                <strong>{{ $product->name }}</strong>
+                                <span>{{ $product->unit ?: 'Unit' }}</span>
+                            </div>
+                            <strong class="product-units">{{ number_format((int) $product->units_sold) }}</strong>
+                        </div>
+                    @empty
+                        <div class="employee-empty compact-empty">
+                            <i class="fas fa-basket-shopping"></i>
+                            <strong>Belum ada penjualan pada periode ini</strong>
+                            <span>Pilih periode lain atau periksa kembali setelah transaksi tercatat.</span>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            <div class="employee-card">
+                <div class="employee-card-header">
+                    <div>
+                        <h2><i class="fas fa-box-open"></i> Kondisi Stok Pegawai</h2>
+                        <p>Stok yang benar-benar dialokasikan ke pegawai · rendah ≤ {{ $lowStockThreshold }}</p>
                     </div>
-                    <div class="info-item">
-                        <div class="info-label">Role</div>
-                        <div class="info-value">{{ ucfirst($employee->role) }}</div>
+                    <a class="employee-card-link" href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock', 'stock_status' => 'empty']) }}">Kelola <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="employee-card-body compact-card-body">
+                    @forelse($stockAttention as $product)
+                        @php
+                            $employeeStock = (int) ($product->employee_stock ?? 0);
+                        @endphp
+                        <div class="attention-product">
+                            <div class="attention-product-copy">
+                                <strong>{{ $product->name }}</strong>
+                                <span>{{ $product->unit ?: 'Unit' }}</span>
+                            </div>
+                            <span class="stock-status {{ $employeeStock <= 0 ? 'status-empty' : 'status-low' }}">
+                                {{ $employeeStock <= 0 ? 'Kosong' : 'Rendah' }} · {{ $employeeStock }}
+                            </span>
+                        </div>
+                    @empty
+                        <div class="employee-empty compact-empty">
+                            <i class="fas fa-circle-check"></i>
+                            <strong>Semua stok pegawai dalam kondisi normal</strong>
+                            <span>Tidak ada produk kosong atau di bawah ambang {{ $lowStockThreshold }} unit.</span>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            <div class="employee-card">
+                <div class="employee-card-header">
+                    <div>
+                        <h2><i class="fas fa-clock-rotate-left"></i> Transaksi Terbaru</h2>
+                        <p>Aktivitas penjualan yang tercatat</p>
                     </div>
-                    <div class="info-item">
-                        <div class="info-label">Total Transaksi</div>
-                        <div class="info-value">{{ $totalSales }} Transaksi</div>
-                    </div>
+                    <button type="button" class="employee-card-link as-button" data-open-tab="sales">Semua transaksi <i class="fas fa-arrow-right"></i></button>
+                </div>
+                <div class="employee-table-wrap">
+                    @if($recentSales->isNotEmpty())
+                        <table class="data-table employee-table">
+                            <thead><tr><th>Transaksi</th><th>Tanggal</th><th>Unit</th><th class="text-end">Pendapatan</th></tr></thead>
+                            <tbody>
+                                @foreach($recentSales as $sale)
+                                    <tr>
+                                        <td><strong>{{ $sale->invoice_number }}</strong><span class="table-subtext">{{ $sale->customer->name ?? 'Umum' }}</span></td>
+                                        <td>{{ $sale->transaction_date?->format('d/m/Y H:i') ?? '—' }}</td>
+                                        <td>{{ number_format((int) ($sale->sale_items_sum_quantity ?? 0)) }}</td>
+                                        <td class="text-end">Rp {{ number_format((float) $sale->total, 0, ',', '.') }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @else
+                        <div class="employee-empty">
+                            <i class="fas fa-receipt"></i>
+                            <strong>Belum ada transaksi penjualan</strong>
+                            <span>Transaksi baru akan muncul di sini setelah tercatat.</span>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="tab-panel" id="tab-stock">
-        <div class="panel-card">
-            <div class="panel-card-header">
-                <div class="panel-card-title"><i class="fas fa-boxes-stacked"></i> Distribusi Stok</div>
-                <div class="d-flex gap-2">
-                    <span class="badge bg-primary-subtle text-primary">Gudang: {{ $pageMasterStock }}</span>
-                    <span class="badge bg-success-subtle text-success">Pegawai: {{ $pageEmployeeStock }}</span>
+    <section class="employee-tab-panel {{ $activeTab === 'stock' ? 'active' : '' }}" id="tab-stock" role="tabpanel" aria-labelledby="tab-button-stock" tabindex="0">
+        <div class="stock-overview">
+            <div class="stock-total"><span>Stok pegawai</span><strong>{{ number_format((int) $stockSummary->employee_stock_total) }} <small>unit</small></strong></div>
+            <div class="stock-total"><span>Stok gudang</span><strong>{{ number_format((int) $stockSummary->master_stock_total) }} <small>unit</small></strong></div>
+            <div class="stock-total stock-total-empty"><span>Produk kosong</span><strong>{{ number_format((int) $stockSummary->empty_stock_count) }}</strong></div>
+            <div class="stock-total stock-total-low"><span>Produk rendah</span><strong>{{ number_format((int) $stockSummary->low_stock_count) }}</strong></div>
+        </div>
+
+        <div class="employee-card">
+            <div class="employee-card-header stock-card-header">
+                <div>
+                    <h2><i class="fas fa-boxes-stacked"></i> Alokasi & Pemantauan Stok</h2>
+                    <p>Stok gudang dan pegawai ditampilkan terpisah. Stok rendah pegawai: 1–{{ $lowStockThreshold }} unit.</p>
                 </div>
+                <span class="stock-result-count">{{ $products->total() }} produk</span>
             </div>
-            <div class="panel-card-body">
-                @if($products->count() > 0)
-                    <div class="table-scroll">
-                        <table class="data-table">
-                            <thead>
-                            <tr>
-                                <th>Produk</th>
-                                <th>Kategori</th>
-                                <th>Gudang</th>
-                                <th>Pegawai</th>
-                                <th>Transfer</th>
-                            </tr>
-                            </thead>
-                            <tbody>
+            <form method="GET" action="{{ route('employees.manage', $employee) }}" class="stock-toolbar">
+                <input type="hidden" name="tab" value="stock">
+                <input type="hidden" name="analytics_period" value="{{ $analyticsPeriod }}">
+                <label class="stock-search">
+                    <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+                    <span class="visually-hidden">Cari produk atau kategori</span>
+                    <input type="search" name="stock_search" value="{{ $stockSearch }}" placeholder="Cari produk atau kategori...">
+                </label>
+                <label class="stock-status-filter">
+                    <span class="visually-hidden">Filter kondisi stok pegawai</span>
+                    <select name="stock_status">
+                        <option value="">Semua kondisi stok</option>
+                        <option value="empty" {{ $stockStatus === 'empty' ? 'selected' : '' }}>Kosong</option>
+                        <option value="low" {{ $stockStatus === 'low' ? 'selected' : '' }}>Rendah (1–{{ $lowStockThreshold }})</option>
+                        <option value="normal" {{ $stockStatus === 'normal' ? 'selected' : '' }}>Normal (&gt; {{ $lowStockThreshold }})</option>
+                    </select>
+                </label>
+                <button type="submit" class="btn-add"><i class="fas fa-filter"></i> Terapkan</button>
+                @if($stockSearch !== '' || $stockStatus !== '')
+                    <a href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock', 'analytics_period' => $analyticsPeriod]) }}" class="stock-reset">Reset</a>
+                @endif
+            </form>
+
+            <div class="employee-table-wrap">
+                @if($products->isNotEmpty())
+                    <table class="data-table employee-table stock-table">
+                        <thead>
+                            <tr><th>Produk</th><th>Kategori</th><th>Stok gudang</th><th>Stok pegawai</th><th>Jumlah transfer</th><th>Aksi</th></tr>
+                        </thead>
+                        <tbody>
                             @foreach($products as $product)
                                 @php
-                                    $employeeProduct = $product->users->first();
-                                    $employeeStock = $employeeProduct ? $employeeProduct->pivot->stock : 0;
-                                    $isLow = $product->stock > 0 && $product->stock <= 10;
+                                    $employeeStock = (int) ($product->employee_stock ?? 0);
+                                    $masterStock = (int) $product->stock;
                                 @endphp
-                                <tr>
-                                    <td>{{ $product->name }}</td>
-                                    <td>{{ $product->category ? $product->category->name : 'Tanpa kategori' }}</td>
+                                <tr id="row-{{ $product->id }}">
                                     <td>
-                                        <span class="badge bg-secondary-subtle text-secondary">{{ $product->stock }}</span>
-                                        @if($isLow)
-                                            <span class="badge bg-warning-subtle text-warning ms-1">Rendah</span>
+                                        <strong>{{ $product->name }}</strong>
+                                        <span class="table-subtext">{{ $product->unit ?: 'Unit' }}</span>
+                                    </td>
+                                    <td>{{ $product->category->name ?? 'Tanpa kategori' }}</td>
+                                    <td>
+                                        <span class="stock-balance master-balance" id="master-stock-{{ $product->id }}">{{ number_format($masterStock) }}</span>
+                                        @if($masterStock <= 0)
+                                            <span class="stock-status status-empty">Kosong</span>
+                                        @elseif($masterStock <= $lowStockThreshold)
+                                            <span class="stock-status status-low">Rendah</span>
                                         @endif
                                     </td>
-                                    <td><span class="badge bg-success-subtle text-success">{{ $employeeStock }}</span></td>
                                     <td>
-                                        <div class="d-flex gap-2 align-items-center">
-                                            <input type="number" min="1" value="1" class="form-control form-control-sm" style="width:80px;" id="amount-{{ $product->id }}">
-                                            <button type="button" class="btn-stock btn-transfer" data-product-id="{{ $product->id }}" data-action="push" {{ $product->stock <= 0 ? 'disabled' : '' }}>
+                                        <span class="stock-balance employee-balance" id="emp-stock-{{ $product->id }}">{{ number_format($employeeStock) }}</span>
+                                        @if($employeeStock <= 0)
+                                            <span class="stock-status status-empty" id="employee-stock-status-{{ $product->id }}">Kosong</span>
+                                        @elseif($employeeStock <= $lowStockThreshold)
+                                            <span class="stock-status status-low" id="employee-stock-status-{{ $product->id }}">Rendah</span>
+                                        @else
+                                            <span class="stock-status status-normal" id="employee-stock-status-{{ $product->id }}">Normal</span>
+                                        @endif
+                                    </td>
+                                    <td><input type="number" id="amount-{{ $product->id }}" class="stock-quantity" min="1" step="1" value="1" aria-label="Jumlah transfer {{ $product->name }}"></td>
+                                    <td>
+                                        <div class="stock-actions">
+                                            <button type="button" class="btn-stock btn-transfer" id="btn-give-{{ $product->id }}" data-product-id="{{ $product->id }}" data-action="push" {{ $masterStock <= 0 ? 'disabled' : '' }}>
                                                 <i class="fas fa-arrow-right"></i> Berikan
                                             </button>
-                                            <button type="button" class="btn-edit btn-transfer" data-product-id="{{ $product->id }}" data-action="pull" {{ $employeeStock <= 0 ? 'disabled' : '' }}>
+                                            <button type="button" class="btn-edit btn-transfer" id="btn-pull-{{ $product->id }}" data-product-id="{{ $product->id }}" data-action="pull" {{ $employeeStock <= 0 ? 'disabled' : '' }}>
                                                 <i class="fas fa-arrow-left"></i> Tarik
                                             </button>
                                         </div>
                                     </td>
                                 </tr>
                             @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    @if($products->hasPages())
-                        <div class="pagination-wrapper mt-3">
-                            {{ $products->links('pagination::bootstrap-5') }}
-                        </div>
-                    @endif
+                        </tbody>
+                    </table>
                 @else
-                    <div class="empty-state">
-                        <div class="empty-state-icon"><i class="fas fa-boxes-stacked"></i></div>
-                        <div class="empty-state-text">Belum ada produk yang tersedia untuk distribusi.</div>
+                    <div class="employee-empty">
+                        <i class="fas fa-box-open"></i>
+                        <strong>{{ $stockSearch !== '' || $stockStatus !== '' ? 'Tidak ada produk yang cocok' : 'Belum ada produk' }}</strong>
+                        <span>{{ $stockSearch !== '' || $stockStatus !== '' ? 'Ubah kata pencarian atau filter kondisi stok.' : 'Produk akan tampil di sini setelah tersedia di katalog.' }}</span>
                     </div>
                 @endif
             </div>
+            @if($products->hasPages())
+                <div class="employee-pagination">
+                    <span>Menampilkan {{ $products->firstItem() }}–{{ $products->lastItem() }} dari {{ $products->total() }}</span>
+                    {{ $products->links('pagination::bootstrap-5') }}
+                </div>
+            @endif
         </div>
     </section>
 
-    <section class="tab-panel" id="tab-sales">
-        <div class="panel-card">
-            <div class="panel-card-header">
-                <div class="panel-card-title"><i class="fas fa-chart-line"></i> Riwayat Penjualan</div>
-                <div class="d-flex gap-2">
-                    <span class="badge bg-primary-subtle text-primary">{{ $totalSales }} transaksi</span>
-                    <span class="badge bg-success-subtle text-success">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</span>
+    <section class="employee-tab-panel {{ $activeTab === 'sales' ? 'active' : '' }}" id="tab-sales" role="tabpanel" aria-labelledby="tab-button-sales" tabindex="0">
+        <div class="sales-period-heading">
+            <div>
+                <h2>Analisis Penjualan</h2>
+                <p>{{ $periodStart->format('d/m/Y') }}–{{ $periodEnd->format('d/m/Y') }} · tanggal transaksi</p>
+            </div>
+            <form method="GET" action="{{ route('employees.manage', $employee) }}" class="period-filter">
+                <input type="hidden" name="tab" value="sales">
+                <label class="visually-hidden" for="sales-period">Periode analisis</label>
+                <select id="sales-period" name="analytics_period">
+                    <option value="7" {{ $analyticsPeriod === 7 ? 'selected' : '' }}>7 hari</option>
+                    <option value="30" {{ $analyticsPeriod === 30 ? 'selected' : '' }}>30 hari</option>
+                    <option value="90" {{ $analyticsPeriod === 90 ? 'selected' : '' }}>90 hari</option>
+                </select>
+                <button type="submit">Terapkan</button>
+            </form>
+        </div>
+
+        <div class="employee-kpis sales-kpis">
+            <article class="employee-kpi kpi-revenue">
+                <div class="employee-kpi-icon"><i class="fas fa-wallet"></i></div>
+                <div class="employee-kpi-label">Pendapatan periode</div>
+                <div class="employee-kpi-value">Rp {{ number_format((float) $periodTotals->revenue, 0, ',', '.') }}</div>
+                <div class="employee-kpi-note">Periode {{ $analyticsPeriod }} hari</div>
+            </article>
+            <article class="employee-kpi kpi-transactions">
+                <div class="employee-kpi-icon"><i class="fas fa-receipt"></i></div>
+                <div class="employee-kpi-label">Transaksi periode</div>
+                <div class="employee-kpi-value">{{ number_format((int) $periodTotals->transactions) }}</div>
+                <div class="employee-kpi-note">Periode {{ $analyticsPeriod }} hari</div>
+            </article>
+            <article class="employee-kpi kpi-units">
+                <div class="employee-kpi-icon"><i class="fas fa-cubes"></i></div>
+                <div class="employee-kpi-label">Unit terjual periode</div>
+                <div class="employee-kpi-value">{{ number_format((int) $periodItemsSold) }}</div>
+                <div class="employee-kpi-note">Dari detail transaksi</div>
+            </article>
+            <article class="employee-kpi kpi-month">
+                <div class="employee-kpi-icon"><i class="fas fa-calendar-check"></i></div>
+                <div class="employee-kpi-label">Pendapatan bulan berjalan</div>
+                <div class="employee-kpi-value">Rp {{ number_format($currentMonthSales, 0, ',', '.') }}</div>
+                <div class="employee-kpi-note">Bulan ini hingga saat ini</div>
+            </article>
+        </div>
+
+        <div class="employee-card sales-trend-card">
+            <div class="employee-card-header">
+                <div><h2><i class="fas fa-chart-area"></i> Tren Pendapatan Harian</h2><p>Periode {{ $analyticsPeriod }} hari · transaksi pegawai ini</p></div>
+            </div>
+            <div class="employee-card-body">
+                @include('employees._trend-chart', ['chartId' => 'sales-tab-chart'])
+            </div>
+        </div>
+
+        <div class="employee-card sales-table-card">
+            <div class="employee-card-header">
+                <div>
+                    <h2><i class="fas fa-list"></i> Transaksi</h2>
+                    <p>{{ $sales->total() }} transaksi pada periode yang dipilih</p>
                 </div>
             </div>
-            <div class="panel-card-body">
-                @if($sales->count() > 0)
-                    <div class="table-scroll">
-                        <table class="data-table">
-                            <thead>
-                            <tr>
-                                <th>Invoice</th>
-                                <th>Customer</th>
-                                <th>Tanggal</th>
-                                <th>Item</th>
-                                <th>Total</th>
-                            </tr>
-                            </thead>
-                            <tbody>
+            <div class="employee-table-wrap">
+                @if($sales->isNotEmpty())
+                    <table class="data-table employee-table">
+                        <thead><tr><th>Invoice</th><th>Pelanggan</th><th>Tanggal transaksi</th><th>Metode</th><th>Unit</th><th class="text-end">Total</th></tr></thead>
+                        <tbody>
                             @foreach($sales as $sale)
                                 <tr>
-                                    <td>{{ $sale->invoice_number }}</td>
-                                    <td>{{ $sale->customer ? $sale->customer->name : 'Umum' }}</td>
-                                    <td>{{ $sale->transaction_date ? $sale->transaction_date->format('d M Y') : '-' }}</td>
-                                    <td>{{ $sale->saleItems->sum('quantity') }}</td>
-                                    <td>Rp {{ number_format($sale->total, 0, ',', '.') }}</td>
+                                    <td><strong>{{ $sale->invoice_number }}</strong></td>
+                                    <td>{{ $sale->customer->name ?? 'Umum' }}</td>
+                                    <td>{{ $sale->transaction_date?->format('d/m/Y H:i') ?? '—' }}</td>
+                                    <td>{{ ucfirst($sale->payment_method ?? '—') }}</td>
+                                    <td>{{ number_format((int) ($sale->sale_items_sum_quantity ?? 0)) }}</td>
+                                    <td class="text-end">Rp {{ number_format((float) $sale->total, 0, ',', '.') }}</td>
                                 </tr>
                             @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    @if($sales->hasPages())
-                        <div class="pagination-wrapper mt-3">
-                            {{ $sales->links('pagination::bootstrap-5') }}
-                        </div>
-                    @endif
+                        </tbody>
+                    </table>
                 @else
-                    <div class="empty-state">
-                        <div class="empty-state-icon"><i class="fas fa-chart-line"></i></div>
-                        <div class="empty-state-text">Belum ada penjualan untuk pegawai ini.</div>
+                    <div class="employee-empty">
+                        <i class="fas fa-chart-line"></i>
+                        <strong>Tidak ada transaksi pada periode ini</strong>
+                        <span>Pilih periode yang lebih panjang atau kembali setelah penjualan tercatat.</span>
                     </div>
                 @endif
             </div>
+            @if($sales->hasPages())
+                <div class="employee-pagination">
+                    <span>Menampilkan {{ $sales->firstItem() }}–{{ $sales->lastItem() }} dari {{ $sales->total() }}</span>
+                    {{ $sales->links('pagination::bootstrap-5') }}
+                </div>
+            @endif
         </div>
     </section>
+
+    <div id="stock-toast" class="employee-toast" role="status" aria-live="polite">
+        <span class="employee-toast-icon"><i class="fas fa-check" id="toast-icon-el"></i></span>
+        <span><strong id="toast-title"></strong><small id="toast-msg"></small></span>
+    </div>
 </div>
 @endsection
 
 @section('js')
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const tabs = document.querySelectorAll('.tab-btn');
-        const panels = document.querySelectorAll('.tab-panel');
-
-        tabs.forEach((tab) => {
-            tab.addEventListener('click', function () {
-                const target = this.dataset.tab;
-
-                tabs.forEach((btn) => btn.classList.toggle('active', btn === this));
-                panels.forEach((panel) => {
-                    panel.classList.toggle('active', panel.id === `tab-${target}`);
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ asset('js/employees/stock.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabs = [...document.querySelectorAll('.employee-tab')];
+            const panels = [...document.querySelectorAll('.employee-tab-panel')];
+            const activateTab = (name) => {
+                const activeName = ['overview', 'stock', 'sales'].includes(name) ? name : 'overview';
+                tabs.forEach((tab) => {
+                    const active = tab.dataset.tab === activeName;
+                    tab.classList.toggle('active', active);
+                    tab.setAttribute('aria-selected', String(active));
                 });
-            });
-        });
+                panels.forEach((panel) => panel.classList.toggle('active', panel.id === `tab-${activeName}`));
+            };
 
-        const transferButtons = document.querySelectorAll('.btn-transfer');
-        transferButtons.forEach((button) => {
-            button.addEventListener('click', async function () {
-                const productId = this.dataset.productId;
-                const action = this.dataset.action;
-                const amountInput = document.getElementById(`amount-${productId}`);
-                const amount = Number(amountInput?.value || 1);
+            tabs.forEach((tab) => tab.addEventListener('click', () => {
+                activateTab(tab.dataset.tab);
+                const url = new URL(window.location.href);
+                url.searchParams.set('tab', tab.dataset.tab);
+                window.history.replaceState({}, '', url);
+            }));
+            document.querySelectorAll('[data-open-tab]').forEach((link) => link.addEventListener('click', () => {
+                const tab = link.dataset.openTab;
+                activateTab(tab);
+                const url = new URL(window.location.href);
+                url.searchParams.set('tab', tab);
+                window.history.replaceState({}, '', url);
+            }));
 
-                if (!productId || !Number.isFinite(amount) || amount <= 0) {
-                    alert('Masukkan jumlah transfer yang valid.');
+            const currency = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 });
+            ['overview-sales-chart', 'sales-tab-chart'].forEach((chartId) => {
+                const canvas = document.getElementById(chartId);
+                if (!canvas) return;
+                if (typeof Chart === 'undefined') {
+                    canvas.insertAdjacentHTML('afterend', '<p class="chart-error" role="alert">Grafik tidak dapat dimuat. Periksa koneksi lalu muat ulang halaman.</p>');
+                    canvas.remove();
                     return;
                 }
-
-                const response = await fetch(`/employees/{{ $employee->id }}/stock/transfer`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                new Chart(canvas, {
+                    type: 'line',
+                    data: {
+                        labels: @json($trendLabels),
+                        datasets: [{
+                            label: 'Pendapatan',
+                            data: @json($trendRevenue),
+                            borderColor: '#4f46e5',
+                            backgroundColor: 'rgba(79, 70, 229, .12)',
+                            pointBackgroundColor: '#4f46e5',
+                            pointRadius: 3,
+                            pointHoverRadius: 5,
+                            fill: true,
+                            tension: .3
+                        }]
                     },
-                    body: JSON.stringify({
-                        product_id: Number(productId),
-                        amount: action === 'pull' ? -amount : amount
-                    })
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { intersect: false, mode: 'index' },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    title: (items) => @json($trendFullLabels)[items[0].dataIndex],
+                                    label: (item) => `Pendapatan: ${currency.format(item.parsed.y)}`
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { maxTicksLimit: 10, color: '#64748b' } },
+                            y: {
+                                beginAtZero: true,
+                                ticks: { color: '#64748b', callback: (value) => currency.format(value) },
+                                grid: { color: 'rgba(148, 163, 184, .18)' }
+                            }
+                        }
+                    }
                 });
+            });
 
-                const result = await response.json();
-                if (!response.ok || !result.success) {
-                    alert(result.message || 'Transfer stok gagal.');
-                    return;
-                }
-
-                window.location.reload();
+            document.querySelectorAll('.stock-quantity').forEach((input) => {
+                input.addEventListener('input', () => {
+                    input.setCustomValidity(input.value !== '' && Number(input.value) > 0 && Number.isInteger(Number(input.value)) ? '' : 'Masukkan jumlah unit bulat minimal 1.');
+                });
             });
         });
-    });
-</script>
+    </script>
 @endsection
