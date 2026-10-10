@@ -565,11 +565,6 @@
 </head>
 
 <body class="{{ $isAuthPage ? 'auth-page' : '' }}">
-    <div id="navigation-progress" aria-hidden="true"></div>
-    <div id="navigation-overlay" role="status" aria-live="polite" aria-hidden="true">
-        <span class="navigation-spinner" aria-hidden="true"></span>
-        <span class="navigation-label">Memuat halaman SIMKEU</span>
-    </div>
     <!-- ============================================================
          SIDEBAR
     ============================================================ -->
@@ -892,14 +887,12 @@
                 if (isDashboard) {
                     // Jika berada di halaman dashboard, reload dengan query param ?period=<nilai>
                     // Ini akan memicu DashboardController untuk memfilter data berdasarkan periode
-                    window.SimkeuMotion?.startNavigation();
                     window.location.href = '/dashboard?period=' + encodeURIComponent(selectedPeriod);
                 } else if (isPemasukanIndex || isPengeluaranIndex) {
                     // Jika berada di halaman index pemasukan atau pengeluaran, perbarui URL
                     const url = new URL(window.location.href);
                     url.searchParams.set('period', selectedPeriod);
                     url.searchParams.delete('page'); // Reset halaman ke 1
-                    window.SimkeuMotion?.startNavigation();
                     window.location.href = url.toString();
                 }
                 // Jika bukan halaman dashboard/pemasukan/pengeluaran, filter disimpan di localStorage saja

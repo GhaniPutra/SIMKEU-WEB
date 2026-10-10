@@ -34,7 +34,7 @@ function showToast(type, title, msg) {
 }
 
 // Tampilkan status loading pada tombol aksi.
-function setLoading(productId, loading) {
+function setLoading(productId, loading, showSpinner = true) {
     const btnGive = document.getElementById(`btn-give-${productId}`); // Tombol beri stok
     const btnPull = document.getElementById(`btn-pull-${productId}`); // Tombol tarik stok
 
@@ -43,23 +43,33 @@ function setLoading(productId, loading) {
     }
 
     if (loading) {
-        btnGive.dataset.loadingDisabled = String(btnGive.disabled);
-        btnPull.dataset.loadingDisabled = String(btnPull.disabled);
+        if (!btnGive.hasAttribute('aria-busy')) {
+            btnGive.dataset.loadingDisabled = String(btnGive.disabled);
+            btnGive.dataset.loadingHtml = btnGive.innerHTML;
+        }
+        if (!btnPull.hasAttribute('aria-busy')) {
+            btnPull.dataset.loadingDisabled = String(btnPull.disabled);
+            btnPull.dataset.loadingHtml = btnPull.innerHTML;
+        }
         btnGive.setAttribute('aria-busy', 'true');
         btnPull.setAttribute('aria-busy', 'true');
-        btnGive.disabled = true; // Nonaktifkan saat loading
-        btnPull.disabled = true; // Nonaktifkan saat loading
-        btnGive.innerHTML = '<span class="spin"></span>'; // Ganti isi tombol dengan spinner
-        btnPull.innerHTML = '<span class="spin"></span>'; // Ganti isi tombol dengan spinner
+        btnGive.disabled = true;
+        btnPull.disabled = true;
+        if (showSpinner) {
+            btnGive.innerHTML = '<span class="spin" aria-hidden="true"></span><span class="visually-hidden">Memproses transfer</span>';
+            btnPull.innerHTML = '<span class="spin" aria-hidden="true"></span><span class="visually-hidden">Memproses transfer</span>';
+        }
     } else {
-        btnGive.innerHTML = '<i class="fas fa-arrow-right"></i> Berikan'; // Kembalikan teks tombol beri
-        btnPull.innerHTML = '<i class="fas fa-arrow-left"></i> Tarik'; // Kembalikan teks tombol tarik
+        btnGive.innerHTML = btnGive.dataset.loadingHtml || btnGive.innerHTML;
+        btnPull.innerHTML = btnPull.dataset.loadingHtml || btnPull.innerHTML;
         btnGive.removeAttribute('aria-busy');
         btnPull.removeAttribute('aria-busy');
         btnGive.disabled = btnGive.dataset.loadingDisabled === 'true';
         btnPull.disabled = btnPull.dataset.loadingDisabled === 'true';
         delete btnGive.dataset.loadingDisabled;
         delete btnPull.dataset.loadingDisabled;
+        delete btnGive.dataset.loadingHtml;
+        delete btnPull.dataset.loadingHtml;
     }
 }
 
@@ -98,7 +108,8 @@ async function transferStock(productId, action) {
         return;
     }
 
-    setLoading(productId, true); // Set status loading
+    setLoading(productId, true, false);
+    const spinnerTimer = window.setTimeout(() => setLoading(productId, true), 250);
 
     try {
         const response = await fetch(getTransferUrl(employeeId), {
@@ -149,7 +160,6 @@ async function transferStock(productId, action) {
             showToast('success', 'Transfer Berhasil', `${Math.abs(amount)} unit berhasil ${dir}.`); // Tampilkan toast sukses
             if (document.querySelector('.employee-manage')) {
                 window.setTimeout(() => {
-                    window.SimkeuMotion?.startNavigation();
                     window.location.reload();
                 }, 1100);
             }
@@ -160,6 +170,7 @@ async function transferStock(productId, action) {
         console.error(err); // Tampilkan error di konsol
         showToast('error', 'Koneksi Error', 'Gagal menghubungi server. Periksa koneksi Anda.'); // Toast jika fetch gagal
     } finally {
+        window.clearTimeout(spinnerTimer);
         setLoading(productId, false); // Matikan loading
     }
 }

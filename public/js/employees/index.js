@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (confirmed) {
                 const form = button.closest('form');
                 if (form) {
-                    window.SimkeuMotion?.startNavigation();
+                    window.SimkeuLoading?.showSubmitLoadingAfterDelay(button);
                     form.submit();
                 }
             }

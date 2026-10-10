@@ -491,17 +491,6 @@
     line-height: 1.5; /* Jarak baris */
 }
 
-@keyframes fade-up {
-    from {
-        opacity: 0; /* Mulai transparan */
-        transform: translateY(24px); /* Mulai sedikit turun */
-    }
-    to {
-        opacity: 1; /* Akhir terlihat */
-        transform: translateY(0); /* Kembali ke posisi normal */
-    }
-}
-
 @keyframes spin {
     to {
         transform: rotate(360deg); /* Rotasi searah jarum jam */
@@ -513,7 +502,7 @@
         transform: scale(1); /* Skala normal */
     }
     50% {
-        transform: scale(1.3); /* Membesar */
+        transform: scale(1.04); /* Beri penekanan ringan */
         color: var(--primary); /* Warna berubah */
     }
     100% {
@@ -521,9 +510,7 @@
     }
 }
 
-.num-updated {
-    animation: fade-up 0.6s ease;
-}
+.num-updated { animation: numPop 0.3s ease; }
 
 .spin {
     display: inline-block; /* Tampilkan sebagai inline block */

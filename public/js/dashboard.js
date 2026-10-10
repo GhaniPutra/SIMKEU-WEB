@@ -2,8 +2,7 @@
 // dashboard.js — JavaScript Halaman Dashboard SIMKEU
 //
 // File ini bertanggung jawab untuk:
-//   1. Animasi elemen saat halaman pertama kali dimuat (fade-up)
-//   2. Menginisialisasi grafik tren pendapatan vs pengeluaran
+//   1. Menginisialisasi grafik tren pendapatan vs pengeluaran
 //      dengan tampilan yang berbeda sesuai periode filter:
 //      - 'month' → 12 bulan (Jan–Des), total per bulan
 //      - 'week'  → 7 hari (Senin–Minggu), total per hari

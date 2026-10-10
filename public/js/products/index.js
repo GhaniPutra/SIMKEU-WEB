@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (confirmed && formId) {
                 const form = document.getElementById(formId);
                 if (form) {
-                    window.SimkeuMotion?.startNavigation();
+                    window.SimkeuLoading?.showSubmitLoadingAfterDelay(btn);
                     form.submit();
                 }
             }
