@@ -10,7 +10,12 @@
 @endsection
 
 @section('content')
-<div class="employee-manage" data-employee-id="{{ $employee->id }}" data-stock-transfer-url="{{ route('employees.stock.transfer', $employee) }}">
+<div class="employee-manage"
+    data-employee-id="{{ $employee->id }}"
+    data-stock-transfer-url="{{ route('employees.stock.transfer', $employee) }}"
+    data-trend-labels="{{ json_encode($trendLabels, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) }}"
+    data-trend-revenue="{{ json_encode($trendRevenue, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) }}"
+    data-trend-full-labels="{{ json_encode($trendFullLabels, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) }}">
     <header class="employee-manage-header">
         <div class="employee-identity">
             <div class="employee-avatar" aria-hidden="true"><i class="fas fa-user-tie"></i></div>
@@ -439,6 +444,10 @@
             }));
 
             const currency = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 });
+            const chartData = document.querySelector('.employee-manage').dataset;
+            const trendLabels = JSON.parse(chartData.trendLabels);
+            const trendRevenue = JSON.parse(chartData.trendRevenue);
+            const trendFullLabels = JSON.parse(chartData.trendFullLabels);
             ['overview-sales-chart', 'sales-tab-chart'].forEach((chartId) => {
                 const canvas = document.getElementById(chartId);
                 if (!canvas) return;
@@ -450,10 +459,10 @@
                 new Chart(canvas, {
                     type: 'line',
                     data: {
-                        labels: @json($trendLabels),
+                        labels: trendLabels,
                         datasets: [{
                             label: 'Pendapatan',
-                            data: @json($trendRevenue),
+                            data: trendRevenue,
                             borderColor: '#4f46e5',
                             backgroundColor: 'rgba(79, 70, 229, .12)',
                             pointBackgroundColor: '#4f46e5',
@@ -471,7 +480,7 @@
                             legend: { display: false },
                             tooltip: {
                                 callbacks: {
-                                    title: (items) => @json($trendFullLabels)[items[0].dataIndex],
+                                    title: (items) => trendFullLabels[items[0].dataIndex],
                                     label: (item) => `Pendapatan: ${currency.format(item.parsed.y)}`
                                 }
                             }

@@ -172,7 +172,7 @@
                     <ul class="activity-list">
                         @forelse($latestActivities as $activity)
                             <li class="activity-item">
-                                <div class="activity-dot" style="background: {{ $activity['type'] === 'sale' ? 'var(--success)' : 'var(--warning)' }}"></div>
+                                <div class="activity-dot {{ $activity['type'] === 'sale' ? 'activity-sale' : 'activity-expense' }}"></div>
                                 <div class="activity-content">
                                     <p class="activity-text">{{ $activity['message'] }}</p>
                                     <p class="activity-time"><i class="fas fa-clock fa-xs"></i> {{ $activity['date']->diffForHumans() }}</p>
@@ -180,7 +180,7 @@
                             </li>
                         @empty
                             <li class="activity-item">
-                                <div class="activity-dot" style="background:var(--primary)"></div>
+                                <div class="activity-dot activity-default"></div>
                                 <div class="activity-content">
                                     <p class="activity-text">Belum ada aktivitas terbaru.</p>
                                 </div>
@@ -247,17 +247,25 @@
     {{-- Library Chart.js untuk menggambar grafik tren --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <div id="dashboard-data"
+        data-period="{{ $period }}"
+        data-period-label="{{ $periodLabel }}"
+        data-trend-labels="{{ json_encode($trendLabels, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) }}"
+        data-revenue-data="{{ json_encode($revenueTrendData, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) }}"
+        data-expense-data="{{ json_encode($expenseTrendData, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) }}"
+        hidden></div>
     <script>
         // ============================================================
         // Kirim data tren dari PHP (server) ke JavaScript (client)
         // Data ini digunakan oleh dashboard.js untuk menggambar grafik
         // ============================================================
+        const dashboardData = document.getElementById('dashboard-data').dataset;
         window.dashboardData = {
-            period      : '{{ $period }}',             // Periode aktif: 'today', 'week', atau 'month'
-            periodLabel : '{{ $periodLabel }}',        // Label periode untuk ditampilkan di chart
-            trendLabels : @json($trendLabels),         // Label sumbu X sesuai periode
-            revenueData : @json($revenueTrendData),    // Data pendapatan sesuai periode
-            expenseData : @json($expenseTrendData),    // Data pengeluaran sesuai periode
+            period: dashboardData.period,
+            periodLabel: dashboardData.periodLabel,
+            trendLabels: JSON.parse(dashboardData.trendLabels),
+            revenueData: JSON.parse(dashboardData.revenueData),
+            expenseData: JSON.parse(dashboardData.expenseData),
         };
 
         // ============================================================
@@ -273,10 +281,10 @@
             if (periodSelect) {
                 // Paksa nilai select sesuai $period yang dikirim dari controller
                 // Ini menimpa logika localStorage di app.blade.php untuk halaman ini
-                periodSelect.value = '{{ $period }}';
+                periodSelect.value = dashboardData.period;
 
                 // Simpan juga ke localStorage agar konsisten saat pindah halaman
-                localStorage.setItem('dashboardPeriod', '{{ $period }}');
+                localStorage.setItem('dashboardPeriod', dashboardData.period);
             }
         });
     </script>

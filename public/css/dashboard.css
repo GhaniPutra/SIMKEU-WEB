@@ -273,6 +273,10 @@
     flex-shrink: 0;
 }
 
+.activity-sale { background: var(--success); }
+.activity-expense { background: var(--warning); }
+.activity-default { background: var(--primary); }
+
 .activity-content {
     flex: 1;
     min-width: 0;
