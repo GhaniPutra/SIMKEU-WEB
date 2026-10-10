@@ -86,6 +86,7 @@ Route::middleware(['auth'])->group(function () {
 
         // Resource routes untuk manajemen Pegawai
         Route::resource('employees', App\Http\Controllers\EmployeeController::class)->except(['show']);
+        Route::get('/employees/{employee}/manage', [App\Http\Controllers\EmployeeController::class, 'manage'])->name('employees.manage');
         // Route untuk dashboard penjualan pegawai
         Route::get('/employees/{employee}/sales-dashboard', [App\Http\Controllers\EmployeeSalesController::class, 'dashboard'])->name('employees.sales-dashboard');
 

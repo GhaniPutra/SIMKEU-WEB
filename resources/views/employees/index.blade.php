@@ -42,9 +42,9 @@
 <div class="content-card"> {{-- Kartu utama konten daftar pegawai --}}
     <div class="content-card-header"> {{-- Header kartu dengan judul dan tombol --}}
         <div class="content-card-title"><i class="fas fa-table-list"></i> Daftar Pegawai</div> {{-- Judul tabel --}}
-        <a href="{{ route('employees.create') }}" class="btn-add"> {{-- Tombol tambah pegawai --}}
+        <button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#employeeModal" data-mode="create" data-create-url="{{ route('employees.store') }}">
             <i class="fas fa-plus"></i> Tambah Pegawai
-        </a>
+        </button>
     </div>
     <div class="content-card-body"> {{-- Badan konten kartu --}}
         <form method="GET" action="{{ route('employees.index') }}" class="toolbar"> {{-- Form filter dan pencarian --}}
@@ -92,8 +92,8 @@
                             <tr>
                                 <td>{{ $loop->iteration + ($employees->currentPage()-1)*$employees->perPage() }}</td> {{-- Nomor urut tabel --}}
                                 <td>
-                                    @if($employee->role === 'pegawai') {{-- Jika pegawai, buat link dashboard penjualan --}}
-                                        <a href="{{ route('employees.sales-dashboard', $employee) }}" class="employee-link">
+                                    @if($employee->role === 'pegawai') {{-- Jika pegawai, buka halaman kelola pegawai --}}
+                                        <a href="{{ route('employees.manage', $employee) }}" class="employee-link">
                                             {{ $employee->name }}
                                         </a>
                                     @else {{-- Jika bukan pegawai, tampilkan nama biasa --}}
@@ -106,14 +106,16 @@
                                 </td>
                                 <td>
                                     <div class="table-actions"> {{-- Tombol aksi baris --}}
-                                        @if($employee->role === 'pegawai') {{-- Jika pegawai, tampilkan tombol atur stok --}}
-                                            <a href="{{ route('employees.stock', $employee) }}" class="btn-stock">
-                                                <i class="fas fa-boxes"></i> Atur Stok
+                                        @if($employee->role === 'pegawai') {{-- Jika pegawai, tampilkan tombol kelola --}}
+                                            <a href="{{ route('employees.manage', $employee) }}" class="btn-stock">
+                                                <i class="fas fa-boxes"></i> Kelola
                                             </a>
                                         @endif
-                                        <a href="{{ route('employees.edit', $employee) }}" class="btn-edit"> {{-- Tombol edit --}}
+                                        <button type="button" class="btn-edit employee-edit" data-bs-toggle="modal" data-bs-target="#employeeModal" data-mode="edit"
+                                                data-id="{{ $employee->id }}" data-name="{{ $employee->name }}" data-email="{{ $employee->email }}"
+                                                data-role="{{ $employee->role }}" data-update-url="{{ route('employees.update', $employee) }}">
                                             <i class="fas fa-edit"></i> Edit
-                                        </a>
+                                        </button>
                                         <form action="{{ route('employees.destroy', $employee) }}" method="POST" class="inline-form delete-form"> {{-- Form hapus pegawai --}}
                                             @csrf {{-- Token CSRF untuk keamanan --}}
                                             @method('DELETE') {{-- Metode DELETE untuk resource --}}
@@ -133,9 +135,9 @@
             <div class="empty-state">
                 <div class="empty-state-icon"><i class="fas fa-inbox"></i></div>
                 <div class="empty-state-text">Belum ada pegawai terdaftar</div>
-                <a href="{{ route('employees.create') }}" class="btn-add"> {{-- Tombol tambah pegawai pertama --}}
+                <button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#employeeModal" data-mode="create" data-create-url="{{ route('employees.store') }}">
                     <i class="fas fa-plus"></i> Tambah Pegawai Pertama
-                </a>
+                </button>
             </div>
         @endif
     </div>
@@ -149,6 +151,49 @@
             {{ $employees->links('pagination::bootstrap-5') }}
         </div>
     @endif
+</div>
+
+<div class="modal fade" id="employeeModal" tabindex="-1" aria-labelledby="employeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="POST" id="employeeForm">
+                @csrf
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="employeeModalLabel"><i class="fas fa-user-plus"></i> Tambah Pegawai</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="employeeName" class="form-label">Nama Pegawai</label>
+                        <input id="employeeName" type="text" name="name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="employeeEmail" class="form-label">Email</label>
+                        <input id="employeeEmail" type="email" name="email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="employeeRole" class="form-label">Role Akses</label>
+                        <select id="employeeRole" name="role" class="form-control" required>
+                            <option value="pegawai">Pegawai</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div class="form-group password-wrapper">
+                        <label for="employeePassword" class="form-label">Password</label>
+                        <input id="employeePassword" type="password" name="password" class="form-control" placeholder="Minimal 8 karakter" required>
+                    </div>
+                    <div class="form-group password-wrapper">
+                        <label for="employeePasswordConfirmation" class="form-label">Konfirmasi Password</label>
+                        <input id="employeePasswordConfirmation" type="password" name="password_confirmation" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn-modal-save"><i class="fas fa-floppy-disk"></i> Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 @endsection

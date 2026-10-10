@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
+use App\Models\Sale;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -88,5 +90,61 @@ class EmployeeController extends Controller
     {
         $employee->delete();
         return redirect()->route('employees.index')->with('success', 'User berhasil dihapus.');
+    }
+
+    public function manage(User $employee)
+    {
+        if ($employee->role !== 'pegawai') {
+            return redirect()->route('employees.index')->with('error', 'Hanya dapat mengelola data pegawai.');
+        }
+
+        $products = Product::with(['category', 'users' => function ($query) use ($employee) {
+            $query->where('user_id', $employee->id);
+        }])->orderBy('name')->paginate(15);
+
+        $pageMasterStock = 0;
+        $pageEmployeeStock = 0;
+        $lowStockCount = 0;
+
+        foreach ($products as $product) {
+            $pageMasterStock += $product->stock;
+            $employeeProduct = $product->users->first();
+            $pageEmployeeStock += $employeeProduct ? $employeeProduct->pivot->stock : 0;
+
+            if ($product->stock > 0 && $product->stock <= 10) {
+                $lowStockCount++;
+            }
+        }
+
+        $sales = Sale::where('user_id', $employee->id)
+            ->with(['saleItems.product', 'customer'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
+        $totalSales = Sale::where('user_id', $employee->id)->count();
+        $totalRevenue = (float) Sale::where('user_id', $employee->id)->sum('total');
+        $totalItemsSold = Sale::where('user_id', $employee->id)
+            ->with('saleItems')
+            ->get()
+            ->sum(function ($sale) {
+                return $sale->saleItems->sum('quantity');
+            });
+        $currentMonthSales = (float) Sale::where('user_id', $employee->id)
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->sum('total');
+
+        return view('employees.manage', compact(
+            'employee',
+            'products',
+            'pageMasterStock',
+            'pageEmployeeStock',
+            'lowStockCount',
+            'sales',
+            'totalSales',
+            'totalRevenue',
+            'totalItemsSold',
+            'currentMonthSales'
+        ));
     }
 }
