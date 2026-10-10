@@ -148,7 +148,10 @@ async function transferStock(productId, action) {
             const dir = action === 'push' ? 'diberikan ke pegawai' : 'ditarik dari pegawai'; // Pesan arah transfer
             showToast('success', 'Transfer Berhasil', `${Math.abs(amount)} unit berhasil ${dir}.`); // Tampilkan toast sukses
             if (document.querySelector('.employee-manage')) {
-                window.setTimeout(() => window.location.reload(), 1100);
+                window.setTimeout(() => {
+                    window.SimkeuMotion?.startNavigation();
+                    window.location.reload();
+                }, 1100);
             }
         } else {
             showToast('error', 'Transfer Gagal', result.message || 'Terjadi kesalahan pada server.'); // Toast error jika gagal

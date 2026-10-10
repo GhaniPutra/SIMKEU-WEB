@@ -19,7 +19,6 @@
             min-height: 100vh;
             padding: 24px;
             background: linear-gradient(135deg, var(--body-bg) 0%, rgba(var(--primary-rgb, 79 70 229), 0.04) 100%);
-            animation: fade-up 0.8s ease;
         }
 
         .register-box {
@@ -186,12 +185,6 @@
 
         /* Container override */
         main .container { padding: 0; max-width: 100%; }
-
-        /* Animations */
-        @keyframes fade-up {
-            from { opacity: 0; transform: translateY(32px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
 
         /* Responsive */
         @media (max-width: 576px) {

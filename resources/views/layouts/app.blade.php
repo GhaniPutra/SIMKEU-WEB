@@ -561,9 +561,15 @@
 
     @yield('css')
     <link rel="stylesheet" href="{{ asset('css/ui-geometry.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/app-animations.css') }}">
 </head>
 
 <body class="{{ $isAuthPage ? 'auth-page' : '' }}">
+    <div id="navigation-progress" aria-hidden="true"></div>
+    <div id="navigation-overlay" role="status" aria-live="polite" aria-hidden="true">
+        <span class="navigation-spinner" aria-hidden="true"></span>
+        <span class="navigation-label">Memuat halaman SIMKEU</span>
+    </div>
     <!-- ============================================================
          SIDEBAR
     ============================================================ -->
@@ -750,6 +756,7 @@
 
     <!-- Bootstrap JS: komponen seperti modal, alert, dll membutuhkan ini -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('js/app-animations.js') }}"></script>
 
     <script>
         // ============================================================
@@ -804,7 +811,7 @@
         }
 
         // Event listener: klik tombol hamburger / toggle
-        toggle.addEventListener('click', () => {
+        toggle?.addEventListener('click', () => {
             if (isMobile()) {
                 // Di mobile: buka atau tutup sidebar overlay
                 sidebar.classList.contains('mobile-open') ? closeMobileSidebar() : openMobileSidebar();
@@ -815,10 +822,10 @@
         });
 
         // Klik overlay di mobile akan menutup sidebar
-        overlay.addEventListener('click', closeMobileSidebar);
+        overlay?.addEventListener('click', closeMobileSidebar);
 
         // Pulihkan status collapse sidebar dari localStorage saat halaman dimuat (desktop saja)
-        if (!isMobile() && localStorage.getItem('sidebarCollapsed') === 'true') {
+        if (sidebar && topbar && main && !isMobile() && localStorage.getItem('sidebarCollapsed') === 'true') {
             sidebar.classList.add('collapsed');          // Sidebar dalam kondisi collapsed
             topbar.classList.add('sidebar-collapsed');   // Topbar menyesuaikan
             main.classList.add('sidebar-collapsed');     // Konten menyesuaikan
@@ -826,7 +833,7 @@
 
         // Saat layar di-resize dari mobile ke desktop, tutup sidebar mobile jika terbuka
         window.addEventListener('resize', () => {
-            if (!isMobile()) closeMobileSidebar();
+            if (sidebar && overlay && !isMobile()) closeMobileSidebar();
         });
 
         // ============================================================
@@ -885,12 +892,14 @@
                 if (isDashboard) {
                     // Jika berada di halaman dashboard, reload dengan query param ?period=<nilai>
                     // Ini akan memicu DashboardController untuk memfilter data berdasarkan periode
+                    window.SimkeuMotion?.startNavigation();
                     window.location.href = '/dashboard?period=' + encodeURIComponent(selectedPeriod);
                 } else if (isPemasukanIndex || isPengeluaranIndex) {
                     // Jika berada di halaman index pemasukan atau pengeluaran, perbarui URL
                     const url = new URL(window.location.href);
                     url.searchParams.set('period', selectedPeriod);
                     url.searchParams.delete('page'); // Reset halaman ke 1
+                    window.SimkeuMotion?.startNavigation();
                     window.location.href = url.toString();
                 }
                 // Jika bukan halaman dashboard/pemasukan/pengeluaran, filter disimpan di localStorage saja

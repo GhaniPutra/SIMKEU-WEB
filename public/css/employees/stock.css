@@ -5,11 +5,6 @@
 .stock-page {
     display: grid; /* Menggunakan grid untuk tata letak utama */
     gap: 28px; /* Jarak antar elemen utama */
-    animation: fade-up 0.6s ease; /* Animasi masuk halaman */
-}
-
-.stock-header.fade-up {
-    animation-delay: 0.1s; /* Delay untuk animasi header */
 }
 
 /* Header halaman */
@@ -92,7 +87,7 @@
     transition: all var(--transition); /* Transisi hover */
 }
 
-.summary-card:hover, .summary-card.fade-up {
+.summary-card:hover {
     transform: translateY(-4px); /* Efek hover naik */
     box-shadow: var(--shadow-md); /* Bayangan hover */
 }
@@ -182,7 +177,6 @@
     border-radius: var(--radius); /* Sudut kartu */
     overflow: hidden; /* Potong konten berlebih */
     box-shadow: var(--shadow-sm); /* Bayangan kartu */
-    animation: fade-up 0.6s ease 0.2s both; /* Animasi muncul */
 }
 
 .table-card-header {
@@ -527,9 +521,8 @@
     }
 }
 
-.num-updated,
-.fade-up {
-    animation: fade-up 0.6s ease; /* Animasi keluar */
+.num-updated {
+    animation: fade-up 0.6s ease;
 }
 
 .spin {

@@ -390,16 +390,6 @@
     }
 
     /* ============================================================
-       ANIMASI FADE-UP
-    ============================================================ */
-    .fade-up {
-        opacity: 0;
-        transform: translateY(18px);
-        transition: opacity 0.45s ease, transform 0.45s ease;
-    }
-    .fade-up.visible { opacity: 1; transform: translateY(0); }
-
-    /* ============================================================
        EMPTY STATE — Tampilan saat tidak ada data
     ============================================================ */
     .empty-state {
@@ -768,15 +758,6 @@
 <script>
 // Jalankan setelah DOM selesai dirender
 document.addEventListener('DOMContentLoaded', function () {
-
-    // ============================================================
-    // ANIMASI FADE-UP — Elemen masuk bertahap dari bawah
-    // ============================================================
-    const fadeEls = document.querySelectorAll('.fade-up');
-    fadeEls.forEach((el, i) => {
-        // Tunda 90ms per elemen untuk efek staggered
-        setTimeout(() => el.classList.add('visible'), i * 90);
-    });
 
     // ============================================================
     // STYLE DINAMIS — Terapkan warna dan lebar dari data attributes

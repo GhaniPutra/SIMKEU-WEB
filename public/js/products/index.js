@@ -7,33 +7,12 @@
 
 // Jalankan kode saat DOM sudah siap agar elemen tersedia
 document.addEventListener('DOMContentLoaded', function () {
-    // Ambil semua elemen dengan kelas 'fade-up' untuk animasi masuk
-    const fadeEls = document.querySelectorAll('.fade-up');
-
     // Terapkan warna avatar produk berdasarkan atribut data-hue (di-generate server-side)
     document.querySelectorAll('.product-avatar[data-hue]').forEach(el => {
         const hue = el.dataset.hue;
         if (hue !== undefined && hue !== null && hue !== '') {
             el.style.background = 'hsl(' + hue + ', 60%, 50%)';
         }
-    });
-
-    // Buat IntersectionObserver untuk mendeteksi saat elemen terlihat di viewport
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            // Jika elemen muncul di viewport
-            if (entry.isIntersecting) {
-                // Tambahkan kelas 'visible' untuk memicu transisi CSS
-                entry.target.classList.add('visible');
-                // Berhenti mengamati elemen ini agar animasi berjalan sekali saja
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.05 }); // Trigger saat 5% elemen terlihat
-
-    // Observasi setiap elemen dengan delay kecil agar animasi tidak serentak
-    fadeEls.forEach((el, i) => {
-        setTimeout(() => observer.observe(el), i * 60);
     });
 
     // Ambil elemen modal overlay untuk penyesuaian stok
@@ -119,7 +98,10 @@ document.addEventListener('DOMContentLoaded', function () {
             );
             if (confirmed && formId) {
                 const form = document.getElementById(formId);
-                if (form) form.submit();
+                if (form) {
+                    window.SimkeuMotion?.startNavigation();
+                    form.submit();
+                }
             }
         });
     });

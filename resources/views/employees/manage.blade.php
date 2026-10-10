@@ -419,6 +419,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             const tabs = [...document.querySelectorAll('.employee-tab')];
             const panels = [...document.querySelectorAll('.employee-tab-panel')];
+            const chartInstances = new Map();
             const activateTab = (name) => {
                 const activeName = ['overview', 'stock', 'sales'].includes(name) ? name : 'overview';
                 tabs.forEach((tab) => {
@@ -427,6 +428,7 @@
                     tab.setAttribute('aria-selected', String(active));
                 });
                 panels.forEach((panel) => panel.classList.toggle('active', panel.id === `tab-${activeName}`));
+                window.requestAnimationFrame(() => chartInstances.get(activeName)?.resize());
             };
 
             tabs.forEach((tab) => tab.addEventListener('click', () => {
@@ -456,7 +458,7 @@
                     canvas.remove();
                     return;
                 }
-                new Chart(canvas, {
+                const chart = new Chart(canvas, {
                     type: 'line',
                     data: {
                         labels: trendLabels,
@@ -495,6 +497,7 @@
                         }
                     }
                 });
+                chartInstances.set(chartId === 'overview-sales-chart' ? 'overview' : 'sales', chart);
             });
 
             document.querySelectorAll('.stock-quantity').forEach((input) => {

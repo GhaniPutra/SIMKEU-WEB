@@ -26,7 +26,7 @@
 }
 
 .error-pulse {
-    animation: errorPulse 2s infinite;
+    animation: errorPulse 1.2s ease 2;
 }
 
 .validation-errors ul {

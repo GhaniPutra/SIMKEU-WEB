@@ -346,12 +346,6 @@
 .product-unit-text { font-size:0.72rem; color:var(--text-muted); margin-top:1px; }
 
 /* ============================================================
-   ANIMASI FADE-UP
-   ============================================================ */
-.fade-up { opacity:0; transform:translateY(18px); transition: opacity 0.45s ease, transform 0.45s ease; }
-.fade-up.visible { opacity:1; transform:translateY(0); }
-
-/* ============================================================
    PAGINATION
    ============================================================ */
 .pagination-wrapper { padding:14px 20px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }

@@ -33,29 +33,6 @@ const {
 };
 
 // ============================================================
-// Fungsi: animateFadeUp
-// Tujuan: Membuat efek animasi muncul dari bawah (fade-up)
-//         pada semua elemen yang memiliki class 'fade-up'.
-//
-// Animasi dibuat secara staggered (bertahap) dengan delay
-// berbeda untuk setiap elemen, sehingga elemen muncul
-// satu per satu dari atas ke bawah halaman.
-// ============================================================
-function animateFadeUp() {
-    // Pilih semua elemen yang memiliki class 'fade-up'
-    const elements = document.querySelectorAll('.fade-up');
-
-    // Iterasi setiap elemen dan tambahkan class 'visible' dengan delay bertahap
-    elements.forEach((element, index) => {
-        // Setiap elemen mendapat delay tambahan 80ms dari elemen sebelumnya
-        // Elemen ke-0: 0ms, Elemen ke-1: 80ms, Elemen ke-2: 160ms, dst.
-        setTimeout(() => {
-            element.classList.add('visible'); // Class 'visible' memicu animasi CSS
-        }, index * 80); // Delay staggered: 80ms per elemen
-    });
-}
-
-// ============================================================
 // Fungsi: formatRupiah
 // Tujuan: Format angka menjadi string Rupiah untuk tooltip
 // ============================================================
@@ -251,7 +228,6 @@ function initTrendChart() {
 //         yang perlu dijalankan saat halaman dashboard dimuat.
 // ============================================================
 function initDashboard() {
-    animateFadeUp();   // Jalankan animasi fade-up pada elemen-elemen halaman
     initTrendChart();  // Inisialisasi dan render grafik tren keuangan
 }
 

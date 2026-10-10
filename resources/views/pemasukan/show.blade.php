@@ -190,15 +190,6 @@
         border-color: var(--primary);
     }
 
-    /* ============================================================
-       ANIMASI FADE-UP
-    ============================================================ */
-    .fade-up {
-        opacity: 0;
-        transform: translateY(16px);
-        transition: opacity 0.4s ease, transform 0.4s ease;
-    }
-    .fade-up.visible { opacity: 1; transform: translateY(0); }
 </style>
 @endsection
 
@@ -407,18 +398,4 @@
 
 </div>{{-- /detail-card item --}}
 
-@endsection
-
-@section('js')
-<script>
-// Animasi fade-up saat halaman dimuat
-document.addEventListener('DOMContentLoaded', function () {
-    // Pilih semua elemen dengan class fade-up di halaman ini
-    const els = document.querySelectorAll('.fade-up');
-    els.forEach((el, i) => {
-        // Tunda kemunculan setiap elemen sebesar 100ms (efek staggered)
-        setTimeout(() => el.classList.add('visible'), i * 100);
-    });
-});
-</script>
 @endsection
