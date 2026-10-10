@@ -1,0 +1,253 @@
+:root {
+    --ui-space-1: 4px;
+    --ui-space-2: 8px;
+    --ui-space-3: 12px;
+    --ui-space-4: 16px;
+    --ui-space-5: 20px;
+    --ui-space-6: 24px;
+    --ui-page-padding-x: 28px;
+    --ui-page-padding-top: 24px;
+    --ui-page-padding-bottom: 36px;
+    --ui-card-padding: 20px;
+    --ui-card-header-padding-y: 14px;
+    --ui-card-header-padding-x: 18px;
+    --ui-grid-gap: 16px;
+    --ui-control-height: 40px;
+    --ui-control-height-compact: 36px;
+    --ui-table-cell-padding-y: 12px;
+    --ui-table-cell-padding-x: 14px;
+    --ui-tab-height: 40px;
+    --ui-control-radius: 8px;
+}
+
+#main-content {
+    padding: var(--ui-page-padding-top) var(--ui-page-padding-x) var(--ui-page-padding-bottom);
+}
+
+#topbar .topbar-actions {
+    gap: var(--ui-space-2);
+}
+
+#topbar .topbar-toggle,
+#topbar .topbar-btn {
+    width: var(--ui-control-height-compact);
+    height: var(--ui-control-height-compact);
+    border-radius: var(--ui-control-radius);
+}
+
+.sidebar-nav .nav-link {
+    min-height: 52px;
+    gap: var(--ui-space-3);
+    padding-block: 10px;
+}
+
+#main-content .kpi-grid {
+    gap: var(--ui-grid-gap);
+    margin-bottom: var(--ui-space-6);
+}
+
+#main-content .kpi-card {
+    padding: var(--ui-card-padding);
+    border-radius: var(--radius);
+}
+
+#main-content .kpi-top {
+    gap: var(--ui-space-3);
+    margin-bottom: var(--ui-space-3);
+}
+
+#main-content .kpi-icon,
+#main-content .employee-kpi-icon {
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    border-radius: var(--ui-control-radius);
+}
+
+#main-content .section-title {
+    gap: var(--ui-space-2);
+    margin-bottom: var(--ui-space-3);
+}
+
+#main-content .content-card,
+#main-content .employee-card,
+#main-content .form-card {
+    border-radius: var(--radius);
+}
+
+#main-content .content-card-header,
+#main-content .employee-card-header {
+    gap: var(--ui-space-3);
+    padding: var(--ui-card-header-padding-y) var(--ui-card-header-padding-x);
+}
+
+#main-content .content-card-title,
+#main-content .employee-card-header h2 {
+    gap: var(--ui-space-2);
+}
+
+#main-content .employee-kpi {
+    padding: 18px;
+}
+
+#main-content .data-table thead th,
+#main-content .pos-table th {
+    padding: var(--ui-space-3) var(--ui-table-cell-padding-x);
+}
+
+#main-content .data-table tbody td,
+#main-content .pos-table td {
+    padding: var(--ui-table-cell-padding-y) var(--ui-table-cell-padding-x);
+}
+
+#main-content .toolbar,
+#main-content .stock-toolbar {
+    gap: var(--ui-space-2);
+    padding: var(--ui-space-3) var(--ui-space-4);
+}
+
+#main-content .toolbar input:not([type="hidden"]),
+#main-content .toolbar select,
+#main-content .stock-search input,
+#main-content .stock-status-filter select,
+#main-content .stock-quantity,
+#main-content .period-filter select,
+#main-content .form-control,
+#main-content .form-input,
+#main-content .form-select,
+#main-content .modal-input,
+#main-content .category-modal-input {
+    min-height: var(--ui-control-height);
+    border-radius: var(--ui-control-radius);
+}
+
+#main-content .toolbar input:not([type="hidden"]),
+#main-content .toolbar select,
+#main-content .stock-search input,
+#main-content .stock-status-filter select,
+#main-content .stock-quantity,
+#main-content .period-filter select {
+    min-height: var(--ui-control-height-compact);
+}
+
+#main-content .btn-add,
+#main-content .btn-stock,
+#main-content .btn-edit,
+#main-content .btn-delete,
+#main-content .btn-detail,
+#main-content .btn-primary,
+#main-content .btn-qa,
+#main-content .btn-submit,
+#main-content .btn-cancel,
+#main-content .btn-modal-cancel,
+#main-content .btn-modal-save,
+#main-content .period-filter button,
+#main-content .stock-reset {
+    min-height: var(--ui-control-height-compact);
+    padding: var(--ui-space-2) 14px;
+    border-radius: var(--ui-control-radius);
+    gap: var(--ui-space-2);
+}
+
+#main-content .table-actions,
+#main-content .stock-actions,
+#main-content .category-actions {
+    gap: var(--ui-space-2);
+}
+
+#main-content .pagination-wrapper,
+#main-content .employee-pagination {
+    gap: var(--ui-space-3);
+    padding: var(--ui-space-3) var(--ui-space-4);
+}
+
+#main-content .pagination .page-link {
+    min-height: 32px;
+    padding: var(--ui-space-1) 10px;
+}
+
+#main-content .module-tabs,
+#main-content .employee-tabs {
+    gap: var(--ui-space-1);
+    padding: var(--ui-space-1);
+}
+
+#main-content .module-tabs {
+    margin-bottom: var(--ui-space-5);
+}
+
+#main-content .module-tab,
+#main-content .employee-tab {
+    min-height: var(--ui-tab-height);
+    gap: var(--ui-space-2);
+    border-radius: var(--ui-control-radius);
+}
+
+#main-content .module-tab {
+    padding: var(--ui-space-2) 14px;
+}
+
+#main-content .two-col,
+#main-content .two-thirds-col,
+#main-content .two-col-chart,
+#main-content .pos-grid,
+#main-content .employee-content-grid {
+    gap: var(--ui-grid-gap);
+}
+
+#main-content .form-container {
+    margin-top: var(--ui-space-3);
+    margin-bottom: var(--ui-space-6);
+}
+
+#main-content .form-card > .form-card-header {
+    padding: var(--ui-card-header-padding-y) var(--ui-card-header-padding-x);
+}
+
+#main-content .form-card-body {
+    padding: var(--ui-card-padding);
+}
+
+#main-content .form-actions {
+    gap: var(--ui-space-3);
+    margin-top: var(--ui-space-6);
+    padding-top: var(--ui-space-5);
+}
+
+#main-content .modal-box {
+    max-width: min(420px, calc(100vw - 32px));
+    padding: 24px;
+    border-radius: var(--radius);
+}
+
+#main-content .modal-actions {
+    gap: var(--ui-space-2);
+}
+
+#main-content #employeeModal .modal-header,
+#main-content #employeeModal .modal-footer,
+#main-content .category-modal .modal-header,
+#main-content .category-modal .modal-footer {
+    padding: var(--ui-card-header-padding-y) var(--ui-card-header-padding-x);
+}
+
+#main-content #employeeModal .modal-body,
+#main-content .category-modal .modal-body {
+    padding: var(--ui-card-padding);
+}
+
+@media (max-width: 991px) {
+    #main-content {
+        padding-inline: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    #main-content {
+        padding: 18px 16px 28px;
+    }
+
+    #main-content .module-tab {
+        padding-inline: 10px;
+    }
+}

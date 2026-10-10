@@ -560,6 +560,7 @@
     </style>
 
     @yield('css')
+    <link rel="stylesheet" href="{{ asset('css/ui-geometry.css') }}">
 </head>
 
 <body class="{{ $isAuthPage ? 'auth-page' : '' }}">
