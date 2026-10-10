@@ -129,9 +129,9 @@
                 <div class="employee-card-header">
                     <div>
                         <h2><i class="fas fa-box-open"></i> Kondisi Stok Pegawai</h2>
-                        <p>Stok yang benar-benar dialokasikan ke pegawai · rendah ≤ {{ $lowStockThreshold }}</p>
+                        <p>Stok kosong = 0 · rendah 1–{{ $lowStockThreshold }}</p>
                     </div>
-                    <a class="employee-card-link" href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock', 'stock_status' => 'empty']) }}">Kelola <i class="fas fa-arrow-right"></i></a>
+                    <a class="employee-card-link" href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock']) }}">Kelola <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="employee-card-body compact-card-body">
                     @forelse($stockAttention as $product)
@@ -150,8 +150,8 @@
                     @empty
                         <div class="employee-empty compact-empty">
                             <i class="fas fa-circle-check"></i>
-                            <strong>Semua stok pegawai dalam kondisi normal</strong>
-                            <span>Tidak ada produk kosong atau di bawah ambang {{ $lowStockThreshold }} unit.</span>
+                            <strong>Tidak ada stok pegawai yang kosong atau rendah</strong>
+                            <span>Produk yang belum dialokasikan ditampilkan terpisah.</span>
                         </div>
                     @endforelse
                 </div>
@@ -196,8 +196,10 @@
         <div class="stock-overview">
             <div class="stock-total"><span>Stok pegawai</span><strong>{{ number_format((int) $stockSummary->employee_stock_total) }} <small>unit</small></strong></div>
             <div class="stock-total"><span>Stok gudang</span><strong>{{ number_format((int) $stockSummary->master_stock_total) }} <small>unit</small></strong></div>
+            <div class="stock-total stock-total-unallocated"><span>Belum dialokasikan</span><strong>{{ number_format((int) $stockSummary->unallocated_stock_count) }}</strong></div>
             <div class="stock-total stock-total-empty"><span>Produk kosong</span><strong>{{ number_format((int) $stockSummary->empty_stock_count) }}</strong></div>
             <div class="stock-total stock-total-low"><span>Produk rendah</span><strong>{{ number_format((int) $stockSummary->low_stock_count) }}</strong></div>
+            <div class="stock-total stock-total-normal"><span>Produk normal</span><strong>{{ number_format((int) $stockSummary->normal_stock_count) }}</strong></div>
         </div>
 
         <div class="employee-card">
@@ -220,6 +222,7 @@
                     <span class="visually-hidden">Filter kondisi stok pegawai</span>
                     <select name="stock_status">
                         <option value="">Semua kondisi stok</option>
+                        <option value="unallocated" {{ $stockStatus === 'unallocated' ? 'selected' : '' }}>Belum dialokasikan</option>
                         <option value="empty" {{ $stockStatus === 'empty' ? 'selected' : '' }}>Kosong</option>
                         <option value="low" {{ $stockStatus === 'low' ? 'selected' : '' }}>Rendah (1–{{ $lowStockThreshold }})</option>
                         <option value="normal" {{ $stockStatus === 'normal' ? 'selected' : '' }}>Normal (&gt; {{ $lowStockThreshold }})</option>
@@ -240,6 +243,7 @@
                         <tbody>
                             @foreach($products as $product)
                                 @php
+                                    $isEmployeeStockAllocated = $product->employee_stock !== null;
                                     $employeeStock = (int) ($product->employee_stock ?? 0);
                                     $masterStock = (int) $product->stock;
                                 @endphp
@@ -258,8 +262,10 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <span class="stock-balance employee-balance" id="emp-stock-{{ $product->id }}">{{ number_format($employeeStock) }}</span>
-                                        @if($employeeStock <= 0)
+                                        <span class="stock-balance employee-balance" id="emp-stock-{{ $product->id }}">{{ $isEmployeeStockAllocated ? number_format($employeeStock) : '—' }}</span>
+                                        @if(!$isEmployeeStockAllocated)
+                                            <span class="stock-status status-unallocated" id="employee-stock-status-{{ $product->id }}">Belum dialokasikan</span>
+                                        @elseif($employeeStock <= 0)
                                             <span class="stock-status status-empty" id="employee-stock-status-{{ $product->id }}">Kosong</span>
                                         @elseif($employeeStock <= $lowStockThreshold)
                                             <span class="stock-status status-low" id="employee-stock-status-{{ $product->id }}">Rendah</span>

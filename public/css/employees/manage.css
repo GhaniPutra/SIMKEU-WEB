@@ -415,6 +415,11 @@
     color: var(--success);
 }
 
+.status-unallocated {
+    background: var(--body-bg);
+    color: var(--text-muted);
+}
+
 .employee-empty {
     display: grid;
     justify-items: center;
@@ -532,7 +537,7 @@
 
 .stock-overview {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 12px;
 }
 
@@ -561,6 +566,8 @@
 
 .stock-total-empty > strong { color: var(--danger); }
 .stock-total-low > strong { color: #b45309; }
+.stock-total-normal > strong { color: var(--success); }
+.stock-total-unallocated > strong { color: var(--text-muted); }
 
 .stock-card-header {
     min-height: 70px;

@@ -170,10 +170,12 @@ class EmployeeController extends Controller
             })
             ->selectRaw('
                 COALESCE(SUM(products.stock), 0) as master_stock_total,
-                COALESCE(SUM(COALESCE(employee_product.stock, 0)), 0) as employee_stock_total,
-                COALESCE(SUM(CASE WHEN COALESCE(employee_product.stock, 0) <= 0 THEN 1 ELSE 0 END), 0) as empty_stock_count,
-                COALESCE(SUM(CASE WHEN employee_product.stock BETWEEN 1 AND ? THEN 1 ELSE 0 END), 0) as low_stock_count
-            ', [Product::LOW_STOCK_THRESHOLD])
+                COALESCE(SUM(CASE WHEN employee_product.id IS NOT NULL THEN employee_product.stock ELSE 0 END), 0) as employee_stock_total,
+                COALESCE(SUM(CASE WHEN employee_product.id IS NOT NULL AND employee_product.stock <= 0 THEN 1 ELSE 0 END), 0) as empty_stock_count,
+                COALESCE(SUM(CASE WHEN employee_product.stock BETWEEN 1 AND ? THEN 1 ELSE 0 END), 0) as low_stock_count,
+                COALESCE(SUM(CASE WHEN employee_product.stock > ? THEN 1 ELSE 0 END), 0) as normal_stock_count,
+                COALESCE(SUM(CASE WHEN employee_product.id IS NULL THEN 1 ELSE 0 END), 0) as unallocated_stock_count
+            ', [Product::LOW_STOCK_THRESHOLD, Product::LOW_STOCK_THRESHOLD])
             ->first();
         $lowStockThreshold = Product::LOW_STOCK_THRESHOLD;
 
@@ -182,9 +184,10 @@ class EmployeeController extends Controller
                 $join->on('products.id', '=', 'employee_product.product_id')
                     ->where('employee_product.user_id', '=', $employee->id);
             })
-            ->whereRaw('COALESCE(employee_product.stock, 0) <= ?', [Product::LOW_STOCK_THRESHOLD])
+            ->whereNotNull('employee_product.id')
+            ->where('employee_product.stock', '<=', Product::LOW_STOCK_THRESHOLD)
             ->select('products.id', 'products.name', 'products.unit', 'employee_product.stock as employee_stock')
-            ->orderByRaw('COALESCE(employee_product.stock, 0) asc')
+            ->orderBy('employee_product.stock')
             ->orderBy('products.name')
             ->limit(5)
             ->get();
@@ -192,7 +195,7 @@ class EmployeeController extends Controller
         $requestedStockSearch = $request->query('stock_search', '');
         $stockSearch = is_string($requestedStockSearch) ? trim($requestedStockSearch) : '';
         $stockStatus = $request->query('stock_status', '');
-        if (!in_array($stockStatus, ['empty', 'low', 'normal'], true)) {
+        if (!in_array($stockStatus, ['unallocated', 'empty', 'low', 'normal'], true)) {
             $stockStatus = '';
         }
 
@@ -214,8 +217,11 @@ class EmployeeController extends Controller
             });
         }
 
-        if ($stockStatus === 'empty') {
-            $productsQuery->whereRaw('COALESCE(employee_product.stock, 0) <= 0');
+        if ($stockStatus === 'unallocated') {
+            $productsQuery->whereNull('employee_product.id');
+        } elseif ($stockStatus === 'empty') {
+            $productsQuery->whereNotNull('employee_product.id')
+                ->where('employee_product.stock', '<=', 0);
         } elseif ($stockStatus === 'low') {
             $productsQuery->whereBetween('employee_product.stock', [1, Product::LOW_STOCK_THRESHOLD]);
         } elseif ($stockStatus === 'normal') {

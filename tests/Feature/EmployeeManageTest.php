@@ -43,28 +43,75 @@ class EmployeeManageTest extends TestCase
             ->assertViewHas('topProducts', fn ($products) => $products->first()->id === $product->id && (int) $products->first()->units_sold === 7);
     }
 
-    public function test_manage_dashboard_separates_empty_low_and_normal_employee_stock_and_filters_rows(): void
+    public function test_manage_dashboard_distinguishes_unallocated_empty_low_and_normal_employee_stock(): void
     {
         $this->actAsConfiguredAdmin();
         $employee = User::factory()->create(['role' => 'pegawai']);
         $emptyProduct = Product::create(['name' => 'Stok Kosong', 'stock' => 30, 'unit' => 'pcs']);
         $lowProduct = Product::create(['name' => 'Stok Rendah', 'stock' => 20, 'unit' => 'pcs']);
         $normalProduct = Product::create(['name' => 'Stok Normal', 'stock' => 15, 'unit' => 'pcs']);
-        Product::create(['name' => 'Belum Dialokasikan', 'stock' => 5, 'unit' => 'pcs']);
+        $unallocatedProduct = Product::create(['name' => 'Belum Dialokasikan', 'stock' => 5, 'unit' => 'pcs']);
         $employee->products()->attach($emptyProduct->id, ['stock' => 0]);
-        $employee->products()->attach($lowProduct->id, ['stock' => 6]);
+        $employee->products()->attach($lowProduct->id, ['stock' => Product::LOW_STOCK_THRESHOLD]);
         $employee->products()->attach($normalProduct->id, ['stock' => 18]);
 
-        $response = $this->get(route('employees.manage', [
+        $response = $this->get(route('employees.manage', ['employee' => $employee, 'tab' => 'stock']));
+
+        $response->assertOk()
+            ->assertViewHas('stockSummary', fn ($summary) => (int) $summary->employee_stock_total === 28
+                && (int) $summary->empty_stock_count === 1
+                && (int) $summary->low_stock_count === 1
+                && (int) $summary->normal_stock_count === 1
+                && (int) $summary->unallocated_stock_count === 1)
+            ->assertViewHas('stockAttention', fn ($products) => $products->pluck('id')->all() === [$emptyProduct->id, $lowProduct->id])
+            ->assertViewHas('products', fn ($products) => $products->total() === 4
+                && $products->firstWhere('id', $unallocatedProduct->id)->employee_stock === null)
+            ->assertSee('Belum dialokasikan')
+            ->assertSee('Kosong')
+            ->assertSee('Rendah')
+            ->assertSee('Normal')
+            ->assertSee('28 <small>unit</small>', false);
+
+        $this->get(route('employees.manage', [
             'employee' => $employee,
             'tab' => 'stock',
             'stock_status' => 'low',
-        ]));
+        ]))
+            ->assertOk()
+            ->assertViewHas('products', fn ($products) => $products->total() === 1 && $products->first()->name === 'Stok Rendah');
+        $this->get(route('employees.manage', ['employee' => $employee, 'tab' => 'stock', 'stock_status' => 'empty']))
+            ->assertViewHas('products', fn ($products) => $products->total() === 1 && $products->first()->name === 'Stok Kosong');
+        $this->get(route('employees.manage', ['employee' => $employee, 'tab' => 'stock', 'stock_status' => 'unallocated']))
+            ->assertViewHas('products', fn ($products) => $products->total() === 1 && $products->first()->name === 'Belum Dialokasikan');
 
-        $response->assertOk()
-            ->assertViewHas('stockSummary', fn ($summary) => (int) $summary->empty_stock_count === 2 && (int) $summary->low_stock_count === 1)
-            ->assertViewHas('products', fn ($products) => $products->total() === 1 && $products->first()->name === 'Stok Rendah')
-            ->assertSee('Stok pegawai');
+        $this->get(route('employees.manage', $employee))
+            ->assertViewHas('stockSummary', fn ($summary) => (int) $summary->empty_stock_count === 1
+                && (int) $summary->low_stock_count === 1
+                && (int) $summary->normal_stock_count === 1
+                && (int) $summary->unallocated_stock_count === 1)
+            ->assertViewHas('stockAttention', fn ($products) => $products->pluck('id')->all() === [$emptyProduct->id, $lowProduct->id])
+            ->assertSee('1 kosong · 1 rendah');
+    }
+
+    public function test_employee_with_no_allocated_products_has_no_employee_stock_alerts(): void
+    {
+        $this->actAsConfiguredAdmin();
+        $employee = User::factory()->create(['role' => 'pegawai']);
+        Product::create(['name' => 'Produk gudang normal', 'stock' => 30, 'unit' => 'pcs']);
+        Product::create(['name' => 'Produk gudang kosong', 'stock' => 0, 'unit' => 'pcs']);
+
+        $this->get(route('employees.manage', ['employee' => $employee, 'tab' => 'stock']))
+            ->assertOk()
+            ->assertViewHas('stockSummary', fn ($summary) => (int) $summary->employee_stock_total === 0
+                && (int) $summary->empty_stock_count === 0
+                && (int) $summary->low_stock_count === 0
+                && (int) $summary->normal_stock_count === 0
+                && (int) $summary->unallocated_stock_count === 2)
+            ->assertViewHas('stockAttention', fn ($products) => $products->isEmpty())
+            ->assertViewHas('products', fn ($products) => $products->total() === 2
+                && $products->every(fn ($product) => $product->employee_stock === null))
+            ->assertSee('Belum dialokasikan')
+            ->assertSee('0 kosong · 0 rendah');
     }
 
     public function test_manage_dashboard_shows_empty_sales_states_for_an_employee_without_transactions(): void
