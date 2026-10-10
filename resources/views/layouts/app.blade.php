@@ -624,21 +624,11 @@
                 </li>
                 <!-- Menu "Cabang" dihapus -->
                 <li class="nav-item">
-                    {{-- Link menu Produk / Stok --}}
-                    {{-- Aktif jika route saat ini adalah products.* --}}
+                    {{-- Satu menu untuk produk dan kategori --}}
                     <a href="{{ route('products.index') }}"
-                       class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
+                       class="nav-link {{ request()->routeIs('products.*', 'categories.*') ? 'active' : '' }}">
                         <span class="nav-icon"><i class="fas fa-box-open"></i></span>
-                        <span class="nav-label">Produk / Stok</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    {{-- Link menu Kategori Produk --}}
-                    {{-- Aktif jika route saat ini adalah categories.* --}}
-                    <a href="{{ route('categories.index') }}"
-                       class="nav-link {{ request()->routeIs('categories.*') ? 'active' : '' }}">
-                        <span class="nav-icon"><i class="fas fa-tags"></i></span>
-                        <span class="nav-label">Kategori</span>
+                        <span class="nav-label">Produk & Kategori</span>
                     </a>
                 </li>
 

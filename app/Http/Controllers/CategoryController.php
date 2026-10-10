@@ -22,39 +22,21 @@ class CategoryController extends Controller
      * Menampilkan halaman daftar kategori beserta jumlah produk per kategori.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\View\View
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function index(Request $request)
     {
-        // Ambil kata kunci pencarian dari query string (opsional)
-        $search = $request->input('search');
-
-        // Query kategori dengan hitungan produk (withCount untuk menghindari N+1)
-        $query = Category::withCount('products')->orderBy('name', 'asc');
-
-        // Terapkan filter pencarian jika ada
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                  ->orWhere('description', 'like', '%' . $search . '%');
-            });
+        $query = $request->query();
+        if (isset($query['search']) && !isset($query['category_search'])) {
+            $query['category_search'] = $query['search'];
+            unset($query['search']);
+        }
+        if (isset($query['page']) && !isset($query['categories_page'])) {
+            $query['categories_page'] = $query['page'];
+            unset($query['page']);
         }
 
-        // Paginate: 12 kategori per halaman
-        $categories = $query->paginate(12)->withQueryString();
-
-        // Total kategori yang ada di sistem
-        $totalCategories = Category::count();
-
-        // Total kategori yang sudah memiliki setidaknya 1 produk
-        $totalCategorized = Category::has('products')->count();
-
-        return view('categories.index', compact(
-            'categories',
-            'totalCategories',
-            'totalCategorized',
-            'search'
-        ));
+        return redirect()->route('products.index', array_merge($query, ['tab' => 'kategori']));
     }
 
     // =====================================================================
@@ -82,7 +64,7 @@ class CategoryController extends Controller
         // Simpan kategori baru ke database
         Category::create($data);
 
-        return redirect()->route('categories.index')
+        return $this->redirectToCategories($request)
             ->with('success', "Kategori \"{$data['name']}\" berhasil ditambahkan.");
     }
 
@@ -112,7 +94,7 @@ class CategoryController extends Controller
         // Update data kategori dengan data yang sudah divalidasi
         $category->update($data);
 
-        return redirect()->route('categories.index')
+        return $this->redirectToCategories($request)
             ->with('success', "Kategori \"{$category->name}\" berhasil diperbarui.");
     }
 
@@ -128,7 +110,7 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(Category $category)
+    public function destroy(Request $request, Category $category)
     {
         $name = $category->name;
         $productCount = $category->products()->count();
@@ -141,6 +123,14 @@ class CategoryController extends Controller
             $message .= " {$productCount} produk terkait kini tidak memiliki kategori.";
         }
 
-        return redirect()->route('categories.index')->with('success', $message);
+        return $this->redirectToCategories($request)->with('success', $message);
+    }
+
+    private function redirectToCategories(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        return redirect()->route('products.index', array_merge(
+            $request->only(['search', 'category_id', 'products_page', 'category_search', 'categories_page']),
+            ['tab' => 'kategori']
+        ));
     }
 }

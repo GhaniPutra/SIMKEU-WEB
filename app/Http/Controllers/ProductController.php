@@ -27,12 +27,37 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        // Ambil kata kunci pencarian dari query string (opsional)
+        $activeTab = $request->input('tab') === 'kategori' ? 'kategori' : 'produk';
         $search = $request->input('search');
-
-        // Ambil filter kategori dari query string (opsional)
         $categoryFilter = $request->input('category_id');
+        $categorySearch = $request->input('category_search');
 
+        if ($activeTab === 'kategori') {
+            $categoryQuery = Category::withCount('products')->orderBy('name', 'asc');
+            if ($categorySearch) {
+                $categoryQuery->where(function ($q) use ($categorySearch) {
+                    $q->where('name', 'like', '%' . $categorySearch . '%')
+                      ->orWhere('description', 'like', '%' . $categorySearch . '%');
+                });
+            }
+
+            $categoryList = $categoryQuery->paginate(12, ['*'], 'categories_page')->withQueryString();
+            $totalCategories = Category::count();
+            $totalCategorized = Category::has('products')->count();
+
+            return view('products.index', compact(
+                'activeTab',
+                'categoryList',
+                'categorySearch',
+                'totalCategories',
+                'totalCategorized',
+                'search',
+                'categoryFilter'
+            ));
+        }
+
+        // Ambil kata kunci pencarian dari query string (opsional)
+        // Ambil filter kategori dari query string (opsional)
         // Query produk dengan eager loading kategori agar tidak N+1 query
         $query = Product::with('category')->orderBy('name', 'asc');
 
@@ -48,7 +73,12 @@ class ProductController extends Controller
         }
 
         // Paginate hasil query: 15 produk per halaman
-        $products = $query->paginate(15)->withQueryString();
+        $products = $query->paginate(
+            15,
+            ['*'],
+            'products_page',
+            $request->query('products_page', $request->query('page'))
+        )->withQueryString();
 
         // ---- KPI / Statistik ----
 
@@ -76,7 +106,9 @@ class ProductController extends Controller
             'inventoryValue',
             'categories',
             'search',
-            'categoryFilter'
+            'categoryFilter',
+            'categorySearch',
+            'activeTab'
         ));
     }
 

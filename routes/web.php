@@ -106,13 +106,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('products', ProductController::class)->except(['show']);
 
         // ====================================
-        // Route untuk manajemen Kategori Produk
-        // resource() membuat 6 route standar CRUD:
-        // GET    /categories           → index   (daftar kategori)
-        // POST   /categories           → store   (simpan kategori baru)
-        // PUT    /categories/{id}      → update  (simpan perubahan)
-        // DELETE /categories/{id}      → destroy (hapus kategori)
-        // (create & edit tidak dipakai karena menggunakan modal)
+        // CRUD kategori tetap tersedia; route index mengarah ke tab Kategori.
         // ====================================
         Route::resource('categories', CategoryController::class)->only(['index', 'store', 'update', 'destroy']);
 

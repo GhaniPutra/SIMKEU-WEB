@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Tombol delete menggunakan data-delete-form-id untuk mengidentifikasi form yang harus disubmit
-    document.querySelectorAll('.btn-action.delete').forEach(btn => {
+    document.querySelectorAll('.btn-action.delete[data-delete-form-id]').forEach(btn => {
         btn.addEventListener('click', function () {
             const formId = this.dataset.deleteFormId;
             const name = this.dataset.productName;
@@ -130,5 +130,43 @@ document.addEventListener('DOMContentLoaded', function () {
             window.closeStockModal();
         });
     });
+
+    document.querySelectorAll('.category-edit').forEach(button => {
+        button.addEventListener('click', function () {
+            const form = document.getElementById('categoryEditForm');
+            form.action = this.dataset.updateUrl;
+            form.elements.name.value = this.dataset.name;
+            form.elements.description.value = this.dataset.description;
+            form.elements._category_id.value = this.dataset.id;
+        });
+    });
+
+    document.querySelectorAll('.category-delete').forEach(button => {
+        button.addEventListener('click', function () {
+            document.getElementById('categoryDeleteForm').action = this.dataset.deleteUrl;
+            const count = Number(this.dataset.productsCount) || 0;
+            document.getElementById('categoryDeleteDescription').textContent =
+                'Hapus kategori "' + this.dataset.name + '"? ' +
+                (count ? count + ' produk akan menjadi tanpa kategori.' : 'Tindakan ini tidak dapat dibatalkan.');
+        });
+    });
+
+    [['categoryAddModal', 'categoryAddName'], ['categoryEditModal', 'categoryEditName']].forEach(([modalId, inputId]) => {
+        document.getElementById(modalId)?.addEventListener('shown.bs.modal', () => {
+            document.getElementById(inputId).focus();
+        });
+    });
+
+    const categoryModalState = document.getElementById('category-modal-state');
+    if (categoryModalState && categoryModalState.dataset.modal) {
+        const modalType = categoryModalState.dataset.modal;
+        const modalId = modalType === 'add' ? 'categoryAddModal' : 'categoryEditModal';
+        if (modalType === 'edit' && categoryModalState.dataset.id) {
+            const url = new URL('/categories/' + encodeURIComponent(categoryModalState.dataset.id), window.location.origin);
+            url.search = window.location.search;
+            document.getElementById('categoryEditForm').action = url.toString();
+        }
+        bootstrap.Modal.getOrCreateInstance(document.getElementById(modalId)).show();
+    }
 
 });

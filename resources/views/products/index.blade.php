@@ -33,6 +33,20 @@
 ===================================================== --}}
 @section('content')
 
+    <nav class="module-tabs" aria-label="Modul produk">
+        <a href="{{ route('products.index', array_merge(request()->query(), ['tab' => 'produk'])) }}"
+           class="module-tab {{ $activeTab === 'produk' ? 'active' : '' }}"
+           @if($activeTab === 'produk') aria-current="page" @endif>
+            <i class="fas fa-boxes-stacked"></i> Produk &amp; Stok
+        </a>
+        <a href="{{ route('products.index', array_merge(request()->query(), ['tab' => 'kategori'])) }}"
+           class="module-tab {{ $activeTab === 'kategori' ? 'active' : '' }}"
+           @if($activeTab === 'kategori') aria-current="page" @endif>
+            <i class="fas fa-tags"></i> Kategori
+        </a>
+    </nav>
+
+    @if($activeTab === 'produk')
     {{-- ============================================================
          KPI CARDS — Ringkasan statistik stok utama
          Data dikirim dari ProductController::index()
@@ -114,6 +128,11 @@
              TOOLBAR — Pencarian dan Filter
         ============================================================ --}}
         <form method="GET" action="{{ route('products.index') }}" class="toolbar">
+            <input type="hidden" name="tab" value="produk">
+            <input type="hidden" name="category_search" value="{{ $categorySearch }}">
+            @if(request('categories_page'))
+                <input type="hidden" name="categories_page" value="{{ request('categories_page') }}">
+            @endif
 
             {{-- Input pencarian berdasarkan nama produk --}}
             <div class="toolbar-search">
@@ -146,7 +165,7 @@
 
             {{-- Tombol reset filter: hapus semua parameter pencarian --}}
             @if($search || $categoryFilter)
-                <a href="{{ route('products.index') }}" class="btn-add" style="background:#e2e8f0;color:var(--text-primary);">
+                <a href="{{ route('products.index', array_merge(request()->except(['search', 'category_id', 'products_page']), ['tab' => 'produk'])) }}" class="btn-add" style="background:#e2e8f0;color:var(--text-primary);">
                     <i class="fas fa-xmark"></i> Reset
                 </a>
             @endif
@@ -380,6 +399,10 @@
 
         </div>
     </div>
+
+    @else
+        @include('categories._panel')
+    @endif
 
 @endsection
 
