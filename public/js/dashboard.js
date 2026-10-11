@@ -77,13 +77,13 @@ function createChartDefaults() {
             subtitle: {
                 display: true,
                 text: getChartTitle(),
-                font: { size: 12, family: 'Inter', weight: '500' },
+                font: { size: 12, family: 'Poppins', weight: '500' },
                 color: '#64748b',
                 padding: { bottom: 12 }
             },
             legend: {
                 position: 'bottom',
-                labels: { font: { size: 11, family: 'Inter' } }
+                labels: { font: { size: 11, family: 'Poppins' } }
             },
             tooltip: {
                 mode: 'index',
@@ -98,12 +98,12 @@ function createChartDefaults() {
                 type: 'category',
                 stacked: false,
                 grid: { display: false },
-                ticks: { font: { size: 10, family: 'Inter' }, maxTicksLimit: period === 'today' ? 9 : 12, autoSkip: true }
+                ticks: { font: { size: 10, family: 'Poppins' }, maxTicksLimit: period === 'today' ? 9 : 12, autoSkip: true }
             },
             y: {
                 stacked: false,
                 grid: { color: gridLine },
-                ticks: { font: { size: 10, family: 'Inter' }, callback: moneyTick },
+                ticks: { font: { size: 10, family: 'Poppins' }, callback: moneyTick },
                 beginAtZero: true,
                 grace: '5%'
             }

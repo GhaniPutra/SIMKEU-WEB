@@ -233,7 +233,7 @@
             {{-- Nomor Invoice --}}
             <div class="info-item">
                 <div class="info-label">Nomor Invoice</div>
-                <div class="info-value" style="font-family:monospace;color:var(--primary);">
+                <div class="info-value" style="font-family:inherit;color:var(--primary);">
                     {{ $sale->invoice_number }}
                 </div>
             </div>

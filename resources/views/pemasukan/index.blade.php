@@ -589,7 +589,7 @@
                 <tr>
                     {{-- Nomor invoice --}}
                     <td>
-                        <span style="font-family:monospace;font-size:.8rem;color:var(--primary);font-weight:600;">
+                        <span style="font-family:inherit;font-size:.8rem;color:var(--primary);font-weight:600;">
                             {{ $sale->invoice_number }}
                         </span>
                     </td>
@@ -731,8 +731,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // ============================================================
     const tooltipDefaults = {
         backgroundColor: '#1e293b',          // Latar tooltip gelap
-        titleFont: { family: 'Inter', size: 12 },
-        bodyFont:  { family: 'Inter', size: 11 },
+        titleFont: { family: 'Poppins', size: 12 },
+        bodyFont:  { family: 'Poppins', size: 11 },
         padding: 10,
         cornerRadius: 8,
     };
@@ -775,7 +775,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     x: {
                         grid: { display: false },
                         ticks: {
-                            font: { size: 10, family: 'Inter' },
+                            font: { size: 10, family: 'Poppins' },
                             maxTicksLimit: chartData.length > 12 ? 8 : undefined,
                             autoSkip: true,
                         }
@@ -784,7 +784,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         beginAtZero: true,
                         grid: { color: 'rgba(148, 163, 184, .18)' },
                         ticks: {
-                            font: { size: 10, family: 'Inter' },
+                            font: { size: 10, family: 'Poppins' },
                             callback: (value) => value >= 1000000
                                 ? `Rp ${(value / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 })} jt`
                                 : `Rp ${value.toLocaleString('id-ID')}`

@@ -102,7 +102,7 @@
     background: var(--card-bg);
     transition: border-color 0.2s, box-shadow 0.2s;
     width: 100%;
-    font-family: 'Inter', sans-serif;
+    font-family: inherit;
 }
 
 .form-control:focus {

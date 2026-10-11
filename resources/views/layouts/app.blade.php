@@ -14,7 +14,7 @@
             --sidebar-collapsed-w: 72px;
             --topbar-h: 64px;
             --body-bg: #f1f5f9;
-            --sidebar-bg: #0f172a;
+            --sidebar-bg: #ECEFD8;
             --topbar-bg: #ffffff;
             --text-primary: #1e293b;
         }
@@ -71,8 +71,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
 
     <!-- Speculation Rules: Prefetch navigation pages on hover for instant smooth page transitions -->
@@ -118,11 +118,12 @@
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
-            --sidebar-bg: #0f172a;
-            --sidebar-hover: rgba(255, 255, 255, 0.07);
-            --sidebar-active: rgba(79, 70, 229, 0.25);
-            --sidebar-text: #94a3b8;
-            --sidebar-text-active: #e2e8f0;
+            --sidebar-bg: #ECEFD8;
+            --sidebar-hover: rgba(29, 35, 16, 0.06);
+            --sidebar-active: rgba(29, 35, 16, 0.11);
+            --sidebar-indicator: #F7F8ED;
+            --sidebar-text: #1D2310;
+            --sidebar-text-active: #1D2310;
             --body-bg: #f1f5f9;
             --topbar-bg: #ffffff;
             --card-bg: #ffffff;
@@ -137,7 +138,7 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Poppins', sans-serif;
             background: var(--body-bg);
             color: var(--text-primary);
             min-height: 100vh;
@@ -172,7 +173,7 @@
             gap: 12px;
             padding: 0 20px;
             height: var(--topbar-h);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(29, 35, 16, 0.12);
             text-decoration: none;
             flex-shrink: 0;
         }
@@ -180,20 +181,20 @@
         .sidebar-brand .brand-icon {
             width: 36px;
             height: 36px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            background: var(--sidebar-indicator);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1rem;
-            color: white;
+            color: var(--sidebar-text);
             flex-shrink: 0;
         }
 
         .sidebar-brand .brand-text {
             font-weight: 800;
             font-size: 1.1rem;
-            color: #f1f5f9;
+            color: var(--sidebar-text);
             letter-spacing: 0.5px;
             white-space: nowrap;
             transition: opacity var(--transition);
@@ -210,7 +211,7 @@
             overflow-y: auto;
             padding: 16px 0;
             scrollbar-width: thin;
-            scrollbar-color: #334155 transparent;
+            scrollbar-color: rgba(29, 35, 16, 0.28) transparent;
         }
 
         .sidebar-nav::-webkit-scrollbar {
@@ -222,7 +223,7 @@
         }
 
         .sidebar-nav::-webkit-scrollbar-thumb {
-            background: #334155;
+            background: rgba(29, 35, 16, 0.28);
             border-radius: 4px;
         }
 
@@ -231,7 +232,7 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1.2px;
-            color: #475569;
+            color: var(--sidebar-text);
             padding: 12px 20px 6px;
             white-space: nowrap;
             transition: opacity var(--transition);
@@ -287,11 +288,11 @@
         }
 
         .sidebar-nav .nav-link:hover .nav-icon {
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--sidebar-hover);
         }
 
         .sidebar-nav .nav-link.active {
-            color: #fff;
+            color: var(--sidebar-text);
             background: var(--sidebar-active);
         }
 
@@ -302,13 +303,14 @@
             top: 4px;
             bottom: 4px;
             width: 3px;
-            background: var(--primary-light);
+            background: var(--sidebar-indicator);
             border-radius: 0 3px 3px 0;
+            box-shadow: 0 0 0 1px rgba(29, 35, 16, 0.35);
         }
 
         .sidebar-nav .nav-link.active .nav-icon {
-            background: var(--primary);
-            color: white;
+            background: var(--sidebar-hover);
+            color: var(--sidebar-text);
         }
 
         /* Badge */
@@ -319,8 +321,8 @@
             min-width: 20px;
             height: 20px;
             padding: 0 6px;
-            background: var(--primary);
-            color: white;
+            background: var(--sidebar-indicator);
+            color: var(--sidebar-text);
             font-size: 0.65rem;
             font-weight: 700;
             border-radius: 10px;
@@ -334,7 +336,7 @@
 
         /* Sidebar footer - user profile */
         .sidebar-footer {
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            border-top: 1px solid rgba(29, 35, 16, 0.12);
             padding: 14px 16px;
             flex-shrink: 0;
         }
@@ -348,14 +350,14 @@
         .sidebar-user .user-avatar {
             width: 36px;
             height: 36px;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
+            background: var(--sidebar-indicator);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
             font-size: 0.9rem;
-            color: white;
+            color: var(--sidebar-text);
             flex-shrink: 0;
         }
 
@@ -372,7 +374,7 @@
         .sidebar-user .user-name {
             font-size: 0.825rem;
             font-weight: 600;
-            color: #e2e8f0;
+            color: var(--sidebar-text);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -380,11 +382,11 @@
 
         .sidebar-user .user-role {
             font-size: 0.7rem;
-            color: #64748b;
+            color: var(--sidebar-text);
         }
 
         .sidebar-user .user-logout {
-            color: #475569;
+            color: var(--sidebar-text);
             font-size: 0.85rem;
             cursor: pointer;
             background: none;
@@ -395,7 +397,7 @@
         }
 
         .sidebar-user .user-logout:hover {
-            color: var(--danger);
+            color: var(--sidebar-text);
         }
 
         /* ============================================================
