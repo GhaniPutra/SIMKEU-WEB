@@ -118,11 +118,11 @@ function createChartDefaults() {
 //         berdekatan dan proporsional di semua periode.
 // ============================================================
 function getCategoryPercentage(numLabels) {
-    if (numLabels <= 1) return 0.12;
-    if (numLabels <= 3) return 0.28;
-    if (numLabels <= 7) return 0.58;
-    if (numLabels <= 14) return 0.70;
-    return 0.82;
+    if (numLabels <= 1) return 0.10;
+    if (numLabels <= 3) return 0.20;
+    if (numLabels <= 7) return 0.30;
+    if (numLabels <= 14) return 0.40;
+    return 0.60;
 }
 
 // ============================================================
