@@ -133,7 +133,7 @@
 }
 
 .c-master .sc-icon {
-    background: rgba(59,130,246,0.12); /* Latar ikon master stok */
+    background: rgba(138,156,70,0.12); /* Latar ikon master stok */
     color: var(--accent); /* Warna ikon */
 }
 
@@ -272,7 +272,7 @@
 }
 
 .badge-master {
-    background: rgba(59,130,246,0.12); /* Latar badge master */
+    background: rgba(138,156,70,0.12); /* Latar badge master */
     color: var(--accent); /* Warna teks */
 }
 
@@ -341,7 +341,7 @@
     padding: 10px 12px; /* Ruang dalam input */
     border-radius: var(--radius); /* Sudut input */
     border: 1px solid var(--border); /* Border input */
-    background: var(--body-bg); /* Latar input */
+    background: var(--card-bg); /* Latar input */
     color: var(--text-primary); /* Warna teks */
     font-size: 0.9rem; /* Ukuran teks */
     font-weight: 600; /* Tebal */
@@ -373,7 +373,7 @@
 
 .btn-give {
     background: linear-gradient(135deg, var(--primary), var(--primary-light)); /* Warna tombol beri */
-    color: white; /* Warna teks tombol */
+    color: #F7F8ED; /* Warna teks tombol */
 }
 
 .btn-give:hover:not(:disabled) {
@@ -389,7 +389,7 @@
 
 .btn-pull:hover:not(:disabled) {
     background: var(--danger); /* Latar hover */
-    color: white; /* Warna teks hover */
+    color: #F7F8ED; /* Warna teks hover */
     border-color: transparent; /* Hilangkan border */
     transform: translateY(-2px); /* Naik sedikit */
     box-shadow: var(--shadow-md); /* Bayangan hover */
@@ -516,8 +516,8 @@
     display: inline-block; /* Tampilkan sebagai inline block */
     width: 16px; /* Lebar animasi spin */
     height: 16px; /* Tinggi animasi spin */
-    border: 2px solid rgba(255,255,255,0.4); /* Border spin */
-    border-top-color: white; /* Warna border atas */
+    border: 2px solid rgba(247,248,237,0.4); /* Border spin */
+    border-top-color: #F7F8ED; /* Warna border atas */
     border-radius: 50%; /* Bulat lengkap */
     animation: spin 0.6s linear infinite; /* Animasi berputar terus */
 }

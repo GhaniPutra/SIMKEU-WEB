@@ -89,10 +89,10 @@
     }
 
     /* Warna ikon sesuai tema */
-    .kpi-card.primary .kpi-icon { background: rgba(79,70,229,.12);  color: var(--primary); }
-    .kpi-card.danger  .kpi-icon { background: rgba(239,68,68,.12);  color: var(--danger);  }
-    .kpi-card.warning .kpi-icon { background: rgba(245,158,11,.12); color: var(--warning); }
-    .kpi-card.accent  .kpi-icon { background: rgba(6,182,212,.12);  color: var(--accent);  }
+    .kpi-card.primary .kpi-icon { background: rgba(107,123,53,.12);  color: var(--primary); }
+    .kpi-card.danger  .kpi-icon { background: rgba(58,66,37,.12);  color: var(--danger);  }
+    .kpi-card.warning .kpi-icon { background: rgba(167,183,100,.12); color: var(--warning); }
+    .kpi-card.accent  .kpi-icon { background: rgba(138,156,70,.12);  color: var(--accent);  }
 
     /* Nilai utama kartu (angka besar) */
     .kpi-value {
@@ -121,8 +121,8 @@
         margin-left: 4px;
     }
     /* Pengeluaran naik = merah (buruk), turun = hijau (baik) */
-    .trend-naik  { background: rgba(239,68,68,.12);  color: var(--danger);  }
-    .trend-turun { background: rgba(16,185,129,.12); color: var(--success); }
+    .trend-naik  { background: rgba(58,66,37,.12);  color: var(--danger);  }
+    .trend-turun { background: rgba(107,123,53,.12); color: var(--success); }
 
     /* ============================================================
        SECTION TITLE — Judul seksi dengan garis horizontal
@@ -219,7 +219,7 @@
         justify-content: center;
         font-size: 0.85rem;
         flex-shrink: 0;
-        color: white;
+        color: #F7F8ED;
     }
 
     .kategori-info  { flex: 1; min-width: 0; }
@@ -263,7 +263,7 @@
     .filter-bar .form-control:focus,
     .filter-bar .form-select:focus {
         border-color: var(--danger); /* Fokus merah sesuai tema pengeluaran */
-        box-shadow: 0 0 0 3px rgba(239,68,68,.1);
+        box-shadow: 0 0 0 3px rgba(58,66,37,.1);
     }
 
     /* ============================================================
@@ -277,7 +277,7 @@
 
     .data-table thead th {
         padding: 10px 14px;
-        background: #f8fafc;
+        background: #F7F8ED;
         color: var(--text-muted);
         font-weight: 600;
         font-size: 0.72rem;
@@ -296,7 +296,7 @@
     }
 
     .data-table tbody tr:last-child td { border-bottom: none; }
-    .data-table tbody tr:hover { background: #f8fafc; }
+    .data-table tbody tr:hover { background: #F7F8ED; }
 
     /* ============================================================
        BADGE KATEGORI — Label warna per jenis pengeluaran
@@ -309,7 +309,7 @@
         border-radius: 20px;
         font-size: 0.7rem;
         font-weight: 600;
-        color: white;
+        color: #F7F8ED;
     }
 
     /* ============================================================
@@ -319,7 +319,7 @@
         padding: 5px 12px;
         border-radius: 7px;
         border: 1px solid var(--border);
-        background: white;
+        background: #F7F8ED;
         font-size: 0.75rem;
         font-weight: 600;
         color: var(--text-muted);
@@ -330,7 +330,7 @@
     }
     .btn-detail:hover {
         background: var(--danger); /* Hover merah untuk halaman pengeluaran */
-        color: white;
+        color: #F7F8ED;
         border-color: var(--danger);
     }
 
@@ -348,7 +348,7 @@
 
     .btn-qa-primary {
         background: var(--danger);
-        color: white;
+        color: #F7F8ED;
         border: 1px solid transparent;
     }
 
@@ -382,7 +382,7 @@
     .pagination-wrapper .page-item.active .page-link {
         background: var(--danger); /* Paginasi aktif merah */
         border-color: var(--danger);
-        color: white;
+        color: #F7F8ED;
     }
     .pagination-wrapper .page-link:hover {
         background: var(--border);
@@ -669,7 +669,7 @@
                             $katInfo = $kategoriLabel[$expense->category] ?? [
                                 'label' => ucfirst($expense->category),
                                 'icon'  => 'fa-ellipsis',
-                                'warna' => '#94a3b8',
+                                'warna' => '#434D27',
                             ];
                         @endphp
                         <span class="badge-kategori" data-bg="{{ $katInfo['warna'] }}">
@@ -790,7 +790,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Konfigurasi tooltip bersama untuk semua chart
     // ============================================================
     const tooltipDefaults = {
-        backgroundColor: '#1e293b',         // Latar tooltip gelap
+        backgroundColor: '#1D2310',         // Latar tooltip gelap
         titleFont: { family: 'Poppins', size: 12 },
         bodyFont:  { family: 'Poppins', size: 11 },
         padding: 10,
@@ -817,7 +817,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 labels: trendLabels,
                 datasets: [{
                     label: 'Pengeluaran',
-                    backgroundColor: 'rgba(239,68,68,.72)',
+                    backgroundColor: 'rgba(58,66,37,.72)',
                     data: trendValues,
                     borderRadius: 4,
                     maxBarThickness: 28,
@@ -847,7 +847,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     },
                     y: {
                         beginAtZero: true,
-                        grid: { color: 'rgba(148, 163, 184, .18)' },
+                        grid: { color: 'rgba(67,77,39,.18)' },
                         ticks: {
                             font: { size: 10, family: 'Poppins' },
                             callback: (value) => value >= 1000000
@@ -907,7 +907,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 scales: {
                     x: {
                         beginAtZero: true,
-                        grid: { color: 'rgba(148, 163, 184, .18)' },
+                        grid: { color: 'rgba(67,77,39,.18)' },
                         ticks: {
                             font: { size: 9, family: 'Poppins' },
                             callback: (value) => value >= 1000000

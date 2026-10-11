@@ -1,7 +1,7 @@
 :root {
-    --expense-border: #e2e8f0;
-    --expense-bg: #ffffff;
-    --expense-panel: #f8fafc;
+    --expense-border: #DAE1B5;
+    --expense-bg: #F7F8ED;
+    --expense-panel: #F7F8ED;
 }
 
 .expense-form {
@@ -76,13 +76,13 @@
     padding: 10px 14px;
     font-size: 0.95rem;
     color: var(--text-primary);
-    background: #fff;
+    background: #FFFFFF;
 }
 
 .form-control:focus {
     outline: none;
     border-color: var(--danger);
-    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.08);
+    box-shadow: 0 0 0 4px rgba(58,66,37,0.08);
 }
 
 .summary-card {
@@ -137,7 +137,7 @@
 }
 
 .btn-qa-outline {
-    background: white;
+    background: #FFFFFF;
     color: var(--text-primary);
     border-color: var(--border);
 }
@@ -147,13 +147,13 @@
 }
 
 .btn-qa-success {
-    background: #10b981;
-    color: white;
+    background: #6B7B35;
+    color: #F7F8ED;
     border-color: transparent;
 }
 
 .btn-qa-success:hover {
-    background: #059669;
+    background: #4F5B2A;
 }
 
 @media (max-width: 1100px) {

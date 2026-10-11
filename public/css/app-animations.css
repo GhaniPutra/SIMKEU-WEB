@@ -120,7 +120,7 @@
    4. SKELETON LOADING — Placeholder berkedip saat data belum ada
 ============================================================ */
 .skeleton {
-    background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+    background: linear-gradient(90deg, #DAE1B5 25%, #F7F8ED 50%, #DAE1B5 75%);
     background-size: 200% 100%;
     animation: skeleton-shimmer 1.4s ease-in-out infinite;
     border-radius: 6px;
@@ -287,7 +287,7 @@
     left: 0;
     height: 2px;
     width: 0%;
-    background: linear-gradient(90deg, var(--primary, #4f46e5), var(--accent, #06b6d4));
+    background: linear-gradient(90deg, var(--primary, #6B7B35), var(--accent, #8A9C46));
     z-index: 9999;
     transition: width 200ms ease, opacity 300ms ease;
     pointer-events: none;

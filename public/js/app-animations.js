@@ -363,7 +363,7 @@
             const defaults = window.Chart.defaults;
             defaults.animation.duration = reducedMotion.matches ? 0 : 400;
             defaults.font.family = 'Poppins, sans-serif';
-            defaults.color = '#64748b';
+            defaults.color = '#434D27';
             defaults.elements.line.tension = 0;
             defaults.elements.line.fill = false;
             defaults.elements.point.radius = 2;
@@ -371,7 +371,7 @@
             defaults.plugins.legend.labels.boxWidth = 10;
             defaults.plugins.legend.labels.boxHeight = 10;
             defaults.plugins.legend.labels.padding = 14;
-            defaults.plugins.tooltip.backgroundColor = '#1e293b';
+            defaults.plugins.tooltip.backgroundColor = '#1D2310';
             defaults.plugins.tooltip.titleFont = { family: 'Poppins, sans-serif', size: 12 };
             defaults.plugins.tooltip.bodyFont = { family: 'Poppins, sans-serif', size: 11 };
             defaults.plugins.tooltip.padding = 10;

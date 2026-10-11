@@ -61,7 +61,7 @@ function getChartTitle() {
 //         Konfigurasi disesuaikan dengan periode filter aktif.
 // ============================================================
 function createChartDefaults() {
-    const gridLine = 'rgba(148, 163, 184, .18)';
+    const gridLine = 'rgba(67,77,39,.18)';
     const moneyTick = (value) => {
         if (value >= 1000000) return `Rp ${(value / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 })} jt`;
         if (value >= 1000) return `Rp ${(value / 1000).toLocaleString('id-ID', { maximumFractionDigits: 0 })} rb`;
@@ -78,7 +78,7 @@ function createChartDefaults() {
                 display: true,
                 text: getChartTitle(),
                 font: { size: 12, family: 'Poppins', weight: '500' },
-                color: '#64748b',
+                color: '#434D27',
                 padding: { bottom: 12 }
             },
             legend: {
@@ -155,7 +155,7 @@ function initTrendChart() {
             datasets: [
                 {
                     label: 'Pendapatan',
-                    backgroundColor: 'rgba(79,70,229,.78)',
+                    backgroundColor: 'rgba(107,123,53,.78)',
                     data: revenue,
                     borderRadius: 4,
                     maxBarThickness: 38,
@@ -165,7 +165,7 @@ function initTrendChart() {
                 },
                 {
                     label: 'Pengeluaran',
-                    backgroundColor: 'rgba(239,68,68,.72)',
+                    backgroundColor: 'rgba(58,66,37,.72)',
                     data: expenses,
                     borderRadius: 4,
                     maxBarThickness: 38,

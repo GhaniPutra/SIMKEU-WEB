@@ -79,10 +79,10 @@
 }
 
 /* Warna ikon KPI untuk tiap varian */
-.kpi-card.primary .kpi-icon { background: rgba(79,70,229,.12); color: var(--primary); }
-.kpi-card.success .kpi-icon { background: rgba(16,185,129,.12); color: var(--success); }
-.kpi-card.danger .kpi-icon { background: rgba(239,68,68,.12); color: var(--danger); }
-.kpi-card.accent .kpi-icon { background: rgba(6,182,212,.12); color: var(--accent); }
+.kpi-card.primary .kpi-icon { background: rgba(107,123,53,.12); color: var(--primary); }
+.kpi-card.success .kpi-icon { background: rgba(107,123,53,.12); color: var(--success); }
+.kpi-card.danger .kpi-icon { background: rgba(58,66,37,.12); color: var(--danger); }
+.kpi-card.accent .kpi-icon { background: rgba(138,156,70,.12); color: var(--accent); }
 
 /* Nilai utama pada kartu KPI */
 .kpi-value {
@@ -165,7 +165,7 @@
     align-items: center;
     padding: 14px 20px;
     border-bottom: 1px solid var(--border);
-    background: #f8fafc;
+    background: #FFFFFF;
 }
 
 /* Wrapper input pencarian */
@@ -184,7 +184,7 @@
     font-size: 0.82rem;
     font-family: inherit;
     color: var(--text-primary);
-    background: white;
+    background: #FFFFFF;
     transition: border-color 0.2s;
 }
 
@@ -192,7 +192,7 @@
 .toolbar-search input:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(79,70,229,0.08);
+    box-shadow: 0 0 0 3px rgba(107,123,53,0.08);
 }
 
 /* Ikon pencarian di dalam input */
@@ -214,7 +214,7 @@
     font-size: 0.82rem;
     font-family: inherit;
     color: var(--text-primary);
-    background: white;
+    background: #FFFFFF;
     cursor: pointer;
     text-align: left;
     text-align-last: left;
@@ -251,7 +251,7 @@
 /* Header tabel daftar pegawai */
 .data-table thead th {
     padding: 12px 16px;
-    background: #f8fafc;
+    background: #F7F8ED;
     color: var(--text-muted);
     font-weight: 600;
     font-size: 0.7rem;
@@ -270,7 +270,7 @@
 
 /* Hover pada baris tabel */
 .data-table tbody tr:hover {
-    background: #f8fafc;
+    background: #F7F8ED;
 }
 
 /* Hapus border bawah pada baris terakhir */
@@ -310,7 +310,7 @@
     gap: 6px;
     padding: 7px 14px;
     border-radius: 6px;
-    background: white;
+    background: #F7F8ED;
     color: var(--success);
     border: 1px solid var(--success);
     font-size: 0.75rem;
@@ -323,7 +323,7 @@
 /* Hover tombol atur stok */
 .btn-stock:hover {
     background: var(--success);
-    color: white;
+    color: #F7F8ED;
     border-color: var(--success);
 }
 
@@ -334,7 +334,7 @@
     gap: 6px;
     padding: 7px 14px;
     border-radius: 6px;
-    background: white;
+    background: #F7F8ED;
     color: var(--primary);
     border: 1px solid var(--primary);
     font-size: 0.75rem;
@@ -347,7 +347,7 @@
 /* Hover tombol edit */
 .btn-edit:hover {
     background: var(--primary);
-    color: white;
+    color: #F7F8ED;
 }
 
 /* Tombol hapus */
@@ -357,9 +357,9 @@
     gap: 6px;
     padding: 7px 14px;
     border-radius: 6px;
-    background: white;
-    color: var(--danger, #ef4444);
-    border: 1px solid var(--danger, #ef4444);
+    background: #F7F8ED;
+    color: var(--danger, #3A4225);
+    border: 1px solid var(--danger, #3A4225);
     font-size: 0.75rem;
     font-weight: 600;
     cursor: pointer;
@@ -368,8 +368,8 @@
 
 /* Hover tombol hapus */
 .btn-delete:hover {
-    background: var(--danger, #ef4444);
-    color: white;
+    background: var(--danger, #3A4225);
+    color: #F7F8ED;
 }
 
 /* Wrapper pagination */
@@ -397,7 +397,7 @@
 .pagination .page-item.active .page-link {
     background: var(--primary);
     border-color: var(--primary);
-    color: white;
+    color: #F7F8ED;
 }
 
 
@@ -428,7 +428,7 @@
     gap: 7px;
     padding: 8px 16px;
     background: var(--primary);
-    color: white;
+    color: #F7F8ED;
     border: none;
     border-radius: 9px;
     font-size: 0.82rem;
@@ -442,7 +442,7 @@
 /* Hover tombol tambah pegawai */
 .btn-add:hover {
     background: var(--primary-dark);
-    color: white;
+    color: #F7F8ED;
 }
 
 /* Styling dasar untuk badge role */
@@ -463,14 +463,14 @@
 
 /* Badge role pegawai */
 .role-pegawai {
-    background: rgba(59, 130, 246, 0.12);
-    color: #3b82f6;
-    border-color: rgba(59, 130, 246, 0.2);
+    background: rgba(138,156,70,0.12);
+    color: #8A9C46;
+    border-color: rgba(138,156,70,0.2);
 }
 
 /* Badge role admin */
 .role-admin {
-    background: rgba(239, 68, 68, 0.12);
-    color: #ef4444;
-    border-color: rgba(239, 68, 68, 0.2);
+    background: rgba(58,66,37,0.12);
+    color: #3A4225;
+    border-color: rgba(58,66,37,0.2);
 }

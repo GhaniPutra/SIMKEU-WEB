@@ -63,7 +63,7 @@
     .kpi-card.warning::before  { background: var(--warning);  }
     .kpi-card.danger::before   { background: var(--danger);   }
     .kpi-card.accent::before   { background: var(--accent);   }
-    .kpi-card.indigo::before   { background: #6366f1;         }
+    .kpi-card.indigo::before   { background: #8A9C46;         }
 
     /* Baris atas kartu: label dan ikon */
     .kpi-top {
@@ -90,12 +90,12 @@
     }
 
     /* Warna ikon per tema */
-    .kpi-card.primary .kpi-icon { background: rgba(79,70,229,.12);  color: var(--primary); }
-    .kpi-card.success .kpi-icon { background: rgba(16,185,129,.12); color: var(--success); }
-    .kpi-card.warning .kpi-icon { background: rgba(245,158,11,.12); color: var(--warning); }
-    .kpi-card.danger  .kpi-icon { background: rgba(239,68,68,.12);  color: var(--danger);  }
-    .kpi-card.accent  .kpi-icon { background: rgba(6,182,212,.12);  color: var(--accent);  }
-    .kpi-card.indigo  .kpi-icon { background: rgba(99,102,241,.12); color: #6366f1;        }
+    .kpi-card.primary .kpi-icon { background: rgba(107,123,53,.12);  color: var(--primary); }
+    .kpi-card.success .kpi-icon { background: rgba(107,123,53,.12); color: var(--success); }
+    .kpi-card.warning .kpi-icon { background: rgba(167,183,100,.12); color: var(--warning); }
+    .kpi-card.danger  .kpi-icon { background: rgba(58,66,37,.12);  color: var(--danger);  }
+    .kpi-card.accent  .kpi-icon { background: rgba(138,156,70,.12);  color: var(--accent);  }
+    .kpi-card.indigo  .kpi-icon { background: rgba(138,156,70,.12); color: #8A9C46;        }
 
     /* Nilai utama kartu (angka besar) */
     .kpi-value {
@@ -123,8 +123,8 @@
         border-radius: 20px;
         margin-left: 4px;
     }
-    .trend-up   { background: rgba(16,185,129,.12); color: var(--success); }
-    .trend-down { background: rgba(239,68,68,.12);  color: var(--danger);  }
+    .trend-up   { background: rgba(107,123,53,.12); color: var(--success); }
+    .trend-down { background: rgba(58,66,37,.12);  color: var(--danger);  }
 
     /* ============================================================
        SECTION TITLE — Judul antar seksi dengan garis
@@ -220,7 +220,7 @@
     .filter-bar .form-control:focus,
     .filter-bar .form-select:focus {
         border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(79,70,229,.12);
+        box-shadow: 0 0 0 3px rgba(107,123,53,.12);
     }
 
     /* ============================================================
@@ -234,7 +234,7 @@
 
     .data-table thead th {
         padding: 10px 14px;
-        background: #f8fafc;                /* Latar header tabel */
+        background: #F7F8ED;                /* Latar header tabel */
         color: var(--text-muted);
         font-weight: 600;
         font-size: 0.72rem;
@@ -256,7 +256,7 @@
     .data-table tbody tr:last-child td { border-bottom: none; }
 
     /* Highlight saat hover baris */
-    .data-table tbody tr:hover { background: #f8fafc; }
+    .data-table tbody tr:hover { background: #F7F8ED; }
 
     /* ============================================================
        BADGE — Label jenis / metode pembayaran
@@ -271,9 +271,9 @@
         font-weight: 600;
     }
     /* Warna badge per metode */
-    .badge-tunai    { background: rgba(16,185,129,.12); color: var(--success); }
-    .badge-transfer { background: rgba(79,70,229,.12);  color: var(--primary); }
-    .badge-qris     { background: rgba(6,182,212,.12);  color: var(--accent);  }
+    .badge-tunai    { background: rgba(107,123,53,.12); color: var(--success); }
+    .badge-transfer { background: rgba(107,123,53,.12);  color: var(--primary); }
+    .badge-qris     { background: rgba(138,156,70,.12);  color: var(--accent);  }
 
     /* ============================================================
        TOMBOL AKSI — Tombol lihat detail di tabel
@@ -282,7 +282,7 @@
         padding: 5px 12px;
         border-radius: 7px;
         border: 1px solid var(--border);
-        background: white;
+        background: #F7F8ED;
         font-size: 0.75rem;
         font-weight: 600;
         color: var(--text-muted);
@@ -293,7 +293,7 @@
     }
     .btn-detail:hover {
         background: var(--primary);
-        color: white;
+        color: #F7F8ED;
         border-color: var(--primary);
     }
 
@@ -328,7 +328,7 @@
     .pagination-wrapper .page-item.active .page-link {
         background: var(--primary);
         border-color: var(--primary);
-        color: white;
+        color: #F7F8ED;
     }
 
     .pagination-wrapper .page-link:hover {
@@ -712,9 +712,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // ============================================================
     // PALET WARNA — Konsisten dengan dashboard utama
     // ============================================================
-    const primary = '#4f46e5';   // Ungu (warna utama)
-    const success = '#10b981';   // Hijau (pemasukan / tunai)
-    const accent  = '#06b6d4';   // Biru muda (QRIS / aksen)
+    const primary = '#6B7B35';   // Ungu (warna utama)
+    const success = '#6B7B35';   // Hijau (pemasukan / tunai)
+    const accent  = '#8A9C46';   // Biru muda (QRIS / aksen)
 
     // ============================================================
     // DATA DARI HTML — Ambil nilai JSON dari atribut data
@@ -730,7 +730,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Dipakai bersama antara line chart dan doughnut chart
     // ============================================================
     const tooltipDefaults = {
-        backgroundColor: '#1e293b',          // Latar tooltip gelap
+        backgroundColor: '#1D2310',          // Latar tooltip gelap
         titleFont: { family: 'Poppins', size: 12 },
         bodyFont:  { family: 'Poppins', size: 11 },
         padding: 10,
@@ -752,7 +752,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 labels: chartLabels,
                 datasets: [{
                     label: 'Pemasukan',
-                    backgroundColor: 'rgba(79,70,229,.78)',
+                    backgroundColor: 'rgba(107,123,53,.78)',
                     data: chartData,
                     borderRadius: 4,
                     maxBarThickness: 28,
@@ -782,7 +782,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     },
                     y: {
                         beginAtZero: true,
-                        grid: { color: 'rgba(148, 163, 184, .18)' },
+                        grid: { color: 'rgba(67,77,39,.18)' },
                         ticks: {
                             font: { size: 10, family: 'Poppins' },
                             callback: (value) => value >= 1000000

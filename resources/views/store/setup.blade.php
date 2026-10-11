@@ -28,7 +28,7 @@
         }
 
         .setup-box {
-            background: white;
+            background: #FFFFFF;
             border-radius: 12px;
             box-shadow: 0 5px 25px rgba(0, 0, 0, 0.10);
             padding: 40px;
@@ -56,15 +56,16 @@
         /* Styling input form */
         .form-control {
             padding: 12px 15px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #DAE1B5;
             border-radius: 8px;
             font-size: 0.95rem;
             transition: all var(--transition);
+            background: #FFFFFF;
         }
 
         .form-control:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.25);
+            box-shadow: 0 0 0 0.2rem rgba(107,123,53,0.25);
         }
 
         .form-label {
@@ -79,7 +80,7 @@
             background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
             border: none;
             border-radius: 8px;
-            color: white;
+            color: #F7F8ED;
             font-weight: 600;
             font-size: 1rem;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -89,13 +90,13 @@
 
         .btn-setup:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
-            color: white;
+            box-shadow: 0 8px 20px rgba(107,123,53,0.3);
+            color: #F7F8ED;
         }
 
         .input-group-text {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
+            background-color: #FFFFFF;
+            border: 1px solid #DAE1B5;
             color: var(--text-muted);
         }
         
@@ -113,9 +114,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: #F7F8ED;
             font-size: 2rem;
-            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+            box-shadow: 0 4px 15px rgba(107,123,53,0.4);
         }
     </style>
 @endsection

@@ -93,9 +93,9 @@
         font-size: 0.78rem;
         font-weight: 600;
     }
-    .badge-tunai    { background: rgba(16,185,129,.12); color: var(--success); }
-    .badge-transfer { background: rgba(79,70,229,.12);  color: var(--primary); }
-    .badge-qris     { background: rgba(6,182,212,.12);  color: var(--accent);  }
+    .badge-tunai    { background: rgba(107,123,53,.12); color: var(--success); }
+    .badge-transfer { background: rgba(107,123,53,.12);  color: var(--primary); }
+    .badge-qris     { background: rgba(138,156,70,.12);  color: var(--accent);  }
 
     /* ============================================================
        TABEL ITEM — Daftar produk dalam transaksi ini
@@ -108,7 +108,7 @@
 
     .items-table thead th {
         padding: 10px 14px;
-        background: #f8fafc;
+        background: #F7F8ED;
         color: var(--text-muted);
         font-weight: 600;
         font-size: 0.72rem;
@@ -127,13 +127,13 @@
     }
 
     .items-table tbody tr:last-child td { border-bottom: none; }
-    .items-table tbody tr:hover { background: #f8fafc; }
+    .items-table tbody tr:hover { background: #F7F8ED; }
 
     /* ============================================================
        RINGKASAN TOTAL — Panel kanan bawah (subtotal, diskon, total)
     ============================================================ */
     .summary-box {
-        background: #f8fafc;
+        background: #F7F8ED;
         border-radius: 10px;
         padding: 20px;
         min-width: 280px; /* Lebar minimal box ringkasan */
@@ -178,7 +178,7 @@
         border-radius: 9px;
         font-size: 0.82rem;
         font-weight: 600;
-        background: white;
+        background: #F7F8ED;
         color: var(--text-primary);
         border: 1px solid var(--border);
         text-decoration: none;
@@ -186,7 +186,7 @@
     }
     .btn-back:hover {
         background: var(--primary);
-        color: white;
+        color: #F7F8ED;
         border-color: var(--primary);
     }
 

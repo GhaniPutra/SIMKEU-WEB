@@ -83,13 +83,13 @@
             border-radius: var(--radius);
             font-size: 1rem;
             transition: all var(--transition);
-            background: var(--body-bg);
+            background: #FFFFFF;
             font-weight: 500;
         }
         .form-control:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 4px rgba(var(--primary-rgb, 79 70 229), 0.1);
-            background: white;
+            background: #FFFFFF;
             transform: translateY(-1px);
         }
         .invalid-feedback {
@@ -112,7 +112,7 @@
             background: linear-gradient(135deg, var(--primary), var(--primary-light));
             border: none;
             border-radius: var(--radius);
-            color: white;
+            color: #F7F8ED;
             font-weight: 700;
             font-size: 1.05rem;
             transition: all var(--transition);

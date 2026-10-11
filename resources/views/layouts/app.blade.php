@@ -13,15 +13,16 @@
             --sidebar-w: 260px;
             --sidebar-collapsed-w: 72px;
             --topbar-h: 64px;
-            --body-bg: #f1f5f9;
+            --body-bg: #FAFAF7;
             --sidebar-bg: #ECEFD8;
-            --topbar-bg: #ffffff;
-            --text-primary: #1e293b;
+            --sidebar-indicator: #F7F8ED;
+            --topbar-bg: #FFFFFF;
+            --text-primary: #1D2310;
         }
 
         html, body {
-            background-color: #f1f5f9;
-            color: #1e293b;
+            background-color: var(--body-bg);
+            color: var(--text-primary);
         }
 
         /* Prevent sidebar collapse flash/jump on initial render */
@@ -111,25 +112,47 @@
             --sidebar-w: 260px;
             --sidebar-collapsed-w: 72px;
             --topbar-h: 64px;
-            --primary: #4f46e5;
-            --primary-dark: #3730a3;
-            --primary-light: #818cf8;
-            --accent: #06b6d4;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
+            --primary: #6B7B35;
+            --primary-dark: #4F5B2A;
+            --primary-light: #A7B764;
+            --accent: #8A9C46;
+            --success: #6B7B35;
+            --warning: #8A9C46;
+            --danger: #3A4225;
+            --primary-rgb: 107 123 53;
+            --success-rgb: 107 123 53;
+            --warning-rgb: 138 156 70;
+            --danger-rgb: 58 66 37;
+            --surface-light: #F7F8ED;
+            --surface-secondary: #ECEFD8;
+            --surface-alt: #DAE1B5;
+            --border-accent: #C0CC8A;
+            --text-secondary: #434D27;
             --sidebar-bg: #ECEFD8;
             --sidebar-hover: rgba(29, 35, 16, 0.06);
             --sidebar-active: rgba(29, 35, 16, 0.11);
             --sidebar-indicator: #F7F8ED;
             --sidebar-text: #1D2310;
             --sidebar-text-active: #1D2310;
-            --body-bg: #f1f5f9;
-            --topbar-bg: #ffffff;
-            --card-bg: #ffffff;
-            --text-primary: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
+            --body-bg: #FAFAF7;
+            --topbar-bg: #FFFFFF;
+            --card-bg: #FFFFFF;
+            --text-primary: #1D2310;
+            --text-muted: #434D27;
+            --border: #DAE1B5;
+            --bs-primary: var(--primary);
+            --bs-primary-rgb: var(--primary-rgb);
+            --bs-success: var(--success);
+            --bs-success-rgb: var(--success-rgb);
+            --bs-warning: var(--warning);
+            --bs-warning-rgb: var(--warning-rgb);
+            --bs-danger: var(--danger);
+            --bs-danger-rgb: var(--danger-rgb);
+            --bs-body-bg: var(--card-bg);
+            --bs-body-color: var(--text-primary);
+            --bs-border-color: var(--border);
+            --bs-link-color: var(--primary);
+            --bs-link-hover-color: var(--primary-dark);
             --shadow-sm: 0 1px 3px rgba(0, 0, 0, .08);
             --shadow-md: 0 4px 16px rgba(0, 0, 0, .10);
             --shadow-lg: 0 10px 40px rgba(0, 0, 0, .14);
@@ -495,7 +518,7 @@
             height: 7px;
             background: var(--danger);
             border-radius: 50%;
-            border: 1.5px solid white;
+            border: 1.5px solid #F7F8ED;
         }
 
         .topbar-divider {
@@ -530,7 +553,7 @@
             justify-content: center;
             font-weight: 700;
             font-size: 0.8rem;
-            color: white;
+            color: #F7F8ED;
         }
 
         .topbar-user .uname {

@@ -80,7 +80,7 @@ Dashboard Penjualan Pegawai - SIMKEU
         }
 
         .kpi-card.indigo::before {
-            background: #6366f1;
+            background: #8A9C46;
         }
 
         .kpi-top {
@@ -109,33 +109,33 @@ Dashboard Penjualan Pegawai - SIMKEU
         }
 
         .kpi-card.primary .kpi-icon {
-            background: rgba(79, 70, 229, .12);
+            background: rgba(107,123,53,.12);
             color: var(--primary);
         }
 
         .kpi-card.success .kpi-icon {
-            background: rgba(16, 185, 129, .12);
+            background: rgba(107,123,53,.12);
             color: var(--success);
         }
 
         .kpi-card.warning .kpi-icon {
-            background: rgba(245, 158, 11, .12);
+            background: rgba(167,183,100,.12);
             color: var(--warning);
         }
 
         .kpi-card.danger .kpi-icon {
-            background: rgba(239, 68, 68, .12);
+            background: rgba(58,66,37,.12);
             color: var(--danger);
         }
 
         .kpi-card.accent .kpi-icon {
-            background: rgba(6, 182, 212, .12);
+            background: rgba(138,156,70,.12);
             color: var(--accent);
         }
 
         .kpi-card.indigo .kpi-icon {
-            background: rgba(99, 102, 241, .12);
-            color: #6366f1;
+            background: rgba(138,156,70,.12);
+            color: #8A9C46;
         }
 
         .kpi-value {
@@ -215,7 +215,7 @@ Dashboard Penjualan Pegawai - SIMKEU
 
         .data-table thead th {
             padding: 12px 16px;
-            background: #f8fafc;
+            background: #F7F8ED;
             color: var(--text-muted);
             font-weight: 600;
             font-size: 0.7rem;
@@ -232,7 +232,7 @@ Dashboard Penjualan Pegawai - SIMKEU
         }
 
         .data-table tbody tr:hover {
-            background: #f8fafc;
+            background: #F7F8ED;
         }
 
         .data-table tbody tr:last-child td {
@@ -245,7 +245,7 @@ Dashboard Penjualan Pegawai - SIMKEU
             gap: 8px;
             padding: 10px 18px;
             background: var(--text-muted);
-            color: white;
+            color: #F7F8ED;
             border: none;
             border-radius: 8px;
             font-size: 0.875rem;
@@ -280,7 +280,7 @@ Dashboard Penjualan Pegawai - SIMKEU
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: #F7F8ED;
             font-size: 1.5rem;
             font-weight: 700;
         }
@@ -308,13 +308,13 @@ Dashboard Penjualan Pegawai - SIMKEU
         }
 
         .role-pegawai {
-            background: rgba(59, 130, 246, 0.12);
-            color: #3b82f6;
+            background: rgba(138,156,70,0.12);
+            color: #8A9C46;
         }
 
         .role-admin {
-            background: rgba(239, 68, 68, 0.12);
-            color: #ef4444;
+            background: rgba(58,66,37,0.12);
+            color: #3A4225;
         }
     </style>
 @endsection

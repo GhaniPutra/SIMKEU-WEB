@@ -69,7 +69,7 @@
             </button>
 
             @if(!empty($search) || !empty($roleFilter)) {{-- Tampilkan reset saat filter aktif --}}
-                <a href="{{ route('employees.index') }}" class="btn-add" style="background:#e2e8f0;color:var(--text-primary);"> {{-- Tombol reset filter --}}
+                <a href="{{ route('employees.index') }}" class="btn-add" style="background:#DAE1B5;color:var(--text-primary);"> {{-- Tombol reset filter --}}
                     <i class="fas fa-xmark"></i> Reset
                 </a>
             @endif

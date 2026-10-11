@@ -446,9 +446,9 @@
                         datasets: [{
                             label: 'Pendapatan',
                             data: trendRevenue,
-                            borderColor: '#4f46e5',
+                            borderColor: '#6B7B35',
                             backgroundColor: 'transparent',
-                            pointBackgroundColor: '#4f46e5',
+                            pointBackgroundColor: '#6B7B35',
                             pointRadius: 2,
                             pointHoverRadius: 4,
                             fill: false,
@@ -469,18 +469,18 @@
                             }
                         },
                         scales: {
-                            x: { grid: { display: false }, ticks: { maxTicksLimit: 8, autoSkip: true, color: '#64748b' } },
+                            x: { grid: { display: false }, ticks: { maxTicksLimit: 8, autoSkip: true, color: '#434D27' } },
                             y: {
                                 beginAtZero: true,
                                 ticks: {
-                                    color: '#64748b',
+                                    color: '#434D27',
                                     callback: (value) => value >= 1000000
                                         ? `Rp ${(value / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 })} jt`
                                         : value >= 1000
                                             ? `Rp ${(value / 1000).toLocaleString('id-ID', { maximumFractionDigits: 0 })} rb`
                                             : currency.format(value)
                                 },
-                                grid: { color: 'rgba(148, 163, 184, .18)' }
+                                grid: { color: 'rgba(67,77,39,.18)' }
                             }
                         }
                     }

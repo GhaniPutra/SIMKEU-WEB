@@ -165,7 +165,7 @@
 
             {{-- Tombol reset filter: hapus semua parameter pencarian --}}
             @if($search || $categoryFilter)
-                <a href="{{ route('products.index', array_merge(request()->except(['search', 'category_id', 'products_page']), ['tab' => 'produk'])) }}" class="btn-add" style="background:#e2e8f0;color:var(--text-primary);">
+                <a href="{{ route('products.index', array_merge(request()->except(['search', 'category_id', 'products_page']), ['tab' => 'produk'])) }}" class="btn-add" style="background:#DAE1B5;color:var(--text-primary);">
                     <i class="fas fa-xmark"></i> Reset
                 </a>
             @endif
@@ -228,7 +228,7 @@
                                             border-radius:20px;
                                             font-size:0.72rem;
                                             font-weight:600;
-                                            background:rgba(79,70,229,.08);
+                                            background:rgba(107,123,53,.08);
                                             color:var(--primary);
                                         ">{{ $product->category->name }}</span>
                                     @else

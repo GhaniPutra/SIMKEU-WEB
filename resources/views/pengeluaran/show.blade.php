@@ -56,10 +56,10 @@
        Ditampilkan di atas sebagai focal point halaman
     ============================================================ */
     .amount-highlight {
-        background: linear-gradient(135deg, #ef4444 0%, #f97316 100%); /* Gradasi merah–oranye */
+        background: linear-gradient(135deg, #3A4225 0%, #4F5B2A 100%); /* Gradasi merah–oranye */
         border-radius: 14px;
         padding: 28px 24px;
-        color: white;
+        color: #F7F8ED;
         margin-bottom: 24px;
         position: relative;
         overflow: hidden;
@@ -72,7 +72,7 @@
         right: -40px; top: -40px;
         width: 160px; height: 160px;
         border-radius: 50%;
-        background: rgba(255,255,255,0.07);
+        background: rgba(247,248,237,0.07);
     }
 
     .amount-highlight .ah-label {
@@ -147,14 +147,14 @@
         border-radius: 20px;
         font-size: 0.8rem;
         font-weight: 600;
-        color: white;
+        color: #F7F8ED;
     }
 
     /* ============================================================
        KOTAK PRODUK — Info produk terkait (untuk kategori beli_stok)
     ============================================================ */
     .produk-box {
-        background: #f8fafc;
+        background: #F7F8ED;
         border-radius: 10px;
         padding: 16px 18px;
         border: 1px solid var(--border);
@@ -167,7 +167,7 @@
     /* Kotak ikon produk */
     .produk-icon {
         width: 42px; height: 42px;
-        background: rgba(79,70,229,.1);
+        background: rgba(107,123,53,.1);
         border-radius: 10px;
         display: flex;
         align-items: center;
@@ -192,7 +192,7 @@
         border-radius: 9px;
         font-size: 0.82rem;
         font-weight: 600;
-        background: white;
+        background: #F7F8ED;
         color: var(--text-primary);
         border: 1px solid var(--border);
         text-decoration: none;
@@ -200,7 +200,7 @@
     }
     .btn-back:hover {
         background: var(--danger); /* Hover merah untuk halaman pengeluaran */
-        color: white;
+        color: #F7F8ED;
         border-color: var(--danger);
     }
 
@@ -224,7 +224,7 @@
     $katInfo = $kategoriLabel[$expense->category] ?? [
         'label' => ucfirst($expense->category),
         'icon'  => 'fa-ellipsis',
-        'warna' => '#94a3b8',
+        'warna' => '#434D27',
     ];
 @endphp
 

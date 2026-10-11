@@ -32,7 +32,7 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        background: #f8fafc;
+        background: #FFFFFF;
     }
 
     .form-card-header i { color: var(--primary); font-size: 1.1rem; }
@@ -47,7 +47,7 @@
     /* Chip nama produk di header —— menampilkan produk yang sedang diedit */
     .product-chip {
         margin-left: auto;
-        background: rgba(79,70,229,.08);
+        background: rgba(107,123,53,.08);
         color: var(--primary);
         padding: 4px 12px;
         border-radius: 20px;
@@ -87,7 +87,7 @@
         font-size: 0.875rem;
         font-family: inherit;
         color: var(--text-primary);
-        background: white;
+        background: #FFFFFF;
         transition: border-color 0.2s, box-shadow 0.2s;
     }
 
@@ -95,7 +95,7 @@
     .form-select:focus {
         outline: none;
         border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(79,70,229,0.08);
+        box-shadow: 0 0 0 3px rgba(107,123,53,0.08);
     }
 
     /* Tampilan field yang gagal validasi */
@@ -127,8 +127,8 @@
        INFORMASI STOK SAAT INI — Banner info stok aktual
     ============================================================ */
     .stock-info-banner {
-        background: rgba(79,70,229,.06);
-        border: 1px solid rgba(79,70,229,.15);
+        background: rgba(107,123,53,.06);
+        border: 1px solid rgba(107,123,53,.15);
         border-radius: 9px;
         padding: 12px 16px;
         margin-bottom: 20px;
@@ -163,7 +163,7 @@
     .btn-submit {
         padding: 10px 24px;
         background: var(--primary);
-        color: white;
+        color: #F7F8ED;
         border: none;
         border-radius: 9px;
         font-size: 0.875rem;
@@ -179,7 +179,7 @@
 
     .btn-cancel {
         padding: 10px 24px;
-        background: white;
+        background: #FFFFFF;
         color: var(--text-muted);
         border: 1px solid var(--border);
         border-radius: 9px;
@@ -193,7 +193,7 @@
         transition: all 0.2s;
     }
 
-    .btn-cancel:hover { background: #f1f5f9; color: var(--text-primary); }
+    .btn-cancel:hover { background: #F7F8ED; color: var(--text-primary); }
 
     /* ============================================================
        PREVIEW GAMBAR PRODUK

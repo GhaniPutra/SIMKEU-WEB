@@ -38,7 +38,7 @@
     flex: 0 0 46px;
     border-radius: 13px;
     background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: #fff;
+    color: #F7F8ED;
     font-size: 1.1rem;
 }
 
@@ -74,18 +74,18 @@
 }
 
 .employee-role {
-    background: rgba(79, 70, 229, .1);
+    background: rgba(107,123,53,.1);
     color: var(--primary);
 }
 
 .employee-verification.is-verified {
-    background: rgba(16, 185, 129, .11);
+    background: rgba(107,123,53,.11);
     color: var(--success);
 }
 
 .employee-verification.is-unverified {
-    background: rgba(245, 158, 11, .13);
-    color: #b45309;
+    background: rgba(167,183,100,.13);
+    color: #4F5B2A;
 }
 
 .employee-back {
@@ -140,7 +140,7 @@
 }
 
 .employee-tab.active {
-    background: rgba(79, 70, 229, .11);
+    background: rgba(107,123,53,.11);
     color: var(--primary);
 }
 
@@ -151,7 +151,7 @@
     height: 19px;
     padding: 0 5px;
     border-radius: 999px;
-    background: rgba(239, 68, 68, .12);
+    background: rgba(58,66,37,.12);
     color: var(--danger);
     font-size: .68rem;
 }
@@ -208,14 +208,14 @@
     height: 34px;
     margin-bottom: 11px;
     border-radius: 9px;
-    background: rgba(79, 70, 229, .1);
+    background: rgba(107,123,53,.1);
     color: var(--primary);
 }
 
-.kpi-transactions .employee-kpi-icon { background: rgba(16, 185, 129, .1); color: var(--success); }
-.kpi-units .employee-kpi-icon { background: rgba(6, 182, 212, .1); color: var(--accent); }
-.kpi-attention .employee-kpi-icon { background: rgba(245, 158, 11, .13); color: #b45309; }
-.kpi-month .employee-kpi-icon { background: rgba(129, 140, 248, .13); color: var(--primary); }
+.kpi-transactions .employee-kpi-icon { background: rgba(107,123,53,.1); color: var(--success); }
+.kpi-units .employee-kpi-icon { background: rgba(138,156,70,.1); color: var(--accent); }
+.kpi-attention .employee-kpi-icon { background: rgba(167,183,100,.13); color: #4F5B2A; }
+.kpi-month .employee-kpi-icon { background: rgba(167,183,100,.13); color: var(--primary); }
 
 .employee-kpi-label {
     margin-bottom: 6px;
@@ -247,7 +247,7 @@
 
 .kpi-attention .employee-kpi-note span {
     flex: 0 0 auto;
-    color: #b45309;
+    color: #4F5B2A;
     font-weight: 700;
 }
 
@@ -401,17 +401,17 @@
 }
 
 .status-empty {
-    background: rgba(239, 68, 68, .11);
+    background: rgba(58,66,37,.11);
     color: var(--danger);
 }
 
 .status-low {
-    background: rgba(245, 158, 11, .14);
-    color: #b45309;
+    background: rgba(167,183,100,.14);
+    color: #4F5B2A;
 }
 
 .status-normal {
-    background: rgba(16, 185, 129, .11);
+    background: rgba(107,123,53,.11);
     color: var(--success);
 }
 
@@ -565,7 +565,7 @@
 }
 
 .stock-total-empty > strong { color: var(--danger); }
-.stock-total-low > strong { color: #b45309; }
+.stock-total-low > strong { color: #4F5B2A; }
 .stock-total-normal > strong { color: var(--success); }
 .stock-total-unallocated > strong { color: var(--text-muted); }
 
@@ -629,12 +629,12 @@
 }
 
 .master-balance {
-    background: rgba(6, 182, 212, .1);
+    background: rgba(138,156,70,.1);
     color: var(--accent);
 }
 
 .employee-balance {
-    background: rgba(79, 70, 229, .1);
+    background: rgba(107,123,53,.1);
     color: var(--primary);
 }
 
@@ -745,12 +745,12 @@
     height: 30px;
     flex: 0 0 30px;
     border-radius: 50%;
-    background: rgba(16, 185, 129, .12);
+    background: rgba(107,123,53,.12);
     color: var(--success);
 }
 
 .employee-toast.error .employee-toast-icon {
-    background: rgba(239, 68, 68, .12);
+    background: rgba(58,66,37,.12);
     color: var(--danger);
 }
 
