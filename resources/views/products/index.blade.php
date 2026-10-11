@@ -165,7 +165,7 @@
 
             {{-- Tombol reset filter: hapus semua parameter pencarian --}}
             @if($search || $categoryFilter)
-                <a href="{{ route('products.index', array_merge(request()->except(['search', 'category_id', 'products_page']), ['tab' => 'produk'])) }}" class="btn-add" style="background:#DAE1B5;color:var(--text-primary);">
+                <a href="{{ route('products.index', array_merge(request()->except(['search', 'category_id', 'products_page']), ['tab' => 'produk'])) }}" class="btn-add btn-reset">
                     <i class="fas fa-xmark"></i> Reset
                 </a>
             @endif

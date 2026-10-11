@@ -273,7 +273,7 @@
 
 .badge-master {
     background: rgba(138,156,70,0.12); /* Latar badge master */
-    color: var(--accent); /* Warna teks */
+    color: var(--primary-dark); /* Warna teks */
 }
 
 .badge-employee {
@@ -282,12 +282,12 @@
 }
 
 .badge-low {
-    background: rgba(var(--warning-rgb, 245 158 11), 0.15); /* Latar badge low */
+    background: var(--warning-bg); /* Latar badge low */
     color: var(--warning); /* Warna teks */
 }
 
 .badge-zero {
-    background: rgba(var(--danger-rgb, 239 68 68), 0.12); /* Latar badge kosong */
+    background: var(--danger-bg); /* Latar badge kosong */
     color: var(--danger); /* Warna teks */
 }
 

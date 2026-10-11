@@ -91,9 +91,9 @@
 
     /* Warna ikon per tema */
     .kpi-card.primary .kpi-icon { background: rgba(107,123,53,.12);  color: var(--primary); }
-    .kpi-card.success .kpi-icon { background: rgba(107,123,53,.12); color: var(--success); }
-    .kpi-card.warning .kpi-icon { background: rgba(167,183,100,.12); color: var(--warning); }
-    .kpi-card.danger  .kpi-icon { background: rgba(58,66,37,.12);  color: var(--danger);  }
+    .kpi-card.success .kpi-icon { background: var(--success-bg); color: var(--success); }
+    .kpi-card.warning .kpi-icon { background: var(--warning-bg); color: var(--warning); }
+    .kpi-card.danger  .kpi-icon { background: var(--danger-bg);  color: var(--danger);  }
     .kpi-card.accent  .kpi-icon { background: rgba(138,156,70,.12);  color: var(--accent);  }
     .kpi-card.indigo  .kpi-icon { background: rgba(138,156,70,.12); color: #8A9C46;        }
 
@@ -123,8 +123,8 @@
         border-radius: 20px;
         margin-left: 4px;
     }
-    .trend-up   { background: rgba(107,123,53,.12); color: var(--success); }
-    .trend-down { background: rgba(58,66,37,.12);  color: var(--danger);  }
+    .trend-up   { background: var(--success-bg); color: var(--success); }
+    .trend-down { background: var(--danger-bg);  color: var(--danger);  }
 
     /* ============================================================
        SECTION TITLE — Judul antar seksi dengan garis
@@ -271,9 +271,9 @@
         font-weight: 600;
     }
     /* Warna badge per metode */
-    .badge-tunai    { background: rgba(107,123,53,.12); color: #6B7B35; }
-    .badge-transfer { background: rgba(138,156,70,.12); color: #8A9C46; }
-    .badge-qris     { background: rgba(167,183,100,.12); color: #A7B764; }
+    .badge-tunai    { background: rgba(107,123,53,.18); color: var(--primary-dark); }
+    .badge-transfer { background: rgba(138,156,70,.18); color: var(--primary-dark); }
+    .badge-qris     { background: rgba(167,183,100,.18); color: var(--primary-dark); }
 
     /* ============================================================
        TOMBOL AKSI — Tombol lihat detail di tabel

@@ -90,8 +90,8 @@
 
     /* Warna ikon sesuai tema */
     .kpi-card.primary .kpi-icon { background: rgba(107,123,53,.12);  color: var(--primary); }
-    .kpi-card.danger  .kpi-icon { background: rgba(58,66,37,.12);  color: var(--danger);  }
-    .kpi-card.warning .kpi-icon { background: rgba(167,183,100,.12); color: var(--warning); }
+    .kpi-card.danger  .kpi-icon { background: var(--danger-bg);  color: var(--danger);  }
+    .kpi-card.warning .kpi-icon { background: var(--warning-bg); color: var(--warning); }
     .kpi-card.accent  .kpi-icon { background: rgba(138,156,70,.12);  color: var(--accent);  }
 
     /* Nilai utama kartu (angka besar) */
@@ -121,8 +121,8 @@
         margin-left: 4px;
     }
     /* Pengeluaran naik = merah (buruk), turun = hijau (baik) */
-    .trend-naik  { background: rgba(58,66,37,.12);  color: var(--danger);  }
-    .trend-turun { background: rgba(107,123,53,.12); color: var(--success); }
+    .trend-naik  { background: var(--danger-bg);  color: var(--danger);  }
+    .trend-turun { background: var(--success-bg); color: var(--success); }
 
     /* ============================================================
        SECTION TITLE — Judul seksi dengan garis horizontal

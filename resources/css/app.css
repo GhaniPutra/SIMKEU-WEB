@@ -61,6 +61,12 @@
 
     --color-destructive: var(--destructive);
     --color-destructive-foreground: var(--destructive-foreground);
+    --color-success: var(--success);
+    --color-success-bg: var(--success-bg);
+    --color-warning: var(--warning);
+    --color-warning-bg: var(--warning-bg);
+    --color-danger: var(--danger);
+    --color-danger-bg: var(--danger-bg);
 
     --color-border: var(--border);
     --color-input: var(--input);
@@ -97,25 +103,37 @@
     --muted-foreground: #434D27;
     --accent: #DAE1B5;
     --accent-foreground: #1D2310;
-    --destructive: #3A4225;
-    --destructive-foreground: #F7F8ED;
-    --border: #DAE1B5;
-    --input: #DAE1B5;
-    --ring: #8A9C46;
+    --success: #2F7D45;
+    --success-bg: #E8F4EA;
+    --warning: #946200;
+    --warning-bg: #FFF4D6;
+    --danger: #B42318;
+    --danger-bg: #FDECEC;
+    --success-rgb: 47 125 69;
+    --warning-rgb: 148 98 0;
+    --danger-rgb: 180 35 24;
+    --destructive: var(--danger);
+    --destructive-foreground: #FDECEC;
+    --border: #E3E6DD;
+    --input: #C6CCBB;
+    --ring: #6B7B35;
     --chart-1: #6B7B35;
     --chart-2: #4F5B2A;
     --chart-3: #8A9C46;
     --chart-4: #A7B764;
     --chart-5: #3A4225;
     --radius: 0.625rem;
-    --sidebar: #ECEFD8;
+    --sidebar: #F7F8F4;
     --sidebar-foreground: #1D2310;
-    --sidebar-primary: #6B7B35;
+    --sidebar-primary: var(--sidebar-indicator);
     --sidebar-primary-foreground: #F7F8ED;
-    --sidebar-accent: #DAE1B5;
+    --sidebar-hover: #F4F6EF;
+    --sidebar-active: #E8EDDA;
+    --sidebar-indicator: #6B7B35;
+    --sidebar-accent: var(--sidebar-active);
     --sidebar-accent-foreground: #1D2310;
-    --sidebar-border: #C0CC8A;
-    --sidebar-ring: #8A9C46;
+    --sidebar-border: var(--border);
+    --sidebar-ring: var(--sidebar-indicator);
 }
 
 .dark {
@@ -133,8 +151,17 @@
     --muted-foreground: #DAE1B5;
     --accent: #6B7B35;
     --accent-foreground: #F7F8ED;
-    --destructive: #3A4225;
-    --destructive-foreground: #F7F8ED;
+    --success: #2F7D45;
+    --success-bg: #E8F4EA;
+    --warning: #946200;
+    --warning-bg: #FFF4D6;
+    --danger: #B42318;
+    --danger-bg: #FDECEC;
+    --success-rgb: 47 125 69;
+    --warning-rgb: 148 98 0;
+    --danger-rgb: 180 35 24;
+    --destructive: var(--danger);
+    --destructive-foreground: #FDECEC;
     --border: #434D27;
     --input: #434D27;
     --ring: #A7B764;

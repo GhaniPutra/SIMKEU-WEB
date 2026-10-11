@@ -70,9 +70,9 @@
 }
 
 .kpi-card.primary .kpi-icon { background: rgba(107,123,53,.12); color: var(--primary); }
-.kpi-card.success .kpi-icon { background: rgba(107,123,53,.12); color: var(--success); }
-.kpi-card.warning .kpi-icon { background: rgba(167,183,100,.12); color: var(--warning); }
-.kpi-card.danger .kpi-icon  { background: rgba(58,66,37,.12);  color: var(--danger);  }
+.kpi-card.success .kpi-icon { background: var(--success-bg); color: var(--success); }
+.kpi-card.warning .kpi-icon { background: var(--warning-bg); color: var(--warning); }
+.kpi-card.danger .kpi-icon  { background: var(--danger-bg);  color: var(--danger);  }
 
 .kpi-value { /* Angka utama pada kartu */
     font-size: 1.5rem; /* Ukuran besar */
@@ -220,6 +220,8 @@
 }
 
 .btn-add:hover { background: var(--primary-dark); color: #F7F8ED; } /* Hover */
+.btn-reset { background: var(--surface-selected); color: var(--text-primary); }
+.btn-reset:hover { background: var(--surface-hover); color: var(--text-primary); }
 
 /* ============================================================
    TABEL DATA PRODUK
@@ -267,9 +269,9 @@
     font-weight: 700; /* Tebal */
 }
 
-.stock-ok { background: rgba(107,123,53,.12); color: var(--success); } /* Normal */
-.stock-low { background: rgba(58,66,37,.12); color: var(--danger); } /* Rendah */
-.stock-empty { background: rgba(67,77,39,.12); color: var(--text-muted); } /* Habis */
+.stock-ok { background: var(--success-bg); color: var(--success); } /* Normal */
+.stock-low { background: var(--warning-bg); color: var(--warning); } /* Rendah */
+.stock-empty { background: var(--danger-bg); color: var(--danger); } /* Habis */
 
 /* ============================================================
    TOMBOL AKSI TABEL (Edit, Hapus, Stok)

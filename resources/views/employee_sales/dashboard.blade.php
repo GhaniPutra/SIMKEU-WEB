@@ -114,17 +114,17 @@ Dashboard Penjualan Pegawai - SIMKEU
         }
 
         .kpi-card.success .kpi-icon {
-            background: rgba(107,123,53,.12);
+            background: var(--success-bg);
             color: var(--success);
         }
 
         .kpi-card.warning .kpi-icon {
-            background: rgba(167,183,100,.12);
+            background: var(--warning-bg);
             color: var(--warning);
         }
 
         .kpi-card.danger .kpi-icon {
-            background: rgba(58,66,37,.12);
+            background: var(--danger-bg);
             color: var(--danger);
         }
 
@@ -309,7 +309,12 @@ Dashboard Penjualan Pegawai - SIMKEU
 
         .role-pegawai {
             background: rgba(138,156,70,0.12);
-            color: #8A9C46;
+            color: var(--primary-dark);
+        }
+
+        .status-complete {
+            background: var(--success-bg);
+            color: var(--success);
         }
 
         .role-admin {
@@ -425,7 +430,7 @@ Dashboard Penjualan Pegawai - SIMKEU
                                 <td>{{ $sale->saleItems->sum('quantity') }}</td>
                                 <td>Rp {{ number_format($sale->total, 0, ',', '.') }}</td>
                                 <td>
-                                    <span class="role-badge role-pegawai">Selesai</span>
+                                    <span class="role-badge status-complete">Selesai</span>
                                 </td>
                             </tr>
                         @endforeach

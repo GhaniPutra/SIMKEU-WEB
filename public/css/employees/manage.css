@@ -214,7 +214,7 @@
 
 .kpi-transactions .employee-kpi-icon { background: rgba(107,123,53,.1); color: var(--success); }
 .kpi-units .employee-kpi-icon { background: rgba(138,156,70,.1); color: var(--accent); }
-.kpi-attention .employee-kpi-icon { background: rgba(167,183,100,.13); color: #4F5B2A; }
+.kpi-attention .employee-kpi-icon { background: var(--warning-bg); color: var(--warning); }
 .kpi-month .employee-kpi-icon { background: rgba(167,183,100,.13); color: var(--primary); }
 
 .employee-kpi-label {
@@ -401,17 +401,17 @@
 }
 
 .status-empty {
-    background: rgba(58,66,37,.11);
+    background: var(--danger-bg);
     color: var(--danger);
 }
 
 .status-low {
-    background: rgba(167,183,100,.14);
-    color: #4F5B2A;
+    background: var(--warning-bg);
+    color: var(--warning);
 }
 
 .status-normal {
-    background: rgba(107,123,53,.11);
+    background: var(--success-bg);
     color: var(--success);
 }
 
@@ -630,7 +630,7 @@
 
 .master-balance {
     background: rgba(138,156,70,.1);
-    color: var(--accent);
+    color: var(--primary-dark);
 }
 
 .employee-balance {
@@ -745,12 +745,12 @@
     height: 30px;
     flex: 0 0 30px;
     border-radius: 50%;
-    background: rgba(107,123,53,.12);
+    background: var(--success-bg);
     color: var(--success);
 }
 
 .employee-toast.error .employee-toast-icon {
-    background: rgba(58,66,37,.12);
+    background: var(--danger-bg);
     color: var(--danger);
 }
 

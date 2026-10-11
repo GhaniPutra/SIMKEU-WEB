@@ -14,8 +14,8 @@
             --sidebar-collapsed-w: 72px;
             --topbar-h: 64px;
             --body-bg: #FAFAF7;
-            --sidebar-bg: #ECEFD8;
-            --sidebar-indicator: #F7F8ED;
+            --sidebar-bg: #AA9C68;
+            --sidebar-indicator: #F6F5F0;
             --topbar-bg: #FFFFFF;
             --text-primary: #1D2310;
         }
@@ -116,30 +116,39 @@
             --primary-dark: #4F5B2A;
             --primary-light: #A7B764;
             --accent: #8A9C46;
-            --success: #6B7B35;
-            --warning: #8A9C46;
-            --danger: #3A4225;
+            --success: #2F7D45;
+            --success-bg: #E8F4EA;
+            --warning: #946200;
+            --warning-bg: #FFF4D6;
+            --danger: #B42318;
+            --danger-bg: #FDECEC;
             --primary-rgb: 107 123 53;
-            --success-rgb: 107 123 53;
-            --warning-rgb: 138 156 70;
-            --danger-rgb: 58 66 37;
+            --success-rgb: 47 125 69;
+            --warning-rgb: 148 98 0;
+            --danger-rgb: 180 35 24;
             --surface-light: #F7F8ED;
             --surface-secondary: #ECEFD8;
             --surface-alt: #DAE1B5;
             --border-accent: #C0CC8A;
+            --surface-hover: #F4F6EF;
+            --surface-selected: #E8EDDA;
             --text-secondary: #434D27;
-            --sidebar-bg: #ECEFD8;
-            --sidebar-hover: rgba(29, 35, 16, 0.06);
-            --sidebar-active: rgba(29, 35, 16, 0.11);
-            --sidebar-indicator: #F7F8ED;
-            --sidebar-text: #1D2310;
-            --sidebar-text-active: #1D2310;
+            --sidebar-bg: #AA9C68;
+            --sidebar-hover: #d6d1b5;
+            --sidebar-active: #eae8d8;
+            --sidebar-active-text: #2A2219;
+            --sidebar-indicator: #F6F5F0;
+            --sidebar-border: #827148;
+            --sidebar-badge-bg: #EAE8D8;
+            --sidebar-text: #F6F5F0;
+            --sidebar-text-active: #66573a;
             --body-bg: #FAFAF7;
             --topbar-bg: #FFFFFF;
             --card-bg: #FFFFFF;
-            --text-primary: #1D2310;
+            --text-primary: #2A2219;
             --text-muted: #434D27;
-            --border: #DAE1B5;
+            --border: #E3E6DD;
+            --input: #C6CCBB;
             --bs-primary: var(--primary);
             --bs-primary-rgb: var(--primary-rgb);
             --bs-success: var(--success);
@@ -196,7 +205,7 @@
             gap: 12px;
             padding: 0 20px;
             height: var(--topbar-h);
-            border-bottom: 1px solid rgba(29, 35, 16, 0.12);
+            border-bottom: 1px solid var(--sidebar-border);
             text-decoration: none;
             flex-shrink: 0;
         }
@@ -204,13 +213,13 @@
         .sidebar-brand .brand-icon {
             width: 36px;
             height: 36px;
-            background: var(--sidebar-indicator);
+            background: var(--sidebar-active);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1rem;
-            color: var(--sidebar-text);
+            color: var(--sidebar-active-text);
             flex-shrink: 0;
         }
 
@@ -234,7 +243,7 @@
             overflow-y: auto;
             padding: 16px 0;
             scrollbar-width: thin;
-            scrollbar-color: rgba(29, 35, 16, 0.28) transparent;
+            scrollbar-color: var(--sidebar-border) transparent;
         }
 
         .sidebar-nav::-webkit-scrollbar {
@@ -246,7 +255,7 @@
         }
 
         .sidebar-nav::-webkit-scrollbar-thumb {
-            background: rgba(29, 35, 16, 0.28);
+            background: var(--sidebar-border);
             border-radius: 4px;
         }
 
@@ -315,7 +324,7 @@
         }
 
         .sidebar-nav .nav-link.active {
-            color: var(--sidebar-text);
+            color: var(--sidebar-active-text);
             background: var(--sidebar-active);
         }
 
@@ -328,12 +337,11 @@
             width: 3px;
             background: var(--sidebar-indicator);
             border-radius: 0 3px 3px 0;
-            box-shadow: 0 0 0 1px rgba(29, 35, 16, 0.35);
         }
 
         .sidebar-nav .nav-link.active .nav-icon {
-            background: var(--sidebar-hover);
-            color: var(--sidebar-text);
+            background: var(--sidebar-active);
+            color: var(--sidebar-active-text);
         }
 
         /* Badge */
@@ -344,7 +352,7 @@
             min-width: 20px;
             height: 20px;
             padding: 0 6px;
-            background: var(--sidebar-indicator);
+            background: var(--sidebar-badge-bg);
             color: var(--sidebar-text);
             font-size: 0.65rem;
             font-weight: 700;
@@ -359,7 +367,7 @@
 
         /* Sidebar footer - user profile */
         .sidebar-footer {
-            border-top: 1px solid rgba(29, 35, 16, 0.12);
+            border-top: 1px solid var(--sidebar-border);
             padding: 14px 16px;
             flex-shrink: 0;
         }
@@ -373,14 +381,14 @@
         .sidebar-user .user-avatar {
             width: 36px;
             height: 36px;
-            background: var(--sidebar-indicator);
+            background: var(--sidebar-active);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
             font-size: 0.9rem;
-            color: var(--sidebar-text);
+            color: var(--sidebar-active-text);
             flex-shrink: 0;
         }
 
@@ -464,7 +472,7 @@
         }
 
         .topbar-toggle:hover {
-            background: var(--border);
+            background: var(--surface-hover);
             color: var(--text-primary);
         }
 
@@ -506,7 +514,7 @@
         }
 
         .topbar-btn:hover {
-            background: var(--border);
+            background: var(--surface-hover);
             color: var(--text-primary);
         }
 
@@ -540,7 +548,7 @@
         }
 
         .topbar-user:hover {
-            background: var(--border);
+            background: var(--surface-hover);
         }
 
         .topbar-user .avatar {
@@ -598,6 +606,24 @@
             font-size: 0.875rem;
             font-weight: 500;
             animation: slideInDown 0.3s ease;
+        }
+
+        .alert-success,
+        .alert-banner.alert-success {
+            color: var(--success);
+            background: var(--success-bg);
+        }
+
+        .alert-warning,
+        .alert-banner.alert-warning {
+            color: var(--warning);
+            background: var(--warning-bg);
+        }
+
+        .alert-danger,
+        .alert-banner.alert-danger {
+            color: var(--danger);
+            background: var(--danger-bg);
         }
 
         @keyframes slideInDown {
@@ -666,6 +692,43 @@
     @yield('css')
     <link rel="stylesheet" href="{{ asset('css/ui-geometry.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app-animations.css') }}">
+    <style>
+        #main-content input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not(:disabled):not(.is-invalid),
+        #main-content select:not(:disabled):not(.is-invalid),
+        #main-content textarea:not(:disabled):not(.is-invalid) {
+            border-color: var(--input);
+            background-color: var(--card-bg);
+        }
+
+        #main-content input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not(:disabled):not(.is-invalid):focus,
+        #main-content select:not(:disabled):not(.is-invalid):focus,
+        #main-content textarea:not(:disabled):not(.is-invalid):focus,
+        #topbar .form-select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.12);
+        }
+
+        #topbar .form-select:not(:disabled) {
+            border-color: var(--input);
+            background-color: var(--card-bg);
+        }
+
+        #main-content .btn-cancel:hover,
+        #main-content .btn-back:hover,
+        #main-content .btn-modal-cancel:hover,
+        #main-content .btn-qa-outline:hover {
+            border-color: var(--border);
+            background: var(--surface-hover);
+            color: var(--text-primary);
+        }
+
+        #main-content .data-table tbody tr:hover,
+        #main-content .items-table tbody tr:hover,
+        #main-content .pos-table tbody tr:hover {
+            background-color: var(--surface-hover);
+        }
+    </style>
 </head>
 
 <body class="{{ $isAuthPage ? 'auth-page' : '' }} preload-transitions">
@@ -792,7 +855,7 @@
             <select
                 class="form-select form-select-sm"
                 id="global-period"
-                style="width:148px; border-radius:8px; font-size:.8rem; border-color:var(--border);"
+                style="width:148px; border-radius:8px; font-size:.8rem; border-color:var(--input);"
                 title="Filter periode data dashboard"
             >
                 <option value="today">Hari Ini</option>

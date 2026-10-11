@@ -92,17 +92,17 @@
 }
 
 .kpi-card.success .kpi-icon {
-    background: rgba(107,123,53,.12);
+    background: var(--success-bg);
     color: var(--success);
 }
 
 .kpi-card.warning .kpi-icon {
-    background: rgba(167,183,100,.12);
+    background: var(--warning-bg);
     color: var(--warning);
 }
 
 .kpi-card.danger .kpi-icon {
-    background: rgba(58,66,37,.12);
+    background: var(--danger-bg);
     color: var(--danger);
 }
 
@@ -141,12 +141,12 @@
 }
 
 .trend-up {
-    background: rgba(107,123,53,.12);
+    background: var(--success-bg);
     color: var(--success);
 }
 
 .trend-down {
-    background: rgba(58,66,37,.12);
+    background: var(--danger-bg);
     color: var(--danger);
 }
 
@@ -339,12 +339,12 @@
 }
 
 .type-revenue {
-    background: rgba(107,123,53,.12);
+    background: var(--success-bg);
     color: var(--success);
 }
 
 .type-expense {
-    background: rgba(58,66,37,.12);
+    background: var(--danger-bg);
     color: var(--danger);
 }
 
@@ -407,9 +407,9 @@
 }
 
 .btn-qa-outline:hover {
-    background: var(--primary);
-    color: #F7F8ED;
-    border-color: var(--primary);
+    background: var(--surface-hover);
+    color: var(--text-primary);
+    border-color: var(--border);
 }
 
 /* ============================================================

@@ -93,9 +93,9 @@
         font-size: 0.78rem;
         font-weight: 600;
     }
-    .badge-tunai    { background: rgba(107,123,53,.12); color: var(--success); }
-    .badge-transfer { background: rgba(107,123,53,.12);  color: var(--primary); }
-    .badge-qris     { background: rgba(138,156,70,.12);  color: var(--accent);  }
+    .badge-tunai    { background: rgba(107,123,53,.18); color: var(--primary-dark); }
+    .badge-transfer { background: rgba(138,156,70,.18); color: var(--primary-dark); }
+    .badge-qris     { background: rgba(167,183,100,.18); color: var(--primary-dark); }
 
     /* ============================================================
        TABEL ITEM — Daftar produk dalam transaksi ini

@@ -56,7 +56,7 @@
         /* Styling input form */
         .form-control {
             padding: 12px 15px;
-            border: 1px solid #DAE1B5;
+            border: 1px solid var(--input);
             border-radius: 8px;
             font-size: 0.95rem;
             transition: all var(--transition);
@@ -65,7 +65,7 @@
 
         .form-control:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 0.2rem rgba(107,123,53,0.25);
+            box-shadow: 0 0 0 0.2rem rgba(var(--primary-rgb),0.12);
         }
 
         .form-label {
@@ -95,8 +95,8 @@
         }
 
         .input-group-text {
-            background-color: #FFFFFF;
-            border: 1px solid #DAE1B5;
+            background-color: var(--card-bg);
+            border: 1px solid var(--input);
             color: var(--text-muted);
         }
         
