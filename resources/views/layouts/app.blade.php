@@ -7,6 +7,66 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'SIMKEU - Sistem Informasi Manajemen Keuangan UMKM')</title>
 
+    <!-- Critical style to prevent white screen flicker & layout jump -->
+    <style>
+        :root {
+            --sidebar-w: 260px;
+            --sidebar-collapsed-w: 72px;
+            --topbar-h: 64px;
+            --body-bg: #f1f5f9;
+            --sidebar-bg: #0f172a;
+            --topbar-bg: #ffffff;
+            --text-primary: #1e293b;
+        }
+
+        html, body {
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+
+        /* Prevent sidebar collapse flash/jump on initial render */
+        html.sidebar-is-collapsed #sidebar {
+            width: var(--sidebar-collapsed-w) !important;
+        }
+        html.sidebar-is-collapsed #topbar {
+            left: var(--sidebar-collapsed-w) !important;
+        }
+        html.sidebar-is-collapsed #main-content {
+            margin-left: var(--sidebar-collapsed-w) !important;
+        }
+        html.sidebar-is-collapsed .sidebar-brand .brand-text,
+        html.sidebar-is-collapsed .nav-section-label,
+        html.sidebar-is-collapsed .sidebar-nav .nav-link .nav-label,
+        html.sidebar-is-collapsed .nav-badge,
+        html.sidebar-is-collapsed .sidebar-user .user-info {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        /* Disable transitions during initial page load to prevent layout flicker */
+        body.preload-transitions,
+        body.preload-transitions * {
+            transition: none !important;
+        }
+    </style>
+
+    <!-- Immediate script to set sidebar state before DOM paint -->
+    <script>
+        (function() {
+            try {
+                if (window.innerWidth >= 992 && localStorage.getItem('sidebarCollapsed') === 'true') {
+                    document.documentElement.classList.add('sidebar-is-collapsed');
+                }
+            } catch (e) {}
+        })();
+    </script>
+
+    <!-- Preconnect to CDNs for fast resource loading -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -14,6 +74,25 @@
     <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
+
+    <!-- Speculation Rules: Prefetch navigation pages on hover for instant smooth page transitions -->
+    <script type="speculationrules">
+    {
+        "prefetch": [
+            {
+                "where": {
+                    "and": [
+                        { "href_matches": "/*" },
+                        { "not": { "href_matches": "/logout" } },
+                        { "not": { "href_matches": "*/delete*" } },
+                        { "not": { "href_matches": "*transfer*" } }
+                    ]
+                },
+                "eagerness": "moderate"
+            }
+        ]
+    }
+    </script>
 
     @php $isAuthPage = request()->routeIs('login', 'register'); @endphp
     <style>
@@ -564,7 +643,7 @@
     <link rel="stylesheet" href="{{ asset('css/app-animations.css') }}">
 </head>
 
-<body class="{{ $isAuthPage ? 'auth-page' : '' }}">
+<body class="{{ $isAuthPage ? 'auth-page' : '' }} preload-transitions">
     <!-- ============================================================
          SIDEBAR
     ============================================================ -->
@@ -581,7 +660,7 @@
             <ul class="list-unstyled">
                 <li class="nav-section-label">Utama</li>
                 <li class="nav-item">
-                    <a href="{{ route('dashboard') }}"
+                    <a href="{{ route('dashboard', array_filter(['period' => request('period')])) }}"
                         class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                         <span class="nav-icon"><i class="fas fa-gauge-high"></i></span>
                         <span class="nav-label">Dashboard</span>
@@ -590,7 +669,7 @@
 
                 <li class="nav-section-label" style="margin-top:8px;">Keuangan</li>
                 <li class="nav-item">
-                    <a href="{{ route('pemasukan.index') }}"
+                    <a href="{{ route('pemasukan.index', array_filter(['period' => request('period')])) }}"
                        class="nav-link {{ request()->routeIs('pemasukan.*') ? 'active' : '' }}">
                         <span class="nav-icon"><i class="fas fa-arrow-trend-up"></i></span>
                         <span class="nav-label">Pemasukan</span>
@@ -604,7 +683,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('pengeluaran.index') }}"
+                    <a href="{{ route('pengeluaran.index', array_filter(['period' => request('period')])) }}"
                        class="nav-link {{ request()->routeIs('pengeluaran.*') ? 'active' : '' }}">
                         <span class="nav-icon"><i class="fas fa-arrow-trend-down"></i></span>
                         <span class="nav-label">Pengeluaran</span>
@@ -803,8 +882,16 @@
             const collapsed = sidebar.classList.toggle('collapsed'); // Toggle class dan simpan status
             topbar.classList.toggle('sidebar-collapsed', collapsed); // Sesuaikan posisi topbar
             main.classList.toggle('sidebar-collapsed', collapsed);   // Sesuaikan margin konten
-            localStorage.setItem('sidebarCollapsed', collapsed);     // Simpan status ke localStorage
+            document.documentElement.classList.toggle('sidebar-is-collapsed', collapsed);
+            localStorage.setItem('sidebarCollapsed', collapsed ? 'true' : 'false');     // Simpan status ke localStorage
         }
+
+        // Hapus class preload-transitions setelah frame pertama selesai di-paint agar animasi layout stabil
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                document.body.classList.remove('preload-transitions');
+            });
+        });
 
         // Event listener: klik tombol hamburger / toggle
         toggle?.addEventListener('click', () => {
@@ -821,10 +908,11 @@
         overlay?.addEventListener('click', closeMobileSidebar);
 
         // Pulihkan status collapse sidebar dari localStorage saat halaman dimuat (desktop saja)
-        if (sidebar && topbar && main && !isMobile() && localStorage.getItem('sidebarCollapsed') === 'true') {
+        if (sidebar && topbar && main && !isMobile() && (document.documentElement.classList.contains('sidebar-is-collapsed') || localStorage.getItem('sidebarCollapsed') === 'true')) {
             sidebar.classList.add('collapsed');          // Sidebar dalam kondisi collapsed
             topbar.classList.add('sidebar-collapsed');   // Topbar menyesuaikan
             main.classList.add('sidebar-collapsed');     // Konten menyesuaikan
+            document.documentElement.classList.add('sidebar-is-collapsed');
         }
 
         // Saat layar di-resize dari mobile ke desktop, tutup sidebar mobile jika terbuka
@@ -837,9 +925,11 @@
         // Mengelola filter periode global di topbar
         //
         // Cara kerja:
-        //   1. Periode URL menjadi state aktif; localStorage dipakai saat halaman
-        //      relevan dibuka dari halaman yang tidak memakai filter periode.
-        //   2. Pilihan navbar diteruskan ke semua halaman yang memiliki data temporal.
+        //   1. Periode URL menjadi state aktif; localStorage & cookie dipakai saat
+        //      halaman relevan dibuka sehingga server & client selalu sinkron.
+        //   2. Menggunakan history.replaceState (BUKAN location.replace) agar
+        //      tidak terjadi double-reload yang menyebabkan layar berkedip/flicker.
+        //   3. Href navigasi otomatis disinkronkan ke periode aktif.
         // ============================================================
 
         (function initPeriodFilter() {
@@ -864,8 +954,9 @@
             // Setel nilai awal select sesuai periode aktif
             periodSelect.value = activePeriod;
 
-            // Simpan ke localStorage agar konsisten di semua halaman
+            // Simpan ke localStorage & cookie agar konsisten di semua halaman
             localStorage.setItem('dashboardPeriod', activePeriod);
+            document.cookie = `dashboardPeriod=${activePeriod}; path=/; max-age=31536000; SameSite=Lax`;
 
             function supportsPeriod(path) {
                 return path === '/' || path === '/dashboard'
@@ -874,11 +965,28 @@
                     || /^\/employees\/[^/]+\/(manage|sales-dashboard)$/.test(path);
             }
 
+            // Jika query param belum ada di URL, sinkronkan query string menggunakan replaceState
+            // TANPA me-reload halaman agar tidak ada flicker/kedipan
             if (supportsPeriod(window.location.pathname) && !supportedPeriods.includes(periodFromUrl)) {
                 urlParams.set('period', activePeriod);
-                window.location.replace(`${window.location.pathname}?${urlParams.toString()}`);
-                return;
+                window.history.replaceState({}, '', `${window.location.pathname}?${urlParams.toString()}`);
             }
+
+            function syncPeriodLinks() {
+                document.querySelectorAll('a[href]').forEach((link) => {
+                    if (link.target && link.target.toLowerCase() !== '_self') return;
+                    if (link.hasAttribute('download')) return;
+                    try {
+                        const destination = new URL(link.href, window.location.href);
+                        if (destination.origin === window.location.origin && supportsPeriod(destination.pathname)) {
+                            destination.searchParams.set('period', activePeriod);
+                            link.href = destination.toString();
+                        }
+                    } catch (e) {}
+                });
+            }
+
+            syncPeriodLinks();
 
             document.addEventListener('click', (event) => {
                 if (event.defaultPrevented || event.button !== 0
@@ -919,11 +1027,12 @@
                 const selectedPeriod = this.value; // Nilai periode yang baru dipilih
                 activePeriod = selectedPeriod;
 
-                // Simpan nilai yang dipilih ke localStorage untuk persistensi
+                // Simpan nilai yang dipilih ke localStorage & cookie untuk persistensi
                 localStorage.setItem('dashboardPeriod', selectedPeriod);
+                document.cookie = `dashboardPeriod=${selectedPeriod}; path=/; max-age=31536000; SameSite=Lax`;
+                syncPeriodLinks();
 
-                // Periksa apakah halaman saat ini adalah halaman dashboard
-                // (path '/dashboard' atau root '/')
+                // Periksa apakah halaman saat ini adalah halaman dashboard/keuangan
                 if (supportsPeriod(window.location.pathname)) {
                     const url = new URL(window.location.href);
                     url.searchParams.set('period', selectedPeriod);

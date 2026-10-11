@@ -25,7 +25,7 @@ class EmployeeSalesController extends Controller
             'periodLabel' => $periodLabel,
             'periodStart' => $periodStart,
             'periodEnd' => $periodEnd,
-        ] = PeriodFilter::resolve($request->query('period', 'month'), $now);
+        ] = PeriodFilter::resolveFromRequest($request, $now);
         $employeeSales = Sale::where('user_id', $employee->id);
         $periodSales = PeriodFilter::apply(clone $employeeSales, 'transaction_date', $periodStart, $periodEnd);
 

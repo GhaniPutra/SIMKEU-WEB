@@ -1,6 +1,318 @@
 (() => {
+    // ============================================================
+    // SIMKEU App Animations JS
+    // Sistem animasi entrance, counter, progress bar, dan loading
+    // ============================================================
+
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const activeSubmitButtons = new Set();
+
+    // ============================================================
+    // 1. NAVIGATION PROGRESS BAR
+    // Menampilkan bar tipis di atas halaman saat navigasi
+    // ============================================================
+
+    let progressBar = null;
+    let progressTimer = null;
+    let progressValue = 0;
+
+    function createProgressBar() {
+        if (document.getElementById('simkeu-progress')) return;
+        progressBar = document.createElement('div');
+        progressBar.id = 'simkeu-progress';
+        document.body.prepend(progressBar);
+    }
+
+    function startProgress() {
+        if (reducedMotion.matches) return;
+        createProgressBar();
+        progressValue = 0;
+        progressBar.style.width = '0%';
+        progressBar.classList.add('is-loading');
+        progressBar.classList.remove('is-done');
+
+        // Simulasi progress: cepat ke 30%, lalu lambat ke 80%
+        const steps = [
+            { target: 30, duration: 200 },
+            { target: 60, duration: 400 },
+            { target: 80, duration: 600 },
+        ];
+        let stepIndex = 0;
+
+        function runStep() {
+            if (stepIndex >= steps.length) return;
+            const step = steps[stepIndex++];
+            progressValue = step.target;
+            progressBar.style.width = `${progressValue}%`;
+            progressTimer = setTimeout(runStep, step.duration);
+        }
+        runStep();
+    }
+
+    function finishProgress() {
+        if (!progressBar) return;
+        clearTimeout(progressTimer);
+        progressBar.classList.add('is-done');
+        progressBar.classList.remove('is-loading');
+        setTimeout(() => {
+            if (progressBar) progressBar.style.width = '0%';
+        }, 600);
+    }
+
+    // Trigger progress saat navigasi dimulai
+    document.addEventListener('click', (event) => {
+        if (reducedMotion.matches) return;
+        const link = event.target instanceof Element ? event.target.closest('a[href]') : null;
+        if (!link) return;
+        if (link.target && link.target.toLowerCase() !== '_self') return;
+        if (link.hasAttribute('download')) return;
+
+        try {
+            const dest = new URL(link.href, window.location.href);
+            if (dest.origin !== window.location.origin) return;
+            if (dest.pathname === window.location.pathname && dest.search === window.location.search) return;
+            if (dest.hash && !dest.pathname !== window.location.pathname) return;
+        } catch (e) {
+            return;
+        }
+
+        startProgress();
+    }, { capture: true });
+
+    window.addEventListener('pageshow', () => {
+        finishProgress();
+        restoreSubmitButtons();
+    });
+
+    window.addEventListener('pagehide', () => {
+        startProgress();
+    });
+
+    // ============================================================
+    // 2. ENTRANCE ANIMATIONS — Intersection Observer
+    // Elemen dengan .simkeu-animate muncul saat masuk viewport
+    // ============================================================
+
+    function initEntranceAnimations() {
+        if (reducedMotion.matches) {
+            // Langsung tampilkan semua jika reduced motion
+            document.querySelectorAll('.simkeu-animate, .simkeu-animate-left, .simkeu-animate-scale')
+                .forEach((el) => el.classList.add('is-visible'));
+            return;
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target);
+            });
+        }, {
+            threshold: 0.06,
+            rootMargin: '0px 0px -24px 0px',
+        });
+
+        document.querySelectorAll('.simkeu-animate, .simkeu-animate-left, .simkeu-animate-scale')
+            .forEach((el) => observer.observe(el));
+    }
+
+    // ============================================================
+    // 3. AUTO-ANNOTATE ANIMATABLE ELEMENTS
+    // Otomatis tambahkan .simkeu-animate ke elemen yang relevan
+    // berdasarkan kelas yang ada di halaman, dengan stagger delay
+    // ============================================================
+
+    function annotateAnimatables() {
+        if (reducedMotion.matches) return;
+
+        // KPI cards — stagger berurutan
+        const kpiCards = document.querySelectorAll('#main-content .kpi-card');
+        kpiCards.forEach((card, i) => {
+            if (!card.classList.contains('simkeu-animate')) {
+                card.classList.add('simkeu-animate');
+                card.setAttribute('data-delay', Math.min(i + 1, 6));
+            }
+        });
+
+        // Section titles — slide dari kiri
+        document.querySelectorAll('#main-content .section-title').forEach((el, i) => {
+            if (!el.classList.contains('simkeu-animate-left')) {
+                el.classList.add('simkeu-animate-left');
+            }
+        });
+
+        // Content cards — fade up dengan stagger
+        const contentCards = document.querySelectorAll(
+            '#main-content .content-card, ' +
+            '#main-content .detail-card, ' +
+            '#main-content .summary-card, ' +
+            '#main-content .employee-card'
+        );
+        contentCards.forEach((card, i) => {
+            if (!card.classList.contains('simkeu-animate')) {
+                card.classList.add('simkeu-animate');
+                card.setAttribute('data-delay', Math.min(i + 1, 6));
+            }
+        });
+
+        // Form containers — scale-in
+        document.querySelectorAll('#main-content .form-container').forEach((el) => {
+            if (!el.classList.contains('simkeu-animate-scale')) {
+                el.classList.add('simkeu-animate-scale');
+            }
+        });
+
+        // Auth pages (login/register box)
+        document.querySelectorAll('.login-box, .register-box, .setup-box').forEach((el) => {
+            if (!el.classList.contains('simkeu-animate-scale')) {
+                el.classList.add('simkeu-animate-scale');
+            }
+        });
+
+        // Employee manage header
+        document.querySelectorAll('.employee-manage-header').forEach((el) => {
+            if (!el.classList.contains('simkeu-animate')) {
+                el.classList.add('simkeu-animate');
+            }
+        });
+
+        // Nav tabs
+        document.querySelectorAll('#main-content .employee-tabs, #main-content .module-tabs').forEach((el) => {
+            if (!el.classList.contains('simkeu-animate')) {
+                el.classList.add('simkeu-animate');
+            }
+        });
+
+        // Table cards
+        document.querySelectorAll('#main-content .table-card').forEach((el) => {
+            if (!el.classList.contains('simkeu-animate')) {
+                el.classList.add('simkeu-animate');
+            }
+        });
+
+        // Employee KPI
+        const empKpis = document.querySelectorAll('#main-content .employee-kpi');
+        empKpis.forEach((el, i) => {
+            if (!el.classList.contains('simkeu-animate')) {
+                el.classList.add('simkeu-animate');
+                el.setAttribute('data-delay', Math.min(i + 1, 6));
+            }
+        });
+
+        // Alert banners
+        document.querySelectorAll('#main-content .alert-banner').forEach((el) => {
+            if (!el.classList.contains('simkeu-animate')) {
+                el.classList.add('simkeu-animate');
+            }
+        });
+
+        // Two-col / two-col-chart
+        document.querySelectorAll('#main-content .two-col, #main-content .two-col-chart').forEach((el) => {
+            if (!el.classList.contains('simkeu-animate')) {
+                el.classList.add('simkeu-animate');
+            }
+        });
+
+        // Fade-up kelas lama (kompatibilitas)
+        document.querySelectorAll('#main-content .fade-up').forEach((el) => {
+            if (!el.classList.contains('simkeu-animate')) {
+                el.classList.add('simkeu-animate');
+            }
+        });
+
+        // Stock header
+        document.querySelectorAll('#main-content .stock-header').forEach((el) => {
+            if (!el.classList.contains('simkeu-animate')) {
+                el.classList.add('simkeu-animate');
+            }
+        });
+
+        // POS header
+        document.querySelectorAll('#main-content .pos-header').forEach((el) => {
+            if (!el.classList.contains('simkeu-animate')) {
+                el.classList.add('simkeu-animate');
+            }
+        });
+
+        // Form card
+        document.querySelectorAll('#main-content .form-card').forEach((el) => {
+            if (!el.classList.contains('simkeu-animate-scale')) {
+                el.classList.add('simkeu-animate-scale');
+            }
+        });
+    }
+
+    // ============================================================
+    // 4. KPI COUNTER ANIMATION
+    // Angka KPI menghitung naik saat elemen muncul
+    // ============================================================
+
+    function parseNumber(str) {
+        // Handles "Rp 1.234.567" atau "1.234" atau "123"
+        return parseFloat(str.replace(/[^0-9,.-]/g, '').replace(/\./g, '').replace(',', '.')) || 0;
+    }
+
+    function formatNumber(val, original) {
+        const isRupiah = original.includes('Rp');
+        const hasDecimal = original.includes(',');
+        const rounded = Math.round(val);
+
+        if (isRupiah) {
+            return 'Rp ' + rounded.toLocaleString('id-ID');
+        }
+        return rounded.toLocaleString('id-ID');
+    }
+
+    function animateCounter(el) {
+        if (reducedMotion.matches) return;
+        const original = el.textContent.trim();
+        const end = parseNumber(original);
+        if (!end || end <= 0) return;
+
+        const duration = 700;
+        const start = performance.now();
+
+        function frame(now) {
+            const elapsed = now - start;
+            const progress = Math.min(elapsed / duration, 1);
+            // Easing: ease out quart
+            const eased = 1 - Math.pow(1 - progress, 4);
+            const current = eased * end;
+
+            el.textContent = formatNumber(current, original);
+
+            if (progress < 1) {
+                requestAnimationFrame(frame);
+            } else {
+                el.textContent = original;
+            }
+        }
+
+        requestAnimationFrame(frame);
+    }
+
+    function initCounters() {
+        if (reducedMotion.matches) return;
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+                animateCounter(entry.target);
+                observer.unobserve(entry.target);
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('#main-content .kpi-value').forEach((el) => {
+            const text = el.textContent.trim();
+            if (/[0-9]/.test(text)) {
+                observer.observe(el);
+            }
+        });
+    }
+
+    // ============================================================
+    // 5. SUBMIT BUTTON LOADING
+    // ============================================================
 
     function showSubmitLoading(button) {
         if (!button || button.disabled || !button.isConnected) return;
@@ -14,6 +326,16 @@
 
     function showSubmitLoadingAfterDelay(button) {
         return window.setTimeout(() => showSubmitLoading(button), 250);
+    }
+
+    function restoreSubmitButtons() {
+        activeSubmitButtons.forEach((button) => {
+            button.innerHTML = button.dataset.originalHtml || button.innerHTML;
+            button.disabled = false;
+            button.removeAttribute('aria-busy');
+            delete button.dataset.originalHtml;
+        });
+        activeSubmitButtons.clear();
     }
 
     document.addEventListener('submit', (event) => {
@@ -32,20 +354,14 @@
         }, 0);
     });
 
-    window.addEventListener('pageshow', () => {
-        activeSubmitButtons.forEach((button) => {
-            button.innerHTML = button.dataset.originalHtml || button.innerHTML;
-            button.disabled = false;
-            button.removeAttribute('aria-busy');
-            delete button.dataset.originalHtml;
-        });
-        activeSubmitButtons.clear();
-    });
+    // ============================================================
+    // 6. CHART.JS DEFAULT SETTINGS
+    // ============================================================
 
     document.addEventListener('DOMContentLoaded', () => {
         if (window.Chart) {
             const defaults = window.Chart.defaults;
-            defaults.animation.duration = reducedMotion.matches ? 0 : 250;
+            defaults.animation.duration = reducedMotion.matches ? 0 : 400;
             defaults.font.family = 'Inter, sans-serif';
             defaults.color = '#64748b';
             defaults.elements.line.tension = 0;
@@ -63,5 +379,23 @@
         }
     });
 
+    // ============================================================
+    // 7. INIT — Jalankan semua saat DOM siap
+    // ============================================================
+
+    function init() {
+        annotateAnimatables();
+        initEntranceAnimations();
+        initCounters();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+    // Expose public API
     window.SimkeuLoading = { showSubmitLoadingAfterDelay };
+    window.SimkeuAnimate = { refresh: init };
 })();

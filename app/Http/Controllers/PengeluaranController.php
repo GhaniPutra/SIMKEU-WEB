@@ -37,14 +37,13 @@ class PengeluaranController extends Controller
         // Ambil parameter filter dari URL query string
         // Default: 'month'
         // ----------------------------------------------------------
-        $period    = $request->query('period', 'month');
         $search    = $request->input('search', '');
         $kategori  = $request->input('kategori', '');
 
         $now = Carbon::now();
 
         ['period' => $period, 'periodLabel' => $periodLabel, 'periodStart' => $periodStart, 'periodEnd' => $periodEnd]
-            = PeriodFilter::resolve($period, $now);
+            = PeriodFilter::resolveFromRequest($request, $now);
 
         // ----------------------------------------------------------
         // Query dasar: ambil semua pengeluaran dalam rentang periode

@@ -20,7 +20,7 @@ class DashboardController extends Controller
         $store = null;
         $now = Carbon::now();
         ['period' => $period, 'periodLabel' => $periodLabel, 'periodStart' => $periodStart, 'periodEnd' => $periodEnd]
-            = PeriodFilter::resolve($request->query('period', 'month'), $now);
+            = PeriodFilter::resolveFromRequest($request, $now);
 
         $totalRevenueToday = Sale::whereBetween('transaction_date', [$now->copy()->startOfDay(), $now->copy()->endOfDay()])
             ->sum('total');

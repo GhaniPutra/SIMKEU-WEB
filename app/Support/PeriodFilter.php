@@ -4,6 +4,7 @@ namespace App\Support;
 
 use Carbon\Carbon;
 use DateTimeInterface;
+use Illuminate\Http\Request;
 
 final class PeriodFilter
 {
@@ -34,6 +35,13 @@ final class PeriodFilter
             'periodStart' => $start,
             'periodEnd' => $end,
         ];
+    }
+
+    public static function resolveFromRequest(Request $request, ?DateTimeInterface $now = null): array
+    {
+        $requested = $request->query('period') ?? $request->cookie('dashboardPeriod', 'month');
+
+        return self::resolve($requested, $now);
     }
 
     public static function apply($query, string $column, Carbon|string|null $start, Carbon|string|null $end)

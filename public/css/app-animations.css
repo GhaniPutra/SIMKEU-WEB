@@ -1,3 +1,11 @@
+/* ============================================================
+   SIMKEU — App Animations
+   Sistem animasi terpusat: entrance, transitions, micro-interactions
+============================================================ */
+
+/* ============================================================
+   1. RESET LAMA (hapus inline animation dari blade lama)
+============================================================ */
 #main-content .fade-up,
 #main-content .table-card,
 #main-content .form-container,
@@ -9,6 +17,130 @@
     animation: none;
 }
 
+/* ============================================================
+   2. CROSS-DOCUMENT VIEW TRANSITIONS
+   Menghilangkan flicker saat berpindah halaman (MPA Navigation)
+   Sidebar & topbar diam, hanya main-content yang bertransisi
+============================================================ */
+@view-transition {
+    navigation: auto;
+}
+
+#sidebar {
+    view-transition-name: app-sidebar;
+}
+
+#topbar {
+    view-transition-name: app-topbar;
+}
+
+#main-content {
+    view-transition-name: app-main-content;
+}
+
+/* Sidebar & topbar: tidak ada animasi, tetap di posisi */
+::view-transition-old(app-sidebar),
+::view-transition-new(app-sidebar),
+::view-transition-old(app-topbar),
+::view-transition-new(app-topbar) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+
+/* Main content: slide+fade halus */
+::view-transition-old(app-main-content) {
+    animation: 90ms cubic-bezier(.4, 0, 1, 1) both page-exit;
+}
+
+::view-transition-new(app-main-content) {
+    animation: 200ms cubic-bezier(0, 0, .2, 1) 60ms both page-enter;
+}
+
+@keyframes page-exit {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to   { opacity: 0; transform: translateY(-6px) scale(.99); }
+}
+
+@keyframes page-enter {
+    from { opacity: 0; transform: translateY(8px) scale(.99); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ============================================================
+   3. ENTRANCE ANIMATIONS — Saat elemen muncul setelah load
+   Menggunakan CSS animation + intersection observer di JS
+============================================================ */
+
+/* State awal: elemen belum terlihat */
+.simkeu-animate {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 350ms cubic-bezier(0, 0, .2, 1),
+                transform 350ms cubic-bezier(0, 0, .2, 1);
+}
+
+/* State aktif: elemen muncul */
+.simkeu-animate.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Varian animasi — untuk elemen spesifik */
+.simkeu-animate-left {
+    opacity: 0;
+    transform: translateX(-16px);
+    transition: opacity 350ms cubic-bezier(0, 0, .2, 1),
+                transform 350ms cubic-bezier(0, 0, .2, 1);
+}
+.simkeu-animate-left.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.simkeu-animate-scale {
+    opacity: 0;
+    transform: scale(.96);
+    transition: opacity 300ms cubic-bezier(0, 0, .2, 1),
+                transform 300ms cubic-bezier(0, 0, .2, 1);
+}
+.simkeu-animate-scale.is-visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Delay stagger — anak-anak dianimasikan bergiliran */
+.simkeu-animate[data-delay="1"] { transition-delay:  40ms; }
+.simkeu-animate[data-delay="2"] { transition-delay:  80ms; }
+.simkeu-animate[data-delay="3"] { transition-delay: 120ms; }
+.simkeu-animate[data-delay="4"] { transition-delay: 160ms; }
+.simkeu-animate[data-delay="5"] { transition-delay: 200ms; }
+.simkeu-animate[data-delay="6"] { transition-delay: 240ms; }
+
+/* ============================================================
+   4. SKELETON LOADING — Placeholder berkedip saat data belum ada
+============================================================ */
+.skeleton {
+    background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.4s ease-in-out infinite;
+    border-radius: 6px;
+}
+
+@keyframes skeleton-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ============================================================
+   5. KPI COUNTER ANIMATION — Angka menghitung naik
+============================================================ */
+.kpi-value[data-count] {
+    display: inline-block;
+}
+
+/* ============================================================
+   6. MICRO-INTERACTIONS — Hover & active feedback
+============================================================ */
 #main-content a,
 #main-content button,
 #main-content input,
@@ -21,19 +153,101 @@
     transition-timing-function: cubic-bezier(.2, .65, .3, 1);
 }
 
+/* KPI card hover lift */
+#main-content .kpi-card {
+    transition: transform 220ms cubic-bezier(.2, .65, .3, 1),
+                box-shadow 220ms cubic-bezier(.2, .65, .3, 1);
+}
+#main-content .kpi-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+}
+
+/* Content card hover */
+#main-content .content-card,
+#main-content .detail-card,
+#main-content .summary-card {
+    transition: box-shadow 220ms cubic-bezier(.2, .65, .3, 1);
+}
+#main-content .content-card:hover,
+#main-content .detail-card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, .10);
+}
+
+/* Button press */
 #main-content button:active:not(:disabled),
 #main-content .btn-back:active,
+#main-content .btn-add:active,
+#main-content .btn-cancel:active,
+#main-content .btn-primary:active,
 #sidebar .nav-link:active {
-    transform: translateY(1px);
+    transform: translateY(1px) scale(.98);
 }
 
-.modal.fade .modal-dialog,
-.modal-backdrop.fade,
-.employee-toast,
-.alert {
-    transition-duration: 220ms;
+/* Table row hover */
+#main-content .data-table tbody tr {
+    transition: background-color 140ms ease;
 }
 
+/* Nav link active indicator */
+#sidebar .nav-link {
+    transition: all 200ms cubic-bezier(.2, .65, .3, 1);
+}
+
+/* ============================================================
+   7. ALERT BANNER SLIDE-IN
+============================================================ */
+.alert,
+.alert-banner {
+    animation: alert-slide-in 280ms cubic-bezier(0, 0, .2, 1) both;
+}
+
+@keyframes alert-slide-in {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   8. MODAL ANIMATIONS
+============================================================ */
+.modal.fade .modal-dialog {
+    transition: transform 220ms cubic-bezier(0, 0, .2, 1),
+                opacity 220ms cubic-bezier(0, 0, .2, 1);
+    transform: scale(.96) translateY(-8px);
+}
+.modal.show .modal-dialog {
+    transform: scale(1) translateY(0);
+}
+.modal-backdrop.fade {
+    transition: opacity 200ms ease;
+}
+
+/* ============================================================
+   9. TOAST / EMPLOYEE TOAST
+============================================================ */
+.employee-toast {
+    animation: toast-pop 280ms cubic-bezier(0, 0, .2, 1) both;
+}
+
+@keyframes toast-pop {
+    from { opacity: 0; transform: translateY(12px) scale(.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ============================================================
+   10. FORM FOCUS GLOW
+============================================================ */
+#main-content .form-control:focus,
+#main-content .form-select:focus,
+#main-content input:focus,
+#main-content select:focus,
+#main-content textarea:focus {
+    transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+/* ============================================================
+   11. SUBMIT SPINNER
+============================================================ */
 .submit-spinner {
     display: inline-block;
     width: 1em;
@@ -46,6 +260,13 @@
     animation: submit-spin 700ms linear infinite;
 }
 
+@keyframes submit-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   12. CHART EMPTY STATE
+============================================================ */
 .chart-empty-state {
     display: grid;
     min-height: 100%;
@@ -57,10 +278,52 @@
     text-align: center;
 }
 
-@keyframes submit-spin {
-    to { transform: rotate(360deg); }
+/* ============================================================
+   13. NAVIGATION PROGRESS BAR (top page)
+============================================================ */
+#simkeu-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--primary, #4f46e5), var(--accent, #06b6d4));
+    z-index: 9999;
+    transition: width 200ms ease, opacity 300ms ease;
+    pointer-events: none;
+    border-radius: 0 2px 2px 0;
+}
+#simkeu-progress.is-loading {
+    opacity: 1;
+}
+#simkeu-progress.is-done {
+    width: 100% !important;
+    opacity: 0;
+    transition: width 150ms ease, opacity 400ms ease 150ms;
 }
 
+/* ============================================================
+   14. SIDEBAR ACTIVE INDICATOR ANIMATION
+============================================================ */
+#sidebar .nav-link.active::before {
+    animation: indicator-slide-in 200ms cubic-bezier(0, 0, .2, 1) both;
+}
+
+@keyframes indicator-slide-in {
+    from { transform: scaleY(0); }
+    to   { transform: scaleY(1); }
+}
+
+/* ============================================================
+   15. SECTION TITLE UNDERLINE
+============================================================ */
+.section-title {
+    position: relative;
+}
+
+/* ============================================================
+   16. REDUCED MOTION — Hormati preferensi aksesibilitas pengguna
+============================================================ */
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -69,5 +332,18 @@
         animation-duration: .01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: .01ms !important;
+        transition-delay: 0ms !important;
+    }
+
+    .simkeu-animate,
+    .simkeu-animate-left,
+    .simkeu-animate-scale {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    ::view-transition-old(app-main-content),
+    ::view-transition-new(app-main-content) {
+        animation: none !important;
     }
 }

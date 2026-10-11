@@ -26,13 +26,12 @@ class PemasukanController extends Controller
         // ----------------------------------------------------------
         // Ambil parameter filter period (default: 'month')
         // ----------------------------------------------------------
-        $period = $request->query('period', 'month');
         $search = $request->input('search', '');
         $metode = $request->input('metode', '');
 
         $now = Carbon::now();
         ['period' => $period, 'periodLabel' => $periodLabel, 'periodStart' => $periodStart, 'periodEnd' => $periodEnd]
-            = PeriodFilter::resolve($period, $now);
+            = PeriodFilter::resolveFromRequest($request, $now);
 
         // ----------------------------------------------------------
         // Query dasar: ambil semua penjualan dalam rentang periode terpilih
