@@ -271,9 +271,9 @@
         font-weight: 600;
     }
     /* Warna badge per metode */
-    .badge-tunai    { background: rgba(107,123,53,.12); color: var(--success); }
-    .badge-transfer { background: rgba(107,123,53,.12);  color: var(--primary); }
-    .badge-qris     { background: rgba(138,156,70,.12);  color: var(--accent);  }
+    .badge-tunai    { background: rgba(107,123,53,.12); color: #6B7B35; }
+    .badge-transfer { background: rgba(138,156,70,.12); color: #8A9C46; }
+    .badge-qris     { background: rgba(167,183,100,.12); color: #A7B764; }
 
     /* ============================================================
        TOMBOL AKSI — Tombol lihat detail di tabel
@@ -498,7 +498,7 @@
             {{-- Legend warna per metode --}}
             <div>
                 @if(array_sum($metodeData) > 0)
-                    @foreach([['Tunai', 'var(--success)', $metodeData[0]], ['Transfer', 'var(--primary)', $metodeData[1]], ['QRIS', 'var(--accent)', $metodeData[2]]] as [$namaMetode, $warna, $nilai])
+                    @foreach([['Tunai', '#6B7B35', $metodeData[0]], ['Transfer', '#8A9C46', $metodeData[1]], ['QRIS', '#A7B764', $metodeData[2]]] as [$namaMetode, $warna, $nilai])
                         @if($nilai > 0)
                             <div class="legend-item">
                                 <div class="legend-dot" data-bg="{{ $warna }}"></div>
@@ -710,11 +710,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // ============================================================
-    // PALET WARNA — Konsisten dengan dashboard utama
+    // PALET WARNA — Metode pembayaran mengikuti zaitun
     // ============================================================
-    const primary = '#6B7B35';   // Ungu (warna utama)
-    const success = '#6B7B35';   // Hijau (pemasukan / tunai)
-    const accent  = '#8A9C46';   // Biru muda (QRIS / aksen)
+    const tunai = '#6B7B35';
+    const transfer = '#8A9C46';
+    const qris = '#A7B764';
 
     // ============================================================
     // DATA DARI HTML — Ambil nilai JSON dari atribut data
@@ -801,7 +801,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // ============================================================
     const metodeCtx = document.getElementById('metodeChart');
     if (metodeCtx) {
-        const methodColors = [success, primary, accent];
+        const methodColors = [tunai, transfer, qris];
         const methods = metodeLabels.map((label, index) => ({
             label,
             value: metodeData[index] ?? 0,
