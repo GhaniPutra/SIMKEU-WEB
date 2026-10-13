@@ -80,7 +80,7 @@ Dashboard Penjualan Pegawai - SIMKEU
         }
 
         .kpi-card.indigo::before {
-            background: #8A9C46;
+            background: var(--accent);
         }
 
         .kpi-top {
@@ -109,7 +109,7 @@ Dashboard Penjualan Pegawai - SIMKEU
         }
 
         .kpi-card.primary .kpi-icon {
-            background: rgba(107,123,53,.12);
+            background: rgba(var(--primary-rgb),.12);
             color: var(--primary);
         }
 
@@ -129,13 +129,13 @@ Dashboard Penjualan Pegawai - SIMKEU
         }
 
         .kpi-card.accent .kpi-icon {
-            background: rgba(138,156,70,.12);
+            background: rgba(var(--accent-rgb),.12);
             color: var(--accent);
         }
 
         .kpi-card.indigo .kpi-icon {
-            background: rgba(138,156,70,.12);
-            color: #8A9C46;
+            background: rgba(var(--accent-rgb),.12);
+            color: var(--accent);
         }
 
         .kpi-value {
@@ -308,7 +308,7 @@ Dashboard Penjualan Pegawai - SIMKEU
         }
 
         .role-pegawai {
-            background: rgba(138,156,70,0.12);
+            background: rgba(var(--accent-rgb),0.12);
             color: var(--primary-dark);
         }
 
@@ -318,8 +318,8 @@ Dashboard Penjualan Pegawai - SIMKEU
         }
 
         .role-admin {
-            background: rgba(58,66,37,0.12);
-            color: #3A4225;
+            background: rgba(var(--primary-rgb),0.12);
+            color: var(--primary);
         }
     </style>
 @endsection

@@ -146,13 +146,13 @@
 }
 
 .btn-qa-success {
-    background: #6B7B35;
+    background: var(--primary);
     color: #F7F8ED;
     border-color: transparent;
 }
 
 .btn-qa-success:hover {
-    background: #4F5B2A;
+    background: var(--primary-dark);
 }
 
 @media (max-width: 1100px) {

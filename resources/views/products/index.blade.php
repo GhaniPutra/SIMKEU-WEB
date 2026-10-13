@@ -228,7 +228,7 @@
                                             border-radius:20px;
                                             font-size:0.72rem;
                                             font-weight:600;
-                                            background:rgba(107,123,53,.08);
+                                            background:rgba(var(--primary-rgb),.08);
                                             color:var(--primary);
                                         ">{{ $product->category->name }}</span>
                                     @else

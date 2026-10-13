@@ -63,7 +63,7 @@
     .kpi-card.warning::before  { background: var(--warning);  }
     .kpi-card.danger::before   { background: var(--danger);   }
     .kpi-card.accent::before   { background: var(--accent);   }
-    .kpi-card.indigo::before   { background: #8A9C46;         }
+    .kpi-card.indigo::before   { background: var(--accent);   }
 
     /* Baris atas kartu: label dan ikon */
     .kpi-top {
@@ -90,12 +90,12 @@
     }
 
     /* Warna ikon per tema */
-    .kpi-card.primary .kpi-icon { background: rgba(107,123,53,.12);  color: var(--primary); }
+    .kpi-card.primary .kpi-icon { background: rgba(var(--primary-rgb),.12);  color: var(--primary); }
     .kpi-card.success .kpi-icon { background: var(--success-bg); color: var(--success); }
     .kpi-card.warning .kpi-icon { background: var(--warning-bg); color: var(--warning); }
     .kpi-card.danger  .kpi-icon { background: var(--danger-bg);  color: var(--danger);  }
-    .kpi-card.accent  .kpi-icon { background: rgba(138,156,70,.12);  color: var(--accent);  }
-    .kpi-card.indigo  .kpi-icon { background: rgba(138,156,70,.12); color: #8A9C46;        }
+    .kpi-card.accent  .kpi-icon { background: rgba(var(--accent-rgb),.12);  color: var(--accent);  }
+    .kpi-card.indigo  .kpi-icon { background: rgba(var(--accent-rgb),.12); color: var(--accent); }
 
     /* Nilai utama kartu (angka besar) */
     .kpi-value {
@@ -220,7 +220,7 @@
     .filter-bar .form-control:focus,
     .filter-bar .form-select:focus {
         border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(107,123,53,.12);
+        box-shadow: 0 0 0 3px rgba(var(--primary-rgb),.12);
     }
 
     /* ============================================================
@@ -234,7 +234,7 @@
 
     .data-table thead th {
         padding: 10px 14px;
-        background: #F7F8ED;                /* Latar header tabel */
+        background: var(--surface-light);   /* Latar header tabel */
         color: var(--text-muted);
         font-weight: 600;
         font-size: 0.72rem;
@@ -256,7 +256,7 @@
     .data-table tbody tr:last-child td { border-bottom: none; }
 
     /* Highlight saat hover baris */
-    .data-table tbody tr:hover { background: #F7F8ED; }
+    .data-table tbody tr:hover { background: var(--surface-light); }
 
     /* ============================================================
        BADGE — Label jenis / metode pembayaran
@@ -271,9 +271,9 @@
         font-weight: 600;
     }
     /* Warna badge per metode */
-    .badge-tunai    { background: rgba(107,123,53,.18); color: var(--primary-dark); }
-    .badge-transfer { background: rgba(138,156,70,.18); color: var(--primary-dark); }
-    .badge-qris     { background: rgba(167,183,100,.18); color: var(--primary-dark); }
+    .badge-tunai    { background: rgba(var(--primary-rgb),.18); color: var(--primary-dark); }
+    .badge-transfer { background: rgba(var(--accent-rgb),.18); color: var(--primary-dark); }
+    .badge-qris     { background: rgba(var(--accent-soft-rgb),.18); color: var(--primary-dark); }
 
     /* ============================================================
        TOMBOL AKSI — Tombol lihat detail di tabel
@@ -730,7 +730,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Dipakai bersama antara line chart dan doughnut chart
     // ============================================================
     const tooltipDefaults = {
-        backgroundColor: '#1D2310',          // Latar tooltip gelap
+        backgroundColor: '#382719',          // Latar tooltip gelap
         titleFont: { family: 'Poppins', size: 12 },
         bodyFont:  { family: 'Poppins', size: 11 },
         padding: 10,
@@ -752,7 +752,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 labels: chartLabels,
                 datasets: [{
                     label: 'Pemasukan',
-                    backgroundColor: 'rgba(107,123,53,.78)',
+                    backgroundColor: 'rgba(99,55,25,.78)',
                     data: chartData,
                     borderRadius: 4,
                     maxBarThickness: 28,
@@ -782,7 +782,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     },
                     y: {
                         beginAtZero: true,
-                        grid: { color: 'rgba(67,77,39,.18)' },
+                        grid: { color: 'rgba(140,122,107,.18)' },
                         ticks: {
                             font: { size: 10, family: 'Poppins' },
                             callback: (value) => value >= 1000000

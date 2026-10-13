@@ -47,7 +47,7 @@
     /* Chip nama produk di header —— menampilkan produk yang sedang diedit */
     .product-chip {
         margin-left: auto;
-        background: rgba(107,123,53,.08);
+        background: rgba(var(--primary-rgb),.08);
         color: var(--primary);
         padding: 4px 12px;
         border-radius: 20px;
@@ -95,7 +95,7 @@
     .form-select:focus {
         outline: none;
         border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(107,123,53,0.08);
+        box-shadow: 0 0 0 3px rgba(var(--primary-rgb),0.08);
     }
 
     /* Tampilan field yang gagal validasi */
@@ -127,8 +127,8 @@
        INFORMASI STOK SAAT INI — Banner info stok aktual
     ============================================================ */
     .stock-info-banner {
-        background: rgba(107,123,53,.06);
-        border: 1px solid rgba(107,123,53,.15);
+        background: rgba(var(--primary-rgb),.06);
+        border: 1px solid rgba(var(--primary-rgb),.15);
         border-radius: 9px;
         padding: 12px 16px;
         margin-bottom: 20px;

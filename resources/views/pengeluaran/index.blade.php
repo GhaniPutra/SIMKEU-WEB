@@ -89,10 +89,10 @@
     }
 
     /* Warna ikon sesuai tema */
-    .kpi-card.primary .kpi-icon { background: rgba(107,123,53,.12);  color: var(--primary); }
+    .kpi-card.primary .kpi-icon { background: rgba(var(--primary-rgb),.12);  color: var(--primary); }
     .kpi-card.danger  .kpi-icon { background: var(--danger-bg);  color: var(--danger);  }
     .kpi-card.warning .kpi-icon { background: var(--warning-bg); color: var(--warning); }
-    .kpi-card.accent  .kpi-icon { background: rgba(138,156,70,.12);  color: var(--accent);  }
+    .kpi-card.accent  .kpi-icon { background: rgba(var(--accent-rgb),.12);  color: var(--accent);  }
 
     /* Nilai utama kartu (angka besar) */
     .kpi-value {
@@ -263,7 +263,7 @@
     .filter-bar .form-control:focus,
     .filter-bar .form-select:focus {
         border-color: var(--danger); /* Fokus merah sesuai tema pengeluaran */
-        box-shadow: 0 0 0 3px rgba(58,66,37,.1);
+        box-shadow: 0 0 0 3px rgba(var(--danger-rgb),.1);
     }
 
     /* ============================================================
@@ -669,7 +669,7 @@
                             $katInfo = $kategoriLabel[$expense->category] ?? [
                                 'label' => ucfirst($expense->category),
                                 'icon'  => 'fa-ellipsis',
-                                'warna' => '#434D27',
+                                'warna' => '#8B5431',
                             ];
                         @endphp
                         <span class="badge-kategori" data-bg="{{ $katInfo['warna'] }}">
@@ -790,7 +790,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Konfigurasi tooltip bersama untuk semua chart
     // ============================================================
     const tooltipDefaults = {
-        backgroundColor: '#1D2310',         // Latar tooltip gelap
+        backgroundColor: '#382719',         // Latar tooltip gelap
         titleFont: { family: 'Poppins', size: 12 },
         bodyFont:  { family: 'Poppins', size: 11 },
         padding: 10,
@@ -817,7 +817,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 labels: trendLabels,
                 datasets: [{
                     label: 'Pengeluaran',
-                    backgroundColor: 'rgba(58,66,37,.72)',
+                    backgroundColor: 'rgba(99,55,25,.72)',
                     data: trendValues,
                     borderRadius: 4,
                     maxBarThickness: 28,
@@ -847,7 +847,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     },
                     y: {
                         beginAtZero: true,
-                        grid: { color: 'rgba(67,77,39,.18)' },
+                        grid: { color: 'rgba(140,122,107,.18)' },
                         ticks: {
                             font: { size: 10, family: 'Poppins' },
                             callback: (value) => value >= 1000000
@@ -907,7 +907,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 scales: {
                     x: {
                         beginAtZero: true,
-                        grid: { color: 'rgba(67,77,39,.18)' },
+                        grid: { color: 'rgba(140,122,107,.18)' },
                         ticks: {
                             font: { size: 9, family: 'Poppins' },
                             callback: (value) => value >= 1000000

@@ -95,7 +95,7 @@ Extends: layouts.app (layout utama SIMKEU)
         .form-select:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(107,123,53,0.08);
+            box-shadow: 0 0 0 3px rgba(var(--primary-rgb),0.08);
         }
 
         /* Tampilan jika validasi gagal */

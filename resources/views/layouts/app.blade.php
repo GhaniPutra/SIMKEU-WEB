@@ -13,11 +13,11 @@
             --sidebar-w: 260px;
             --sidebar-collapsed-w: 72px;
             --topbar-h: 64px;
-            --body-bg: #FAFAF7;
-            --sidebar-bg: #AA9C68;
-            --sidebar-indicator: #F6F5F0;
+            --body-bg: #FFFCF8;
+            --sidebar-bg: #F8E9D8;
+            --sidebar-indicator: #B27D55;
             --topbar-bg: #FFFFFF;
-            --text-primary: #1D2310;
+            --text-primary: #382719;
         }
 
         html, body {
@@ -112,43 +112,44 @@
             --sidebar-w: 260px;
             --sidebar-collapsed-w: 72px;
             --topbar-h: 64px;
-            --primary: #6B7B35;
-            --primary-dark: #4F5B2A;
-            --primary-light: #A7B764;
-            --accent: #8A9C46;
-            --success: #2F7D45;
-            --success-bg: #E8F4EA;
-            --warning: #946200;
-            --warning-bg: #FFF4D6;
-            --danger: #B42318;
-            --danger-bg: #FDECEC;
-            --primary-rgb: 107 123 53;
-            --success-rgb: 47 125 69;
-            --warning-rgb: 148 98 0;
-            --danger-rgb: 180 35 24;
-            --surface-light: #F7F8ED;
-            --surface-secondary: #ECEFD8;
-            --surface-alt: #DAE1B5;
-            --border-accent: #C0CC8A;
-            --surface-hover: #F4F6EF;
-            --surface-selected: #E8EDDA;
-            --text-secondary: #434D27;
-            --sidebar-bg: #AA9C68;
-            --sidebar-hover: #d6d1b5;
-            --sidebar-active: #eae8d8;
-            --sidebar-active-text: #2A2219;
-            --sidebar-indicator: #F6F5F0;
-            --sidebar-border: #827148;
-            --sidebar-badge-bg: #EAE8D8;
-            --sidebar-text: #F6F5F0;
-            --sidebar-text-active: #66573a;
-            --body-bg: #FAFAF7;
+            --primary: #633719;
+            --primary-dark: #382719;
+            --primary-light: #8B5431;
+            --accent: #B27D55;
+            --success: #548B6A;
+            --success-bg: #EAF3EC;
+            --warning: #B27D55;
+            --warning-bg: #F3E2D0;
+            --danger: #C65C4B;
+            --danger-bg: #FBEAE6;
+            --primary-rgb: 99 55 25;
+            --accent-rgb: 178 125 85;
+            --accent-soft-rgb: 214 184 156;
+            --success-rgb: 84 139 106;
+            --warning-rgb: 178 125 85;
+            --danger-rgb: 198 92 75;
+            --surface-light: #FFFCF8;
+            --surface-secondary: #F3E2D0;
+            --surface-alt: #D6B89C;
+            --border-accent: #D6B89C;
+            --surface-hover: #F8E9D8;
+            --surface-selected: #F3E2D0;
+            --text-secondary: #8C7A6B;
+            --sidebar-bg: #F8E9D8;
+            --sidebar-hover: #F3E2D0;
+            --sidebar-active: #EAD2BB;
+            --sidebar-active-text: #382719;
+            --sidebar-indicator: #B27D55;
+            --sidebar-border: #EAD2BB;
+            --sidebar-badge-bg: #F3E2D0;
+            --sidebar-text: #633719;
+            --sidebar-text-active: #382719;
             --topbar-bg: #FFFFFF;
             --card-bg: #FFFFFF;
-            --text-primary: #2A2219;
-            --text-muted: #434D27;
-            --border: #E3E6DD;
-            --input: #C6CCBB;
+            --text-primary: #382719;
+            --text-muted: #8C7A6B;
+            --border: #EEE5DC;
+            --input: #D6B89C;
             --bs-primary: var(--primary);
             --bs-primary-rgb: var(--primary-rgb);
             --bs-success: var(--success);
@@ -526,7 +527,7 @@
             height: 7px;
             background: var(--danger);
             border-radius: 50%;
-            border: 1.5px solid #F7F8ED;
+            border: 1.5px solid #FFFCF8;
         }
 
         .topbar-divider {
@@ -561,7 +562,7 @@
             justify-content: center;
             font-weight: 700;
             font-size: 0.8rem;
-            color: #F7F8ED;
+            color: #FFFCF8;
         }
 
         .topbar-user .uname {
@@ -578,6 +579,7 @@
             margin-top: var(--topbar-h);
             min-height: calc(100vh - var(--topbar-h));
             padding: 28px 28px 40px;
+            background-color: #FFFFFF;
             transition: margin-left var(--transition);
         }
 

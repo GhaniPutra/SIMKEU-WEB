@@ -133,7 +133,7 @@
 }
 
 .c-master .sc-icon {
-    background: rgba(138,156,70,0.12); /* Latar ikon master stok */
+    background: rgba(var(--accent-rgb),0.12); /* Latar ikon master stok */
     color: var(--accent); /* Warna ikon */
 }
 
@@ -272,7 +272,7 @@
 }
 
 .badge-master {
-    background: rgba(138,156,70,0.12); /* Latar badge master */
+    background: rgba(var(--accent-rgb),0.12); /* Latar badge master */
     color: var(--primary-dark); /* Warna teks */
 }
 

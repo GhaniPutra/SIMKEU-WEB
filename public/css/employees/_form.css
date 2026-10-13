@@ -2,9 +2,9 @@
 /* Gaya ini hanya digunakan oleh partial employees._form */
 
 .validation-errors {
-    background: rgba(58,66,37,0.04);
-    border: 1px solid rgba(58,66,37,0.2);
-    border-left: 4px solid #3A4225;
+    background: rgba(var(--danger-rgb),0.04);
+    border: 1px solid rgba(var(--danger-rgb),0.2);
+    border-left: 4px solid var(--danger);
     padding: 16px 20px;
     border-radius: var(--radius, 12px);
     margin-bottom: 28px;
@@ -15,7 +15,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    color: #3A4225;
+    color: var(--danger);
     font-weight: 700;
     font-size: 0.95rem;
     margin-bottom: 8px;
@@ -32,7 +32,7 @@
 .validation-errors ul {
     margin: 0;
     padding-left: 20px;
-    color: #dc2626;
+    color: var(--danger);
     font-size: 0.9rem;
     line-height: 1.6;
 }
@@ -57,25 +57,25 @@
 
 .form-card-section {
     background: rgba(247,248,237,0.5);
-    border: 1px solid var(--border, #DAE1B5);
+    border: 1px solid var(--border, #EEE5DC);
     border-radius: var(--radius, 12px);
     padding: 24px;
     transition: all 0.3s ease;
 }
 
 .form-card-section:hover {
-    border-color: rgba(107,123,53,0.2);
+    border-color: rgba(var(--primary-rgb),0.2);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
 }
 
 .form-card-section.bg-gradient-subtle {
-    background: linear-gradient(135deg, rgba(247,248,237,0.5) 0%, rgba(107,123,53,0.02) 100%);
+    background: linear-gradient(135deg, rgba(255,252,248,0.5) 0%, rgba(var(--primary-rgb),0.02) 100%);
 }
 
 .section-subtitle {
     font-size: 1.1rem;
     font-weight: 700;
-    color: var(--text-primary, #1D2310);
+    color: var(--text-primary, #382719);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -83,12 +83,12 @@
 }
 
 .section-subtitle i {
-    color: var(--primary, #6B7B35);
+    color: var(--primary, #633719);
 }
 
 .section-desc {
     font-size: 0.85rem;
-    color: var(--text-muted, #434D27);
+    color: var(--text-muted, #8C7A6B);
     line-height: 1.5;
     margin: 0 0 20px 0;
 }
@@ -102,14 +102,14 @@
     display: block;
     font-size: 0.875rem;
     font-weight: 600;
-    color: var(--text-primary, #1D2310);
+    color: var(--text-primary, #382719);
     margin-bottom: 8px;
     transition: color 0.25s ease;
 }
 
 /* Focus highlighting label */
 .form-group:focus-within .form-label {
-    color: var(--primary, #6B7B35);
+    color: var(--primary, #633719);
 }
 
 /* Input Wrapper & Icon Styling */
@@ -123,7 +123,7 @@
 .input-with-icon i.field-icon {
     position: absolute;
     left: 16px;
-    color: var(--text-muted, #434D27);
+    color: var(--text-muted, #8C7A6B);
     font-size: 1rem;
     transition: color 0.25s ease;
     pointer-events: none;
@@ -135,23 +135,23 @@
     min-height: 48px;
     padding: 12px 16px;
     padding-left: 46px; /* Space for left icon */
-    border: 1px solid var(--border, #DAE1B5);
+    border: 1px solid var(--border, #EEE5DC);
     border-radius: 10px;
     font-size: 0.95rem;
     font-weight: 500;
-    color: var(--text-primary, #1D2310);
+    color: var(--text-primary, #382719);
     background: var(--card-bg, #FFFFFF);
     transition: all 0.25s ease;
 }
 
 .input-with-icon:focus-within i.field-icon {
-    color: var(--primary, #6B7B35);
+    color: var(--primary, #633719);
 }
 
 .input-with-icon .form-control:focus {
     outline: none;
-    border-color: var(--primary, #6B7B35);
-    box-shadow: 0 0 0 4px rgba(107,123,53,0.08);
+    border-color: var(--primary, #633719);
+    box-shadow: 0 0 0 4px rgba(var(--primary-rgb),0.08);
     background: #FFFFFF;
 }
 
@@ -166,7 +166,7 @@ select.form-control {
 }
 
 select.form-control:focus {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%234f46e5' stroke-width='1.8'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23633719' stroke-width='1.8'/%3E%3C/svg%3E");
 }
 
 /* Password Toggle Wrapper Integration */
@@ -181,7 +181,7 @@ select.form-control:focus {
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: var(--text-muted, #434D27);
+    color: var(--text-muted, #8C7A6B);
     cursor: pointer;
     padding: 6px;
     font-size: 1.15rem;
@@ -193,7 +193,7 @@ select.form-control:focus {
 }
 
 .password-toggle:hover {
-    color: var(--primary, #6B7B35);
+    color: var(--primary, #633719);
     transform: translateY(-50%) scale(1.1);
 }
 
@@ -203,7 +203,7 @@ select.form-control:focus {
 
 /* Error & Info Helper Styles */
 .form-error {
-    color: #3A4225;
+    color: var(--danger);
     font-size: 0.8rem;
     font-weight: 600;
     margin-top: 6px;
@@ -216,7 +216,7 @@ select.form-control:focus {
 .form-text-info {
     display: block;
     font-size: 0.8rem;
-    color: var(--text-muted, #434D27);
+    color: var(--text-muted, #8C7A6B);
     margin-top: 6px;
     font-style: normal;
 }

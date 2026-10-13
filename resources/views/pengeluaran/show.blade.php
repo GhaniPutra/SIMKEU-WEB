@@ -56,7 +56,7 @@
        Ditampilkan di atas sebagai focal point halaman
     ============================================================ */
     .amount-highlight {
-        background: linear-gradient(135deg, #3A4225 0%, #4F5B2A 100%); /* Gradasi merah–oranye */
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
         border-radius: 14px;
         padding: 28px 24px;
         color: #F7F8ED;
@@ -167,7 +167,7 @@
     /* Kotak ikon produk */
     .produk-icon {
         width: 42px; height: 42px;
-        background: rgba(107,123,53,.1);
+        background: rgba(var(--primary-rgb),.1);
         border-radius: 10px;
         display: flex;
         align-items: center;
@@ -224,7 +224,7 @@
     $katInfo = $kategoriLabel[$expense->category] ?? [
         'label' => ucfirst($expense->category),
         'icon'  => 'fa-ellipsis',
-        'warna' => '#434D27',
+        'warna' => '#8B5431',
     ];
 @endphp
 

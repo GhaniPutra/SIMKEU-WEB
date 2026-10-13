@@ -79,10 +79,10 @@
 }
 
 /* Warna ikon KPI untuk tiap varian */
-.kpi-card.primary .kpi-icon { background: rgba(107,123,53,.12); color: var(--primary); }
+.kpi-card.primary .kpi-icon { background: rgba(var(--primary-rgb),.12); color: var(--primary); }
 .kpi-card.success .kpi-icon { background: var(--success-bg); color: var(--success); }
 .kpi-card.danger .kpi-icon { background: var(--danger-bg); color: var(--danger); }
-.kpi-card.accent .kpi-icon { background: rgba(138,156,70,.12); color: var(--accent); }
+.kpi-card.accent .kpi-icon { background: rgba(var(--accent-rgb),.12); color: var(--accent); }
 
 /* Nilai utama pada kartu KPI */
 .kpi-value {
@@ -192,7 +192,7 @@
 .toolbar-search input:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(107,123,53,0.08);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb),0.08);
 }
 
 /* Ikon pencarian di dalam input */
@@ -358,8 +358,8 @@
     padding: 7px 14px;
     border-radius: 6px;
     background: #F7F8ED;
-    color: var(--danger, #3A4225);
-    border: 1px solid var(--danger, #3A4225);
+    color: var(--danger, #C65C4B);
+    border: 1px solid var(--danger, #C65C4B);
     font-size: 0.75rem;
     font-weight: 600;
     cursor: pointer;
@@ -368,7 +368,7 @@
 
 /* Hover tombol hapus */
 .btn-delete:hover {
-    background: var(--danger, #3A4225);
+    background: var(--danger, #C65C4B);
     color: #F7F8ED;
 }
 
@@ -473,14 +473,14 @@
 
 /* Badge role pegawai */
 .role-pegawai {
-    background: rgba(138,156,70,0.12);
+    background: rgba(var(--accent-rgb),0.12);
     color: var(--primary-dark);
-    border-color: rgba(138,156,70,0.2);
+    border-color: rgba(var(--accent-rgb),0.2);
 }
 
 /* Badge role admin */
 .role-admin {
-    background: rgba(58,66,37,0.12);
-    color: #3A4225;
-    border-color: rgba(58,66,37,0.2);
+    background: rgba(var(--primary-rgb),0.12);
+    color: var(--primary);
+    border-color: rgba(var(--primary-rgb),0.2);
 }

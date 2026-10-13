@@ -287,7 +287,7 @@
     left: 0;
     height: 2px;
     width: 0%;
-    background: linear-gradient(90deg, var(--primary, #6B7B35), var(--accent, #8A9C46));
+    background: linear-gradient(90deg, var(--primary, #633719), var(--accent, #B27D55));
     z-index: 9999;
     transition: width 200ms ease, opacity 300ms ease;
     pointer-events: none;

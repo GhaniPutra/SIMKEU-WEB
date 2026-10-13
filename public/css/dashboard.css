@@ -59,7 +59,7 @@
 .kpi-card.warning::before { background: var(--warning); }
 .kpi-card.danger::before { background: var(--danger); }
 .kpi-card.accent::before { background: var(--accent); }
-.kpi-card.indigo::before { background: #8A9C46; }
+.kpi-card.indigo::before { background: var(--accent); }
 
 .kpi-top {
     display: flex;
@@ -87,7 +87,7 @@
 }
 
 .kpi-card.primary .kpi-icon {
-    background: rgba(107,123,53,.12);
+    background: rgba(var(--primary-rgb),.12);
     color: var(--primary);
 }
 
@@ -107,13 +107,13 @@
 }
 
 .kpi-card.accent .kpi-icon {
-    background: rgba(138,156,70,.12);
+    background: rgba(var(--accent-rgb),.12);
     color: var(--accent);
 }
 
 .kpi-card.indigo .kpi-icon {
-    background: rgba(138,156,70,.12);
-    color: #8A9C46;
+    background: rgba(var(--accent-rgb),.12);
+    color: var(--accent);
 }
 
 .kpi-value {
@@ -305,7 +305,7 @@
 
 .data-table thead th {
     padding: 10px 14px;
-    background: #F7F8ED;
+    background: var(--surface-light);
     color: var(--text-muted);
     font-weight: 600;
     font-size: 0.72rem;
@@ -327,7 +327,7 @@
 }
 
 .data-table tbody tr:hover {
-    background: #F7F8ED;
+    background: var(--surface-light);
 }
 
 .type-badge {
@@ -352,7 +352,7 @@
     padding: 5px 12px;
     border-radius: 7px;
     border: 1px solid var(--border);
-    background: #F7F8ED;
+    background: var(--surface-light);
     font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-muted);
@@ -362,7 +362,7 @@
 
 .btn-detail:hover {
     background: var(--primary);
-    color: #F7F8ED;
+    color: var(--surface-light);
     border-color: var(--primary);
 }
 
@@ -392,7 +392,7 @@
 
 .btn-qa-primary {
     background: var(--primary);
-    color: #F7F8ED;
+    color: var(--surface-light);
 }
 
 .btn-qa-primary:hover {
@@ -401,7 +401,7 @@
 }
 
 .btn-qa-outline {
-    background: #F7F8ED;
+    background: var(--surface-light);
     color: var(--text-primary);
     border: 1px solid var(--border);
 }
@@ -416,10 +416,10 @@
    Profit Highlight
 ============================================================ */
 .profit-highlight {
-    background: linear-gradient(135deg, #6B7B35 0%, #8A9C46 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
     border-radius: var(--radius);
     padding: 24px 22px;
-    color: #F7F8ED;
+    color: var(--surface-light);
     position: relative;
     overflow: hidden;
 }

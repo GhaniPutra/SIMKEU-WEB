@@ -90,7 +90,7 @@
 
         .btn-setup:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(107,123,53,0.3);
+            box-shadow: 0 8px 20px rgba(var(--primary-rgb),0.3);
             color: #F7F8ED;
         }
 
@@ -116,7 +116,7 @@
             justify-content: center;
             color: #F7F8ED;
             font-size: 2rem;
-            box-shadow: 0 4px 15px rgba(107,123,53,0.4);
+            box-shadow: 0 4px 15px rgba(var(--primary-rgb),0.4);
         }
     </style>
 @endsection
