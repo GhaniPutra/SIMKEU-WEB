@@ -131,15 +131,6 @@
     function annotateAnimatables() {
         if (reducedMotion.matches) return;
 
-        // KPI cards — stagger berurutan
-        const kpiCards = document.querySelectorAll('#main-content .kpi-card');
-        kpiCards.forEach((card, i) => {
-            if (!card.classList.contains('simkeu-animate')) {
-                card.classList.add('simkeu-animate');
-                card.setAttribute('data-delay', Math.min(i + 1, 6));
-            }
-        });
-
         // Section titles — slide dari kiri
         document.querySelectorAll('#main-content .section-title').forEach((el, i) => {
             if (!el.classList.contains('simkeu-animate-left')) {
@@ -196,15 +187,6 @@
             }
         });
 
-        // Employee KPI
-        const empKpis = document.querySelectorAll('#main-content .employee-kpi');
-        empKpis.forEach((el, i) => {
-            if (!el.classList.contains('simkeu-animate')) {
-                el.classList.add('simkeu-animate');
-                el.setAttribute('data-delay', Math.min(i + 1, 6));
-            }
-        });
-
         // Alert banners
         document.querySelectorAll('#main-content .alert-banner').forEach((el) => {
             if (!el.classList.contains('simkeu-animate')) {
@@ -219,8 +201,8 @@
             }
         });
 
-        // Fade-up kelas lama (kompatibilitas)
-        document.querySelectorAll('#main-content .fade-up').forEach((el) => {
+        // Fade-up kelas lama (kompatibilitas, kecuali KPI)
+        document.querySelectorAll('#main-content .fade-up:not(.kpi-card):not(.employee-kpi)').forEach((el) => {
             if (!el.classList.contains('simkeu-animate')) {
                 el.classList.add('simkeu-animate');
             }

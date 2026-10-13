@@ -11,10 +11,12 @@
 #main-content .form-container,
 #main-content .login-container,
 #main-content .register-container,
-#main-content .setup-container {
-    opacity: 1;
-    transform: none;
-    animation: none;
+#main-content .setup-container,
+#main-content .kpi-card,
+#main-content .employee-kpi {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
 }
 
 /* ============================================================
@@ -153,14 +155,14 @@
     transition-timing-function: cubic-bezier(.2, .65, .3, 1);
 }
 
-/* KPI card hover lift */
-#main-content .kpi-card {
-    transition: transform 220ms cubic-bezier(.2, .65, .3, 1),
-                box-shadow 220ms cubic-bezier(.2, .65, .3, 1);
+/* KPI card: hover animation dinonaktifkan */
+#main-content .kpi-card,
+#main-content .employee-kpi {
+    transition: none;
 }
-#main-content .kpi-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+#main-content .kpi-card:hover,
+#main-content .employee-kpi:hover {
+    transform: none;
 }
 
 /* Content card hover */
