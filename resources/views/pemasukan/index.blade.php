@@ -498,7 +498,7 @@
             {{-- Legend warna per metode --}}
             <div>
                 @if(array_sum($metodeData) > 0)
-                    @foreach([['Tunai', '#6B7B35', $metodeData[0]], ['Transfer', '#8A9C46', $metodeData[1]], ['QRIS', '#A7B764', $metodeData[2]]] as [$namaMetode, $warna, $nilai])
+                    @foreach([['Tunai', '#827148', $metodeData[0]], ['Transfer', '#988956', $metodeData[1]], ['QRIS', '#aa9c68', $metodeData[2]]] as [$namaMetode, $warna, $nilai])
                         @if($nilai > 0)
                             <div class="legend-item">
                                 <div class="legend-dot" data-bg="{{ $warna }}"></div>
@@ -712,9 +712,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // ============================================================
     // PALET WARNA — Metode pembayaran mengikuti zaitun
     // ============================================================
-    const tunai = '#6B7B35';
-    const transfer = '#8A9C46';
-    const qris = '#A7B764';
+    const tunai = '#827148';
+    const transfer = '#988956';
+    const qris = '#aa9c68';
 
     // ============================================================
     // DATA DARI HTML — Ambil nilai JSON dari atribut data
