@@ -168,11 +168,14 @@
 /* Content card hover */
 #main-content .content-card,
 #main-content .detail-card,
-#main-content .summary-card {
+#main-content .summary-card,
+#main-content .employee-card {
     transition: box-shadow 220ms cubic-bezier(.2, .65, .3, 1);
 }
 #main-content .content-card:hover,
-#main-content .detail-card:hover {
+#main-content .detail-card:hover,
+#main-content .summary-card:hover,
+#main-content .employee-card:hover {
     box-shadow: 0 4px 20px rgba(0, 0, 0, .10);
 }
 
