@@ -4,6 +4,12 @@
     // Sistem animasi entrance, counter, progress bar, dan loading
     // ============================================================
 
+    document.querySelectorAll('.modal').forEach((modal) => {
+        if (modal.parentElement !== document.body) {
+            document.body.append(modal);
+        }
+    });
+
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const activeSubmitButtons = new Set();
 

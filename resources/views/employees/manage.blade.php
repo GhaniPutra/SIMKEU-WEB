@@ -250,7 +250,15 @@
                                     </td>
                                     <td>{{ $product->category->name ?? 'Tanpa kategori' }}</td>
                                     <td>
-                                        <span class="stock-balance master-balance" id="master-stock-{{ $product->id }}">{{ number_format($masterStock) }}</span>
+                                        <span class="stock-balance master-balance" id="master-stock-{{ $product->id }}">
+                                            <span data-stock-value>{{ number_format($masterStock) }}</span>
+                                            <i class="fas fa-warehouse pending-allocation-icon"
+                                               data-pending-allocation-icon
+                                               data-product-id="{{ $product->id }}"
+                                               title="Alokasi menunggu konfirmasi"
+                                               aria-label="Alokasi menunggu konfirmasi"
+                                               @if(!in_array((int) $product->id, $pendingProductIds, true)) hidden @endif></i>
+                                        </span>
                                         @if($masterStock <= 0)
                                             <span class="stock-status status-empty">Kosong</span>
                                         @elseif($masterStock <= $lowStockThreshold)
@@ -258,7 +266,9 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <span class="stock-balance employee-balance" id="emp-stock-{{ $product->id }}">{{ $isEmployeeStockAllocated ? number_format($employeeStock) : '—' }}</span>
+                                        <span class="stock-balance employee-balance" id="emp-stock-{{ $product->id }}">
+                                            <span data-stock-value>{{ $isEmployeeStockAllocated ? number_format($employeeStock) : '—' }}</span>
+                                        </span>
                                         @if(!$isEmployeeStockAllocated)
                                             <span class="stock-status status-unallocated" id="employee-stock-status-{{ $product->id }}">Belum dialokasikan</span>
                                         @elseif($employeeStock <= 0)

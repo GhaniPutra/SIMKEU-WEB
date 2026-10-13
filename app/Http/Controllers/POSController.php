@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Sale;
@@ -146,8 +147,15 @@ class POSController extends Controller
                     'subtotal' => $afterDiscount,
                 ]);
 
-                // Kurangi stok produk sesuai jumlah penjualan
-                $product->decrement('stock', $item['quantity']);
+                $deducted = DB::table('products')
+                    ->where('id', $product->id)
+                    ->where('stock', '>=', $item['quantity'])
+                    ->decrement('stock', $item['quantity'], ['updated_at' => now()]);
+                if ($deducted !== 1) {
+                    throw ValidationException::withMessages([
+                        'items' => "Stok untuk produk {$product->name} tidak mencukupi.",
+                    ]);
+                }
             }
         });
 

@@ -113,7 +113,7 @@
                             <td>
                                 <span class="badge badge-master" id="master-stock-{{ $product->id }}">
                                     <i class="fas fa-warehouse badge-icon"></i>
-                                    {{ $product->stock }}
+                                    <span data-stock-value>{{ $product->stock }}</span>
                                 </span>
                                 @if($isEmpty)
                                     <span class="badge badge-zero badge-status"><i class="fas fa-xmark badge-icon"></i> Kosong</span>
@@ -124,7 +124,7 @@
                             <td>
                                 <span class="badge badge-employee" id="emp-stock-{{ $product->id }}">
                                     <i class="fas fa-user badge-icon"></i>
-                                    {{ $empStock }}
+                                    <span data-stock-value>{{ $empStock }}</span>
                                 </span>
                                 <div class="stock-bar-wrap">
                                     <div class="stock-bar">
@@ -175,6 +175,52 @@
             <div>{{ $lowStockCount }} produk stok rendah di halaman ini</div>
         </div>
     </div>
+
+    @if($pendingAllocations->isNotEmpty())
+        <div class="table-card" style="margin-top: 1.5rem;">
+            <div class="table-card-header">
+                <div>
+                    <div class="table-card-title"><i class="fas fa-clock-rotate-left"></i> Permintaan Alokasi Menunggu</div>
+                    <div class="table-card-meta">Alokasi yang menunggu keputusan dari {{ $employee->name }}</div>
+                </div>
+            </div>
+
+            <div class="table-scroll">
+                <table class="stock-table">
+                    <thead>
+                        <tr>
+                            <th>Produk</th>
+                            <th>Diminta</th>
+                            <th>Pengirim</th>
+                            <th>Catatan</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($pendingAllocations as $allocation)
+                            <tr id="allocation-row-{{ $allocation->id }}">
+                                <td>
+                                    <div class="product-name">{{ $allocation->product->name }}</div>
+                                    <div class="product-meta">{{ $allocation->product->unit }}</div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-employee">
+                                        <i class="fas fa-boxes-stacking badge-icon"></i>
+                                        {{ $allocation->requested_quantity }}
+                                    </span>
+                                </td>
+                                <td>{{ $allocation->owner?->name ?? '—' }}</td>
+                                <td>
+                                    <small>{{ $allocation->decline_reason ?? 'Menunggu review' }}</small>
+                                </td>
+                                <td><small>Menunggu Accept / Decline dari karyawan</small></td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    @endif
 
     {{-- Pagination --}}
     <div class="pagination-wrap">{{ $products->links() }}</div>

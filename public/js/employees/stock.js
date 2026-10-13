@@ -132,11 +132,11 @@ async function transferStock(productId, action) {
             const btnPull = document.getElementById(`btn-pull-${productId}`); // Tombol tarik
 
             if (masterEl) {
-                masterEl.innerHTML = `<i class="fas fa-warehouse badge-icon"></i> ${result.master_stock}`; // Update stok gudang
+                masterEl.querySelector('[data-stock-value]').textContent = Number(result.master_stock).toLocaleString();
                 animateBadge(masterEl); // Animasi badge berubah
             }
             if (empEl) {
-                empEl.innerHTML = `<i class="fas fa-user badge-icon"></i> ${result.employee_stock}`; // Update stok pegawai
+                empEl.querySelector('[data-stock-value]').textContent = Number(result.employee_stock).toLocaleString();
                 animateBadge(empEl); // Animasi badge berubah
             }
 
@@ -156,8 +156,11 @@ async function transferStock(productId, action) {
             }
 
             amountInput.value = 1; // Reset input jumlah
-            const dir = action === 'push' ? 'diberikan ke pegawai' : 'ditarik dari pegawai'; // Pesan arah transfer
-            showToast('success', 'Transfer Berhasil', `${Math.abs(amount)} unit berhasil ${dir}.`); // Tampilkan toast sukses
+            if (action === 'push') {
+                window.refreshPendingStockAllocations?.().catch((error) => console.error(error));
+            } else {
+                showToast('success', 'Transfer Berhasil', `${Math.abs(amount)} unit berhasil ditarik dari pegawai.`);
+            }
             if (document.querySelector('.employee-manage')) {
                 window.setTimeout(() => {
                     window.location.reload();
@@ -204,7 +207,81 @@ function bindStockTransferButtons() {
     });
 }
 
+async function reviewAllocation(allocationId, decision) {
+    const input = document.querySelector(`.allocation-confirmed-qty[data-allocation-id="${allocationId}"]`);
+    const confirmedQuantity = input ? Number(input.value) : null;
+    const payload = { decision, confirmed_quantity: confirmedQuantity };
+
+    if (decision === 'decline') {
+        const actualInput = window.prompt('Jumlah fisik yang diterima:', '0');
+        if (actualInput === null) return;
+
+        const actualQuantity = Number(actualInput);
+        if (!Number.isInteger(actualQuantity) || actualQuantity < 0) {
+            showToast('error', 'Review Gagal', 'Jumlah fisik harus berupa bilangan bulat nol atau lebih.');
+            return;
+        }
+
+        const reason = window.prompt('Alasan selisih wajib diisi:');
+        if (reason === null) return;
+        if (!reason.trim()) {
+            showToast('error', 'Review Gagal', 'Alasan selisih wajib diisi.');
+            return;
+        }
+
+        payload.actual_received_quantity = actualQuantity;
+        payload.decline_reason = reason.trim();
+    }
+
+    try {
+        const response = await fetch(`/stock-allocations/${allocationId}/review`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            showToast('error', 'Review Gagal', result.message || 'Terjadi kesalahan saat meninjau alokasi.');
+            return;
+        }
+
+        showToast('success', 'Review Berhasil', result.message || 'Status alokasi berhasil diperbarui.');
+        const row = document.getElementById(`allocation-row-${allocationId}`);
+        if (row) {
+            row.remove();
+        }
+    } catch (error) {
+        console.error(error);
+        showToast('error', 'Koneksi Error', 'Gagal menghubungi server.');
+    }
+}
+
+function bindAllocationReviewButtons() {
+    const buttons = document.querySelectorAll('.btn-allocation-decision');
+
+    buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+            const allocationId = button.dataset.allocationId;
+            const decision = button.dataset.decision;
+
+            if (!allocationId || !decision) {
+                showToast('error', 'Review Gagal', 'Data alokasi tidak valid.');
+                return;
+            }
+
+            reviewAllocation(allocationId, decision);
+        });
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     initializeStockBarWidths();
     bindStockTransferButtons();
+    bindAllocationReviewButtons();
 });

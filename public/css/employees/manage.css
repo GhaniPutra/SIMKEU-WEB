@@ -633,6 +633,16 @@
     color: var(--primary-dark);
 }
 
+.pending-allocation-icon {
+    margin-left: 4px;
+    color: var(--primary);
+    font-size: .7rem;
+}
+
+.pending-allocation-icon[hidden] {
+    display: none;
+}
+
 .employee-balance {
     background: rgba(107,123,53,.1);
     color: var(--primary);

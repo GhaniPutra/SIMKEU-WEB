@@ -92,6 +92,9 @@ Route::middleware(['auth'])->group(function () {
 
         // Route untuk distribusi stok pegawai
         Route::get('/employees/{employee}/stock', [App\Http\Controllers\EmployeeStockController::class, 'index'])->name('employees.stock');
+        Route::get('/stock-allocations/pending-status', [App\Http\Controllers\EmployeeStockController::class, 'pendingAllocations'])->name('employees.stock.allocations.pending-status');
+        Route::post('/employees/{employee}/stock/allocations', [App\Http\Controllers\EmployeeStockController::class, 'createAllocation'])->name('employees.stock.allocations.store');
+        Route::post('/stock-allocations/{allocation}/review', [App\Http\Controllers\EmployeeStockController::class, 'reviewAllocation'])->name('employees.stock.allocations.review');
         Route::post('/employees/{employee}/stock/transfer', [App\Http\Controllers\EmployeeStockController::class, 'transfer'])->name('employees.stock.transfer');
 
         // ====================================

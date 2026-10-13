@@ -10,6 +10,7 @@ use App\Http\Controllers\API\PengeluaranController;
 use App\Http\Controllers\API\POSController;
 use App\Http\Controllers\API\EmployeeController;
 use App\Http\Controllers\API\DashboardController;
+use App\Http\Controllers\API\StockAllocationController;
 
 // ====================================
 // API Public Routes (tanpa autentikasi)
@@ -107,6 +108,18 @@ Route::middleware('auth:sanctum')->group(function () {
     // ====================================
     Route::apiResource('employees', EmployeeController::class)->names('api.employees');
     Route::get('/employees/{employee}/sales', [EmployeeController::class, 'getSalesData'])->name('api.employees.sales');
+
+    // ====================================
+    // Employee Stock Allocation Routes
+    // GET    /api/stock-allocations/pending                     -> daftar pending milik user login
+    // GET    /api/employees/{employee}/stock/allocations       -> daftar alokasi milik karyawan tertentu
+    // POST   /api/stock-allocations/{allocation}/review        -> accept/decline alokasi tertentu
+    // ====================================
+    Route::get('/stock-allocations/pending', [StockAllocationController::class, 'pending'])->name('api.stock-allocations.pending');
+    Route::get('/stock-allocations/needs-review', [StockAllocationController::class, 'needsReview'])->name('api.stock-allocations.needs-review');
+    Route::get('/employees/{employee}/stock/allocations', [StockAllocationController::class, 'index'])->name('api.employees.stock.allocations');
+    Route::post('/stock-allocations/{allocation}/review', [StockAllocationController::class, 'review'])->name('api.stock-allocations.review');
+    Route::post('/stock-allocations/{allocation}/owner-follow-up', [StockAllocationController::class, 'ownerFollowUp'])->name('api.stock-allocations.owner-follow-up');
 });
 
 // ====================================

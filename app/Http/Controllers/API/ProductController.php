@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class ProductController extends Controller
@@ -146,9 +147,11 @@ class ProductController extends Controller
                 $validated['image'] = $request->file('image')->store('products', 'public');
             }
 
-            // Update produk
-            $product->update($validated);
-            $product->load('category');
+            $product = DB::transaction(function () use ($product, $validated) {
+                $lockedProduct = Product::query()->lockForUpdate()->findOrFail($product->id);
+                $lockedProduct->update($validated);
+                return $lockedProduct->load('category');
+            });
 
             return response()->json([
                 'success' => true,
@@ -239,28 +242,35 @@ class ProductController extends Controller
                 'notes' => 'nullable|string|max:500',
             ]);
 
-            // Hitung stok baru
-            $newStock = $product->stock + $validated['adjustment'];
+            $result = DB::transaction(function () use ($product, $validated) {
+                $lockedProduct = Product::query()->lockForUpdate()->findOrFail($product->id);
+                $previousStock = (int) $lockedProduct->stock;
+                $newStock = $previousStock + $validated['adjustment'];
+                if ($newStock < 0) {
+                    return null;
+                }
 
-            // Pastikan stok tidak negatif
-            if ($newStock < 0) {
+                $lockedProduct->update(['stock' => $newStock]);
+                return [$lockedProduct, $previousStock, $newStock];
+            });
+
+            if ($result === null) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Stok tidak mencukupi. Pengurangan melebihi stok yang tersedia.',
-                    'current_stock' => $product->stock,
+                    'current_stock' => $product->fresh()->stock,
                     'requested_adjustment' => $validated['adjustment']
                 ], 400);
             }
 
-            // Update stok
-            $product->update(['stock' => $newStock]);
+            [$product, $previousStock, $newStock] = $result;
 
             return response()->json([
                 'success' => true,
                 'message' => 'Stok berhasil diperbarui',
                 'data' => [
                     'product' => $product,
-                    'previous_stock' => $product->stock - $validated['adjustment'],
+                    'previous_stock' => $previousStock,
                     'adjustment' => $validated['adjustment'],
                     'new_stock' => $newStock
                 ]

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category; // Model kategori produk
 use App\Models\Product;  // Model produk utama
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /**
  * ProductController
@@ -271,16 +272,20 @@ class ProductController extends Controller
             'adjustment' => 'required|integer|not_in:0',
         ]);
 
-        // Hitung stok baru: stok saat ini + nilai penyesuaian
-        $newStock = $product->stock + $data['adjustment'];
+        $newStock = DB::transaction(function () use ($product, $data) {
+            $lockedProduct = Product::query()->lockForUpdate()->findOrFail($product->id);
+            $newStock = $lockedProduct->stock + $data['adjustment'];
+            if ($newStock < 0) {
+                return null;
+            }
 
-        // Pastikan stok tidak sampai negatif (tidak boleh kurang dari 0)
-        if ($newStock < 0) {
+            $lockedProduct->update(['stock' => $newStock]);
+            return $newStock;
+        });
+
+        if ($newStock === null) {
             return redirect()->back()->with('error', 'Stok tidak mencukupi. Pengurangan melebihi stok yang tersedia.');
         }
-
-        // Simpan stok baru ke database
-        $product->update(['stock' => $newStock]);
 
         // Tentukan keterangan aksi: penambahan atau pengurangan
         $action = $data['adjustment'] > 0

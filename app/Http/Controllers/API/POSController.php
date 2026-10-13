@@ -108,7 +108,7 @@ class POSController extends Controller
                 ]);
 
                 // Buat sale items dan update stok produk
-                foreach ($validated['items'] as $item) {
+                foreach ($validated['items'] as $index => $item) {
                     $product = $products[$item['product_id']];
 
                     SaleItem::create([
@@ -119,10 +119,16 @@ class POSController extends Controller
                         'subtotal' => $product->sell_price * $item['quantity'],
                     ]);
 
-                    // Kurangi stok pada pivot table
-                    auth()->user()->products()->updateExistingPivot($product->id, [
-                        'stock' => DB::raw('stock - ' . (int)$item['quantity'])
-                    ]);
+                    $deducted = DB::table('product_user')
+                        ->where('user_id', auth()->id())
+                        ->where('product_id', $product->id)
+                        ->where('stock', '>=', $item['quantity'])
+                        ->decrement('stock', $item['quantity'], ['updated_at' => now()]);
+                    if ($deducted !== 1) {
+                        throw ValidationException::withMessages([
+                            "items.{$index}.quantity" => "Stok untuk produk {$product->name} tidak mencukupi.",
+                        ]);
+                    }
                 }
 
                 return $sale;

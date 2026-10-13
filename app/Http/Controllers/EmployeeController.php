@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Sale;
+use App\Models\StockAllocation;
 use App\Models\User;
 use App\Support\PeriodFilter;
 use Illuminate\Http\Request;
@@ -251,6 +252,14 @@ class EmployeeController extends Controller
             ->withQueryString()
             ->appends(['tab' => 'stock']);
 
+        $pendingProductIds = StockAllocation::query()
+            ->where('owner_user_id', $request->user()->id)
+            ->where('employee_user_id', $employee->id)
+            ->where('status', StockAllocation::STATUS_PENDING)
+            ->pluck('product_id')
+            ->map(static fn ($productId) => (int) $productId)
+            ->all();
+
         $sales = (clone $periodSales)
             ->with('customer')
             ->withSum('saleItems', 'quantity')
@@ -276,6 +285,7 @@ class EmployeeController extends Controller
         return view('employees.manage', compact(
             'employee',
             'products',
+            'pendingProductIds',
             'analyticsPeriod',
             'periodLabel',
             'periodStart',

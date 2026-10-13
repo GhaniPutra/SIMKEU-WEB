@@ -224,15 +224,15 @@
     gap: var(--ui-space-2);
 }
 
-#main-content #employeeModal .modal-header,
-#main-content #employeeModal .modal-footer,
-#main-content .category-modal .modal-header,
-#main-content .category-modal .modal-footer {
+#employeeModal .modal-header,
+#employeeModal .modal-footer,
+.category-modal .modal-header,
+.category-modal .modal-footer {
     padding: var(--ui-card-header-padding-y) var(--ui-card-header-padding-x);
 }
 
-#main-content #employeeModal .modal-body,
-#main-content .category-modal .modal-body {
+#employeeModal .modal-body,
+.category-modal .modal-body {
     padding: var(--ui-card-padding);
 }
 
