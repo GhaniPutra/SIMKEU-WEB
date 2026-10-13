@@ -3,20 +3,10 @@
    Sistem animasi terpusat: entrance, transitions, micro-interactions
 ============================================================ */
 
-/* ============================================================
-   1. RESET LAMA (hapus inline animation dari blade lama)
-============================================================ */
-#main-content .fade-up,
-#main-content .table-card,
-#main-content .form-container,
-#main-content .login-container,
-#main-content .register-container,
-#main-content .setup-container,
-#main-content .kpi-card,
-#main-content .employee-kpi {
+/* Kompatibilitas backwards untuk kelas animasi lama bila dipanggil langsung */
+.fade-up.visible {
     opacity: 1 !important;
-    transform: none !important;
-    animation: none !important;
+    transform: translateY(0) !important;
 }
 
 /* ============================================================
@@ -155,14 +145,16 @@
     transition-timing-function: cubic-bezier(.2, .65, .3, 1);
 }
 
-/* KPI card: hover animation dinonaktifkan */
+/* KPI card hover lift */
 #main-content .kpi-card,
 #main-content .employee-kpi {
-    transition: none;
+    transition: transform 220ms cubic-bezier(.2, .65, .3, 1),
+                box-shadow 220ms cubic-bezier(.2, .65, .3, 1);
 }
 #main-content .kpi-card:hover,
 #main-content .employee-kpi:hover {
-    transform: none;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
 }
 
 /* Content card hover */

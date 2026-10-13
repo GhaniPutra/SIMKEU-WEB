@@ -131,101 +131,102 @@
     function annotateAnimatables() {
         if (reducedMotion.matches) return;
 
-        // Section titles — slide dari kiri
-        document.querySelectorAll('#main-content .section-title').forEach((el, i) => {
-            if (!el.classList.contains('simkeu-animate-left')) {
-                el.classList.add('simkeu-animate-left');
+        // KPI cards & Employee KPI cards — stagger berurutan
+        const kpiCards = document.querySelectorAll(
+            '#main-content .kpi-card, ' +
+            '#main-content .employee-kpi, ' +
+            '#main-content .stat-card'
+        );
+        kpiCards.forEach((card, i) => {
+            if (!card.classList.contains('simkeu-animate')) {
+                card.classList.add('simkeu-animate');
+                card.setAttribute('data-delay', Math.min((i % 6) + 1, 6));
             }
         });
 
-        // Content cards — fade up dengan stagger
+        // Section titles & page headers — slide dari kiri
+        document.querySelectorAll(
+            '#main-content .section-title, ' +
+            '#main-content .page-header, ' +
+            '#main-content .stock-header, ' +
+            '#main-content .pos-header, ' +
+            '#main-content .employee-manage-header, ' +
+            '#main-content .amount-highlight, ' +
+            '#main-content .btn-back'
+        ).forEach((el, i) => {
+            if (!el.classList.contains('simkeu-animate-left')) {
+                el.classList.add('simkeu-animate-left');
+                el.setAttribute('data-delay', Math.min((i % 4) + 1, 4));
+            }
+        });
+
+        // Content cards & detail cards — fade up dengan stagger
         const contentCards = document.querySelectorAll(
             '#main-content .content-card, ' +
             '#main-content .detail-card, ' +
             '#main-content .summary-card, ' +
-            '#main-content .employee-card'
+            '#main-content .employee-card, ' +
+            '#main-content .table-card, ' +
+            '#main-content .filter-bar, ' +
+            '#main-content .search-filter-card'
         );
         contentCards.forEach((card, i) => {
             if (!card.classList.contains('simkeu-animate')) {
                 card.classList.add('simkeu-animate');
-                card.setAttribute('data-delay', Math.min(i + 1, 6));
+                card.setAttribute('data-delay', Math.min((i % 6) + 1, 6));
             }
         });
 
-        // Form containers — scale-in
-        document.querySelectorAll('#main-content .form-container').forEach((el) => {
+        // Form containers & boxes — scale-in
+        document.querySelectorAll(
+            '#main-content .form-container, ' +
+            '#main-content .form-card, ' +
+            '#main-content .expense-form, ' +
+            '#main-content .pos-form, ' +
+            '.login-box, .register-box, .setup-box'
+        ).forEach((el, i) => {
             if (!el.classList.contains('simkeu-animate-scale')) {
                 el.classList.add('simkeu-animate-scale');
+                el.setAttribute('data-delay', Math.min((i % 4) + 1, 4));
             }
         });
 
-        // Auth pages (login/register box)
-        document.querySelectorAll('.login-box, .register-box, .setup-box').forEach((el) => {
-            if (!el.classList.contains('simkeu-animate-scale')) {
-                el.classList.add('simkeu-animate-scale');
-            }
-        });
-
-        // Employee manage header
-        document.querySelectorAll('.employee-manage-header').forEach((el) => {
+        // Nav tabs & pill buttons
+        document.querySelectorAll(
+            '#main-content .employee-tabs, ' +
+            '#main-content .module-tabs, ' +
+            '#main-content .nav-tabs'
+        ).forEach((el) => {
             if (!el.classList.contains('simkeu-animate')) {
                 el.classList.add('simkeu-animate');
             }
         });
 
-        // Nav tabs
-        document.querySelectorAll('#main-content .employee-tabs, #main-content .module-tabs').forEach((el) => {
+        // Charts & visual grids
+        document.querySelectorAll(
+            '#main-content .two-col, ' +
+            '#main-content .two-col-chart, ' +
+            '#main-content .chart-wrapper, ' +
+            '#main-content .chart-container'
+        ).forEach((el, i) => {
             if (!el.classList.contains('simkeu-animate')) {
                 el.classList.add('simkeu-animate');
-            }
-        });
-
-        // Table cards
-        document.querySelectorAll('#main-content .table-card').forEach((el) => {
-            if (!el.classList.contains('simkeu-animate')) {
-                el.classList.add('simkeu-animate');
+                el.setAttribute('data-delay', Math.min((i % 4) + 2, 6));
             }
         });
 
         // Alert banners
-        document.querySelectorAll('#main-content .alert-banner').forEach((el) => {
+        document.querySelectorAll('#main-content .alert-banner, #main-content .alert').forEach((el) => {
             if (!el.classList.contains('simkeu-animate')) {
                 el.classList.add('simkeu-animate');
             }
         });
 
-        // Two-col / two-col-chart
-        document.querySelectorAll('#main-content .two-col, #main-content .two-col-chart').forEach((el) => {
+        // Semua elemen .fade-up di seluruh halaman
+        document.querySelectorAll('#main-content .fade-up, .fade-up').forEach((el, i) => {
             if (!el.classList.contains('simkeu-animate')) {
                 el.classList.add('simkeu-animate');
-            }
-        });
-
-        // Fade-up kelas lama (kompatibilitas, kecuali KPI)
-        document.querySelectorAll('#main-content .fade-up:not(.kpi-card):not(.employee-kpi)').forEach((el) => {
-            if (!el.classList.contains('simkeu-animate')) {
-                el.classList.add('simkeu-animate');
-            }
-        });
-
-        // Stock header
-        document.querySelectorAll('#main-content .stock-header').forEach((el) => {
-            if (!el.classList.contains('simkeu-animate')) {
-                el.classList.add('simkeu-animate');
-            }
-        });
-
-        // POS header
-        document.querySelectorAll('#main-content .pos-header').forEach((el) => {
-            if (!el.classList.contains('simkeu-animate')) {
-                el.classList.add('simkeu-animate');
-            }
-        });
-
-        // Form card
-        document.querySelectorAll('#main-content .form-card').forEach((el) => {
-            if (!el.classList.contains('simkeu-animate-scale')) {
-                el.classList.add('simkeu-animate-scale');
+                el.setAttribute('data-delay', Math.min((i % 6) + 1, 6));
             }
         });
     }
@@ -288,9 +289,13 @@
                 animateCounter(entry.target);
                 observer.unobserve(entry.target);
             });
-        }, { threshold: 0.5 });
+        }, { threshold: 0.2 });
 
-        document.querySelectorAll('#main-content .kpi-value').forEach((el) => {
+        document.querySelectorAll(
+            '#main-content .kpi-value, ' +
+            '#main-content .employee-kpi-value, ' +
+            '#main-content .stat-value'
+        ).forEach((el) => {
             const text = el.textContent.trim();
             if (/[0-9]/.test(text)) {
                 observer.observe(el);
@@ -382,6 +387,10 @@
     } else {
         init();
     }
+
+    window.addEventListener('pageshow', () => {
+        init();
+    });
 
     // Expose public API
     window.SimkeuLoading = { showSubmitLoadingAfterDelay };
