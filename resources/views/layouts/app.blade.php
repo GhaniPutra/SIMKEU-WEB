@@ -43,6 +43,9 @@
             opacity: 0 !important;
             pointer-events: none !important;
         }
+        html.sidebar-is-collapsed #sidebar .nav-submenu {
+            display: none;
+        }
 
         /* Disable transitions during initial page load to prevent layout flicker */
         body.preload-transitions,
@@ -294,6 +297,51 @@
             font-weight: 500;
         }
 
+        .sidebar-nav details > summary {
+            list-style: none;
+            cursor: pointer;
+        }
+
+        .sidebar-nav details > summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .sidebar-nav .nav-chevron {
+            font-size: 0.7rem;
+            transition: transform 220ms ease, opacity var(--transition);
+        }
+
+        .sidebar-nav details[open] > summary .nav-chevron {
+            transform: rotate(90deg);
+        }
+
+        .sidebar-nav .nav-submenu {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(-6px);
+            transition: height 220ms ease, opacity 220ms ease, transform 220ms ease;
+        }
+
+        .sidebar-nav details[open] > .nav-submenu {
+            height: auto;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .sidebar-nav .nav-submenu .nav-link {
+            padding: 9px 20px 9px 66px;
+            font-size: 0.8rem;
+        }
+
+        #sidebar.collapsed .nav-submenu {
+            display: none;
+        }
+
+        #sidebar.collapsed .nav-chevron {
+            opacity: 0;
+        }
+
         .sidebar-nav .nav-link .nav-icon {
             width: 32px;
             height: 32px;
@@ -327,17 +375,6 @@
         .sidebar-nav .nav-link.active {
             color: var(--sidebar-active-text);
             background: var(--sidebar-active);
-        }
-
-        .sidebar-nav .nav-link.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 4px;
-            bottom: 4px;
-            width: 3px;
-            background: var(--sidebar-indicator);
-            border-radius: 0 3px 3px 0;
         }
 
         .sidebar-nav .nav-link.active .nav-icon {
@@ -803,13 +840,36 @@
                     </a>
                 </li>
                 <!-- Menu "Cabang" dihapus -->
+                @php
+                    $isProductCategoryPage = request()->routeIs('categories.*')
+                        || (request()->routeIs('products.index') && request('tab') === 'kategori');
+                    $isProductSectionOpen = request()->routeIs('products.*', 'categories.*');
+                @endphp
                 <li class="nav-item">
-                    {{-- Satu menu untuk produk dan kategori --}}
-                    <a href="{{ route('products.index') }}"
-                       class="nav-link {{ request()->routeIs('products.*', 'categories.*') ? 'active' : '' }}">
-                        <span class="nav-icon"><i class="fas fa-box-open"></i></span>
-                        <span class="nav-label">Produk & Kategori</span>
-                    </a>
+                    <details {{ $isProductSectionOpen ? 'open' : '' }}>
+                        <summary class="nav-link {{ $isProductSectionOpen ? 'active' : '' }}">
+                            <span class="nav-icon"><i class="fas fa-box-open"></i></span>
+                            <span class="nav-label">Produk</span>
+                            <i class="fas fa-chevron-right nav-chevron" aria-hidden="true"></i>
+                        </summary>
+                        <div class="nav-submenu">
+                            <a href="{{ route('products.index', ['tab' => 'produk']) }}"
+                               class="nav-link {{ request()->routeIs('products.index', 'products.edit') && !$isProductCategoryPage ? 'active' : '' }}"
+                               @if(request()->routeIs('products.index', 'products.edit') && !$isProductCategoryPage) aria-current="page" @endif>
+                                Daftar Produk
+                            </a>
+                            <a href="{{ route('products.create') }}"
+                               class="nav-link {{ request()->routeIs('products.create') ? 'active' : '' }}"
+                               @if(request()->routeIs('products.create')) aria-current="page" @endif>
+                                Tambah Produk
+                            </a>
+                            <a href="{{ route('categories.index') }}"
+                               class="nav-link {{ $isProductCategoryPage ? 'active' : '' }}"
+                               @if($isProductCategoryPage) aria-current="page" @endif>
+                                Daftar Kategori
+                            </a>
+                        </div>
+                    </details>
                 </li>
 
             </ul>
@@ -1140,6 +1200,59 @@
                 }
             });
         })();
+    </script>
+
+    <script>
+        document.querySelectorAll('.sidebar-nav details > summary').forEach((summary) => {
+            const details = summary.parentElement;
+            const submenu = details.querySelector(':scope > .nav-submenu');
+            if (!submenu) return;
+
+            summary.addEventListener('click', (event) => {
+                event.preventDefault();
+
+                const isClosing = details.dataset.closing === 'true';
+                const shouldOpen = isClosing || !details.open;
+                const currentHeight = submenu.getBoundingClientRect().height;
+
+                submenu.style.height = `${currentHeight}px`;
+                submenu.style.opacity = getComputedStyle(submenu).opacity;
+                submenu.style.transform = getComputedStyle(submenu).transform;
+                submenu.offsetHeight;
+
+                if (shouldOpen) {
+                    details.open = true;
+                    delete details.dataset.closing;
+                    requestAnimationFrame(() => {
+                        submenu.style.height = `${submenu.scrollHeight}px`;
+                        submenu.style.opacity = '1';
+                        submenu.style.transform = 'translateY(0)';
+                    });
+                    return;
+                }
+
+                details.dataset.closing = 'true';
+                requestAnimationFrame(() => {
+                    submenu.style.height = '0px';
+                    submenu.style.opacity = '0';
+                    submenu.style.transform = 'translateY(-6px)';
+                });
+            });
+
+            submenu.addEventListener('transitionend', (event) => {
+                if (event.propertyName !== 'height') return;
+
+                if (details.dataset.closing === 'true') {
+                    details.open = false;
+                    delete details.dataset.closing;
+                }
+                if (details.open) {
+                    submenu.style.removeProperty('height');
+                    submenu.style.removeProperty('opacity');
+                    submenu.style.removeProperty('transform');
+                }
+            });
+        });
     </script>
 
     {{-- Slot untuk JavaScript tambahan dari halaman turunan (via @section('js')) --}}

@@ -33,19 +33,6 @@
 ===================================================== --}}
 @section('content')
 
-    <nav class="module-tabs" aria-label="Modul produk">
-        <a href="{{ route('products.index', array_merge(request()->query(), ['tab' => 'produk'])) }}"
-           class="module-tab {{ $activeTab === 'produk' ? 'active' : '' }}"
-           @if($activeTab === 'produk') aria-current="page" @endif>
-            <i class="fas fa-boxes-stacked"></i> Produk &amp; Stok
-        </a>
-        <a href="{{ route('products.index', array_merge(request()->query(), ['tab' => 'kategori'])) }}"
-           class="module-tab {{ $activeTab === 'kategori' ? 'active' : '' }}"
-           @if($activeTab === 'kategori') aria-current="page" @endif>
-            <i class="fas fa-tags"></i> Kategori
-        </a>
-    </nav>
-
     @if($activeTab === 'produk')
     {{-- ============================================================
          KPI CARDS — Ringkasan statistik stok utama
