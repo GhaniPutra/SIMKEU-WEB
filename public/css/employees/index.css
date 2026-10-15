@@ -33,23 +33,6 @@
     box-shadow: var(--shadow-md);
 }
 
-/* Garis warna di atas kartu KPI */
-.kpi-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    border-radius: var(--radius) var(--radius) 0 0;
-}
-
-/* Warna garis atas untuk varian kartu */
-.kpi-card.primary::before { background: var(--primary); }
-.kpi-card.success::before { background: var(--success); }
-.kpi-card.danger::before { background: var(--danger); }
-.kpi-card.accent::before { background: var(--accent); }
-
 /* Baris atas di dalam kartu KPI */
 .kpi-top {
     display: flex;

@@ -47,21 +47,6 @@
         box-shadow: var(--shadow-md);
     }
 
-    /* Garis warna di bagian atas kartu (accent bar) */
-    .kpi-card::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 3px;
-        border-radius: var(--radius) var(--radius) 0 0;
-    }
-
-    /* Warna accent bar per tema */
-    .kpi-card.primary::before { background: var(--primary); }
-    .kpi-card.danger::before  { background: var(--danger);  }
-    .kpi-card.warning::before { background: var(--warning); }
-    .kpi-card.accent::before  { background: var(--accent);  }
-
     /* Bagian atas kartu: label + ikon di kanan */
     .kpi-top {
         display: flex;

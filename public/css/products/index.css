@@ -31,19 +31,6 @@
     box-shadow: var(--shadow-md); /* Bayangan lebih besar */
 }
 
-.kpi-card::before { /* Garis aksen di bagian atas kartu */
-    content: ''; /* Pseudo-element kosong */
-    position: absolute; /* Posisi absolut di dalam kartu */
-    top: 0; left: 0; right: 0; /* Menempel ke atas */
-    height: 3px; /* Ketebalan garis */
-    border-radius: var(--radius) var(--radius) 0 0; /* Bulat sudut atas */
-}
-
-.kpi-card.primary::before { background: var(--primary); } /* Warna aksen primary */
-.kpi-card.success::before { background: var(--success); } /* Warna aksen success */
-.kpi-card.warning::before { background: var(--warning); } /* Warna aksen warning */
-.kpi-card.danger::before  { background: var(--danger);  } /* Warna aksen danger */
-
 .kpi-top { /* Bar atas di dalam kartu yang berisi label dan ikon */
     display: flex; /* Gunakan flex untuk layout */
     justify-content: space-between; /* Sebelah kiri-kanan */

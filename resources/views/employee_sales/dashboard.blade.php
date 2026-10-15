@@ -49,40 +49,6 @@ Dashboard Penjualan Pegawai - SIMKEU
             box-shadow: var(--shadow-md);
         }
 
-        .kpi-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            border-radius: var(--radius) var(--radius) 0 0;
-        }
-
-        .kpi-card.primary::before {
-            background: var(--primary);
-        }
-
-        .kpi-card.success::before {
-            background: var(--success);
-        }
-
-        .kpi-card.warning::before {
-            background: var(--warning);
-        }
-
-        .kpi-card.danger::before {
-            background: var(--danger);
-        }
-
-        .kpi-card.accent::before {
-            background: var(--accent);
-        }
-
-        .kpi-card.indigo::before {
-            background: var(--accent);
-        }
-
         .kpi-top {
             display: flex;
             justify-content: space-between;
