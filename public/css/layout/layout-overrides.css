@@ -1,0 +1,214 @@
+/* Penyesuaian komponen layout SIMKEU
+ * Menjaga gaya form, tabel, tombol, status warna, dan aksesibilitas global.
+ */
+
+/* Gaya form dan kontrol periode pada area konten. */
+#main-content input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not(:disabled):not(.is-invalid),
+        #main-content select:not(:disabled):not(.is-invalid),
+        #main-content textarea:not(:disabled):not(.is-invalid),
+        .modal input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not(:disabled):not(.is-invalid),
+        .modal select:not(:disabled):not(.is-invalid),
+        .modal textarea:not(:disabled):not(.is-invalid) {
+            border-color: var(--input);
+            background-color: var(--card-bg);
+        }
+
+        #main-content input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not(:disabled):not(.is-invalid):focus,
+        #main-content select:not(:disabled):not(.is-invalid):focus,
+        #main-content textarea:not(:disabled):not(.is-invalid):focus,
+        .modal input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not(:disabled):not(.is-invalid):focus,
+        .modal select:not(:disabled):not(.is-invalid):focus,
+        .modal textarea:not(:disabled):not(.is-invalid):focus,
+        #topbar .form-select:focus {
+            border-color: var(--topbar-focus);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(var(--topbar-focus-rgb), 0.12);
+        }
+
+        #topbar .form-select:not(:disabled) {
+            border-color: var(--topbar-border);
+            background-color: var(--topbar-bg);
+        }
+
+        #main-content .btn-cancel:hover,
+        #main-content .btn-back:hover,
+        #main-content .btn-modal-cancel:hover,
+        #main-content .btn-qa-outline:hover,
+        .modal .btn-cancel:hover,
+        .modal .btn-modal-cancel:hover,
+        .modal .btn-qa-outline:hover {
+            border-color: var(--border);
+            background: var(--surface-hover);
+            color: var(--text-primary);
+        }
+
+        #main-content .data-table tbody tr:hover,
+        #main-content .items-table tbody tr:hover,
+        #main-content .pos-table tbody tr:hover {
+            background-color: var(--surface-hover);
+        }
+
+        /* Terapkan warna tema dasar tanpa mengganti warna sidebar dan navbar. */
+        *,
+        *::before,
+        *::after {
+            color: var(--text-primary) !important;
+            border-color: var(--border) !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+        }
+
+        #main-content .content-card,
+        #main-content .kpi-card {
+            background-color: #fff !important;
+        }
+
+        /* Pertahankan warna navigasi sesuai tampilan layout yang ada. */
+        ::placeholder {
+            color: var(--text-muted) !important;
+        }
+
+        #sidebar,
+        #sidebar *,
+        #sidebar *::before,
+        #sidebar *::after,
+        #topbar,
+        #topbar *,
+        #topbar *::before,
+        #topbar *::after {
+            color: #1a1a1a !important;
+            border-color: #d3d3d3 !important;
+        }
+
+        #topbar ::placeholder {
+            color: #1a1a1a !important;
+        }
+
+        #sidebar .sidebar-nav .nav-link:not(.active) .nav-icon,
+        #sidebar .sidebar-nav .nav-link:not(.active) .nav-icon i,
+        #sidebar .sidebar-nav .nav-link:not(.active) .nav-icon i::before {
+            color: #404040 !important;
+        }
+
+        #sidebar .sidebar-nav .nav-link.active,
+        #sidebar .sidebar-nav .nav-link.active * {
+            color: #235fd2 !important;
+        }
+
+        #main-content .alert-success,
+        #main-content .alert-success *,
+        #main-content .text-success,
+        #main-content .badge-success,
+        #main-content .stock-ok {
+            color: var(--success) !important;
+        }
+
+        #main-content .alert-warning,
+        #main-content .alert-warning *,
+        #main-content .text-warning,
+        #main-content .badge-warning,
+        #main-content .stock-low {
+            color: var(--warning) !important;
+        }
+
+        #main-content .alert-danger,
+        #main-content .alert-danger *,
+        #main-content .text-danger,
+        #main-content .badge-danger,
+        #main-content .stock-empty {
+            color: var(--danger) !important;
+        }
+
+        /* Pastikan teks tombol kontras terhadap latar tombol berwarna. */
+        #main-content .btn-primary,
+        #main-content .btn-qa-primary,
+        #main-content .btn-qa-success,
+        #main-content .btn-add,
+        #main-content .btn-submit,
+        #main-content .btn-setup,
+        #main-content .btn-login,
+        #main-content .btn-register,
+        #main-content .btn-detail:hover,
+        #main-content .btn-back:hover,
+        #main-content .btn-stock:hover,
+        #main-content .btn-edit:hover,
+        #main-content .btn-delete:hover,
+        #main-content .btn-action:hover,
+        #main-content .btn-give,
+        #main-content .btn-pull:hover:not(:disabled),
+        #main-content .page-item.active .page-link {
+            color: var(--blue-50) !important;
+        }
+
+        #main-content .amount-highlight,
+        #main-content .amount-highlight *,
+        #main-content .setup-icon,
+        #main-content .employee-avatar,
+        #main-content .badge-kategori {
+            color: var(--blue-50) !important;
+        }
+
+        #main-content .badge-kategori-listrik {
+            color: var(--yellow-950) !important;
+        }
+
+        /* Pertahankan warna ikon ringkasan berdasarkan jenis status. */
+        #main-content .kpi-card.primary .kpi-icon {
+            color: var(--blue-700) !important;
+        }
+
+        #main-content .kpi-card.success .kpi-icon {
+            color: var(--green-700) !important;
+        }
+
+        #main-content .kpi-card.warning .kpi-icon,
+        #main-content .kpi-card.accent .kpi-icon {
+            color: var(--yellow-800) !important;
+        }
+
+        #main-content .kpi-card.danger .kpi-icon {
+            color: var(--red-700) !important;
+        }
+
+        #main-content :focus-visible {
+            outline-color: var(--primary) !important;
+        }
+
+        .sidebar-nav .nav-link:not(.active) .nav-icon,
+        .sidebar-nav .nav-link:not(.active) .nav-icon i,
+        .sidebar-nav .nav-link:not(.active) .nav-icon i::before {
+            color: #404040 !important;
+        }
+
+        .sidebar-nav .nav-link.active,
+        .sidebar-nav .nav-link.active * {
+            color: #235fd2 !important;
+        }
+
+        .sidebar-nav .nav-link.active .nav-icon {
+            color: #235fd2 !important;
+        }
+
+        .sidebar-nav .nav-link.active .nav-icon i,
+        .sidebar-nav .nav-link.active .nav-icon i::before {
+            color: #235fd2 !important;
+        }
+
+        .border-transparent,
+        .btn-qa:not(.btn-qa-outline),
+        .btn-qa-primary,
+        .btn-qa-success,
+        .role-pegawai,
+        .btn-pull:hover:not(:disabled) {
+            border-color: transparent !important;
+        }
+
+        .employee-manage .spin,
+        .submit-spinner {
+            border-right-color: transparent !important;
+        }
+
+        :focus-visible {
+            outline: 2px solid #0b0b0b !important;
+            outline-offset: 2px;
+        }

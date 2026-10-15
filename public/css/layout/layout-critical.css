@@ -1,0 +1,47 @@
+/* Gaya kritis layout SIMKEU
+ * Menjaga warna dasar, status sidebar, dan transisi awal sebelum halaman tampil.
+ */
+
+:root {
+            --sidebar-w: 260px;
+            --sidebar-collapsed-w: 72px;
+            --topbar-h: 64px;
+            --body-bg: #FFFCF8;
+            --sidebar-bg: #ffffff;
+            --sidebar-indicator: #B27D55;
+            --topbar-bg: #FFFFFF;
+            --text-primary: #192b52;
+        }
+
+        html, body {
+            background-color: var(--body-bg);
+            color: var(--text-primary);
+        }
+
+        /* Cegah perubahan ukuran sidebar sebelum halaman selesai dimuat. */
+        html.sidebar-is-collapsed #sidebar {
+            width: var(--sidebar-collapsed-w) !important;
+        }
+        html.sidebar-is-collapsed #topbar {
+            left: var(--sidebar-collapsed-w) !important;
+        }
+        html.sidebar-is-collapsed #main-content {
+            margin-left: var(--sidebar-collapsed-w) !important;
+        }
+        html.sidebar-is-collapsed .sidebar-brand .brand-text,
+        html.sidebar-is-collapsed .nav-section-label,
+        html.sidebar-is-collapsed .sidebar-nav .nav-link .nav-label,
+        html.sidebar-is-collapsed .nav-badge,
+        html.sidebar-is-collapsed .sidebar-user .user-info {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+        html.sidebar-is-collapsed #sidebar .nav-submenu {
+            display: none;
+        }
+
+        /* Nonaktifkan transisi sementara agar halaman tidak berkedip saat dibuka. */
+        body.preload-transitions,
+        body.preload-transitions * {
+            transition: none !important;
+        }
