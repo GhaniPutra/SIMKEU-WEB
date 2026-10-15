@@ -1,7 +1,7 @@
 (() => {
     // ============================================================
     // SIMKEU App Animations JS
-    // Sistem animasi entrance, counter, progress bar, dan loading
+    // Sistem animasi entrance, progress bar, dan loading
     // ============================================================
 
     document.querySelectorAll('.modal').forEach((modal) => {
@@ -232,79 +232,7 @@
     }
 
     // ============================================================
-    // 4. KPI COUNTER ANIMATION
-    // Angka KPI menghitung naik saat elemen muncul
-    // ============================================================
-
-    function parseNumber(str) {
-        // Handles "Rp 1.234.567" atau "1.234" atau "123"
-        return parseFloat(str.replace(/[^0-9,.-]/g, '').replace(/\./g, '').replace(',', '.')) || 0;
-    }
-
-    function formatNumber(val, original) {
-        const isRupiah = original.includes('Rp');
-        const hasDecimal = original.includes(',');
-        const rounded = Math.round(val);
-
-        if (isRupiah) {
-            return 'Rp ' + rounded.toLocaleString('id-ID');
-        }
-        return rounded.toLocaleString('id-ID');
-    }
-
-    function animateCounter(el) {
-        if (reducedMotion.matches) return;
-        const original = el.textContent.trim();
-        const end = parseNumber(original);
-        if (!end || end <= 0) return;
-
-        const duration = 700;
-        const start = performance.now();
-
-        function frame(now) {
-            const elapsed = now - start;
-            const progress = Math.min(elapsed / duration, 1);
-            // Easing: ease out quart
-            const eased = 1 - Math.pow(1 - progress, 4);
-            const current = eased * end;
-
-            el.textContent = formatNumber(current, original);
-
-            if (progress < 1) {
-                requestAnimationFrame(frame);
-            } else {
-                el.textContent = original;
-            }
-        }
-
-        requestAnimationFrame(frame);
-    }
-
-    function initCounters() {
-        if (reducedMotion.matches) return;
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                if (!entry.isIntersecting) return;
-                animateCounter(entry.target);
-                observer.unobserve(entry.target);
-            });
-        }, { threshold: 0.2 });
-
-        document.querySelectorAll(
-            '#main-content .kpi-value, ' +
-            '#main-content .employee-kpi-value, ' +
-            '#main-content .stat-value'
-        ).forEach((el) => {
-            const text = el.textContent.trim();
-            if (/[0-9]/.test(text)) {
-                observer.observe(el);
-            }
-        });
-    }
-
-    // ============================================================
-    // 5. SUBMIT BUTTON LOADING
+    // 4. SUBMIT BUTTON LOADING
     // ============================================================
 
     function showSubmitLoading(button) {
@@ -348,7 +276,7 @@
     });
 
     // ============================================================
-    // 6. CHART.JS DEFAULT SETTINGS
+    // 5. CHART.JS DEFAULT SETTINGS
     // ============================================================
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -373,13 +301,12 @@
     });
 
     // ============================================================
-    // 7. INIT — Jalankan semua saat DOM siap
+    // 6. INIT — Jalankan semua saat DOM siap
     // ============================================================
 
     function init() {
         annotateAnimatables();
         initEntranceAnimations();
-        initCounters();
     }
 
     if (document.readyState === 'loading') {

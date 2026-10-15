@@ -47,7 +47,7 @@ class DashboardController extends Controller
             : ($transactionsToday > 0 ? 100 : 0);
         $transactionsTrendLabel = $transactionsTrendPercent >= 0 ? 'trend-up' : 'trend-down';
         $transactionsTrendText = number_format(abs($transactionsTrendPercent), 1, ',', '.') . '%';
-        $activeEmployees = User::count();
+        $activeEmployees = User::where('role', 'pegawai')->count();
 
         $trendLabels = [];
         $revenueTrendData = [];

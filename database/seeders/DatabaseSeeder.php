@@ -14,16 +14,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Urutan penting: stores -> users -> related data
-        $this->call([
-            StoresSeeder::class,
-            UsersSeeder::class,
-            PersonalAccessTokensSeeder::class,
-            CategoriesSeeder::class,
-            ProductsSeeder::class,
-            ProductUserSeeder::class,
-            SalesSeeder::class,
-            ExpensesSeeder::class,
-        ]);
+        // Data contoh memiliki seeder tersendiri dan tidak dimuat otomatis,
+        // agar KPI selalu menghitung data yang benar-benar dimasukkan pengguna.
     }
 }

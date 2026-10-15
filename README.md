@@ -33,12 +33,15 @@ DB_USERNAME=username_db
 DB_PASSWORD=password_db
 ```
 
-### 4. Jalankan migrasi & seeder *(opsional)*
+### 4. Jalankan migrasi
 
 ```bash
 php artisan migrate
-php artisan db:seed
 ```
+
+`php artisan db:seed` tidak otomatis memasukkan data contoh. Tambahkan toko,
+produk, transaksi, dan pengguna melalui aplikasi agar KPI mencerminkan data
+operasional yang sebenarnya.
 
 ### 5. Instal dependensi frontend
 

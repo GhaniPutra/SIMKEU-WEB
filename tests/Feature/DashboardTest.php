@@ -31,6 +31,18 @@ class DashboardTest extends TestCase
         $response->assertSee('trendChart');
     }
 
+    public function test_dashboard_employee_kpi_counts_only_employee_accounts(): void
+    {
+        $employee = User::factory()->create(['role' => 'pegawai']);
+        User::factory()->create(['role' => 'admin']);
+        User::factory()->create(['role' => 'pegawai']);
+        $this->actingAs($employee);
+
+        $this->get(route('dashboard'))
+            ->assertOk()
+            ->assertViewHas('activeEmployees', 2);
+    }
+
     public function test_global_period_filters_dashboard_totals_lists_and_all_time_chart(): void
     {
         $user = User::factory()->create();
@@ -72,6 +84,12 @@ class DashboardTest extends TestCase
             ->assertViewHas('recentTransactions', fn ($transactions) => $transactions->contains(
                 fn ($item) => str_contains($item['url'], (string) $historicalSale->id)
             ));
+
+        $this->withCookie('dashboardPeriod', 'all')
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertViewHas('period', 'all')
+            ->assertViewHas('totalRevenueMonth', 600);
     }
 
     private function createSale(User $user, float $total, $date): Sale

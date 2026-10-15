@@ -91,8 +91,7 @@
         // Mengelola filter periode global pada bilah atas.
         //
         // Cara kerja:
-        //   1. Periode URL menjadi state aktif; localStorage & cookie dipakai saat
-        //      halaman yang relevan dibuka agar server dan klien selalu sinkron.
+        //   1. Prioritas state mengikuti server: URL, cookie, lalu nilai bawaan.
         //   2. Gunakan history.replaceState agar halaman tidak dimuat ulang dua kali.
         //   3. Tautan navigasi disinkronkan otomatis dengan periode aktif.
         // ============================================================
@@ -103,21 +102,23 @@
             if (!periodSelect) return; // Berhenti jika elemen tidak tersedia.
 
             // -------------------------------------------------------
-            // Tentukan periode aktif: URL, lalu localStorage, kemudian nilai bawaan.
+            // Samakan prioritas dengan PeriodFilter server: URL, cookie, lalu nilai bawaan.
             // -------------------------------------------------------
             const urlParams    = new URLSearchParams(window.location.search); // Baca parameter URL.
             const supportedPeriods = ['all', 'today', 'week', 'month'];
             const periodFromUrl = urlParams.get('period');
-            const savedPeriod = localStorage.getItem('dashboardPeriod') || 'month';
+            const cookiePeriod = document.cookie
+                .split('; ')
+                .find((cookie) => cookie.startsWith('dashboardPeriod='))
+                ?.split('=')[1];
             let activePeriod = supportedPeriods.includes(periodFromUrl)
                 ? periodFromUrl
-                : supportedPeriods.includes(savedPeriod) ? savedPeriod : 'month';
+                : supportedPeriods.includes(cookiePeriod) ? cookiePeriod : 'month';
 
             // Setel pilihan awal sesuai periode aktif.
             periodSelect.value = activePeriod;
 
-            // Simpan periode di localStorage dan cookie agar konsisten antarhalaman.
-            localStorage.setItem('dashboardPeriod', activePeriod);
+            // Simpan periode di cookie agar pilihan berikutnya konsisten dengan server.
             document.cookie = `dashboardPeriod=${activePeriod}; path=/; max-age=31536000; SameSite=Lax`;
 
             function supportsPeriod(path) {
@@ -188,8 +189,7 @@
                 const selectedPeriod = this.value; // Periode yang dipilih.
                 activePeriod = selectedPeriod;
 
-                // Simpan pilihan ke localStorage dan cookie.
-                localStorage.setItem('dashboardPeriod', selectedPeriod);
+                // Simpan pilihan ke cookie, yang juga menjadi sumber state server.
                 document.cookie = `dashboardPeriod=${selectedPeriod}; path=/; max-age=31536000; SameSite=Lax`;
                 syncPeriodLinks();
 

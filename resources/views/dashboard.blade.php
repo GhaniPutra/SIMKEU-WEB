@@ -111,11 +111,11 @@
             {{-- Pegawai --}}
             <div class="kpi-card accent fade-up">
                 <div class="kpi-top">
-                    <span class="kpi-label">Pegawai Aktif</span>
+                    <span class="kpi-label">Pegawai Terdaftar</span>
                     <div class="kpi-icon"><i class="fas fa-user-tie"></i></div>
                 </div>
                 <div class="kpi-value">{{ $activeEmployees }}</div>
-                <div class="kpi-sub">Karyawan terdaftar aktif</div>
+                <div class="kpi-sub">Akun dengan peran pegawai</div>
             </div>
 
             <!-- KPI "Cabang" dihapus -->
@@ -292,11 +292,7 @@
 
             if (periodSelect) {
                 // Paksa nilai select sesuai $period yang dikirim dari controller
-                // Ini menimpa logika localStorage di app.blade.php untuk halaman ini
                 periodSelect.value = dashboardData.period;
-
-                // Simpan juga ke localStorage agar konsisten saat pindah halaman
-                localStorage.setItem('dashboardPeriod', dashboardData.period);
             }
         });
     </script>
