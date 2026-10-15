@@ -66,7 +66,6 @@
     }
 
     /* Satu baris info: label di atas, nilai di bawah */
-    .info-item {}
     .info-label {
         font-size: 0.72rem;
         font-weight: 600;

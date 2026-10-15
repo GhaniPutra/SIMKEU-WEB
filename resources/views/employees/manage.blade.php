@@ -12,6 +12,7 @@
 @section('content')
 <div class="employee-manage"
     data-employee-id="{{ $employee->id }}"
+    data-pending-allocations-url="{{ route('employees.stock.allocations.pending-status') }}"
     data-stock-transfer-url="{{ route('employees.stock.transfer', $employee) }}"
     data-trend-labels="{{ json_encode($trendLabels, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) }}"
     data-trend-revenue="{{ json_encode($trendRevenue, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) }}"

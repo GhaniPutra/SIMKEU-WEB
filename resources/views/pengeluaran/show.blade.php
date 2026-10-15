@@ -121,7 +121,6 @@
         .info-grid { grid-template-columns: 1fr; }
     }
 
-    .info-item {}
     .info-label {
         font-size: 0.72rem;
         font-weight: 600;
@@ -149,6 +148,13 @@
         font-weight: 600;
         color: #f0f7fe;
     }
+    .badge-kategori-beli_stok,
+    .badge-kategori-transport { background: var(--blue-700); }
+    .badge-kategori-gaji,
+    .badge-kategori-air { background: var(--green-600); }
+    .badge-kategori-listrik { background: var(--yellow-400); color: var(--yellow-950); }
+    .badge-kategori-sewa { background: var(--red-600); }
+    .badge-kategori-lainnya { background: var(--blue-800); }
 
     /* ============================================================
        KOTAK PRODUK — Info produk terkait (untuk kategori beli_stok)
@@ -258,7 +264,7 @@
             <i class="fas fa-circle-info"></i> Informasi Pengeluaran
         </div>
         {{-- Badge kategori di pojok kanan header --}}
-        <span class="badge-kategori" style="background: {{ $katInfo['warna'] }};">
+        <span class="badge-kategori badge-kategori-{{ $expense->category }}">
             <i class="fas {{ $katInfo['icon'] }} fa-xs"></i>
             {{ $katInfo['label'] }}
         </span>

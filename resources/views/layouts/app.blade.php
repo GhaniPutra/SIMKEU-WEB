@@ -925,7 +925,7 @@
             color: var(--blue-50) !important;
         }
 
-        #main-content .badge-kategori[style*="#c5a102"] {
+        #main-content .badge-kategori-listrik {
             color: var(--yellow-950) !important;
         }
 
@@ -1475,7 +1475,7 @@
             if (!page) return;
 
             window.refreshPendingStockAllocations = async () => {
-                const response = await fetch(@json(route('employees.stock.allocations.pending-status')), {
+                const response = await fetch(page.dataset.pendingAllocationsUrl, {
                     headers: { Accept: 'application/json' },
                     cache: 'no-store',
                 });
