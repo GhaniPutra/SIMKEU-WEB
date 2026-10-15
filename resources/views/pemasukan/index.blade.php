@@ -481,7 +481,7 @@
             {{-- Legend warna per metode --}}
             <div>
                 @if(array_sum($metodeData) > 0)
-                    @foreach([['Tunai', '#2c74e4', $metodeData[0]], ['Transfer', '#419623', $metodeData[1]], ['QRIS', '#c5a102', $metodeData[2]]] as [$namaMetode, $warna, $nilai])
+                    @foreach([['Tunai', 'var(--blue-600)', $metodeData[0]], ['Transfer', 'var(--blue-500)', $metodeData[1]], ['QRIS', 'var(--blue-400)', $metodeData[2]]] as [$namaMetode, $warna, $nilai])
                         @if($nilai > 0)
                             <div class="legend-item">
                                 <div class="legend-dot" data-bg="{{ $warna }}"></div>
@@ -695,9 +695,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // ============================================================
     // Warna seri chart mengikuti palet UI.
     // ============================================================
-    const tunai = '#2c74e4';
-    const transfer = '#419623';
-    const qris = '#c5a102';
+    const chartColors = getComputedStyle(document.documentElement);
+    const tunai = chartColors.getPropertyValue('--blue-600').trim();
+    const transfer = chartColors.getPropertyValue('--blue-500').trim();
+    const qris = chartColors.getPropertyValue('--blue-400').trim();
 
     // ============================================================
     // DATA DARI HTML — Ambil nilai JSON dari atribut data
@@ -735,7 +736,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 labels: chartLabels,
                 datasets: [{
                     label: 'Pemasukan',
-                    backgroundColor: 'rgba(35,95,210,.78)',
+                    backgroundColor: tunai,
                     data: chartData,
                     borderRadius: 4,
                     maxBarThickness: 28,

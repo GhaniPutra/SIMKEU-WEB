@@ -166,8 +166,8 @@
     --logo-color-inverse: #f0f7fe;
     --destructive: var(--danger);
     --destructive-foreground: #fff0f2;
-    --border: #c1e0fc;
-    --input: #90caf9;
+    --border: #d3d3d3;
+    --input: #d3d3d3;
     --ring: #2c74e4;
     --chart-1: #2c74e4;
     --chart-2: #35761f;
@@ -218,8 +218,8 @@
     --icon-nav-active: #65b1f5;
     --destructive: var(--danger);
     --destructive-foreground: #4d020c;
-    --border: #234eaa;
-    --input: #234eaa;
+    --border: #d3d3d3;
+    --input: #d3d3d3;
     --ring: #65b1f5;
     --chart-1: #65b1f5;
     --chart-2: #88d66c;

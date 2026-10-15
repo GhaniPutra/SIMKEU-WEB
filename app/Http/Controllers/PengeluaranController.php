@@ -18,13 +18,13 @@ class PengeluaranController extends Controller
     // Dicocokkan dengan nilai enum di kolom 'category' tabel expenses
     // ============================================================
     private const KATEGORI_LABEL = [
-        'beli_stok'  => ['label' => 'Beli Stok',   'icon' => 'fa-boxes-stacking', 'warna' => '#2c74e4'],
+        'beli_stok'  => ['label' => 'Beli Stok',   'icon' => 'fa-boxes-stacking', 'warna' => '#f62440'],
         'gaji'       => ['label' => 'Gaji',         'icon' => 'fa-user-tie',       'warna' => '#419623'],
         'listrik'    => ['label' => 'Listrik',      'icon' => 'fa-bolt',           'warna' => '#c5a102'],
-        'air'        => ['label' => 'Air',           'icon' => 'fa-droplet',        'warna' => '#4192f0'],
+        'air'        => ['label' => 'Air',           'icon' => 'fa-droplet',        'warna' => '#ff2c48'],
         'sewa'       => ['label' => 'Sewa',         'icon' => 'fa-building',       'warna' => '#f62440'],
-        'transport'  => ['label' => 'Transport',    'icon' => 'fa-truck',          'warna' => '#235fd2'],
-        'lainnya'    => ['label' => 'Lainnya',      'icon' => 'fa-ellipsis',       'warna' => '#234eaa'],
+        'transport'  => ['label' => 'Transport',    'icon' => 'fa-truck',          'warna' => '#cf0621'],
+        'lainnya'    => ['label' => 'Lainnya',       'icon' => 'fa-ellipsis',       'warna' => '#aa0a1f'],
     ];
 
     // ============================================================

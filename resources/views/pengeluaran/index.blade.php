@@ -74,7 +74,7 @@
     }
 
     /* Warna ikon sesuai tema */
-    .kpi-card.primary .kpi-icon { background: rgba(var(--primary-rgb),.12);  color: var(--icon-primary); }
+    .kpi-card.primary .kpi-icon { background: var(--red-50);  color: var(--red-700); }
     .kpi-card.danger  .kpi-icon { background: var(--danger-bg);  color: var(--icon-danger);  }
     .kpi-card.warning .kpi-icon { background: var(--warning-bg); color: var(--icon-warning); }
     .kpi-card.accent  .kpi-icon { background: rgba(var(--accent-rgb),.12);  color: var(--icon-accent);  }
@@ -263,7 +263,7 @@
 
     .data-table thead th {
         padding: 10px 14px;
-        background: #f0f7fe;
+        background: var(--red-50);
         color: var(--text-muted);
         font-weight: 600;
         font-size: 0.72rem;
@@ -282,7 +282,7 @@
     }
 
     .data-table tbody tr:last-child td { border-bottom: none; }
-    .data-table tbody tr:hover { background: #f0f7fe; }
+    .data-table tbody tr:hover { background: var(--red-50); }
 
     /* ============================================================
        BADGE KATEGORI — Label warna per jenis pengeluaran
@@ -295,7 +295,7 @@
         border-radius: 20px;
         font-size: 0.7rem;
         font-weight: 600;
-        color: #f0f7fe;
+        color: #fff;
     }
 
     /* ============================================================
@@ -305,7 +305,7 @@
         padding: 5px 12px;
         border-radius: 7px;
         border: 1px solid var(--border);
-        background: #f0f7fe;
+        background: var(--red-50);
         font-size: 0.75rem;
         font-weight: 600;
         color: var(--text-muted);
@@ -316,7 +316,7 @@
     }
     .btn-detail:hover {
         background: var(--danger); /* Hover merah untuk halaman pengeluaran */
-        color: #f0f7fe;
+        color: #fff;
         border-color: var(--danger);
     }
 
@@ -334,7 +334,7 @@
 
     .btn-qa-primary {
         background: var(--danger);
-        color: #f0f7fe;
+        color: #fff;
         border: 1px solid transparent;
     }
 
@@ -368,7 +368,7 @@
     .pagination-wrapper .page-item.active .page-link {
         background: var(--danger); /* Paginasi aktif merah */
         border-color: var(--danger);
-        color: #f0f7fe;
+        color: #fff;
     }
     .pagination-wrapper .page-link:hover {
         background: var(--border);
@@ -655,7 +655,7 @@
                             $katInfo = $kategoriLabel[$expense->category] ?? [
                                 'label' => ucfirst($expense->category),
                                 'icon'  => 'fa-ellipsis',
-                                'warna' => '#4192f0',
+                                'warna' => '#ff2c48',
                             ];
                         @endphp
                         <span class="badge-kategori" data-bg="{{ $katInfo['warna'] }}">
@@ -761,6 +761,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // ============================================================
     // PALET WARNA — Konsisten dengan tema SIMKEU
     // ============================================================
+    const pengeluaranColor = getComputedStyle(document.documentElement)
+        .getPropertyValue('--red-600').trim();
+
     // ============================================================
     // DATA DARI HTML — Ambil nilai JSON dari atribut data
     // ============================================================
@@ -803,7 +806,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 labels: trendLabels,
                 datasets: [{
                     label: 'Pengeluaran',
-                    backgroundColor: 'rgba(35,95,210,.72)',
+                    backgroundColor: pengeluaranColor,
                     data: trendValues,
                     borderRadius: 4,
                     maxBarThickness: 28,
@@ -833,7 +836,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     },
                     y: {
                         beginAtZero: true,
-                        grid: { color: 'rgba(193,224,252,.6)' },
+                        grid: { color: 'rgba(246,36,64,.16)' },
                         ticks: {
                             font: { size: 10, family: 'Poppins' },
                             callback: (value) => value >= 1000000
@@ -893,7 +896,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 scales: {
                     x: {
                         beginAtZero: true,
-                        grid: { color: 'rgba(193,224,252,.6)' },
+                        grid: { color: 'rgba(246,36,64,.16)' },
                         ticks: {
                             font: { size: 9, family: 'Poppins' },
                             callback: (value) => value >= 1000000

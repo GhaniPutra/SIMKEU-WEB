@@ -56,10 +56,10 @@
        Ditampilkan di atas sebagai focal point halaman
     ============================================================ */
     .amount-highlight {
-        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+        background: linear-gradient(135deg, var(--red-700) 0%, var(--red-600) 100%);
         border-radius: 14px;
         padding: 28px 24px;
-        color: #f0f7fe;
+        color: #fff;
         margin-bottom: 24px;
         position: relative;
         overflow: hidden;
@@ -146,21 +146,21 @@
         border-radius: 20px;
         font-size: 0.8rem;
         font-weight: 600;
-        color: #f0f7fe;
+        color: #fff;
     }
-    .badge-kategori-beli_stok,
-    .badge-kategori-transport { background: var(--blue-700); }
+    .badge-kategori-beli_stok { background: var(--red-600); }
+    .badge-kategori-transport { background: var(--red-700); }
     .badge-kategori-gaji,
     .badge-kategori-air { background: var(--green-600); }
     .badge-kategori-listrik { background: var(--yellow-400); color: var(--yellow-950); }
     .badge-kategori-sewa { background: var(--red-600); }
-    .badge-kategori-lainnya { background: var(--blue-800); }
+    .badge-kategori-lainnya { background: var(--red-800); }
 
     /* ============================================================
        KOTAK PRODUK — Info produk terkait (untuk kategori beli_stok)
     ============================================================ */
     .produk-box {
-        background: #f0f7fe;
+        background: var(--red-50);
         border-radius: 10px;
         padding: 16px 18px;
         border: 1px solid var(--border);
@@ -173,12 +173,12 @@
     /* Kotak ikon produk */
     .produk-icon {
         width: 42px; height: 42px;
-        background: rgba(var(--primary-rgb),.1);
+        background: rgba(246,36,64,.1);
         border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--icon-primary);
+        color: var(--red-700);
         font-size: 1.1rem;
         flex-shrink: 0;
     }
@@ -198,7 +198,7 @@
         border-radius: 9px;
         font-size: 0.82rem;
         font-weight: 600;
-        background: #f0f7fe;
+        background: var(--red-50);
         color: var(--text-primary);
         border: 1px solid var(--border);
         text-decoration: none;
@@ -206,7 +206,7 @@
     }
     .btn-back:hover {
         background: var(--danger); /* Hover merah untuk halaman pengeluaran */
-        color: #f0f7fe;
+        color: #fff;
         border-color: var(--danger);
     }
 
@@ -230,7 +230,7 @@
     $katInfo = $kategoriLabel[$expense->category] ?? [
         'label' => ucfirst($expense->category),
         'icon'  => 'fa-ellipsis',
-        'warna' => '#4192f0',
+        'warna' => '#ff2c48',
     ];
 @endphp
 

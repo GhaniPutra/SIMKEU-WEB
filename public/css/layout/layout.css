@@ -78,7 +78,7 @@
             --surface-light: var(--blue-50);
             --surface-secondary: var(--blue-100);
             --surface-alt: var(--blue-200);
-            --border-accent: var(--blue-300);
+            --border-accent: #d3d3d3;
             --surface-hover: var(--blue-50);
             --surface-selected: var(--blue-100);
             --text-secondary: var(--blue-900);
@@ -95,8 +95,8 @@
             --card-bg: var(--blue-50);
             --text-primary: var(--blue-950);
             --text-muted: var(--blue-800);
-            --border: var(--blue-200);
-            --input: var(--blue-300);
+            --border: #d3d3d3;
+            --input: #d3d3d3;
             --icon-primary: var(--primary);
             --icon-success: var(--success);
             --icon-warning: var(--warning);

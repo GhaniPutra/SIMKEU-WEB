@@ -146,6 +146,9 @@ function initTrendChart() {
 
     const categoryPercentage = getCategoryPercentage(labels.length);
     const barPercentage = 0.95;
+    const chartColors = getComputedStyle(document.documentElement);
+    const revenueColor = chartColors.getPropertyValue('--blue-600').trim();
+    const expenseColor = chartColors.getPropertyValue('--red-600').trim();
 
     new Chart(trendCanvas, {
         type: 'bar',
@@ -155,7 +158,7 @@ function initTrendChart() {
             datasets: [
                 {
                     label: 'Pendapatan',
-                    backgroundColor: 'rgba(107,123,53,.78)',
+                    backgroundColor: revenueColor,
                     data: revenue,
                     borderRadius: 4,
                     maxBarThickness: 38,
@@ -165,7 +168,7 @@ function initTrendChart() {
                 },
                 {
                     label: 'Pengeluaran',
-                    backgroundColor: 'rgba(58,66,37,.72)',
+                    backgroundColor: expenseColor,
                     data: expenses,
                     borderRadius: 4,
                     maxBarThickness: 38,
