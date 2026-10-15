@@ -114,7 +114,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #f0f7fe;
+            color: var(--icon-on-primary);
             font-size: 2rem;
             box-shadow: 0 4px 15px rgba(var(--primary-rgb),0.4);
         }

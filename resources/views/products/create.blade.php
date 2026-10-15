@@ -37,7 +37,7 @@ Extends: layouts.app (layout utama SIMKEU)
         }
 
         .form-card-header i {
-            color: var(--primary);
+            color: var(--icon-primary);
             font-size: 1.1rem;
         }
 
@@ -282,7 +282,7 @@ Extends: layouts.app (layout utama SIMKEU)
                     </select>
                     {{-- Shortcut: link ke halaman Kategori untuk menambah kategori baru --}}
                     <p style="font-size:0.74rem;color:var(--text-muted);margin-top:5px;">
-                        <i class="fas fa-circle-info" style="color:var(--accent);"></i>
+                        <i class="fas fa-circle-info" style="color:var(--icon-accent);"></i>
                         Kategori belum ada?
                         <a href="{{ route('categories.index') }}" target="_blank"
                             style="color:var(--primary);font-weight:600;text-decoration:none;">

@@ -62,10 +62,10 @@
 }
 
 /* Warna ikon KPI untuk tiap varian */
-.kpi-card.primary .kpi-icon { background: rgba(var(--primary-rgb),.12); color: var(--primary); }
-.kpi-card.success .kpi-icon { background: var(--success-bg); color: var(--success); }
-.kpi-card.danger .kpi-icon { background: var(--danger-bg); color: var(--danger); }
-.kpi-card.accent .kpi-icon { background: rgba(var(--accent-rgb),.12); color: var(--accent); }
+.kpi-card.primary .kpi-icon { background: rgba(var(--primary-rgb),.12); color: var(--icon-primary); }
+.kpi-card.success .kpi-icon { background: var(--success-bg); color: var(--icon-success); }
+.kpi-card.danger .kpi-icon { background: var(--danger-bg); color: var(--icon-danger); }
+.kpi-card.accent .kpi-icon { background: rgba(var(--accent-rgb),.12); color: var(--icon-accent); }
 
 /* Nilai utama pada kartu KPI */
 .kpi-value {
@@ -132,7 +132,7 @@
 
 /* Ikon pada judul konten */
 .content-card-title i {
-    color: var(--primary);
+    color: var(--icon-primary);
 }
 
 /* Badan konten di dalam kartunya */
@@ -184,7 +184,7 @@
     left: 12px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--text-muted);
+    color: var(--icon-muted);
     font-size: 0.8rem;
     pointer-events: none;
 }
@@ -393,7 +393,7 @@
 /* Ikon state kosong */
 .empty-state-icon {
     font-size: 3rem;
-    color: var(--text-muted);
+    color: var(--icon-muted);
     margin-bottom: 12px;
 }
 

@@ -129,22 +129,22 @@
 
 .c-products .sc-icon {
     background: rgba(var(--primary-rgb, 79 70 229), 0.12); /* Latar ikon produk */
-    color: var(--primary); /* Warna ikon */
+    color: var(--icon-primary); /* Warna ikon */
 }
 
 .c-master .sc-icon {
     background: rgba(var(--accent-rgb),0.12); /* Latar ikon master stok */
-    color: var(--accent); /* Warna ikon */
+    color: var(--icon-accent); /* Warna ikon */
 }
 
 .c-employee .sc-icon {
     background: rgba(var(--success-rgb, 16 185 129), 0.12); /* Latar ikon pegawai */
-    color: var(--success); /* Warna ikon */
+    color: var(--icon-success); /* Warna ikon */
 }
 
 .c-lowstock .sc-icon {
     background: rgba(var(--warning-rgb, 245 158 11), 0.14); /* Latar ikon stok rendah */
-    color: var(--warning); /* Warna ikon */
+    color: var(--icon-warning); /* Warna ikon */
 }
 
 .sc-label {
@@ -465,12 +465,12 @@
 
 #stock-toast.success .toast-icon {
     background: rgba(var(--success-rgb, 16 185 129), 0.12); /* Latar success */
-    color: var(--success); /* Warna ikon */
+    color: var(--icon-success); /* Warna ikon */
 }
 
 #stock-toast.error .toast-icon {
     background: rgba(var(--danger-rgb, 239 68 68), 0.12); /* Latar error */
-    color: var(--danger); /* Warna ikon */
+    color: var(--icon-danger); /* Warna ikon */
 }
 
 .toast-body {

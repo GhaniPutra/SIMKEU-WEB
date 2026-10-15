@@ -145,7 +145,7 @@
         {{-- ============================================================
         CHART ROW — Trend Full Width
         ============================================================ --}}
-        <p class="section-title"><i class="fas fa-chart-area" style="color:var(--primary)"></i> Tren Keuangan</p>
+        <p class="section-title"><i class="fas fa-chart-area" style="color:var(--icon-primary)"></i> Tren Keuangan</p>
         <div class="fade-up" style="margin-bottom: 28px;">
             <div class="content-card">
                 <div class="content-card-header">
@@ -168,7 +168,7 @@
         {{-- ============================================================
         ACTIVITY LOG + DATA TABLE
         ============================================================ --}}
-        <p class="section-title"><i class="fas fa-table-list" style="color:var(--primary)"></i> Aktivitas & Data</p>
+        <p class="section-title"><i class="fas fa-table-list" style="color:var(--icon-primary)"></i> Aktivitas & Data</p>
         <div class="two-col fade-up">
             {{-- Aktivitas Terbaru --}}
             <div class="content-card">

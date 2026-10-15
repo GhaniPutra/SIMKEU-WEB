@@ -92,7 +92,7 @@
          TABEL DAFTAR PRODUK
     ============================================================ --}}
     <p class="section-title">
-        <i class="fas fa-box-open" style="color:var(--primary)"></i>
+        <i class="fas fa-box-open" style="color:var(--icon-primary)"></i>
         Daftar Produk & Stok Utama
     </p>
 
@@ -342,7 +342,7 @@
     <div class="modal-overlay" id="stockModal">
         <div class="modal-box">
             {{-- Judul modal --}}
-            <p class="modal-title"><i class="fas fa-sliders" style="color:var(--primary);margin-right:6px;"></i>Sesuaikan Stok</p>
+            <p class="modal-title"><i class="fas fa-sliders" style="color:var(--icon-primary);margin-right:6px;"></i>Sesuaikan Stok</p>
             {{-- Subjudul: nama produk dan stok saat ini (diisi via JavaScript) --}}
             <p class="modal-sub" id="modal-product-info">—</p>
 

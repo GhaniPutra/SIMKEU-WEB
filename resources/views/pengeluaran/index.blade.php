@@ -74,10 +74,10 @@
     }
 
     /* Warna ikon sesuai tema */
-    .kpi-card.primary .kpi-icon { background: rgba(var(--primary-rgb),.12);  color: var(--primary); }
-    .kpi-card.danger  .kpi-icon { background: var(--danger-bg);  color: var(--danger);  }
-    .kpi-card.warning .kpi-icon { background: var(--warning-bg); color: var(--warning); }
-    .kpi-card.accent  .kpi-icon { background: rgba(var(--accent-rgb),.12);  color: var(--accent);  }
+    .kpi-card.primary .kpi-icon { background: rgba(var(--primary-rgb),.12);  color: var(--icon-primary); }
+    .kpi-card.danger  .kpi-icon { background: var(--danger-bg);  color: var(--icon-danger);  }
+    .kpi-card.warning .kpi-icon { background: var(--warning-bg); color: var(--icon-warning); }
+    .kpi-card.accent  .kpi-icon { background: rgba(var(--accent-rgb),.12);  color: var(--icon-accent);  }
 
     /* Nilai utama kartu (angka besar) */
     .kpi-value {
@@ -158,7 +158,7 @@
         align-items: center;
         gap: 8px;
     }
-    .content-card-title i { color: var(--danger); } /* Ikon merah = pengeluaran */
+    .content-card-title i { color: var(--icon-danger); } /* Ikon merah = pengeluaran */
 
     .content-card-body { padding: 20px; }
 
@@ -204,8 +204,9 @@
         justify-content: center;
         font-size: 0.85rem;
         flex-shrink: 0;
-        color: #f0f7fe;
+        color: var(--icon-on-primary);
     }
+    .kategori-icon[data-bg="#c5a102"] { background-color: var(--yellow-800) !important; }
 
     .kategori-info  { flex: 1; min-width: 0; }
     .kategori-name  { font-size: 0.825rem; font-weight: 600; color: var(--text-primary); }
@@ -490,7 +491,7 @@
      CHART ROW — Tren harian + breakdown kategori
 ============================================================ --}}
 <p class="section-title">
-    <i class="fas fa-chart-area" style="color:var(--danger)"></i>
+    <i class="fas fa-chart-area" style="color:var(--icon-danger)"></i>
     Analitik Pengeluaran —
     {{ $periodLabel }}
 </p>
@@ -568,7 +569,7 @@
      TABEL — Daftar entri pengeluaran + filter
 ============================================================ --}}
 <p class="section-title">
-    <i class="fas fa-table-list" style="color:var(--danger)"></i>
+    <i class="fas fa-table-list" style="color:var(--icon-danger)"></i>
     Daftar Pengeluaran
 </p>
 

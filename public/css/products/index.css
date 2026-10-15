@@ -56,10 +56,10 @@
     font-size: 1rem; /* Ukuran ikon */
 }
 
-.kpi-card.primary .kpi-icon { background: rgba(var(--primary-rgb),.12); color: var(--primary); }
-.kpi-card.success .kpi-icon { background: var(--success-bg); color: var(--success); }
-.kpi-card.warning .kpi-icon { background: var(--warning-bg); color: var(--warning); }
-.kpi-card.danger .kpi-icon  { background: var(--danger-bg);  color: var(--danger);  }
+.kpi-card.primary .kpi-icon { background: rgba(var(--primary-rgb),.12); color: var(--icon-primary); }
+.kpi-card.success .kpi-icon { background: var(--success-bg); color: var(--icon-success); }
+.kpi-card.warning .kpi-icon { background: var(--warning-bg); color: var(--icon-warning); }
+.kpi-card.danger .kpi-icon  { background: var(--danger-bg);  color: var(--icon-danger);  }
 
 .kpi-value { /* Angka utama pada kartu */
     font-size: 1.5rem; /* Ukuran besar */
@@ -124,7 +124,7 @@
     gap: 8px; /* Jarak icon-teks */
 }
 
-.content-card-title i { color: var(--primary); } /* Ikon berwarna primary */
+.content-card-title i { color: var(--icon-primary); } /* Ikon berwarna primary */
 
 .content-card-body { padding: 0; } /* Badan kartu tanpa padding ekstra */
 
@@ -170,7 +170,7 @@
     left: 12px; /* Jarak dari kiri */
     top: 50%; /* Vertikal center */
     transform: translateY(-50%); /* Koreksi center */
-    color: var(--text-muted); /* Warna sekunder */
+    color: var(--icon-muted); /* Warna sekunder */
     font-size: 0.8rem; /* Ukuran kecil */
     pointer-events: none; /* Tidak menangkap klik */
 }

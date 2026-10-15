@@ -149,6 +149,21 @@
     --success-rgb: 53 118 31;
     --warning-rgb: 127 93 12;
     --danger-rgb: 207 6 33;
+    --icon-primary: var(--primary);
+    --icon-success: var(--success);
+    --icon-warning: var(--warning);
+    --icon-danger: var(--danger);
+    --icon-accent: var(--color-yellow-800);
+    --icon-muted: var(--muted-foreground);
+    --icon-on-primary: var(--primary-foreground);
+    --icon-disabled: var(--muted-foreground);
+    --icon-nav: #404040;
+    --icon-nav-hover: #234eaa;
+    --icon-nav-active: var(--primary);
+    --logo-icon-bg: var(--primary);
+    --logo-icon-color: var(--primary-foreground);
+    --logo-color: var(--primary);
+    --logo-color-inverse: #f0f7fe;
     --destructive: var(--danger);
     --destructive-foreground: #fff0f2;
     --border: #c1e0fc;
@@ -197,6 +212,10 @@
     --success-rgb: 136 214 108;
     --warning-rgb: 251 228 23;
     --danger-rgb: 255 94 115;
+    --icon-accent: var(--color-yellow-400);
+    --icon-nav: #c1e0fc;
+    --icon-nav-hover: #90caf9;
+    --icon-nav-active: #65b1f5;
     --destructive: var(--danger);
     --destructive-foreground: #4d020c;
     --border: #234eaa;
@@ -260,8 +279,8 @@
 
     [data-sidebar="menu-button"]:not([data-active="true"]) svg,
     [data-sidebar="menu-sub-button"]:not([data-active="true"]) svg {
-        color: #404040 !important;
-        stroke: #404040;
+        color: var(--icon-nav) !important;
+        stroke: var(--icon-nav);
     }
 
     [data-sidebar="menu-button"][data-active="true"],
@@ -273,7 +292,26 @@
 
     [data-sidebar="menu-button"][data-active="true"] svg,
     [data-sidebar="menu-sub-button"][data-active="true"] svg {
-        stroke: #235fd2;
+        color: var(--icon-nav-active) !important;
+        stroke: var(--icon-nav-active);
+    }
+
+    [data-sidebar] [data-disabled="true"] svg,
+    [data-sidebar] [aria-disabled="true"] svg {
+        color: var(--icon-disabled) !important;
+        stroke: var(--icon-disabled) !important;
+    }
+
+    [data-sidebar] [data-logo-icon] {
+        color: var(--logo-color) !important;
+    }
+
+    [data-sidebar] .app-logo-mark [data-logo-icon] {
+        color: var(--logo-icon-color) !important;
+    }
+
+    [data-sidebar] svg * {
+        color: inherit !important;
     }
 
     .border-transparent {

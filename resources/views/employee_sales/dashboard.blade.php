@@ -76,32 +76,32 @@ Dashboard Penjualan Pegawai - SIMKEU
 
         .kpi-card.primary .kpi-icon {
             background: rgba(var(--primary-rgb),.12);
-            color: var(--primary);
+            color: var(--icon-primary);
         }
 
         .kpi-card.success .kpi-icon {
             background: var(--success-bg);
-            color: var(--success);
+            color: var(--icon-success);
         }
 
         .kpi-card.warning .kpi-icon {
             background: var(--warning-bg);
-            color: var(--warning);
+            color: var(--icon-warning);
         }
 
         .kpi-card.danger .kpi-icon {
             background: var(--danger-bg);
-            color: var(--danger);
+            color: var(--icon-danger);
         }
 
         .kpi-card.accent .kpi-icon {
             background: rgba(var(--accent-rgb),.12);
-            color: var(--accent);
+            color: var(--icon-accent);
         }
 
         .kpi-card.indigo .kpi-icon {
             background: rgba(var(--accent-rgb),.12);
-            color: var(--accent);
+            color: var(--icon-accent);
         }
 
         .kpi-value {

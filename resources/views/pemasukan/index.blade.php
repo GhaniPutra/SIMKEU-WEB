@@ -73,12 +73,12 @@
     }
 
     /* Warna ikon per tema */
-    .kpi-card.primary .kpi-icon { background: rgba(var(--primary-rgb),.12);  color: var(--primary); }
-    .kpi-card.success .kpi-icon { background: var(--success-bg); color: var(--success); }
-    .kpi-card.warning .kpi-icon { background: var(--warning-bg); color: var(--warning); }
-    .kpi-card.danger  .kpi-icon { background: var(--danger-bg);  color: var(--danger);  }
-    .kpi-card.accent  .kpi-icon { background: rgba(var(--accent-rgb),.12);  color: var(--accent);  }
-    .kpi-card.indigo  .kpi-icon { background: rgba(var(--accent-rgb),.12); color: var(--accent); }
+    .kpi-card.primary .kpi-icon { background: rgba(var(--primary-rgb),.12);  color: var(--icon-primary); }
+    .kpi-card.success .kpi-icon { background: var(--success-bg); color: var(--icon-success); }
+    .kpi-card.warning .kpi-icon { background: var(--warning-bg); color: var(--icon-warning); }
+    .kpi-card.danger  .kpi-icon { background: var(--danger-bg);  color: var(--icon-danger);  }
+    .kpi-card.accent  .kpi-icon { background: rgba(var(--accent-rgb),.12);  color: var(--icon-accent);  }
+    .kpi-card.indigo  .kpi-icon { background: rgba(var(--accent-rgb),.12); color: var(--icon-accent); }
 
     /* Nilai utama kartu (angka besar) */
     .kpi-value {
@@ -157,7 +157,7 @@
         align-items: center;
         gap: 8px;
     }
-    .content-card-title i { color: var(--primary); }
+    .content-card-title i { color: var(--icon-primary); }
 
     .content-card-body { padding: 20px; }
 
@@ -441,7 +441,7 @@
      CHART ROW — Grafik tren harian + pie chart metode pembayaran
 ============================================================ --}}
 <p class="section-title">
-    <i class="fas fa-chart-area" style="color:var(--primary)"></i>
+    <i class="fas fa-chart-area" style="color:var(--icon-primary)"></i>
     Analitik Pemasukan — {{ $periodLabel }}
 </p>
 
@@ -501,7 +501,7 @@
      TABEL TRANSAKSI — Daftar pemasukan + filter pencarian
 ============================================================ --}}
 <p class="section-title">
-    <i class="fas fa-table-list" style="color:var(--primary)"></i>
+    <i class="fas fa-table-list" style="color:var(--icon-primary)"></i>
     Daftar Transaksi Pemasukan
 </p>
 

@@ -184,7 +184,7 @@
             left: 20px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--text-muted);
+            color: var(--icon-muted);
             font-size: 1.1rem;
             z-index: 2;
         }

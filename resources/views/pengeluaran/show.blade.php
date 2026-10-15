@@ -47,7 +47,7 @@
         align-items: center;
         gap: 8px;
     }
-    .detail-card-title i { color: var(--danger); } /* ikon merah */
+    .detail-card-title i { color: var(--icon-danger); } /* ikon merah */
 
     .detail-card-body { padding: 24px; }
 
@@ -178,7 +178,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--primary);
+        color: var(--icon-primary);
         font-size: 1.1rem;
         flex-shrink: 0;
     }

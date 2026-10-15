@@ -52,10 +52,15 @@
         *,
         *::before,
         *::after {
-            color: var(--text-primary) !important;
             border-color: var(--border) !important;
             box-shadow: none !important;
             text-shadow: none !important;
+        }
+
+        *:not([class*="icon"]):not(.fa):not([class*="fa-"]),
+        *:not([class*="icon"]):not(.fa):not([class*="fa-"])::before,
+        *:not([class*="icon"]):not(.fa):not([class*="fa-"])::after {
+            color: var(--text-primary) !important;
         }
 
         #main-content .content-card,
@@ -76,8 +81,18 @@
         #topbar *,
         #topbar *::before,
         #topbar *::after {
-            color: #1a1a1a !important;
             border-color: #d3d3d3 !important;
+        }
+
+        #sidebar,
+        #sidebar *:not([class*="icon"]):not(.fa):not([class*="fa-"]),
+        #sidebar *:not([class*="icon"]):not(.fa):not([class*="fa-"])::before,
+        #sidebar *:not([class*="icon"]):not(.fa):not([class*="fa-"])::after,
+        #topbar,
+        #topbar *:not([class*="icon"]):not(.fa):not([class*="fa-"]),
+        #topbar *:not([class*="icon"]):not(.fa):not([class*="fa-"])::before,
+        #topbar *:not([class*="icon"]):not(.fa):not([class*="fa-"])::after {
+            color: #1a1a1a !important;
         }
 
         #topbar ::placeholder {
@@ -87,12 +102,36 @@
         #sidebar .sidebar-nav .nav-link:not(.active) .nav-icon,
         #sidebar .sidebar-nav .nav-link:not(.active) .nav-icon i,
         #sidebar .sidebar-nav .nav-link:not(.active) .nav-icon i::before {
-            color: #404040 !important;
+            color: var(--icon-nav);
+        }
+
+        #sidebar .sidebar-nav .nav-link .nav-chevron {
+            color: var(--icon-nav);
         }
 
         #sidebar .sidebar-nav .nav-link.active,
-        #sidebar .sidebar-nav .nav-link.active * {
-            color: #235fd2 !important;
+        #sidebar .sidebar-nav .nav-link.active *:not([class*="icon"]):not(.fa):not([class*="fa-"]) {
+            color: var(--primary) !important;
+        }
+
+        #sidebar .sidebar-nav .nav-link:hover .nav-icon,
+        #sidebar .sidebar-nav .nav-link:hover .nav-icon i,
+        #sidebar .sidebar-nav .nav-link:hover .nav-icon i::before,
+        #sidebar .sidebar-nav .nav-link:hover .nav-chevron,
+        #sidebar .sidebar-nav .nav-link:focus-visible .nav-icon,
+        #sidebar .sidebar-nav .nav-link:focus-visible .nav-icon i,
+        #sidebar .sidebar-nav .nav-link:focus-visible .nav-icon i::before,
+        #sidebar .sidebar-nav .nav-link:focus-visible .nav-chevron {
+            color: var(--icon-nav-hover);
+        }
+
+        #sidebar .sidebar-nav .nav-link:disabled .nav-icon,
+        #sidebar .sidebar-nav .nav-link[aria-disabled="true"] .nav-icon,
+        #sidebar .sidebar-nav .nav-link:disabled .nav-icon i,
+        #sidebar .sidebar-nav .nav-link[aria-disabled="true"] .nav-icon i,
+        #sidebar .sidebar-nav .nav-link:disabled .nav-chevron,
+        #sidebar .sidebar-nav .nav-link[aria-disabled="true"] .nav-chevron {
+            color: var(--icon-disabled);
         }
 
         #main-content .alert-success,
@@ -142,7 +181,6 @@
 
         #main-content .amount-highlight,
         #main-content .amount-highlight *,
-        #main-content .setup-icon,
         #main-content .employee-avatar,
         #main-content .badge-kategori {
             color: var(--blue-50) !important;
@@ -154,44 +192,28 @@
 
         /* Pertahankan warna ikon ringkasan berdasarkan jenis status. */
         #main-content .kpi-card.primary .kpi-icon {
-            color: var(--blue-700) !important;
+            color: var(--icon-primary);
         }
 
         #main-content .kpi-card.success .kpi-icon {
-            color: var(--green-700) !important;
+            color: var(--icon-success);
         }
 
         #main-content .kpi-card.warning .kpi-icon,
         #main-content .kpi-card.accent .kpi-icon {
-            color: var(--yellow-800) !important;
+            color: var(--icon-warning);
         }
 
         #main-content .kpi-card.danger .kpi-icon {
-            color: var(--red-700) !important;
+            color: var(--icon-danger);
+        }
+
+        #main-content :is(button:disabled, [aria-disabled="true"], .disabled) :is(i[class*="fa-"], svg) {
+            color: var(--icon-disabled) !important;
         }
 
         #main-content :focus-visible {
             outline-color: var(--primary) !important;
-        }
-
-        .sidebar-nav .nav-link:not(.active) .nav-icon,
-        .sidebar-nav .nav-link:not(.active) .nav-icon i,
-        .sidebar-nav .nav-link:not(.active) .nav-icon i::before {
-            color: #404040 !important;
-        }
-
-        .sidebar-nav .nav-link.active,
-        .sidebar-nav .nav-link.active * {
-            color: #235fd2 !important;
-        }
-
-        .sidebar-nav .nav-link.active .nav-icon {
-            color: #235fd2 !important;
-        }
-
-        .sidebar-nav .nav-link.active .nav-icon i,
-        .sidebar-nav .nav-link.active .nav-icon i::before {
-            color: #235fd2 !important;
         }
 
         .border-transparent,

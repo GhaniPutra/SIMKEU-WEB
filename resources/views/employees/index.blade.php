@@ -37,7 +37,7 @@
     </div>
 </div>
 
-<p class="section-title"><i class="fas fa-table-list" style="color:var(--primary)"></i> Daftar Pegawai</p> {{-- Judul section daftar pegawai --}}
+<p class="section-title"><i class="fas fa-table-list" style="color:var(--icon-primary)"></i> Daftar Pegawai</p> {{-- Judul section daftar pegawai --}}
 
 <div class="content-card"> {{-- Kartu utama konten daftar pegawai --}}
     <div class="content-card-header"> {{-- Header kartu dengan judul dan tombol --}}

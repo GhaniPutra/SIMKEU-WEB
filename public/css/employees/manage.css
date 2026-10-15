@@ -212,10 +212,10 @@
     color: var(--primary);
 }
 
-.kpi-transactions .employee-kpi-icon { background: rgba(var(--primary-rgb),.1); color: var(--success); }
-.kpi-units .employee-kpi-icon { background: rgba(var(--accent-rgb),.1); color: var(--accent); }
-.kpi-attention .employee-kpi-icon { background: var(--warning-bg); color: var(--warning); }
-.kpi-month .employee-kpi-icon { background: rgba(var(--accent-soft-rgb),.13); color: var(--primary); }
+.kpi-transactions .employee-kpi-icon { background: rgba(var(--primary-rgb),.1); color: var(--icon-success); }
+.kpi-units .employee-kpi-icon { background: rgba(var(--accent-rgb),.1); color: var(--icon-accent); }
+.kpi-attention .employee-kpi-icon { background: var(--warning-bg); color: var(--icon-warning); }
+.kpi-month .employee-kpi-icon { background: rgba(var(--accent-soft-rgb),.13); color: var(--icon-primary); }
 
 .employee-kpi-label {
     margin-bottom: 6px;
@@ -635,7 +635,7 @@
 
 .pending-allocation-icon {
     margin-left: 4px;
-    color: var(--primary);
+    color: var(--icon-primary);
     font-size: .7rem;
 }
 
@@ -756,12 +756,12 @@
     flex: 0 0 30px;
     border-radius: 50%;
     background: var(--success-bg);
-    color: var(--success);
+    color: var(--icon-success);
 }
 
 .employee-toast.error .employee-toast-icon {
     background: var(--danger-bg);
-    color: var(--danger);
+    color: var(--icon-danger);
 }
 
 .employee-toast strong,

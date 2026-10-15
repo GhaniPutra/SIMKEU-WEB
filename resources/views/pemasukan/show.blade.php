@@ -47,7 +47,7 @@
         align-items: center;
         gap: 8px;
     }
-    .detail-card-title i { color: var(--primary); }
+    .detail-card-title i { color: var(--icon-primary); }
 
     .detail-card-body { padding: 24px; }
 

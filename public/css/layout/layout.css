@@ -97,6 +97,20 @@
             --text-muted: var(--blue-800);
             --border: var(--blue-200);
             --input: var(--blue-300);
+            --icon-primary: var(--primary);
+            --icon-success: var(--success);
+            --icon-warning: var(--warning);
+            --icon-danger: var(--danger);
+            --icon-accent: var(--yellow-800);
+            --icon-muted: var(--text-muted);
+            --icon-on-primary: var(--blue-50);
+            --icon-disabled: var(--text-muted);
+            --icon-nav: #404040;
+            --icon-nav-hover: var(--blue-800);
+            --icon-nav-active: var(--blue-700);
+            --logo-icon-bg: var(--blue-700);
+            --logo-icon-color: var(--blue-50);
+            --logo-color: var(--primary);
             --topbar-primary: #633719;
             --topbar-accent: #B27D55;
             --topbar-danger: #C65C4B;
@@ -166,13 +180,13 @@
         .sidebar-brand .brand-icon {
             width: 36px;
             height: 36px;
-            background: var(--sidebar-active);
+            background: var(--logo-icon-bg);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1rem;
-            color: var(--sidebar-active-text);
+            color: var(--logo-icon-color);
             flex-shrink: 0;
         }
 
@@ -319,6 +333,7 @@
 
         .sidebar-nav .nav-link:hover .nav-icon {
             background: var(--sidebar-hover);
+            color: var(--icon-nav-hover);
         }
 
         .sidebar-nav .nav-link.active {
@@ -328,7 +343,7 @@
 
         .sidebar-nav .nav-link.active .nav-icon {
             background: var(--sidebar-active);
-            color: var(--sidebar-active-text);
+            color: var(--icon-nav-active);
         }
 
         /* Penanda jumlah pada item navigasi. */
