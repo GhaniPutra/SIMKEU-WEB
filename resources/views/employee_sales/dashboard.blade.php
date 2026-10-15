@@ -181,7 +181,7 @@ Dashboard Penjualan Pegawai - SIMKEU
 
         .data-table thead th {
             padding: 12px 16px;
-            background: #F7F8ED;
+            background: #f0f7fe;
             color: var(--text-muted);
             font-weight: 600;
             font-size: 0.7rem;
@@ -198,7 +198,7 @@ Dashboard Penjualan Pegawai - SIMKEU
         }
 
         .data-table tbody tr:hover {
-            background: #F7F8ED;
+            background: #f0f7fe;
         }
 
         .data-table tbody tr:last-child td {
@@ -211,7 +211,7 @@ Dashboard Penjualan Pegawai - SIMKEU
             gap: 8px;
             padding: 10px 18px;
             background: var(--text-muted);
-            color: #F7F8ED;
+            color: #f0f7fe;
             border: none;
             border-radius: 8px;
             font-size: 0.875rem;
@@ -246,7 +246,7 @@ Dashboard Penjualan Pegawai - SIMKEU
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #F7F8ED;
+            color: #f0f7fe;
             font-size: 1.5rem;
             font-weight: 700;
         }

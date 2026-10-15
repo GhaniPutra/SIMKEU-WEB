@@ -32,7 +32,7 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        background: #FFFFFF;
+        background: #f0f7fe;
     }
 
     .form-card-header i { color: var(--primary); font-size: 1.1rem; }
@@ -87,7 +87,7 @@
         font-size: 0.875rem;
         font-family: inherit;
         color: var(--text-primary);
-        background: #FFFFFF;
+        background: #f0f7fe;
         transition: border-color 0.2s, box-shadow 0.2s;
     }
 
@@ -163,7 +163,7 @@
     .btn-submit {
         padding: 10px 24px;
         background: var(--primary);
-        color: #F7F8ED;
+        color: #f0f7fe;
         border: none;
         border-radius: 9px;
         font-size: 0.875rem;
@@ -179,7 +179,7 @@
 
     .btn-cancel {
         padding: 10px 24px;
-        background: #FFFFFF;
+        background: #f0f7fe;
         color: var(--text-muted);
         border: 1px solid var(--border);
         border-radius: 9px;
@@ -193,7 +193,7 @@
         transition: all 0.2s;
     }
 
-    .btn-cancel:hover { background: #F7F8ED; color: var(--text-primary); }
+    .btn-cancel:hover { background: #f0f7fe; color: var(--text-primary); }
 
     /* ============================================================
        PREVIEW GAMBAR PRODUK

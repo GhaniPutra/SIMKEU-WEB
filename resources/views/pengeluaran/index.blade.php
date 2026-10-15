@@ -204,7 +204,7 @@
         justify-content: center;
         font-size: 0.85rem;
         flex-shrink: 0;
-        color: #F7F8ED;
+        color: #f0f7fe;
     }
 
     .kategori-info  { flex: 1; min-width: 0; }
@@ -262,7 +262,7 @@
 
     .data-table thead th {
         padding: 10px 14px;
-        background: #F7F8ED;
+        background: #f0f7fe;
         color: var(--text-muted);
         font-weight: 600;
         font-size: 0.72rem;
@@ -281,7 +281,7 @@
     }
 
     .data-table tbody tr:last-child td { border-bottom: none; }
-    .data-table tbody tr:hover { background: #F7F8ED; }
+    .data-table tbody tr:hover { background: #f0f7fe; }
 
     /* ============================================================
        BADGE KATEGORI — Label warna per jenis pengeluaran
@@ -294,7 +294,7 @@
         border-radius: 20px;
         font-size: 0.7rem;
         font-weight: 600;
-        color: #F7F8ED;
+        color: #f0f7fe;
     }
 
     /* ============================================================
@@ -304,7 +304,7 @@
         padding: 5px 12px;
         border-radius: 7px;
         border: 1px solid var(--border);
-        background: #F7F8ED;
+        background: #f0f7fe;
         font-size: 0.75rem;
         font-weight: 600;
         color: var(--text-muted);
@@ -315,7 +315,7 @@
     }
     .btn-detail:hover {
         background: var(--danger); /* Hover merah untuk halaman pengeluaran */
-        color: #F7F8ED;
+        color: #f0f7fe;
         border-color: var(--danger);
     }
 
@@ -333,7 +333,7 @@
 
     .btn-qa-primary {
         background: var(--danger);
-        color: #F7F8ED;
+        color: #f0f7fe;
         border: 1px solid transparent;
     }
 
@@ -367,7 +367,7 @@
     .pagination-wrapper .page-item.active .page-link {
         background: var(--danger); /* Paginasi aktif merah */
         border-color: var(--danger);
-        color: #F7F8ED;
+        color: #f0f7fe;
     }
     .pagination-wrapper .page-link:hover {
         background: var(--border);
@@ -654,7 +654,7 @@
                             $katInfo = $kategoriLabel[$expense->category] ?? [
                                 'label' => ucfirst($expense->category),
                                 'icon'  => 'fa-ellipsis',
-                                'warna' => '#8B5431',
+                                'warna' => '#4192f0',
                             ];
                         @endphp
                         <span class="badge-kategori" data-bg="{{ $katInfo['warna'] }}">
@@ -775,7 +775,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Konfigurasi tooltip bersama untuk semua chart
     // ============================================================
     const tooltipDefaults = {
-        backgroundColor: '#382719',         // Latar tooltip gelap
+        backgroundColor: '#192b52',         // Latar tooltip gelap
         titleFont: { family: 'Poppins', size: 12 },
         bodyFont:  { family: 'Poppins', size: 11 },
         padding: 10,
@@ -802,7 +802,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 labels: trendLabels,
                 datasets: [{
                     label: 'Pengeluaran',
-                    backgroundColor: 'rgba(99,55,25,.72)',
+                    backgroundColor: 'rgba(35,95,210,.72)',
                     data: trendValues,
                     borderRadius: 4,
                     maxBarThickness: 28,
@@ -832,7 +832,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     },
                     y: {
                         beginAtZero: true,
-                        grid: { color: 'rgba(140,122,107,.18)' },
+                        grid: { color: 'rgba(193,224,252,.6)' },
                         ticks: {
                             font: { size: 10, family: 'Poppins' },
                             callback: (value) => value >= 1000000
@@ -892,7 +892,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 scales: {
                     x: {
                         beginAtZero: true,
-                        grid: { color: 'rgba(140,122,107,.18)' },
+                        grid: { color: 'rgba(193,224,252,.6)' },
                         ticks: {
                             font: { size: 9, family: 'Poppins' },
                             callback: (value) => value >= 1000000

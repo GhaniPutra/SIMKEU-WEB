@@ -265,7 +265,7 @@
         padding: 5px 12px;
         border-radius: 7px;
         border: 1px solid var(--border);
-        background: #F7F8ED;
+        background: #f0f7fe;
         font-size: 0.75rem;
         font-weight: 600;
         color: var(--text-muted);
@@ -276,7 +276,7 @@
     }
     .btn-detail:hover {
         background: var(--primary);
-        color: #F7F8ED;
+        color: #f0f7fe;
         border-color: var(--primary);
     }
 
@@ -311,7 +311,7 @@
     .pagination-wrapper .page-item.active .page-link {
         background: var(--primary);
         border-color: var(--primary);
-        color: #F7F8ED;
+        color: #f0f7fe;
     }
 
     .pagination-wrapper .page-link:hover {
@@ -481,7 +481,7 @@
             {{-- Legend warna per metode --}}
             <div>
                 @if(array_sum($metodeData) > 0)
-                    @foreach([['Tunai', '#827148', $metodeData[0]], ['Transfer', '#988956', $metodeData[1]], ['QRIS', '#aa9c68', $metodeData[2]]] as [$namaMetode, $warna, $nilai])
+                    @foreach([['Tunai', '#2c74e4', $metodeData[0]], ['Transfer', '#419623', $metodeData[1]], ['QRIS', '#c5a102', $metodeData[2]]] as [$namaMetode, $warna, $nilai])
                         @if($nilai > 0)
                             <div class="legend-item">
                                 <div class="legend-dot" data-bg="{{ $warna }}"></div>
@@ -693,11 +693,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // ============================================================
-    // PALET WARNA — Metode pembayaran mengikuti zaitun
+    // Warna seri chart mengikuti palet UI.
     // ============================================================
-    const tunai = '#827148';
-    const transfer = '#988956';
-    const qris = '#aa9c68';
+    const tunai = '#2c74e4';
+    const transfer = '#419623';
+    const qris = '#c5a102';
 
     // ============================================================
     // DATA DARI HTML — Ambil nilai JSON dari atribut data
@@ -713,7 +713,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Dipakai bersama antara line chart dan doughnut chart
     // ============================================================
     const tooltipDefaults = {
-        backgroundColor: '#382719',          // Latar tooltip gelap
+        backgroundColor: '#192b52',          // Latar tooltip gelap
         titleFont: { family: 'Poppins', size: 12 },
         bodyFont:  { family: 'Poppins', size: 11 },
         padding: 10,
@@ -735,7 +735,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 labels: chartLabels,
                 datasets: [{
                     label: 'Pemasukan',
-                    backgroundColor: 'rgba(99,55,25,.78)',
+                    backgroundColor: 'rgba(35,95,210,.78)',
                     data: chartData,
                     borderRadius: 4,
                     maxBarThickness: 28,
@@ -765,7 +765,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     },
                     y: {
                         beginAtZero: true,
-                        grid: { color: 'rgba(140,122,107,.18)' },
+                        grid: { color: 'rgba(193,224,252,.6)' },
                         ticks: {
                             font: { size: 10, family: 'Poppins' },
                             callback: (value) => value >= 1000000

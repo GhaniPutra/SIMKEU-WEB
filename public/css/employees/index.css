@@ -148,7 +148,7 @@
     align-items: center;
     padding: 14px 20px;
     border-bottom: 1px solid var(--border);
-    background: #FFFFFF;
+    background: #f0f7fe;
 }
 
 /* Wrapper input pencarian */
@@ -167,7 +167,7 @@
     font-size: 0.82rem;
     font-family: inherit;
     color: var(--text-primary);
-    background: #FFFFFF;
+    background: #f0f7fe;
     transition: border-color 0.2s;
 }
 
@@ -197,7 +197,7 @@
     font-size: 0.82rem;
     font-family: inherit;
     color: var(--text-primary);
-    background: #FFFFFF;
+    background: #f0f7fe;
     cursor: pointer;
     text-align: left;
     text-align-last: left;
@@ -234,7 +234,7 @@
 /* Header tabel daftar pegawai */
 .data-table thead th {
     padding: 12px 16px;
-    background: #F7F8ED;
+    background: #f0f7fe;
     color: var(--text-muted);
     font-weight: 600;
     font-size: 0.7rem;
@@ -253,7 +253,7 @@
 
 /* Hover pada baris tabel */
 .data-table tbody tr:hover {
-    background: #F7F8ED;
+    background: #f0f7fe;
 }
 
 /* Hapus border bawah pada baris terakhir */
@@ -293,7 +293,7 @@
     gap: 6px;
     padding: 7px 14px;
     border-radius: 6px;
-    background: #F7F8ED;
+    background: #f0f7fe;
     color: var(--success);
     border: 1px solid var(--success);
     font-size: 0.75rem;
@@ -306,7 +306,7 @@
 /* Hover tombol atur stok */
 .btn-stock:hover {
     background: var(--success);
-    color: #F7F8ED;
+    color: #f0f7fe;
     border-color: var(--success);
 }
 
@@ -317,7 +317,7 @@
     gap: 6px;
     padding: 7px 14px;
     border-radius: 6px;
-    background: #F7F8ED;
+    background: #f0f7fe;
     color: var(--primary);
     border: 1px solid var(--primary);
     font-size: 0.75rem;
@@ -330,7 +330,7 @@
 /* Hover tombol edit */
 .btn-edit:hover {
     background: var(--primary);
-    color: #F7F8ED;
+    color: #f0f7fe;
 }
 
 /* Tombol hapus */
@@ -340,9 +340,9 @@
     gap: 6px;
     padding: 7px 14px;
     border-radius: 6px;
-    background: #F7F8ED;
-    color: var(--danger, #C65C4B);
-    border: 1px solid var(--danger, #C65C4B);
+    background: #f0f7fe;
+    color: var(--danger, #cf0621);
+    border: 1px solid var(--danger, #cf0621);
     font-size: 0.75rem;
     font-weight: 600;
     cursor: pointer;
@@ -351,8 +351,8 @@
 
 /* Hover tombol hapus */
 .btn-delete:hover {
-    background: var(--danger, #C65C4B);
-    color: #F7F8ED;
+    background: var(--danger, #cf0621);
+    color: #f0f7fe;
 }
 
 /* Wrapper pagination */
@@ -380,7 +380,7 @@
 .pagination .page-item.active .page-link {
     background: var(--primary);
     border-color: var(--primary);
-    color: #F7F8ED;
+    color: #f0f7fe;
 }
 
 
@@ -411,7 +411,7 @@
     gap: 7px;
     padding: 8px 16px;
     background: var(--primary);
-    color: #F7F8ED;
+    color: #f0f7fe;
     border: none;
     border-radius: 9px;
     font-size: 0.82rem;
@@ -425,7 +425,7 @@
 /* Hover tombol tambah pegawai */
 .btn-add:hover {
     background: var(--primary-dark);
-    color: #F7F8ED;
+    color: #f0f7fe;
 }
 
 .btn-reset {

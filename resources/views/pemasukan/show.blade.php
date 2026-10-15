@@ -108,7 +108,7 @@
 
     .items-table thead th {
         padding: 10px 14px;
-        background: #F7F8ED;
+        background: #f0f7fe;
         color: var(--text-muted);
         font-weight: 600;
         font-size: 0.72rem;
@@ -127,13 +127,13 @@
     }
 
     .items-table tbody tr:last-child td { border-bottom: none; }
-    .items-table tbody tr:hover { background: #F7F8ED; }
+    .items-table tbody tr:hover { background: #f0f7fe; }
 
     /* ============================================================
        RINGKASAN TOTAL — Panel kanan bawah (subtotal, diskon, total)
     ============================================================ */
     .summary-box {
-        background: #F7F8ED;
+        background: #f0f7fe;
         border-radius: 10px;
         padding: 20px;
         min-width: 280px; /* Lebar minimal box ringkasan */
@@ -178,7 +178,7 @@
         border-radius: 9px;
         font-size: 0.82rem;
         font-weight: 600;
-        background: #F7F8ED;
+        background: #f0f7fe;
         color: var(--text-primary);
         border: 1px solid var(--border);
         text-decoration: none;
@@ -186,7 +186,7 @@
     }
     .btn-back:hover {
         background: var(--primary);
-        color: #F7F8ED;
+        color: #f0f7fe;
         border-color: var(--primary);
     }
 

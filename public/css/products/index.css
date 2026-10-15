@@ -138,7 +138,7 @@
     align-items: center; /* Rata tengah */
     padding: 14px 20px; /* Padding bar */
     border-bottom: 1px solid var(--border); /* Garis bawah */
-    background: #F7F8ED; /* Latar sedikit abu */
+    background: #f0f7fe; /* Latar sedikit abu */
 }
 
 .toolbar-search { /* Wadah input pencarian */
@@ -155,7 +155,7 @@
     font-size: 0.82rem; /* Ukuran font */
     font-family: inherit; /* Gunakan font induk */
     color: var(--text-primary); /* Warna teks */
-    background: #FFFFFF; /* Latar putih */
+    background: #f0f7fe; /* Latar putih */
     transition: border-color 0.2s; /* Animasi fokus */
 }
 
@@ -182,7 +182,7 @@
     font-size: 0.82rem; /* Ukuran font */
     font-family: inherit; /* Warna font */
     color: var(--text-primary); /* Warna */
-    background: #FFFFFF; /* Latar */
+    background: #f0f7fe; /* Latar */
     cursor: pointer; /* Kursor pointer */
 }
 
@@ -195,7 +195,7 @@
     gap: 7px; /* Jarak icon-teks */
     padding: 8px 16px; /* Padding tombol */
     background: var(--primary); /* Latar primary */
-    color: #F7F8ED; /* Teks putih */
+    color: #f0f7fe; /* Teks putih */
     border: none; /* Tanpa border */
     border-radius: 9px; /* Bulat */
     font-size: 0.82rem; /* Ukuran font */
@@ -206,7 +206,7 @@
     white-space: nowrap; /* Jangan pecah teks */
 }
 
-.btn-add:hover { background: var(--primary-dark); color: #F7F8ED; } /* Hover */
+.btn-add:hover { background: var(--primary-dark); color: #f0f7fe; } /* Hover */
 .btn-reset { background: var(--surface-selected); color: var(--text-primary); }
 .btn-reset:hover { background: var(--surface-hover); color: var(--text-primary); }
 
@@ -221,7 +221,7 @@
 
 .data-table thead th { /* Header tabel */
     padding: 11px 14px; /* Padding header */
-    background: #F7F8ED; /* Latar header */
+    background: #f0f7fe; /* Latar header */
     color: var(--text-muted); /* Warna teks */
     font-weight: 600; /* Tebal */
     font-size: 0.72rem; /* Ukuran kecil */
@@ -241,7 +241,7 @@
 
 .data-table tbody tr:last-child td { border-bottom: none; } /* Baris terakhir */
 
-.data-table tbody tr:hover { background: #F7F8ED; } /* Hover baris */
+.data-table tbody tr:hover { background: #f0f7fe; } /* Hover baris */
 
 /* ============================================================
    BADGE STATUS STOK
@@ -268,7 +268,7 @@
     height: 30px; /* Tinggi */
     border-radius: 7px; /* Bundar */
     border: 1px solid var(--border); /* Border */
-    background: #FFFFFF; /* Latar */
+    background: #f0f7fe; /* Latar */
     display: inline-flex; /* Flex centering */
     align-items: center; /* Rata tengah */
     justify-content: center; /* Center */
@@ -279,9 +279,9 @@
     text-decoration: none; /* Hilangkan underline */
 }
 
-.btn-action.edit:hover  { background: var(--primary); color: #F7F8ED; border-color: var(--primary); }
-.btn-action.delete:hover{ background: var(--danger);  color: #F7F8ED; border-color: var(--danger);  }
-.btn-action.stock:hover { background: var(--success); color: #F7F8ED; border-color: var(--success); }
+.btn-action.edit:hover  { background: var(--primary); color: #f0f7fe; border-color: var(--primary); }
+.btn-action.delete:hover{ background: var(--danger);  color: #f0f7fe; border-color: var(--danger);  }
+.btn-action.stock:hover { background: var(--success); color: #f0f7fe; border-color: var(--success); }
 
 /* ============================================================
    MODAL PENYESUAIAN STOK
@@ -290,7 +290,7 @@
     display: none; /* Tersembunyi default */
     position: fixed; /* Tetap di layar */
     inset: 0; /* Menutupi seluruh layar */
-    background: rgba(29,35,16,0.55); /* Gelap semi-transparan */
+    background: rgba(25,43,82,0.55); /* Gelap semi-transparan */
     z-index: 2000; /* Di atas konten */
     align-items: center; /* Center vertikal */
     justify-content: center; /* Center horizontal */
@@ -302,7 +302,7 @@
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } /* Animasi fade */
 
 .modal-box { /* Kotak modal */
-    background: #FFFFFF; /* Latar putih */
+    background: #f0f7fe; /* Latar putih */
     border-radius: var(--radius); /* Bulat */
     padding: 28px 28px 24px; /* Padding */
     width: 100%; /* Lebar maksimal */
@@ -320,8 +320,8 @@
 .modal-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(var(--primary-rgb),0.08); }
 
 .modal-actions { display:flex; gap:10px; justify-content:flex-end; }
-.btn-modal-cancel { padding:8px 18px; border:1px solid var(--border); border-radius:8px; background:#FFFFFF; color:var(--text-muted); font-size:0.82rem; font-weight:600; cursor:pointer; transition:all 0.2s; }
-.btn-modal-cancel:hover { background:#F7F8ED; }
+.btn-modal-cancel { padding:8px 18px; border:1px solid var(--border); border-radius:8px; background:#f0f7fe; color:var(--text-muted); font-size:0.82rem; font-weight:600; cursor:pointer; transition:all 0.2s; }
+.btn-modal-cancel:hover { background:#f0f7fe; }
 .btn-modal-save { padding:8px 18px; border:none; border-radius:8px; background:var(--primary); color:var(--surface-light); font-size:0.82rem; font-weight:600; cursor:pointer; transition:background 0.2s; }
 .btn-modal-save:hover { background:var(--primary-dark); }
 .modal-hint { font-size:0.75rem; color:var(--text-muted); margin-top:-10px; margin-bottom:14px; }

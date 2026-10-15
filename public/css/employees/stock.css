@@ -104,11 +104,11 @@
 }
 
 .summary-card.c-master::before {
-    background: linear-gradient(90deg, var(--accent), #0ea5e9); /* Warna header stok master */
+    background: linear-gradient(90deg, var(--accent), #4192f0); /* Warna header stok master */
 }
 
 .summary-card.c-employee::before {
-    background: linear-gradient(90deg, var(--success), #34d399); /* Warna header stok pegawai */
+    background: linear-gradient(90deg, var(--success), #88d66c); /* Warna header stok pegawai */
 }
 
 .summary-card.c-lowstock::before {
@@ -315,7 +315,7 @@
 .stock-bar-fill {
     height: 100%; /* Penuhi tinggi batang */
     border-radius: 99px; /* Sudut bulat */
-    background: linear-gradient(90deg, var(--success), #34d399); /* Gradien default */
+    background: linear-gradient(90deg, var(--success), #88d66c); /* Gradien default */
     transition: width 0.5s ease; /* Transisi lebar */
     box-shadow: 0 2px 8px rgba(var(--success-rgb, 16 185 129), 0.3); /* Bayangan */
 }
@@ -373,7 +373,7 @@
 
 .btn-give {
     background: linear-gradient(135deg, var(--primary), var(--primary-light)); /* Warna tombol beri */
-    color: #F7F8ED; /* Warna teks tombol */
+    color: #f0f7fe; /* Warna teks tombol */
 }
 
 .btn-give:hover:not(:disabled) {
@@ -389,7 +389,7 @@
 
 .btn-pull:hover:not(:disabled) {
     background: var(--danger); /* Latar hover */
-    color: #F7F8ED; /* Warna teks hover */
+    color: #f0f7fe; /* Warna teks hover */
     border-color: transparent; /* Hilangkan border */
     transform: translateY(-2px); /* Naik sedikit */
     box-shadow: var(--shadow-md); /* Bayangan hover */
@@ -516,8 +516,8 @@
     display: inline-block; /* Tampilkan sebagai inline block */
     width: 16px; /* Lebar animasi spin */
     height: 16px; /* Tinggi animasi spin */
-    border: 2px solid rgba(247,248,237,0.4); /* Border spin */
-    border-top-color: #F7F8ED; /* Warna border atas */
+    border: 2px solid rgba(240,247,254,0.4); /* Border spin */
+    border-top-color: #f0f7fe; /* Warna border atas */
     border-radius: 50%; /* Bulat lengkap */
     animation: spin 0.6s linear infinite; /* Animasi berputar terus */
 }

@@ -56,8 +56,8 @@
 }
 
 .form-card-section {
-    background: rgba(247,248,237,0.5);
-    border: 1px solid var(--border, #EEE5DC);
+    background: rgba(240,247,254,0.5);
+    border: 1px solid var(--border, #c1e0fc);
     border-radius: var(--radius, 12px);
     padding: 24px;
     transition: all 0.3s ease;
@@ -69,13 +69,13 @@
 }
 
 .form-card-section.bg-gradient-subtle {
-    background: linear-gradient(135deg, rgba(255,252,248,0.5) 0%, rgba(var(--primary-rgb),0.02) 100%);
+    background: linear-gradient(135deg, rgba(240,247,254,0.5) 0%, rgba(var(--primary-rgb),0.02) 100%);
 }
 
 .section-subtitle {
     font-size: 1.1rem;
     font-weight: 700;
-    color: var(--text-primary, #382719);
+    color: var(--text-primary, #192b52);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -83,12 +83,12 @@
 }
 
 .section-subtitle i {
-    color: var(--primary, #633719);
+    color: var(--primary, #2c74e4);
 }
 
 .section-desc {
     font-size: 0.85rem;
-    color: var(--text-muted, #8C7A6B);
+    color: var(--text-muted, #234eaa);
     line-height: 1.5;
     margin: 0 0 20px 0;
 }
@@ -102,14 +102,14 @@
     display: block;
     font-size: 0.875rem;
     font-weight: 600;
-    color: var(--text-primary, #382719);
+    color: var(--text-primary, #192b52);
     margin-bottom: 8px;
     transition: color 0.25s ease;
 }
 
 /* Focus highlighting label */
 .form-group:focus-within .form-label {
-    color: var(--primary, #633719);
+    color: var(--primary, #2c74e4);
 }
 
 /* Input Wrapper & Icon Styling */
@@ -123,7 +123,7 @@
 .input-with-icon i.field-icon {
     position: absolute;
     left: 16px;
-    color: var(--text-muted, #8C7A6B);
+    color: var(--text-muted, #234eaa);
     font-size: 1rem;
     transition: color 0.25s ease;
     pointer-events: none;
@@ -135,24 +135,24 @@
     min-height: 48px;
     padding: 12px 16px;
     padding-left: 46px; /* Space for left icon */
-    border: 1px solid var(--border, #EEE5DC);
+    border: 1px solid var(--border, #c1e0fc);
     border-radius: 10px;
     font-size: 0.95rem;
     font-weight: 500;
-    color: var(--text-primary, #382719);
-    background: var(--card-bg, #FFFFFF);
+    color: var(--text-primary, #192b52);
+    background: var(--card-bg, #f0f7fe);
     transition: all 0.25s ease;
 }
 
 .input-with-icon:focus-within i.field-icon {
-    color: var(--primary, #633719);
+    color: var(--primary, #2c74e4);
 }
 
 .input-with-icon .form-control:focus {
     outline: none;
-    border-color: var(--primary, #633719);
+    border-color: var(--primary, #2c74e4);
     box-shadow: 0 0 0 4px rgba(var(--primary-rgb),0.08);
-    background: #FFFFFF;
+    background: #f0f7fe;
 }
 
 /* Specific styling for select dropdown */
@@ -181,7 +181,7 @@ select.form-control:focus {
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: var(--text-muted, #8C7A6B);
+    color: var(--text-muted, #234eaa);
     cursor: pointer;
     padding: 6px;
     font-size: 1.15rem;
@@ -193,7 +193,7 @@ select.form-control:focus {
 }
 
 .password-toggle:hover {
-    color: var(--primary, #633719);
+    color: var(--primary, #2c74e4);
     transform: translateY(-50%) scale(1.1);
 }
 
@@ -216,7 +216,7 @@ select.form-control:focus {
 .form-text-info {
     display: block;
     font-size: 0.8rem;
-    color: var(--text-muted, #8C7A6B);
+    color: var(--text-muted, #234eaa);
     margin-top: 6px;
     font-style: normal;
 }

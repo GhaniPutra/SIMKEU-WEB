@@ -33,7 +33,7 @@ Extends: layouts.app (layout utama SIMKEU)
             display: flex;
             align-items: center;
             gap: 10px;
-            background: #FFFFFF;
+            background: #f0f7fe;
         }
 
         .form-card-header i {
@@ -86,7 +86,7 @@ Extends: layouts.app (layout utama SIMKEU)
             font-size: 0.875rem;
             font-family: inherit;
             color: var(--text-primary);
-            background: #FFFFFF;
+            background: #f0f7fe;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
 
@@ -147,7 +147,7 @@ Extends: layouts.app (layout utama SIMKEU)
         .btn-submit {
             padding: 10px 24px;
             background: var(--primary);
-            color: #F7F8ED;
+            color: #f0f7fe;
             border: none;
             border-radius: 9px;
             font-size: 0.875rem;
@@ -166,7 +166,7 @@ Extends: layouts.app (layout utama SIMKEU)
         /* Tombol batal: kembali ke daftar produk */
         .btn-cancel {
             padding: 10px 24px;
-            background: #FFFFFF;
+            background: #f0f7fe;
             color: var(--text-muted);
             border: 1px solid var(--border);
             border-radius: 9px;
@@ -181,7 +181,7 @@ Extends: layouts.app (layout utama SIMKEU)
         }
 
         .btn-cancel:hover {
-            background: #F7F8ED;
+            background: #f0f7fe;
             color: var(--text-primary);
         }
 

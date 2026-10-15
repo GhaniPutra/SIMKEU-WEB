@@ -12,7 +12,7 @@
     align-items: center;
     justify-content: space-between; /* Space out header and actions if needed */
     margin-bottom: 28px;
-    border-bottom: 1px solid var(--border, #EEE5DC);
+    border-bottom: 1px solid var(--border, #c1e0fc);
     padding-bottom: 16px;
 }
 
@@ -30,14 +30,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--primary, #633719);
+    color: var(--primary, #2c74e4);
     font-size: 1.4rem;
 }
 
 .form-card-header h1 {
     font-size: 1.5rem;
     font-weight: 800;
-    color: var(--text-primary, #382719);
+    color: var(--text-primary, #192b52);
     margin: 0;
     letter-spacing: -0.5px;
 }
@@ -45,13 +45,13 @@
 .form-card-header p {
     margin: 4px 0 0 0;
     font-size: 0.875rem;
-    color: var(--text-muted, #8C7A6B);
+    color: var(--text-muted, #234eaa);
 }
 
 .content-card {
-    background: var(--card-bg, #FFFFFF);
+    background: var(--card-bg, #f0f7fe);
     border-radius: var(--radius, 12px);
-    border: 1px solid var(--border, #EEE5DC);
+    border: 1px solid var(--border, #c1e0fc);
     box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.01);
     overflow: visible; /* Ensure focus rings and wrappers aren't cut off */
 }
@@ -66,7 +66,7 @@
     justify-content: flex-end;
     gap: 16px;
     margin-top: 32px;
-    border-top: 1px solid var(--border, #EEE5DC);
+    border-top: 1px solid var(--border, #c1e0fc);
     padding-top: 24px;
 }
 
@@ -76,8 +76,8 @@
     align-items: center;
     gap: 10px;
     padding: 14px 28px;
-    background: linear-gradient(135deg, var(--primary, #633719), var(--primary-light, #8B5431));
-    color: #FFFCF8;
+    background: linear-gradient(135deg, var(--primary, #2c74e4), var(--primary-light, #4192f0));
+    color: #f0f7fe;
     border: none;
     border-radius: var(--radius, 12px);
     font-size: 0.95rem;
@@ -88,7 +88,7 @@
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, var(--primary-dark, #382719), var(--primary, #633719));
+    background: linear-gradient(135deg, var(--primary-dark, #192b52), var(--primary, #2c74e4));
     box-shadow: 0 6px 20px rgba(var(--primary-rgb),0.35);
     transform: translateY(-2px);
 }
@@ -102,9 +102,9 @@
     align-items: center;
     gap: 10px;
     padding: 14px 28px;
-    background: #FFFCF8;
-    color: var(--text-primary, #382719);
-    border: 1px solid var(--border, #EEE5DC);
+    background: #f0f7fe;
+    color: var(--text-primary, #192b52);
+    border: 1px solid var(--border, #c1e0fc);
     border-radius: var(--radius, 12px);
     font-size: 0.95rem;
     font-weight: 600;
@@ -114,9 +114,9 @@
 }
 
 .btn-cancel:hover {
-    background: #FFFCF8;
-    border-color: var(--text-muted, #8C7A6B);
-    color: var(--text-primary, #382719);
+    background: #f0f7fe;
+    border-color: var(--text-muted, #234eaa);
+    color: var(--text-primary, #192b52);
 }
 
 /* Animations */

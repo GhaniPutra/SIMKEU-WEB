@@ -59,7 +59,7 @@
         background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
         border-radius: 14px;
         padding: 28px 24px;
-        color: #F7F8ED;
+        color: #f0f7fe;
         margin-bottom: 24px;
         position: relative;
         overflow: hidden;
@@ -72,7 +72,7 @@
         right: -40px; top: -40px;
         width: 160px; height: 160px;
         border-radius: 50%;
-        background: rgba(247,248,237,0.07);
+        background: rgba(240,247,254,0.07);
     }
 
     .amount-highlight .ah-label {
@@ -147,14 +147,14 @@
         border-radius: 20px;
         font-size: 0.8rem;
         font-weight: 600;
-        color: #F7F8ED;
+        color: #f0f7fe;
     }
 
     /* ============================================================
        KOTAK PRODUK — Info produk terkait (untuk kategori beli_stok)
     ============================================================ */
     .produk-box {
-        background: #F7F8ED;
+        background: #f0f7fe;
         border-radius: 10px;
         padding: 16px 18px;
         border: 1px solid var(--border);
@@ -192,7 +192,7 @@
         border-radius: 9px;
         font-size: 0.82rem;
         font-weight: 600;
-        background: #F7F8ED;
+        background: #f0f7fe;
         color: var(--text-primary);
         border: 1px solid var(--border);
         text-decoration: none;
@@ -200,7 +200,7 @@
     }
     .btn-back:hover {
         background: var(--danger); /* Hover merah untuk halaman pengeluaran */
-        color: #F7F8ED;
+        color: #f0f7fe;
         border-color: var(--danger);
     }
 
@@ -224,7 +224,7 @@
     $katInfo = $kategoriLabel[$expense->category] ?? [
         'label' => ucfirst($expense->category),
         'icon'  => 'fa-ellipsis',
-        'warna' => '#8B5431',
+        'warna' => '#4192f0',
     ];
 @endphp
 

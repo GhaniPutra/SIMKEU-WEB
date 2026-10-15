@@ -1,6 +1,6 @@
 :root {
-    --expense-bg: #F7F8ED;
-    --expense-panel: #F7F8ED;
+    --expense-bg: #f0f7fe;
+    --expense-panel: #f0f7fe;
 }
 
 .expense-form {
@@ -75,7 +75,7 @@
     padding: 10px 14px;
     font-size: 0.95rem;
     color: var(--text-primary);
-    background: #FFFFFF;
+    background: #f0f7fe;
 }
 
 .form-control:focus {
@@ -136,7 +136,7 @@
 }
 
 .btn-qa-outline {
-    background: #FFFFFF;
+    background: #f0f7fe;
     color: var(--text-primary);
     border-color: var(--border);
 }
@@ -147,7 +147,7 @@
 
 .btn-qa-success {
     background: var(--primary);
-    color: #F7F8ED;
+    color: #f0f7fe;
     border-color: transparent;
 }
 

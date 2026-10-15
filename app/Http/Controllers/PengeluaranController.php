@@ -18,13 +18,13 @@ class PengeluaranController extends Controller
     // Dicocokkan dengan nilai enum di kolom 'category' tabel expenses
     // ============================================================
     private const KATEGORI_LABEL = [
-        'beli_stok'  => ['label' => 'Beli Stok',   'icon' => 'fa-boxes-stacking', 'warna' => '#6B7B35'],
-        'gaji'       => ['label' => 'Gaji',         'icon' => 'fa-user-tie',       'warna' => '#8A9C46'],
-        'listrik'    => ['label' => 'Listrik',      'icon' => 'fa-bolt',           'warna' => '#A7B764'],
-        'air'        => ['label' => 'Air',           'icon' => 'fa-droplet',        'warna' => '#8A9C46'],
-        'sewa'       => ['label' => 'Sewa',         'icon' => 'fa-building',       'warna' => '#8A9C46'],
-        'transport'  => ['label' => 'Transport',    'icon' => 'fa-truck',          'warna' => '#6B7B35'],
-        'lainnya'    => ['label' => 'Lainnya',      'icon' => 'fa-ellipsis',       'warna' => '#434D27'],
+        'beli_stok'  => ['label' => 'Beli Stok',   'icon' => 'fa-boxes-stacking', 'warna' => '#2c74e4'],
+        'gaji'       => ['label' => 'Gaji',         'icon' => 'fa-user-tie',       'warna' => '#419623'],
+        'listrik'    => ['label' => 'Listrik',      'icon' => 'fa-bolt',           'warna' => '#c5a102'],
+        'air'        => ['label' => 'Air',           'icon' => 'fa-droplet',        'warna' => '#4192f0'],
+        'sewa'       => ['label' => 'Sewa',         'icon' => 'fa-building',       'warna' => '#f62440'],
+        'transport'  => ['label' => 'Transport',    'icon' => 'fa-truck',          'warna' => '#235fd2'],
+        'lainnya'    => ['label' => 'Lainnya',      'icon' => 'fa-ellipsis',       'warna' => '#234eaa'],
     ];
 
     // ============================================================

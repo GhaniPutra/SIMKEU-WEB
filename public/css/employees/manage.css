@@ -37,8 +37,8 @@
     height: 46px;
     flex: 0 0 46px;
     border-radius: 13px;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: #F7F8ED;
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    color: #f0f7fe;
     font-size: 1.1rem;
 }
 

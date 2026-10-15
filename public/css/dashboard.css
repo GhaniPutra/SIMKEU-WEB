@@ -380,7 +380,7 @@
 
 .btn-qa-primary:hover {
     background: var(--primary-dark);
-    color: #F7F8ED;
+    color: #f0f7fe;
 }
 
 .btn-qa-outline {
@@ -414,7 +414,7 @@
     top: -30px;
     width: 130px;
     height: 130px;
-    background: rgba(247,248,237,0.07);
+    background: rgba(240,247,254,0.07);
     border-radius: 50%;
 }
 

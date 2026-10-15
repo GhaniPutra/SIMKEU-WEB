@@ -28,7 +28,7 @@
         }
 
         .setup-box {
-            background: #FFFFFF;
+            background: #f0f7fe;
             border-radius: 12px;
             box-shadow: 0 5px 25px rgba(0, 0, 0, 0.10);
             padding: 40px;
@@ -60,7 +60,7 @@
             border-radius: 8px;
             font-size: 0.95rem;
             transition: all var(--transition);
-            background: #FFFFFF;
+            background: #f0f7fe;
         }
 
         .form-control:focus {
@@ -77,10 +77,10 @@
         /* Styling tombol */
         .btn-setup {
             padding: 12px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
             border: none;
             border-radius: 8px;
-            color: #F7F8ED;
+            color: #f0f7fe;
             font-weight: 600;
             font-size: 1rem;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -91,7 +91,7 @@
         .btn-setup:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(var(--primary-rgb),0.3);
-            color: #F7F8ED;
+            color: #f0f7fe;
         }
 
         .input-group-text {
@@ -109,12 +109,12 @@
         .setup-icon {
             width: 64px;
             height: 64px;
-            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
             border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #F7F8ED;
+            color: #f0f7fe;
             font-size: 2rem;
             box-shadow: 0 4px 15px rgba(var(--primary-rgb),0.4);
         }
