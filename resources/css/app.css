@@ -198,6 +198,12 @@
         color: #1a1a1a !important;
     }
 
+    [data-sidebar="menu-button"]:not([data-active="true"]) svg,
+    [data-sidebar="menu-sub-button"]:not([data-active="true"]) svg {
+        color: #404040 !important;
+        stroke: #404040;
+    }
+
     [data-sidebar="menu-button"][data-active="true"],
     [data-sidebar="menu-button"][data-active="true"] *,
     [data-sidebar="menu-sub-button"][data-active="true"],

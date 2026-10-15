@@ -790,6 +790,12 @@
             color: #1a1a1a !important;
         }
 
+        .sidebar-nav .nav-link:not(.active) .nav-icon,
+        .sidebar-nav .nav-link:not(.active) .nav-icon i,
+        .sidebar-nav .nav-link:not(.active) .nav-icon i::before {
+            color: #404040 !important;
+        }
+
         .sidebar-nav .nav-link.active,
         .sidebar-nav .nav-link.active * {
             color: #235fd2 !important;
