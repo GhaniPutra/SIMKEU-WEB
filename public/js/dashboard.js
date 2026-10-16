@@ -21,12 +21,14 @@
 const {
     period,       // Periode aktif: 'all', 'today', 'week', atau 'month'
     periodLabel,  // Label periode: 'Hari Ini', 'Minggu Ini', 'Bulan Ini'
+    monthDayCount,
     trendLabels,  // Array label untuk sumbu X grafik
     revenueData,  // Array angka pendapatan
     expenseData   // Array angka pengeluaran
 } = window.dashboardData || {
     period      : 'month',
     periodLabel : 'Bulan Ini',
+    monthDayCount: 30,
     trendLabels : [],
     revenueData : [],
     expenseData : []
@@ -152,6 +154,24 @@ function initTrendChart() {
 
     new Chart(trendCanvas, {
         type: 'bar',
+        plugins: [{
+            id: 'fixed-grouped-bar-gap',
+            beforeDatasetsDraw(chart) {
+                const monthCategoryChunk = chart.chartArea.width * getCategoryPercentage(monthDayCount) / monthDayCount / 2;
+                const gap = monthCategoryChunk - Math.min(12, monthCategoryChunk * 0.7);
+                const revenueBars = chart.getDatasetMeta(0).data;
+                const expenseBars = chart.getDatasetMeta(1).data;
+
+                revenueBars.forEach((revenueBar, index) => {
+                    const expenseBar = expenseBars[index];
+                    if (!expenseBar) return;
+
+                    const center = chart.scales.x.getPixelForValue(index);
+                    revenueBar.x = center - (revenueBar.width + gap) / 2;
+                    expenseBar.x = center + (expenseBar.width + gap) / 2;
+                });
+            }
+        }],
 
         data: {
             labels,

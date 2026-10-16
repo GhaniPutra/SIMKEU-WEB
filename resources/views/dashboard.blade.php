@@ -262,6 +262,7 @@
     <div id="dashboard-data"
         data-period="{{ $period }}"
         data-period-label="{{ $periodLabel }}"
+        data-month-day-count="{{ now()->daysInMonth }}"
         data-trend-labels="{{ json_encode($trendLabels, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) }}"
         data-revenue-data="{{ json_encode($revenueTrendData, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) }}"
         data-expense-data="{{ json_encode($expenseTrendData, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) }}"
@@ -275,6 +276,7 @@
         window.dashboardData = {
             period: dashboardData.period,
             periodLabel: dashboardData.periodLabel,
+            monthDayCount: Number(dashboardData.monthDayCount),
             trendLabels: JSON.parse(dashboardData.trendLabels),
             revenueData: JSON.parse(dashboardData.revenueData),
             expenseData: JSON.parse(dashboardData.expenseData),
