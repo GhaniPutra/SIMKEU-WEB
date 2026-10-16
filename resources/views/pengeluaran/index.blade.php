@@ -581,7 +581,9 @@
                     </div>
                 </div>
                 <div class="kategori-bar" aria-label="{{ number_format($kat['persen'], 1, ',', '.') }}% dari total pengeluaran">
-                    <div class="kategori-bar-fill" style="width:{{ min(100, max(0, $kat['persen'])) }}%;background-color:{{ $kat['warna'] }};"></div>
+                    <div class="kategori-bar-fill"
+                         data-width="{{ min(100, max(0, $kat['persen'])) }}"
+                         data-bg="{{ $kat['warna'] }}"></div>
                 </div>
             </div>
             @empty
