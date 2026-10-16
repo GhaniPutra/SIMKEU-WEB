@@ -738,8 +738,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     label: 'Pemasukan',
                     backgroundColor: tunai,
                     data: chartData,
-                    borderRadius: 4,
-                    maxBarThickness: 28,
+                    borderRadius: 0,
+                    maxBarThickness: 12,
+                    categoryPercentage: 0.55,
+                    barPercentage: 0.7,
                 }]
             },
             options: {

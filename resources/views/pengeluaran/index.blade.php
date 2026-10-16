@@ -808,8 +808,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     label: 'Pengeluaran',
                     backgroundColor: pengeluaranColor,
                     data: trendValues,
-                    borderRadius: 4,
-                    maxBarThickness: 28,
+                    borderRadius: 0,
+                    maxBarThickness: 12,
+                    categoryPercentage: 0.55,
+                    barPercentage: 0.7,
                 }]
             },
             options: {
@@ -876,8 +878,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     backgroundColor: categories.map((category) => `${category.color}cc`),
                     borderColor: categories.map((category) => category.color),
                     borderWidth: 1,
-                    borderRadius: 4,
-                    maxBarThickness: 20,
+                    borderRadius: 0,
+                    maxBarThickness: 14,
+                    categoryPercentage: 0.65,
+                    barPercentage: 0.7,
                 }]
             },
             options: {
