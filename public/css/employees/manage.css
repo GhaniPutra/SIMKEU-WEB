@@ -1,4 +1,6 @@
 .employee-manage {
+    --card-bg: #ffffff;
+    --body-bg: #ffffff;
     display: grid;
     gap: 18px;
     color: var(--text-primary);
@@ -9,7 +11,7 @@
 .employee-kpi,
 .stock-total,
 .employee-tabs {
-    background: var(--card-bg);
+    background: #ffffff;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
@@ -131,17 +133,47 @@
     font-size: .82rem;
     font-weight: 700;
     cursor: pointer;
+    transition: color .25s ease, background-color .25s ease, transform .25s ease;
+}
+
+.employee-tab::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    width: 0;
+    height: 2.5px;
+    border-radius: 2px;
+    background: var(--primary);
+    transform: translateX(-50%);
+    transition: width .3s cubic-bezier(.4, 0, .2, 1);
 }
 
 .employee-tab:hover,
 .employee-tab:focus-visible {
     color: var(--primary);
+    background: rgba(var(--primary-rgb),.06);
     outline-color: var(--primary);
+    transform: translateY(-1px);
+}
+
+.employee-tab:hover::after,
+.employee-tab:focus-visible::after {
+    width: 60%;
+}
+
+.employee-tab:active {
+    transform: translateY(0);
+    transition-duration: .1s;
 }
 
 .employee-tab.active {
     background: rgba(var(--primary-rgb),.11);
     color: var(--primary);
+}
+
+.employee-tab.active::after {
+    width: 70%;
 }
 
 .tab-count {
@@ -976,7 +1008,9 @@
 
 @media (prefers-reduced-motion: reduce) {
     .employee-kpi,
-    .employee-toast {
+    .employee-toast,
+    .employee-tab,
+    .employee-tab::after {
         transition: none;
     }
 }
