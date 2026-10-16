@@ -1,16 +1,16 @@
 <div class="kpi-grid category-kpi-grid">
     <div class="kpi-card primary fade-up">
-        <div class="kpi-top"><span class="kpi-label">Total Kategori</span><div class="kpi-icon"><i class="fas fa-tags"></i></div></div>
+        <div class="kpi-top"><span class="kpi-label">Total Kategori</span></div>
         <div class="kpi-value">{{ number_format($totalCategories) }}</div>
         <div class="kpi-sub">Jumlah kategori produk saat ini</div>
     </div>
     <div class="kpi-card success fade-up">
-        <div class="kpi-top"><span class="kpi-label">Kategori Berisi Produk</span><div class="kpi-icon"><i class="fas fa-box-open"></i></div></div>
+        <div class="kpi-top"><span class="kpi-label">Kategori Berisi Produk</span></div>
         <div class="kpi-value">{{ number_format($totalCategorized) }}</div>
         <div class="kpi-sub">Kategori dengan setidaknya satu produk</div>
     </div>
     <div class="kpi-card warning fade-up">
-        <div class="kpi-top"><span class="kpi-label">Kategori Kosong</span><div class="kpi-icon"><i class="fas fa-folder-open"></i></div></div>
+        <div class="kpi-top"><span class="kpi-label">Kategori Kosong</span></div>
         <div class="kpi-value">{{ number_format($totalCategories - $totalCategorized) }}</div>
         <div class="kpi-sub">Kategori tanpa produk saat ini</div>
     </div>

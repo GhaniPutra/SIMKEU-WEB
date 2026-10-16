@@ -88,7 +88,7 @@
         align-items: center;
         gap: 5px;
         padding: 5px 12px;
-        border-radius: 20px;
+        border-radius: 6px;
         font-size: 0.78rem;
         font-weight: 600;
     }
@@ -133,7 +133,7 @@
     ============================================================ */
     .summary-box {
         background: #f0f7fe;
-        border-radius: 10px;
+        border-radius: 6px;
         padding: 20px;
         min-width: 280px; /* Lebar minimal box ringkasan */
     }
@@ -174,7 +174,7 @@
         align-items: center;
         gap: 7px;
         padding: 9px 16px;
-        border-radius: 9px;
+        border-radius: 5px;
         font-size: 0.82rem;
         font-weight: 600;
         background: #f0f7fe;

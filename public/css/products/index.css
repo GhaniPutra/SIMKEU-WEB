@@ -49,7 +49,7 @@
 .kpi-icon { /* Kotak ikon di sudut kanan atas kartu */
     width: 38px; /* Lebar kotak */
     height: 38px; /* Tinggi kotak */
-    border-radius: 10px; /* Sudut membulat */
+    border-radius: 6px; /* Sudut membulat */
     display: flex; /* Flex untuk centering */
     align-items: center; /* Vertikal center */
     justify-content: center; /* Horizontal center */
@@ -62,11 +62,12 @@
 .kpi-card.danger .kpi-icon  { background: var(--danger-bg);  color: var(--icon-danger);  }
 
 .kpi-value { /* Angka utama pada kartu */
-    font-size: 1.5rem; /* Ukuran besar */
+    font-size: clamp(1.5rem, 1.8vw, 1.9rem); /* Angka utama lebih menonjol */
     font-weight: 800; /* Sangat tebal */
     color: var(--text-primary); /* Warna teks utama */
     line-height: 1; /* Tinggi baris */
     margin-bottom: 6px; /* Jarak bawah */
+    overflow-wrap: anywhere;
 }
 
 .kpi-sub { /* Teks penjelas kecil di bawah angka */
@@ -151,7 +152,7 @@
     width: 100%; /* Penuhi wadah */
     padding: 8px 12px 8px 36px; /* Padding kiri untuk ikon */
     border: 1px solid var(--border); /* Border input */
-    border-radius: 9px; /* Bulat */
+    border-radius: 5px; /* Bulat */
     font-size: 0.82rem; /* Ukuran font */
     font-family: inherit; /* Gunakan font induk */
     color: var(--text-primary); /* Warna teks */
@@ -178,7 +179,7 @@
 .toolbar select { /* Dropdown kategori */
     padding: 8px 12px; /* Padding */
     border: 1px solid var(--border); /* Border */
-    border-radius: 9px; /* Bulat */
+    border-radius: 5px; /* Bulat */
     font-size: 0.82rem; /* Ukuran font */
     font-family: inherit; /* Warna font */
     color: var(--text-primary); /* Warna */
@@ -197,7 +198,7 @@
     background: var(--primary); /* Latar primary */
     color: #f0f7fe; /* Teks putih */
     border: none; /* Tanpa border */
-    border-radius: 9px; /* Bulat */
+    border-radius: 5px; /* Bulat */
     font-size: 0.82rem; /* Ukuran font */
     font-weight: 600; /* Tebal */
     text-decoration: none; /* Hilangkan underline */
@@ -251,7 +252,7 @@
     align-items: center; /* Rata tengah */
     gap: 4px; /* Jarak */
     padding: 3px 10px; /* Padding */
-    border-radius: 20px; /* Bulat */
+    border-radius: 6px; /* Bulat */
     font-size: 0.72rem; /* Ukuran kecil */
     font-weight: 700; /* Tebal */
 }
@@ -266,7 +267,7 @@
 .btn-action { /* Tombol kecil di tabel */
     width: 30px; /* Lebar */
     height: 30px; /* Tinggi */
-    border-radius: 7px; /* Bundar */
+    border-radius: 5px; /* Bundar */
     border: 1px solid var(--border); /* Border */
     background: #f0f7fe; /* Latar */
     display: inline-flex; /* Flex centering */
@@ -316,20 +317,20 @@
 .modal-title { font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
 .modal-sub { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px; }
 
-.modal-input { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 9px; font-size: 0.9rem; font-family: inherit; color: var(--text-primary); margin-bottom: 16px; transition: border-color 0.2s; }
+.modal-input { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 5px; font-size: 0.9rem; font-family: inherit; color: var(--text-primary); margin-bottom: 16px; transition: border-color 0.2s; }
 .modal-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(var(--primary-rgb),0.08); }
 
 .modal-actions { display:flex; gap:10px; justify-content:flex-end; }
-.btn-modal-cancel { padding:8px 18px; border:1px solid var(--border); border-radius:8px; background:#f0f7fe; color:var(--text-muted); font-size:0.82rem; font-weight:600; cursor:pointer; transition:all 0.2s; }
+.btn-modal-cancel { padding:8px 18px; border:1px solid var(--border); border-radius:6px; background:#f0f7fe; color:var(--text-muted); font-size:0.82rem; font-weight:600; cursor:pointer; transition:all 0.2s; }
 .btn-modal-cancel:hover { background:#f0f7fe; }
-.btn-modal-save { padding:8px 18px; border:none; border-radius:8px; background:var(--primary); color:var(--surface-light); font-size:0.82rem; font-weight:600; cursor:pointer; transition:background 0.2s; }
+.btn-modal-save { padding:8px 18px; border:none; border-radius:6px; background:var(--primary); color:var(--surface-light); font-size:0.82rem; font-weight:600; cursor:pointer; transition:background 0.2s; }
 .btn-modal-save:hover { background:var(--primary-dark); }
 .modal-hint { font-size:0.75rem; color:var(--text-muted); margin-top:-10px; margin-bottom:14px; }
 
 /* ============================================================
    NAMA PRODUK — Avatar berwarna otomatis
    ============================================================ */
-.product-avatar { width:34px; height:34px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem; color:var(--surface-light); flex-shrink:0; background: linear-gradient(135deg, var(--primary), var(--accent)); }
+.product-avatar { width:34px; height:34px; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem; color:var(--surface-light); flex-shrink:0; background: linear-gradient(135deg, var(--primary), var(--accent)); }
 .product-name-cell { display:flex; align-items:center; gap:10px; }
 .product-name-text { font-weight:600; color:var(--text-primary); }
 .product-unit-text { font-size:0.72rem; color:var(--text-muted); margin-top:1px; }
@@ -339,7 +340,7 @@
    ============================================================ */
 .pagination-wrapper { padding:14px 20px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
 .pagination-info { font-size:0.78rem; color:var(--text-muted); }
-.pagination .page-link { border-radius:7px !important; border:1px solid var(--border); color:var(--text-primary); font-size:0.8rem; padding:5px 11px; margin:0 2px; }
+.pagination .page-link { border-radius:5px !important; border:1px solid var(--border); color:var(--text-primary); font-size:0.8rem; padding:5px 11px; margin:0 2px; }
 .pagination .page-item.active .page-link { background:var(--primary); border-color:var(--primary); color:var(--surface-light); }
 
 /* ============================================================
@@ -395,7 +396,7 @@
     justify-content: center;
     min-width: 26px;
     padding: 3px 8px;
-    border-radius: 20px;
+    border-radius: 6px;
     background: rgba(var(--primary-rgb),.1);
     color: var(--primary);
     font-size: .75rem;

@@ -29,7 +29,7 @@
 
         .setup-box {
             background: #f0f7fe;
-            border-radius: 12px;
+            border-radius: 6px;
             box-shadow: 0 5px 25px rgba(0, 0, 0, 0.10);
             padding: 40px;
             width: 100%;
@@ -57,7 +57,7 @@
         .form-control {
             padding: 12px 15px;
             border: 1px solid var(--input);
-            border-radius: 8px;
+            border-radius: 6px;
             font-size: 0.95rem;
             transition: all var(--transition);
             background: #f0f7fe;
@@ -79,7 +79,7 @@
             padding: 12px;
             background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             color: #f0f7fe;
             font-weight: 600;
             font-size: 1rem;
@@ -110,7 +110,7 @@
             width: 64px;
             height: 64px;
             background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-            border-radius: 16px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;

@@ -66,7 +66,7 @@
     /* Kotak ikon per kartu */
     .kpi-icon {
         width: 38px; height: 38px;
-        border-radius: 10px;
+        border-radius: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -81,11 +81,12 @@
 
     /* Nilai utama kartu (angka besar) */
     .kpi-value {
-        font-size: 1.45rem;
+        font-size: clamp(1.5rem, 1.8vw, 1.9rem);
         font-weight: 800;
         color: var(--text-primary);
         line-height: 1;
         margin-bottom: 6px;
+        overflow-wrap: anywhere;
     }
 
     /* Sub-teks informatif di bawah nilai */
@@ -102,7 +103,7 @@
         font-size: 0.72rem;
         font-weight: 600;
         padding: 2px 7px;
-        border-radius: 20px;
+        border-radius: 6px;
         margin-left: 4px;
     }
     /* Pengeluaran naik = merah (buruk), turun = hijau (baik) */
@@ -162,70 +163,107 @@
 
     .content-card-body { padding: 20px; }
 
+    /* Samakan tinggi kartu analitik yang lapang dan jaga tambahan konten tetap internal. */
+    .analytics-card {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        height: 430px;
+        min-height: 430px;
+        max-height: 430px;
+        overflow: hidden;
+    }
+    .analytics-card .content-card-body {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow: hidden;
+    }
+    .analytics-card .chart-body {
+        display: flex;
+        align-items: stretch;
+        padding: 20px;
+    }
+    .analytics-card .chart-body > .chart-wrapper {
+        flex: 1 1 auto;
+        min-height: 0;
+        height: auto;
+    }
+    .analytics-card > .analytics-scroll {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-gutter: stable;
+    }
+
     /* ============================================================
        WRAPPER CANVAS CHART
     ============================================================ */
-    .chart-wrapper    { position: relative; height: 230px; }
-    .chart-wrapper-sm { height: 195px; }
+    .chart-wrapper    { position: relative; height: 280px; min-height: 280px; }
+    .chart-wrapper canvas { display: block; }
 
     /* ============================================================
        GRID DUA KOLOM (chart tren + chart kategori)
     ============================================================ */
     .two-col-chart {
         display: grid;
-        grid-template-columns: 3fr 2fr; /* Tren lebih lebar dari kategori */
+        grid-template-columns: minmax(0, 3fr) minmax(280px, 2fr); /* Tren lebih lebar dari kategori */
+        align-items: stretch;
         gap: 18px;
         margin-bottom: 28px;
     }
 
     /* Satu kolom di layar kecil */
     @media (max-width: 1100px) {
-        .two-col-chart { grid-template-columns: 1fr; }
+        .two-col-chart { grid-template-columns: minmax(0, 1fr); }
+        .analytics-card { height: 430px; min-height: 430px; max-height: 430px; }
+        .analytics-card > .analytics-scroll { max-height: none; }
+    }
+
+    @media (max-width: 480px) {
+        .analytics-card { height: 400px; min-height: 400px; max-height: 400px; }
+        .chart-wrapper { height: 250px; min-height: 250px; }
+    }
+
+    @media (min-width: 769px) and (max-width: 1100px) {
+        .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
     /* ============================================================
-       BREAKDOWN KATEGORI — Panel ringkasan per kategori
+       RANKING KATEGORI — Ringkasan pengeluaran yang ringkas
     ============================================================ */
     .kategori-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 10px 0;
+        padding: 11px 0;
         border-bottom: 1px solid var(--border);
     }
     .kategori-item:last-child { border-bottom: none; }
-
-    /* Ikon kategori dalam kotak berwarna */
-    .kategori-icon {
-        width: 34px; height: 34px;
-        border-radius: 8px;
+    .kategori-topline {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.85rem;
-        flex-shrink: 0;
-        color: var(--icon-on-primary);
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
     }
-    .kategori-icon[data-bg="#c5a102"] { background-color: var(--yellow-800) !important; }
-
-    .kategori-info  { flex: 1; min-width: 0; }
-    .kategori-name  { font-size: 0.825rem; font-weight: 600; color: var(--text-primary); }
-    .kategori-count { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
-
-    .kategori-amount  { font-size: 0.85rem; font-weight: 700; color: var(--text-primary); }
+    .kategori-name { font-size: 0.825rem; font-weight: 600; color: var(--text-primary); }
+    .kategori-metrics { display: inline-flex; align-items: baseline; justify-content: flex-end; gap: 8px; white-space: nowrap; }
+    .kategori-amount { font-size: 0.825rem; font-weight: 700; color: var(--text-primary); }
+    .kategori-percent { font-size: 0.72rem; color: var(--text-muted); }
 
     /* Progress bar persentase kategori */
     .kategori-bar {
-        height: 3px;
+        height: 4px;
         background: var(--border);
-        border-radius: 3px;
+        border-radius: 1px;
         margin-top: 5px;
         overflow: hidden;
     }
     .kategori-bar-fill {
         height: 100%;
-        border-radius: 3px;
+        border-radius: 1px;
         transition: width 0.6s ease;
+    }
+    @media (max-width: 480px) {
+        .kategori-topline { align-items: flex-start; flex-direction: column; gap: 3px; }
+        .kategori-metrics { justify-content: flex-start; }
     }
 
     /* ============================================================
@@ -241,7 +279,7 @@
     .filter-bar .form-control,
     .filter-bar .form-select {
         font-size: 0.825rem;
-        border-radius: 8px;
+        border-radius: 6px;
         border-color: var(--border);
         height: 36px;
     }
@@ -251,6 +289,16 @@
         border-color: var(--danger); /* Fokus merah sesuai tema pengeluaran */
         box-shadow: 0 0 0 3px rgba(var(--danger-rgb),.1);
     }
+
+    #filterForm button[type="submit"],
+    #filterForm button[type="submit"] i {
+        color: #ffffff !important;
+    }
+
+    .content-card-header,
+    .content-card-body { min-width: 0; }
+    .content-card .table-responsive,
+    .content-card [style*="overflow-x:auto"] { max-width: 100%; }
 
     /* ============================================================
        TABEL DATA PENGELUARAN
@@ -292,7 +340,7 @@
         align-items: center;
         gap: 5px;
         padding: 4px 10px;
-        border-radius: 20px;
+        border-radius: 6px;
         font-size: 0.7rem;
         font-weight: 600;
         color: #fff;
@@ -303,7 +351,7 @@
     ============================================================ */
     .btn-detail {
         padding: 5px 12px;
-        border-radius: 7px;
+        border-radius: 5px;
         border: 1px solid var(--border);
         background: var(--red-50);
         font-size: 0.75rem;
@@ -325,7 +373,7 @@
         align-items: center;
         gap: 8px;
         padding: 9px 14px;
-        border-radius: 8px;
+        border-radius: 6px;
         text-decoration: none;
         font-size: 0.85rem;
         font-weight: 600;
@@ -360,7 +408,7 @@
     .pagination-wrapper .page-link {
         font-size: 0.78rem;
         padding: 5px 10px;
-        border-radius: 6px !important;
+        border-radius: 4px !important;
         border-color: var(--border);
         color: var(--text-primary);
         transition: all 0.2s;
@@ -417,7 +465,6 @@
     <div class="kpi-card danger fade-up">
         <div class="kpi-top">
             <span class="kpi-label">Total Pengeluaran</span>
-            <div class="kpi-icon"><i class="fas fa-arrow-trend-down"></i></div>
         </div>
         {{-- Total nominal pengeluaran bulan ini --}}
         <div class="kpi-value">Rp {{ number_format($totalBulanIni, 0, ',', '.') }}</div>
@@ -438,7 +485,6 @@
     <div class="kpi-card warning fade-up">
         <div class="kpi-top">
             <span class="kpi-label">Jumlah Entri</span>
-            <div class="kpi-icon"><i class="fas fa-list-check"></i></div>
         </div>
         {{-- Total jumlah baris pengeluaran bulan ini --}}
         <div class="kpi-value">{{ number_format($jumlahEntri) }}</div>
@@ -449,7 +495,6 @@
     <div class="kpi-card primary fade-up">
         <div class="kpi-top">
             <span class="kpi-label">Rata-rata / Entri</span>
-            <div class="kpi-icon"><i class="fas fa-calculator"></i></div>
         </div>
         {{-- Rata-rata nilai setiap entri pengeluaran --}}
         <div class="kpi-value">Rp {{ number_format($rataRata, 0, ',', '.') }}</div>
@@ -460,7 +505,6 @@
     <div class="kpi-card accent fade-up">
         <div class="kpi-top">
             <span class="kpi-label">Pengeluaran Terbesar</span>
-            <div class="kpi-icon"><i class="fas fa-triangle-exclamation"></i></div>
         </div>
         {{-- Nilai single entry terbesar di bulan ini --}}
         <div class="kpi-value">Rp {{ number_format($terbesarAmount, 0, ',', '.') }}</div>
@@ -499,7 +543,7 @@
 <div class="two-col-chart fade-up">
 
     {{-- ---- Line Chart: Tren Harian Pengeluaran ---- --}}
-    <div class="content-card">
+    <div class="content-card analytics-card">
         <div class="content-card-header">
             <span class="content-card-title">
                 <i class="fas fa-chart-line"></i> Tren Pengeluaran
@@ -509,7 +553,7 @@
                 {{ $periodLabel }}
             </span>
         </div>
-        <div class="content-card-body">
+        <div class="content-card-body chart-body">
             {{-- Canvas chart — diinisialisasi di section JS --}}
             <div class="chart-wrapper">
                 <canvas id="trendHarianChart"></canvas>
@@ -517,40 +561,27 @@
         </div>
     </div>
 
-    {{-- ---- Bar Chart: Distribusi per Kategori ---- --}}
-    <div class="content-card">
+    {{-- ---- Ranking pengeluaran per kategori ---- --}}
+    <div class="content-card analytics-card">
         <div class="content-card-header">
             <span class="content-card-title">
                 <i class="fas fa-chart-bar"></i> Per Kategori
             </span>
+            <span style="font-size:.75rem;color:var(--text-muted);">{{ $periodLabel }}</span>
         </div>
-        <div class="content-card-body" style="padding-bottom:10px;">
-            {{-- Canvas bar chart --}}
-            <div class="chart-wrapper-sm" style="margin-bottom:14px;">
-                <canvas id="kategoriChart"></canvas>
-            </div>
-
-            {{-- Breakdown list kategori (urutkan dari terbesar) --}}
+        <div class="content-card-body analytics-scroll" style="padding-bottom:10px;">
+            {{-- Data agregat periode aktif, sudah diurutkan dari total terbesar --}}
             @forelse($ringkasanKategori as $kat)
             <div class="kategori-item">
-                {{-- Ikon kategori dengan warna khas --}}
-                <div class="kategori-icon" data-bg="{{ $kat['warna'] }}">
-                    <i class="fas {{ $kat['icon'] }} fa-xs"></i>
-                </div>
-                <div class="kategori-info">
+                <div class="kategori-topline">
                     <div class="kategori-name">{{ $kat['label'] }}</div>
-                    {{-- Jumlah entri kategori ini --}}
-                    <div class="kategori-count">{{ $kat['jumlah'] }} entri</div>
-                    {{-- Progress bar: persentase dari total --}}
-                    <div class="kategori-bar">
-                        <div class="kategori-bar-fill"
-                             data-width="{{ number_format($kat['persen'], 1) }}"
-                             data-bg="{{ $kat['warna'] }}"></div>
+                    <div class="kategori-metrics">
+                        <span class="kategori-amount">Rp {{ number_format($kat['total'], 0, ',', '.') }}</span>
+                        <span class="kategori-percent">{{ number_format($kat['persen'], 1, ',', '.') }}%</span>
                     </div>
                 </div>
-                {{-- Nominal total kategori ini --}}
-                <div class="kategori-amount">
-                    Rp {{ number_format($kat['total'], 0, ',', '.') }}
+                <div class="kategori-bar" aria-label="{{ number_format($kat['persen'], 1, ',', '.') }}% dari total pengeluaran">
+                    <div class="kategori-bar-fill" style="width:{{ min(100, max(0, $kat['persen'])) }}%;background-color:{{ $kat['warna'] }};"></div>
                 </div>
             </div>
             @empty
@@ -605,14 +636,14 @@
 
             {{-- Tombol submit --}}
             <button type="submit" class="btn btn-danger btn-sm"
-                    style="height:36px;border-radius:8px;font-size:.8rem;font-weight:600;">
+                    style="height:36px;border-radius:6px;font-size:.8rem;font-weight:600;">
                 <i class="fas fa-magnifying-glass me-1"></i> Cari
             </button>
 
             {{-- Tombol reset (hanya muncul jika ada filter aktif) --}}
             @if($search || $kategori)
             <a href="{{ route('pengeluaran.index', ['period' => request('period', 'month')]) }}" class="btn btn-outline-secondary btn-sm"
-               style="height:36px;border-radius:8px;font-size:.8rem;font-weight:600;">
+               style="height:36px;border-radius:6px;font-size:.8rem;font-weight:600;">
                 <i class="fas fa-xmark me-1"></i> Reset
             </a>
             @endif
@@ -731,9 +762,7 @@
 <div id="pengeluaran-chart-data" style="display:none" data-period="{{ $period }}"
      data-chart-labels='{{ json_encode($chartLabels) }}'
      data-chart-data='{{ json_encode($chartData) }}'
-     data-kategori-labels='{{ json_encode($kategoriChartLabels) }}'
-     data-kategori-data='{{ json_encode($kategoriChartData) }}'
-     data-kategori-colors='{{ json_encode($kategoriChartColors) }}'>
+     >
 </div>
 
 @endsection
@@ -771,10 +800,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const period = pengeluaranChartData?.dataset.period;
     const chartLabels        = pengeluaranChartData ? JSON.parse(pengeluaranChartData.dataset.chartLabels || '[]') : [];
     const chartData          = pengeluaranChartData ? JSON.parse(pengeluaranChartData.dataset.chartData || '[]') : [];
-    const kategoriLabels     = pengeluaranChartData ? JSON.parse(pengeluaranChartData.dataset.kategoriLabels || '[]') : [];
-    const kategoriData       = pengeluaranChartData ? JSON.parse(pengeluaranChartData.dataset.kategoriData || '[]') : [];
-    const kategoriColors     = pengeluaranChartData ? JSON.parse(pengeluaranChartData.dataset.kategoriColors || '[]') : [];
-
     // ============================================================
     // Konfigurasi tooltip bersama untuk semua chart
     // ============================================================
@@ -845,72 +870,6 @@ document.addEventListener('DOMContentLoaded', function () {
                                 ? `Rp ${(value / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 })} jt`
                                 : `Rp ${value.toLocaleString('id-ID')}`
                         }
-                    }
-                }
-            }
-        });
-        }
-    }
-
-    // ============================================================
-    // BAR CHART HORIZONTAL — Distribusi pengeluaran per kategori
-    // ============================================================
-    const kategoriCtx = document.getElementById('kategoriChart');
-    if (kategoriCtx) {
-        const categories = kategoriLabels.map((label, index) => ({
-            label,
-            value: kategoriData[index] ?? 0,
-            color: kategoriColors[index],
-        })).filter((category) => category.value > 0)
-            .sort((a, b) => b.value - a.value);
-
-        if (!categories.length) {
-            kategoriCtx.insertAdjacentHTML('afterend', '<p class="chart-empty-state">Belum ada pengeluaran per kategori pada periode ini.</p>');
-            kategoriCtx.remove();
-        } else {
-        new Chart(kategoriCtx, {
-            type: 'bar', // Chart batang
-            data: {
-                labels: categories.map((category) => category.label),
-                datasets: [{
-                    label: 'Total Pengeluaran',
-                    data: categories.map((category) => category.value),
-                    backgroundColor: categories.map((category) => `${category.color}cc`),
-                    borderColor: categories.map((category) => category.color),
-                    borderWidth: 1,
-                    borderRadius: 0,
-                    maxBarThickness: 14,
-                    categoryPercentage: 0.65,
-                    barPercentage: 0.7,
-                }]
-            },
-            options: {
-                indexAxis: 'y', // Horizontal bar chart (kategori di sumbu Y)
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false }, // Sembunyikan legend
-                    tooltip: {
-                        ...tooltipDefaults,
-                        callbacks: {
-                            label: ctx => ' Rp ' + ctx.parsed.x.toLocaleString('id-ID')
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        beginAtZero: true,
-                        grid: { color: 'rgba(246,36,64,.16)' },
-                        ticks: {
-                            font: { size: 9, family: 'Poppins' },
-                            callback: (value) => value >= 1000000
-                                ? `Rp ${(value / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 })} jt`
-                                : `Rp ${value.toLocaleString('id-ID')}`
-                        }
-                    },
-                    y: {
-                        grid: { display: false },
-                        ticks: { font: { size: 10, family: 'Poppins' } }
                     }
                 }
             }

@@ -12,218 +12,244 @@ Extends: layouts.app (layout utama SIMKEU)
 
 @section('css')
     <style>
-        /* ============================================================
-           FORM CARD — Kartu pembungkus form
-        ============================================================ */
-        .form-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-sm);
-            overflow: hidden;
-            max-width: 720px;
-            /* Batasi lebar agar mudah dibaca */
-            margin: 0 auto;
+        .product-create-page { max-width: 1080px; margin: 0 auto; }
+        .product-create-intro {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 20px;
+            margin: 0 auto 22px;
         }
+        .product-create-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            color: var(--primary);
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            margin-bottom: 7px;
+        }
+        .product-create-title {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: clamp(1.45rem, 2.2vw, 1.9rem);
+            font-weight: 800;
+            letter-spacing: -.035em;
+        }
+        .product-create-copy { margin: 7px 0 0; color: var(--text-muted); font-size: .86rem; }
+        .product-create-back {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 40px;
+            padding: 0 15px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #fff;
+            color: var(--text-primary);
+            font-size: .8rem;
+            font-weight: 600;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: background .2s, border-color .2s, color .2s;
+        }
+        .product-create-back:hover { background: var(--blue-50); border-color: var(--blue-200); color: var(--primary); }
+        #main-content .product-create-eyebrow,
+        #main-content .product-create-mark,
+        #main-content .form-section-number,
+        #main-content .product-create-tag,
+        #main-content .product-create-back:hover,
+        #main-content .category-shortcut a { color: var(--primary) !important; }
+        #main-content .product-create-copy,
+        #main-content .product-create-page .form-card-header p,
+        #main-content .category-shortcut,
+        #main-content .field-help,
+        #main-content .image-hint,
+        #main-content .image-preview-box .upload-meta { color: var(--text-muted) !important; }
 
-        /* Header bagian form */
-        .form-card-header {
-            padding: 18px 24px;
+        .product-create-page .form-card {
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: #fff;
+            box-shadow: 0 10px 30px rgba(25, 43, 82, .06);
+        }
+        #main-content .product-create-page .form-card { box-shadow: 0 10px 30px rgba(25, 43, 82, .06) !important; }
+        .product-create-page .form-card-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 22px 28px;
             border-bottom: 1px solid var(--border);
+            background: linear-gradient(110deg, #fff 0%, #f7fbff 100%);
+        }
+        .product-create-mark {
+            display: grid;
+            place-items: center;
+            width: 44px;
+            height: 44px;
+            flex: 0 0 44px;
+            border-radius: 6px;
+            background: var(--blue-100);
+            color: var(--primary);
+            font-size: 1.05rem;
+        }
+        .product-create-page .form-card-header h2 { margin: 0; color: var(--text-primary); font-size: 1rem; font-weight: 700; }
+        .product-create-page .form-card-header p { margin: 4px 0 0; color: var(--text-muted); font-size: .78rem; }
+        .product-create-tag {
+            margin-left: auto;
+            padding: 6px 10px;
+            border: 1px solid var(--blue-100);
+            border-radius: 5px;
+            background: #fff;
+            color: var(--blue-800);
+            font-size: .7rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .product-create-page .form-card-body { padding: 28px; }
+        .product-create-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 22px; }
+        .product-create-form > .form-section-heading,
+        .product-create-form > .form-row,
+        .product-create-form > .form-group.full-width,
+        .product-create-form > .form-actions { grid-column: 1 / -1; }
+        .form-section-heading {
             display: flex;
             align-items: center;
             gap: 10px;
-            background: #f0f7fe;
-        }
-
-        .form-card-header i {
-            color: var(--icon-primary);
-            font-size: 1.1rem;
-        }
-
-        .form-card-header h2 {
-            font-size: 0.95rem;
+            margin: 5px 0 16px;
+            color: var(--text-primary);
+            font-size: .86rem;
             font-weight: 700;
-            color: var(--text-primary);
-            margin: 0;
         }
-
-        .form-card-body {
-            padding: 28px 24px;
-        }
-
-        /* ============================================================
-           FORM GROUP — Label dan input per baris
-        ============================================================ */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        /* Label input */
-        .form-label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 7px;
-        }
-
-        /* Tanda bintang untuk field wajib */
-        .required-mark {
-            color: var(--danger);
-            margin-left: 3px;
-        }
-
-        /* Gaya umum untuk semua input form */
-        .form-input,
-        .form-select {
-            width: 100%;
-            padding: 10px 14px;
-            border: 1px solid var(--border);
-            border-radius: 9px;
-            font-size: 0.875rem;
-            font-family: inherit;
-            color: var(--text-primary);
-            background: #f0f7fe;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        /* Gaya fokus: highlight border dengan warna primary */
-        .form-input:focus,
-        .form-select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(var(--primary-rgb),0.08);
-        }
-
-        /* Tampilan jika validasi gagal */
-        .form-input.is-invalid,
-        .form-select.is-invalid {
-            border-color: var(--danger);
-        }
-
-        /* Pesan error validasi */
-        .field-error {
-            font-size: 0.75rem;
-            color: var(--danger);
-            margin-top: 5px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        /* ============================================================
-           GRID DUA KOLOM — Untuk field yang bisa berdampingan
-        ============================================================ */
-        .form-row {
+        .form-section-heading:not(:first-child) { padding-top: 20px; border-top: 1px solid var(--border); }
+        .form-section-number {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
+            place-items: center;
+            width: 25px;
+            height: 25px;
+            border-radius: 5px;
+            background: var(--blue-50);
+            color: var(--primary);
+            font-size: .7rem;
+            font-weight: 800;
         }
-
-        @media (max-width: 600px) {
-
-            /* Di layar kecil, tampilkan satu kolom */
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* ============================================================
-           AREA TOMBOL SUBMIT & BATAL
-        ============================================================ */
-        .form-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            margin-top: 28px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border);
-        }
-
-        /* Tombol simpan / submit */
-        .btn-submit {
-            padding: 10px 24px;
-            background: var(--primary);
-            color: #f0f7fe;
-            border: none;
-            border-radius: 9px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-submit:hover {
-            background: var(--primary-dark);
-        }
-
-        /* Tombol batal: kembali ke daftar produk */
-        .btn-cancel {
-            padding: 10px 24px;
-            background: #f0f7fe;
-            color: var(--text-muted);
-            border: 1px solid var(--border);
-            border-radius: 9px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-        }
-
-        .btn-cancel:hover {
-            background: #f0f7fe;
+        .product-create-form .form-group { min-width: 0; margin-bottom: 18px; }
+        .product-create-form .form-label {
+            display: block;
+            margin-bottom: 7px;
             color: var(--text-primary);
+            font-size: .77rem;
+            font-weight: 600;
         }
-
-        /* ============================================================
-           PREVIEW GAMBAR PRODUK
-        ============================================================ */
-        .image-preview-box {
-            /* Kotak preview sebelum gambar diunggah */
+        .required-mark { color: var(--danger); margin-left: 3px; }
+        .product-create-form .form-input,
+        .product-create-form .form-select {
             width: 100%;
-            height: 140px;
-            border: 2px dashed var(--border);
-            border-radius: 10px;
+            min-height: 44px;
+            padding: 10px 13px;
+            border: 1px solid #d8e1ee;
+            border-radius: 5px;
+            background: #fff;
+            color: var(--text-primary);
+            font: inherit;
+            font-size: .85rem;
+            transition: border-color .18s, box-shadow .18s;
+        }
+        .product-create-form .form-input::placeholder { color: #93a1b5; }
+        .product-create-form .form-input:focus,
+        .product-create-form .form-select:focus { outline: 0; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(var(--primary-rgb), .12); }
+        #main-content .product-create-form .form-input:focus,
+        #main-content .product-create-form .form-select:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(var(--primary-rgb), .12) !important;
+        }
+        .product-create-form .form-input.is-invalid,
+        .product-create-form .form-select.is-invalid { border-color: var(--danger); }
+        #main-content .product-create-form .form-input.is-invalid,
+        #main-content .product-create-form .form-select.is-invalid { border-color: var(--danger) !important; }
+        .field-error { display: flex; align-items: flex-start; gap: 6px; margin: 6px 0 0; color: var(--danger); font-size: .75rem; }
+        .form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+        .field-help { display: flex; align-items: flex-start; gap: 6px; margin: 6px 0 0; color: var(--text-muted); font-size: .72rem; line-height: 1.5; }
+        .category-shortcut { margin: 7px 0 0; color: var(--text-muted); font-size: .74rem; }
+        .category-shortcut a { color: var(--primary); font-weight: 600; text-decoration: none; }
+        .category-shortcut a:hover { text-decoration: underline; }
+
+        .image-preview-box {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: border-color 0.2s;
-            margin-bottom: 8px;
-            overflow: hidden;
-        }
-
-        .image-preview-box:hover {
-            border-color: var(--primary);
-        }
-
-        /* Gambar yang sudah dipilih, ditampilkan dalam kotak preview */
-        .image-preview-box img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-
-        /* Petunjuk teks di bawah input file */
-        .image-hint {
-            font-size: 0.72rem;
+            min-height: 168px;
+            padding: 18px;
+            overflow: hidden;
+            border: 1px dashed #a9bedc;
+            border-radius: 6px;
+            background: #f8fbff;
             color: var(--text-muted);
-            margin-top: 4px;
+            font-size: .8rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color .2s, background .2s;
+        }
+        .image-preview-box:hover,
+        .image-preview-box:focus-visible { border-color: var(--primary); background: var(--blue-50); outline: none; }
+        #main-content .image-preview-box:hover,
+        #main-content .image-preview-box:focus-visible { border-color: var(--primary) !important; }
+        .image-preview-box > i { color: var(--primary); font-size: 1.5rem !important; opacity: .8 !important; }
+        .image-preview-box .upload-title { color: var(--text-primary); font-weight: 600; }
+        .image-preview-box .upload-meta { color: var(--text-muted); font-size: .7rem; }
+        .image-preview-box img { width: 100%; height: 190px; object-fit: contain; border-radius: 4px; }
+        .image-hint { margin: 7px 0 0; color: var(--text-muted); font-size: .72rem; }
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 8px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+        .btn-submit,
+        .product-create-page .btn-cancel {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 42px;
+            padding: 0 18px;
+            border: 1px solid transparent;
+            border-radius: 5px;
+            font-size: .82rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background .2s, border-color .2s, color .2s, transform .2s;
+        }
+        .btn-submit { background: var(--primary); color: #fff; }
+        .btn-submit:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        .product-create-page .btn-cancel { border-color: var(--border); background: #fff; color: var(--text-muted); }
+        .product-create-page .btn-cancel:hover { border-color: var(--blue-200); background: var(--blue-50); color: var(--primary); }
+
+        @media (max-width: 760px) {
+            .product-create-page .form-card-header { padding: 18px 20px; }
+            .product-create-page .form-card-body { padding: 22px 20px; }
+            .product-create-form { grid-template-columns: minmax(0, 1fr); }
+            .product-create-form > * { grid-column: 1 / -1; }
+        }
+        @media (max-width: 520px) {
+            .product-create-intro { align-items: flex-start; flex-direction: column; gap: 14px; margin-bottom: 16px; }
+            .product-create-tag { display: none; }
+            .product-create-page .form-card-header { gap: 11px; padding: 16px; }
+            .product-create-mark { width: 38px; height: 38px; flex-basis: 38px; }
+            .product-create-page .form-card-body { padding: 18px 16px; }
+            .form-row { grid-template-columns: minmax(0, 1fr); gap: 0; }
+            .form-actions { flex-direction: column-reverse; }
+            .form-actions > * { width: 100%; }
         }
     </style>
 @endsection
@@ -233,19 +259,38 @@ Extends: layouts.app (layout utama SIMKEU)
     {{-- ============================================================
     FORM TAMBAH PRODUK
     ============================================================ --}}
+    <div class="product-create-page">
+
+        <div class="product-create-intro">
+            <div>
+                <span class="product-create-eyebrow"><i class="fas fa-box-open"></i> Katalog Produk</span>
+                <h1 class="product-create-title">Tambah Produk</h1>
+                <p class="product-create-copy">Lengkapi informasi produk untuk mulai mengelola stok dan penjualan.</p>
+            </div>
+            <a href="{{ route('products.index') }}" class="product-create-back">
+                <i class="fas fa-arrow-left"></i> Kembali ke Produk
+            </a>
+        </div>
+
     <div class="form-card">
 
         {{-- Header kartu —— judul form --}}
         <div class="form-card-header">
-            <i class="fas fa-plus-circle"></i>
-            <h2>Tambah Produk Baru</h2>
+            <div class="product-create-mark"><i class="fas fa-plus"></i></div>
+            <div>
+                <h2>Informasi Produk</h2>
+                <p>Field bertanda <span class="required-mark">*</span> wajib diisi.</p>
+            </div>
+            <span class="product-create-tag"><i class="fas fa-shield-halved"></i> Data produk baru</span>
         </div>
 
         <div class="form-card-body">
 
             {{-- Form dikirim via POST ke route products.store --}}
-            <form method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data">
+            <form class="product-create-form" method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data">
                 @csrf {{-- Token CSRF wajib ada untuk keamanan form --}}
+
+                <div class="form-section-heading"><span class="form-section-number">01</span> Identitas Produk</div>
 
                 {{-- ================================================
                 FIELD: Nama Produk
@@ -281,13 +326,12 @@ Extends: layouts.app (layout utama SIMKEU)
                         @endforelse
                     </select>
                     {{-- Shortcut: link ke halaman Kategori untuk menambah kategori baru --}}
-                    <p style="font-size:0.74rem;color:var(--text-muted);margin-top:5px;">
+                    <p class="category-shortcut">
                         <i class="fas fa-circle-info" style="color:var(--icon-accent);"></i>
                         Kategori belum ada?
-                        <a href="{{ route('categories.index') }}" target="_blank"
-                            style="color:var(--primary);font-weight:600;text-decoration:none;">
+                        <a href="{{ route('categories.index') }}" target="_blank">
                             Tambah kategori di sini <i class="fas fa-arrow-up-right-from-square"
-                                style="font-size:0.65rem;"></i>
+                                style="font-size:.65rem;"></i>
                         </a>
                     </p>
                     @error('category_id')
@@ -298,6 +342,7 @@ Extends: layouts.app (layout utama SIMKEU)
                 {{-- ================================================
                 FIELD: Harga Beli & Harga Jual (dua kolom)
                 ================================================ --}}
+                <div class="form-section-heading"><span class="form-section-number">02</span> Harga dan Tarif</div>
                 <div class="form-row">
 
                     {{-- Harga Beli: harga modal pembelian produk --}}
@@ -343,7 +388,7 @@ Extends: layouts.app (layout utama SIMKEU)
                             placeholder="0"
                             value="{{ old('tax_rate', 0) }}"
                             min="0" max="100" step="0.01">
-                        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">
+                        <p class="field-help">
                             <i class="fas fa-circle-info"></i> Tarif pajak dalam persen. Contoh: 10 = PPN 10%.
                         </p>
                         @error('tax_rate')
@@ -361,7 +406,7 @@ Extends: layouts.app (layout utama SIMKEU)
                             placeholder="0"
                             value="{{ old('discount_rate', 0) }}"
                             min="0" max="100" step="0.01">
-                        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">
+                        <p class="field-help">
                             <i class="fas fa-circle-info"></i> Diskon default produk. Contoh: 5 = diskon 5%.
                         </p>
                         @error('discount_rate')
@@ -374,6 +419,7 @@ Extends: layouts.app (layout utama SIMKEU)
                 {{-- ================================================
                 FIELD: Stok Awal & Satuan (dua kolom)
                 ================================================ --}}
+                <div class="form-section-heading"><span class="form-section-number">03</span> Stok dan Gambar</div>
                 <div class="form-row">
 
                     {{-- Stok Awal: jumlah unit saat produk pertama kali ditambahkan --}}
@@ -417,22 +463,23 @@ Extends: layouts.app (layout utama SIMKEU)
                 {{-- ================================================
                 FIELD: Gambar Produk (opsional)
                 ================================================ --}}
-                <div class="form-group">
-                    <label class="form-label">Gambar Produk <span
-                            style="color:var(--text-muted);font-weight:400;">(opsional)</span></label>
+                <div class="form-group full-width">
+                    <label class="form-label" for="imageInput">Gambar Produk <span style="color:var(--text-muted);font-weight:400;">(opsional)</span></label>
 
                     {{-- Kotak preview gambar: klik untuk pilih file --}}
-                    <div class="image-preview-box" id="imagePreviewBox"
-                        onclick="document.getElementById('imageInput').click()">
-                        <i class="fas fa-image" style="font-size:1.8rem;opacity:.35;"></i>
-                        <span>Klik untuk memilih gambar</span>
-                        <span style="font-size:0.7rem;opacity:.6;">JPEG, PNG, WEBP — Maks. 2MB</span>
+                    <div class="image-preview-box" id="imagePreviewBox" role="button" tabindex="0"
+                        aria-controls="imageInput" aria-label="Pilih gambar produk"
+                        onclick="document.getElementById('imageInput').click()"
+                        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('imageInput').click()}">
+                        <i class="fas fa-cloud-arrow-up"></i>
+                        <span class="upload-title">Klik untuk memilih gambar</span>
+                        <span class="upload-meta">JPEG, PNG, WEBP · Maks. 2 MB</span>
                     </div>
 
                     {{-- Input file tersembunyi, diakses via klik pada preview box --}}
                     <input type="file" id="imageInput" name="image" accept="image/jpeg,image/png,image/jpg,image/webp"
                         style="display:none;" onchange="previewImage(this)">
-                    <p class="image-hint"><i class="fas fa-circle-info"></i> Gambar akan digunakan sebagai thumbnail produk.
+                    <p class="image-hint"><i class="fas fa-circle-info"></i> Gambar digunakan sebagai thumbnail produk.
                     </p>
                     @error('image')
                         <p class="field-error"><i class="fas fa-circle-exclamation"></i> {{ $message }}</p>
@@ -456,6 +503,7 @@ Extends: layouts.app (layout utama SIMKEU)
             </form>
         </div>{{-- /.form-card-body --}}
     </div>{{-- /.form-card --}}
+    </div>{{-- /.product-create-page --}}
 
 @endsection
 

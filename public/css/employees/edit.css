@@ -25,7 +25,7 @@
 .form-icon-wrapper {
     width: 48px;
     height: 48px;
-    border-radius: 12px;
+    border-radius: 6px;
     background: linear-gradient(135deg, rgba(var(--primary-rgb),0.1) 0%, rgba(var(--accent-rgb),0.1) 100%);
     display: flex;
     align-items: center;
@@ -50,7 +50,7 @@
 
 .content-card {
     background: var(--card-bg, #f0f7fe);
-    border-radius: var(--radius, 12px);
+    border-radius: var(--radius, 6px);
     border: 1px solid var(--border, #c1e0fc);
     box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.01);
     overflow: visible; /* Ensure focus rings and wrappers aren't cut off */
@@ -79,7 +79,7 @@
     background: linear-gradient(135deg, var(--primary, #2c74e4), var(--primary-light, #4192f0));
     color: #f0f7fe;
     border: none;
-    border-radius: var(--radius, 12px);
+    border-radius: var(--radius, 6px);
     font-size: 0.95rem;
     font-weight: 700;
     cursor: pointer;
@@ -105,7 +105,7 @@
     background: #f0f7fe;
     color: var(--text-primary, #192b52);
     border: 1px solid var(--border, #c1e0fc);
-    border-radius: var(--radius, 12px);
+    border-radius: var(--radius, 6px);
     font-size: 0.95rem;
     font-weight: 600;
     text-decoration: none;

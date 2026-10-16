@@ -115,7 +115,7 @@
     background: linear-gradient(90deg, #dcedfd 25%, #f0f7fe 50%, #dcedfd 75%);
     background-size: 200% 100%;
     animation: skeleton-shimmer 1.4s ease-in-out infinite;
-    border-radius: 6px;
+    border-radius: 4px;
 }
 
 @keyframes skeleton-shimmer {
@@ -288,7 +288,7 @@
     z-index: 9999;
     transition: width 200ms ease, opacity 300ms ease;
     pointer-events: none;
-    border-radius: 0 2px 2px 0;
+    border-radius: 0 0px 0px 0;
 }
 #simkeu-progress.is-loading {
     opacity: 1;

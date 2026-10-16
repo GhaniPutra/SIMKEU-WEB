@@ -2,6 +2,21 @@
 
 // Pasang event listener saat semua elemen DOM telah selesai dimuat
 document.addEventListener('DOMContentLoaded', function () {
+    const employeeRows = document.querySelectorAll('.employee-row-clickable[data-href]');
+    employeeRows.forEach(function (row) {
+        function openRow(event) {
+            if (event.target.closest('a, button, form, input, select, textarea, label')) return;
+            window.location.href = row.dataset.href;
+        }
+
+        row.addEventListener('click', openRow);
+        row.addEventListener('keydown', function (event) {
+            if (event.key !== 'Enter' && event.key !== ' ') return;
+            event.preventDefault();
+            openRow(event);
+        });
+    });
+
     const modal = document.getElementById('employeeModal');
     const form = document.getElementById('employeeForm');
     const modalTitle = document.getElementById('employeeModalLabel');

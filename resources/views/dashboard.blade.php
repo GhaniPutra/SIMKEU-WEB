@@ -40,7 +40,6 @@
             <div class="kpi-card success fade-up">
                 <div class="kpi-top">
                     <span class="kpi-label">Pendapatan</span>
-                    <div class="kpi-icon"><i class="fas fa-arrow-trend-up"></i></div>
                 </div>
                 <div class="kpi-value">Rp {{ number_format($totalRevenueMonth, 0, ',', '.') }}</div>
                 <div class="kpi-sub">
@@ -60,7 +59,6 @@
             <div class="kpi-card danger fade-up">
                 <div class="kpi-top">
                     <span class="kpi-label">Pengeluaran</span>
-                    <div class="kpi-icon"><i class="fas fa-arrow-trend-down"></i></div>
                 </div>
                 <div class="kpi-value">Rp {{ number_format($totalExpenseMonth, 0, ',', '.') }}</div>
                 <div class="kpi-sub">
@@ -80,7 +78,6 @@
             <div class="kpi-card primary fade-up">
                 <div class="kpi-top">
                     <span class="kpi-label">Laba Bersih</span>
-                    <div class="kpi-icon"><i class="fas fa-hand-holding-dollar"></i></div>
                 </div>
                 <div class="kpi-value">Rp {{ number_format($netProfit, 0, ',', '.') }}</div>
                 <div class="kpi-sub">
@@ -92,7 +89,6 @@
             <div class="kpi-card warning fade-up">
                 <div class="kpi-top">
                     <span class="kpi-label">Transaksi</span>
-                    <div class="kpi-icon"><i class="fas fa-receipt"></i></div>
                 </div>
                 <div class="kpi-value">{{ $transactionsPeriod }}</div>
                 <div class="kpi-sub">
@@ -112,7 +108,6 @@
             <div class="kpi-card accent fade-up">
                 <div class="kpi-top">
                     <span class="kpi-label">Pegawai Terdaftar</span>
-                    <div class="kpi-icon"><i class="fas fa-user-tie"></i></div>
                 </div>
                 <div class="kpi-value">{{ $activeEmployees }}</div>
                 <div class="kpi-sub">Akun dengan peran pegawai</div>
@@ -147,7 +142,7 @@
         ============================================================ --}}
         <p class="section-title"><i class="fas fa-chart-area" style="color:var(--icon-primary)"></i> Tren Keuangan</p>
         <div class="fade-up" style="margin-bottom: 28px;">
-            <div class="content-card">
+            <div class="content-card dashboard-trend-card">
                 <div class="content-card-header">
                     <span class="content-card-title">
                         <i class="fas fa-chart-line"></i> Pendapatan vs Pengeluaran

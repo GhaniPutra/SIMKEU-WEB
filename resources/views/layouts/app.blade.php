@@ -199,7 +199,7 @@
             <select
                 class="form-select form-select-sm"
                 id="global-period"
-                style="width:148px; border-radius:8px; font-size:.8rem; border-color:var(--input);"
+                style="width:148px; border-radius:6px; font-size:.8rem; border-color:var(--input);"
                 title="Filter periode data dashboard"
             >
                 <option value="today">Hari Ini</option>

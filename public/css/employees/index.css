@@ -54,7 +54,7 @@
 .kpi-icon {
     width: 38px;
     height: 38px;
-    border-radius: 10px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -69,11 +69,12 @@
 
 /* Nilai utama pada kartu KPI */
 .kpi-value {
-    font-size: 1.6rem;
+    font-size: clamp(1.5rem, 1.8vw, 1.9rem);
     font-weight: 800;
     color: var(--text-primary);
     line-height: 1;
     margin-bottom: 6px;
+    overflow-wrap: anywhere;
 }
 
 /* Subteks KPI */
@@ -163,7 +164,7 @@
     width: 100%;
     padding: 8px 12px 8px 36px;
     border: 1px solid var(--border);
-    border-radius: 9px;
+    border-radius: 5px;
     font-size: 0.82rem;
     font-family: inherit;
     color: var(--text-primary);
@@ -193,7 +194,7 @@
 .toolbar select {
     padding: 8px 12px;
     border: 1px solid var(--border);
-    border-radius: 9px;
+    border-radius: 5px;
     font-size: 0.82rem;
     font-family: inherit;
     color: var(--text-primary);
@@ -256,6 +257,15 @@
     background: #f0f7fe;
 }
 
+.data-table tbody tr.employee-row-clickable {
+    cursor: pointer;
+}
+
+.data-table tbody tr.employee-row-clickable:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
+}
+
 /* Hapus border bawah pada baris terakhir */
 .data-table tbody tr:last-child td {
     border-bottom: none;
@@ -292,7 +302,7 @@
     align-items: center;
     gap: 6px;
     padding: 7px 14px;
-    border-radius: 6px;
+    border-radius: 4px;
     background: #f0f7fe;
     color: var(--success);
     border: 1px solid var(--success);
@@ -316,7 +326,7 @@
     align-items: center;
     gap: 6px;
     padding: 7px 14px;
-    border-radius: 6px;
+    border-radius: 4px;
     background: #f0f7fe;
     color: var(--primary);
     border: 1px solid var(--primary);
@@ -339,7 +349,7 @@
     align-items: center;
     gap: 6px;
     padding: 7px 14px;
-    border-radius: 6px;
+    border-radius: 4px;
     background: #f0f7fe;
     color: var(--danger, #cf0621);
     border: 1px solid var(--danger, #cf0621);
@@ -370,7 +380,7 @@
     color: var(--text-muted);
 }
 .pagination .page-link {
-    border-radius: 7px !important;
+    border-radius: 5px !important;
     border: 1px solid var(--border);
     color: var(--text-primary);
     font-size: 0.8rem;
@@ -413,7 +423,7 @@
     background: var(--primary);
     color: #f0f7fe;
     border: none;
-    border-radius: 9px;
+    border-radius: 5px;
     font-size: 0.82rem;
     font-weight: 600;
     text-decoration: none;
@@ -445,7 +455,7 @@
     justify-content: center; /* Tengah teks */
     gap: 6px; /* Jarak ikon / teks jika ada */
     padding: 5px 10px; /* Jarak dalam badge */
-    border-radius: 999px; /* Bentuk pill */
+    border-radius: 6px; /* Bentuk pill */
     font-size: 0.78rem; /* Ukuran teks kecil */
     font-weight: 700; /* Teks tebal */
     text-transform: capitalize; /* Kapitalisasi huruf pertama */
@@ -466,4 +476,161 @@
     background: rgba(var(--primary-rgb),0.12);
     color: var(--primary);
     border-color: rgba(var(--primary-rgb),0.2);
+}
+
+/* Modal tambah/edit pegawai */
+#employeeModal .modal-dialog {
+    width: min(calc(100% - 32px), 560px);
+    max-width: 560px;
+    margin-inline: auto;
+}
+
+#employeeModal .modal-content {
+    overflow: hidden;
+    border: 1px solid #e5e7eb !important;
+    border-radius: var(--radius, 6px);
+    background: #ffffff !important;
+    box-shadow: 0 20px 60px rgba(17, 24, 39, 0.2) !important;
+}
+
+#employeeModal .modal-header {
+    padding: 20px 24px !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    background: #ffffff !important;
+}
+
+#employeeModal .modal-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #252a32 !important;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+#employeeModal .modal-title i {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: var(--radius, 6px);
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary) !important;
+    font-size: 0.95rem;
+}
+
+#employeeModal .btn-close {
+    margin: 0;
+    opacity: 0.55;
+}
+
+#employeeModal .modal-body {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 18px;
+    padding: 22px 24px !important;
+    background: #ffffff !important;
+}
+
+#employeeModal .form-group {
+    min-width: 0;
+    margin: 0;
+}
+
+#employeeModal .form-label {
+    display: block;
+    margin-bottom: 7px;
+    color: #374151 !important;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+#employeeModal .form-control {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db !important;
+    border-radius: var(--radius, 6px);
+    background-color: #ffffff !important;
+    color: #374151 !important;
+    font: inherit;
+    font-size: 0.9rem;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+#employeeModal .form-control::placeholder {
+    color: #9ca3af !important;
+    opacity: 1;
+}
+
+#employeeModal .form-control:focus {
+    border-color: var(--primary) !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.12) !important;
+    outline: none;
+}
+
+#employeeModal .modal-footer {
+    display: flex;
+    gap: 10px;
+    padding: 16px 24px 20px !important;
+    border-top: 1px solid #e5e7eb !important;
+    background: #ffffff !important;
+}
+
+#employeeModal .btn-modal-cancel,
+#employeeModal .btn-modal-save {
+    min-height: 40px;
+    padding: 9px 16px;
+    border: 1px solid transparent !important;
+    border-radius: var(--radius, 6px);
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+#employeeModal .btn-modal-cancel {
+    margin-left: auto;
+    border-color: #d1d5db !important;
+    background: #ffffff !important;
+    color: #4b5563 !important;
+}
+
+#employeeModal .btn-modal-cancel:hover {
+    border-color: #9ca3af !important;
+    background: #f9fafb !important;
+}
+
+#employeeModal .btn-modal-save {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--primary) !important;
+    color: #ffffff !important;
+}
+
+#employeeModal .btn-modal-save:hover {
+    background: var(--primary-dark) !important;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 575px) {
+    #employeeModal .modal-dialog {
+        width: auto;
+        margin: 12px;
+    }
+
+    #employeeModal .modal-body {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+        padding: 18px !important;
+    }
+
+    #employeeModal .modal-header,
+    #employeeModal .modal-footer {
+        padding-inline: 18px !important;
+    }
 }

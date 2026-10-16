@@ -67,7 +67,7 @@ Dashboard Penjualan Pegawai - SIMKEU
         .kpi-icon {
             width: 38px;
             height: 38px;
-            border-radius: 10px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -105,11 +105,12 @@ Dashboard Penjualan Pegawai - SIMKEU
         }
 
         .kpi-value {
-            font-size: 1.55rem;
+            font-size: clamp(1.5rem, 1.8vw, 1.9rem);
             font-weight: 800;
             color: var(--text-primary);
             line-height: 1;
             margin-bottom: 6px;
+            overflow-wrap: anywhere;
         }
 
         .kpi-sub {
@@ -213,7 +214,7 @@ Dashboard Penjualan Pegawai - SIMKEU
             background: var(--text-muted);
             color: #f0f7fe;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             font-size: 0.875rem;
             font-weight: 600;
             text-decoration: none;
@@ -267,7 +268,7 @@ Dashboard Penjualan Pegawai - SIMKEU
         .role-badge {
             display: inline-block;
             padding: 5px 12px;
-            border-radius: 6px;
+            border-radius: 4px;
             font-size: 0.75rem;
             font-weight: 600;
             text-transform: capitalize;
@@ -313,9 +314,6 @@ Dashboard Penjualan Pegawai - SIMKEU
     <div class="kpi-card primary">
         <div class="kpi-top">
             <div class="kpi-label">Penjualan {{ $periodLabel }}</div>
-            <div class="kpi-icon">
-                <i class="fas fa-shopping-cart"></i>
-            </div>
         </div>
         <div class="kpi-value">{{ number_format($totalSales) }}</div>
         <div class="kpi-sub">Transaksi pegawai ini</div>
@@ -324,9 +322,6 @@ Dashboard Penjualan Pegawai - SIMKEU
     <div class="kpi-card success">
         <div class="kpi-top">
             <div class="kpi-label">Pendapatan {{ $periodLabel }}</div>
-            <div class="kpi-icon">
-                <i class="fas fa-dollar-sign"></i>
-            </div>
         </div>
         <div class="kpi-value">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</div>
         <div class="kpi-sub">Transaksi pegawai ini</div>
@@ -335,9 +330,6 @@ Dashboard Penjualan Pegawai - SIMKEU
     <div class="kpi-card warning">
         <div class="kpi-top">
             <div class="kpi-label">Item terjual {{ $periodLabel }}</div>
-            <div class="kpi-icon">
-                <i class="fas fa-boxes"></i>
-            </div>
         </div>
         <div class="kpi-value">{{ number_format($totalItemsSold) }}</div>
         <div class="kpi-sub">Detail transaksi pegawai ini</div>
@@ -346,9 +338,6 @@ Dashboard Penjualan Pegawai - SIMKEU
     <div class="kpi-card accent">
         <div class="kpi-top">
             <div class="kpi-label">Periode Aktif</div>
-            <div class="kpi-icon">
-                <i class="fas fa-calendar-alt"></i>
-            </div>
         </div>
         <div class="kpi-value">{{ $periodLabel }}</div>
         <div class="kpi-sub">{{ $periodStart && $periodEnd ? $periodStart->format('d/m/Y') . '–' . $periodEnd->format('d/m/Y') : 'Seluruh riwayat transaksi' }}</div>

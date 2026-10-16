@@ -67,7 +67,7 @@
     /* Kotak ikon di pojok kanan kartu */
     .kpi-icon {
         width: 38px; height: 38px;
-        border-radius: 10px;
+        border-radius: 6px;
         display: flex; align-items: center; justify-content: center;
         font-size: 1rem;
     }
@@ -82,11 +82,12 @@
 
     /* Nilai utama kartu (angka besar) */
     .kpi-value {
-        font-size: 1.45rem;
+        font-size: clamp(1.5rem, 1.8vw, 1.9rem);
         font-weight: 800;
         color: var(--text-primary);
         line-height: 1;
         margin-bottom: 6px;
+        overflow-wrap: anywhere;
     }
 
     /* Sub-teks di bawah nilai utama */
@@ -103,7 +104,7 @@
         font-size: 0.72rem;
         font-weight: 600;
         padding: 2px 7px;
-        border-radius: 20px;
+        border-radius: 6px;
         margin-left: 4px;
     }
     .trend-up   { background: var(--success-bg); color: var(--success); }
@@ -161,25 +162,88 @@
 
     .content-card-body { padding: 20px; }
 
+    /* Baris analitik memakai tinggi lapang dan tetap; legenda tidak mengubah ruang chart. */
+    .analytics-card {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        height: 430px;
+        min-height: 430px;
+        max-height: 430px;
+        overflow: hidden;
+    }
+    .analytics-card .content-card-body {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow: hidden;
+    }
+    .analytics-card .chart-body {
+        display: flex;
+        align-items: stretch;
+        padding: 20px;
+    }
+    .analytics-card .chart-body > .chart-wrapper {
+        flex: 1 1 auto;
+        min-height: 0;
+        height: auto;
+    }
+    .analytics-card > .analytics-scroll {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-gutter: stable;
+    }
+    .analytics-card > .chart-legend-body {
+        display: grid;
+        grid-template-rows: minmax(0, 1fr) auto;
+        gap: 8px;
+        overflow: hidden;
+    }
+    .chart-legend-body .chart-wrapper-sm {
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        flex: initial;
+        margin: 0 !important;
+    }
+    .chart-legend-list { min-width: 0; }
+
     /* ============================================================
        CHART WRAPPER — Pembungkus canvas chart
     ============================================================ */
-    .chart-wrapper    { position: relative; height: 240px; }
-    .chart-wrapper-sm { height: 190px; }
+    .chart-wrapper    { position: relative; height: 240px; min-height: 240px; }
+    .chart-wrapper-sm { position: relative; height: 260px; min-height: 260px; }
+    .chart-wrapper canvas,
+    .chart-wrapper-sm canvas { display: block; }
 
     /* ============================================================
        GRID DUA KOLOM (chart tren + pie chart metode)
     ============================================================ */
     .two-col-chart {
         display: grid;
-        grid-template-columns: 2fr 1fr; /* Kiri lebih lebar */
+        grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr); /* Kiri lebih lebar */
+        align-items: stretch;
         gap: 18px;
         margin-bottom: 28px;
     }
 
     /* Responsif: satu kolom di layar kecil */
     @media (max-width: 1100px) {
-        .two-col-chart { grid-template-columns: 1fr; }
+        .two-col-chart { grid-template-columns: minmax(0, 1fr); }
+        .analytics-card { height: 430px; min-height: 430px; max-height: 430px; }
+        .analytics-card > .analytics-scroll { max-height: none; }
+        .analytics-card > .chart-legend-body { grid-template-rows: minmax(0, 1fr) auto; }
+    }
+
+    @media (max-width: 480px) {
+        .analytics-card { height: 400px; min-height: 400px; max-height: 400px; }
+        .chart-wrapper { height: 220px; min-height: 220px; }
+        .chart-legend-body { gap: 4px; }
+    }
+
+    @media (min-width: 769px) and (max-width: 1100px) {
+        .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
     /* ============================================================
@@ -195,7 +259,7 @@
     .filter-bar .form-control,
     .filter-bar .form-select {
         font-size: 0.825rem;
-        border-radius: 8px;
+        border-radius: 6px;
         border-color: var(--border);
         height: 36px;
     }
@@ -249,7 +313,7 @@
         align-items: center;
         gap: 5px;
         padding: 4px 10px;
-        border-radius: 20px;
+        border-radius: 6px;
         font-size: 0.7rem;
         font-weight: 600;
     }
@@ -263,7 +327,7 @@
     ============================================================ */
     .btn-detail {
         padding: 5px 12px;
-        border-radius: 7px;
+        border-radius: 5px;
         border: 1px solid var(--border);
         background: #f0f7fe;
         font-size: 0.75rem;
@@ -302,7 +366,7 @@
     .pagination-wrapper .page-link {
         font-size: 0.78rem;
         padding: 5px 10px;
-        border-radius: 6px !important;
+        border-radius: 4px !important;
         border-color: var(--border);
         color: var(--text-primary);
         transition: all 0.2s;
@@ -358,6 +422,11 @@
     .legend-name  { flex: 1; color: var(--text-muted); }
     .legend-value { font-weight: 700; color: var(--text-primary); }
 
+    .content-card-header,
+    .content-card-body { min-width: 0; }
+    .content-card .table-responsive,
+    .content-card [style*="overflow-x:auto"] { max-width: 100%; }
+
     /* ============================================================
        RESPONSIVE — Penyesuaian layar kecil
     ============================================================ */
@@ -384,8 +453,6 @@
     <div class="kpi-card primary fade-up">
         <div class="kpi-top">
             <span class="kpi-label">Total Pemasukan</span>
-            {{-- Ikon dompet --}}
-            <div class="kpi-icon"><i class="fas fa-money-bill-trend-up"></i></div>
         </div>
         {{-- Tampilkan total bersih dengan format rupiah --}}
         <div class="kpi-value">Rp {{ number_format($totalBersih, 0, ',', '.') }}</div>
@@ -406,7 +473,6 @@
     <div class="kpi-card warning fade-up">
         <div class="kpi-top">
             <span class="kpi-label">Transaksi</span>
-            <div class="kpi-icon"><i class="fas fa-receipt"></i></div>
         </div>
         {{-- Total jumlah transaksi bulan ini --}}
         <div class="kpi-value">{{ number_format($jumlahTransaksi) }}</div>
@@ -417,7 +483,6 @@
     <div class="kpi-card danger fade-up">
         <div class="kpi-top">
             <span class="kpi-label">Total Diskon</span>
-            <div class="kpi-icon"><i class="fas fa-tags"></i></div>
         </div>
         {{-- Total diskon yang diberikan bulan ini --}}
         <div class="kpi-value">Rp {{ number_format($totalDiskon, 0, ',', '.') }}</div>
@@ -428,7 +493,6 @@
     <div class="kpi-card accent fade-up">
         <div class="kpi-top">
             <span class="kpi-label">Total Pajak</span>
-            <div class="kpi-icon"><i class="fas fa-file-invoice-dollar"></i></div>
         </div>
         {{-- Total pajak yang dikumpulkan bulan ini --}}
         <div class="kpi-value">Rp {{ number_format($totalPajak, 0, ',', '.') }}</div>
@@ -448,7 +512,7 @@
 <div class="two-col-chart fade-up">
 
     {{-- ---- Grafik Tren Harian ---- --}}
-    <div class="content-card">
+    <div class="content-card analytics-card">
         <div class="content-card-header">
             <span class="content-card-title">
                 <i class="fas fa-chart-line"></i> Tren Pemasukan
@@ -458,7 +522,7 @@
                 {{ $periodLabel }}
             </span>
         </div>
-        <div class="content-card-body">
+        <div class="content-card-body chart-body">
             {{-- Canvas untuk line chart — diinisialisasi di section JS --}}
             <div class="chart-wrapper">
                 <canvas id="trendHarianChart"></canvas>
@@ -467,30 +531,26 @@
     </div>
 
     {{-- ---- Pie Chart Metode Pembayaran ---- --}}
-    <div class="content-card">
+    <div class="content-card analytics-card">
         <div class="content-card-header">
             <span class="content-card-title">
                 <i class="fas fa-chart-pie"></i> Metode Pembayaran
             </span>
         </div>
-        <div class="content-card-body">
+        <div class="content-card-body chart-legend-body">
             {{-- Canvas untuk doughnut chart --}}
-            <div class="chart-wrapper-sm" style="margin-bottom:14px;">
+            <div class="chart-wrapper-sm">
                 <canvas id="metodeChart"></canvas>
             </div>
             {{-- Legend warna per metode --}}
-            <div>
-                @if(array_sum($metodeData) > 0)
-                    @foreach([['Tunai', 'var(--blue-600)', $metodeData[0]], ['Transfer', 'var(--blue-500)', $metodeData[1]], ['QRIS', 'var(--blue-400)', $metodeData[2]]] as [$namaMetode, $warna, $nilai])
-                        @if($nilai > 0)
-                            <div class="legend-item">
-                                <div class="legend-dot" data-bg="{{ $warna }}"></div>
-                                <span class="legend-name">{{ $namaMetode }}</span>
-                                <span class="legend-value">Rp {{ number_format($nilai, 0, ',', '.') }}</span>
-                            </div>
-                        @endif
-                    @endforeach
-                @endif
+            <div class="chart-legend-list">
+                @foreach([['Tunai', 'var(--blue-600)', $metodeData[0] ?? 0], ['Transfer', 'var(--blue-500)', $metodeData[1] ?? 0], ['QRIS', 'var(--blue-400)', $metodeData[2] ?? 0]] as [$namaMetode, $warna, $nilai])
+                    <div class="legend-item">
+                        <div class="legend-dot" data-bg="{{ $warna }}"></div>
+                        <span class="legend-name">{{ $namaMetode }}</span>
+                        <span class="legend-value">Rp {{ number_format($nilai, 0, ',', '.') }}</span>
+                    </div>
+                @endforeach
             </div>
         </div>
     </div>
@@ -535,14 +595,14 @@
                    style="width:200px;">
 
             {{-- Tombol submit filter --}}
-            <button type="submit" class="btn btn-primary btn-sm" style="height:36px;border-radius:8px;font-size:.8rem;font-weight:600;">
+            <button type="submit" class="btn btn-primary btn-sm" style="height:36px;border-radius:6px;font-size:.8rem;font-weight:600;">
                 <i class="fas fa-magnifying-glass me-1"></i> Cari
             </button>
 
             {{-- Tombol reset filter (hapus parameter pencarian) --}}
             @if($search || $metode)
             <a href="{{ route('pemasukan.index', ['period' => request('period', 'month')]) }}" class="btn btn-outline-secondary btn-sm"
-               style="height:36px;border-radius:8px;font-size:.8rem;font-weight:600;">
+               style="height:36px;border-radius:6px;font-size:.8rem;font-weight:600;">
                 <i class="fas fa-xmark me-1"></i> Reset
             </a>
             @endif
@@ -792,12 +852,9 @@ document.addEventListener('DOMContentLoaded', function () {
             label,
             value: metodeData[index] ?? 0,
             color: methodColors[index]
-        })).filter((method) => method.value > 0);
+        }));
 
-        if (!methods.length) {
-            metodeCtx.insertAdjacentHTML('afterend', '<p class="chart-empty-state">Belum ada transaksi pada periode ini.</p>');
-            metodeCtx.remove();
-        } else new Chart(metodeCtx, {
+        new Chart(metodeCtx, {
             type: 'doughnut', // Tipe chart donut
             data: {
                 labels: methods.map((method) => method.label),

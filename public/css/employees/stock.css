@@ -118,7 +118,7 @@
 .sc-icon {
     width: 44px; /* Lebar ikon */
     height: 44px; /* Tinggi ikon */
-    border-radius: 12px; /* Sudut melengkung */
+    border-radius: 6px; /* Sudut melengkung */
     display: flex; /* Flex untuk ikon */
     align-items: center; /* Rata tengah vertikal */
     justify-content: center; /* Rata tengah horizontal */
@@ -266,7 +266,7 @@
     align-items: center; /* Rata tengah */
     gap: 6px; /* Jarak ikon dan teks */
     padding: 6px 12px; /* Ruang dalam badge */
-    border-radius: 999px; /* Badge bentuk piller */
+    border-radius: 6px; /* Badge bentuk piller */
     font-size: 0.8rem; /* Ukuran teks badge */
     font-weight: 700; /* Tebal */
 }
@@ -306,7 +306,7 @@
 
 .stock-bar {
     height: 6px; /* Tinggi batang */
-    border-radius: 99px; /* Sudut bulat */
+    border-radius: 6px; /* Sudut bulat */
     background: var(--border); /* Latar batang */
     overflow: hidden; /* Potong isi */
     width: 90px; /* Lebar batang */
@@ -314,7 +314,7 @@
 
 .stock-bar-fill {
     height: 100%; /* Penuhi tinggi batang */
-    border-radius: 99px; /* Sudut bulat */
+    border-radius: 6px; /* Sudut bulat */
     background: linear-gradient(90deg, var(--success), #88d66c); /* Gradien default */
     transition: width 0.5s ease; /* Transisi lebar */
     box-shadow: 0 2px 8px rgba(var(--success-rgb, 16 185 129), 0.3); /* Bayangan */
@@ -454,7 +454,7 @@
 #stock-toast .toast-icon {
     width: 40px; /* Lebar ikon toast */
     height: 40px; /* Tinggi ikon toast */
-    border-radius: 12px; /* Sudut bulat */
+    border-radius: 6px; /* Sudut bulat */
     display: flex; /* Flex untuk ikon */
     align-items: center; /* Rata tengah */
     justify-content: center; /* Rata tengah */

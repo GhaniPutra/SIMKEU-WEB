@@ -50,7 +50,7 @@
         background: rgba(var(--primary-rgb),.08);
         color: var(--primary);
         padding: 4px 12px;
-        border-radius: 20px;
+        border-radius: 6px;
         font-size: 0.75rem;
         font-weight: 600;
         white-space: nowrap;
@@ -83,7 +83,7 @@
         width: 100%;
         padding: 10px 14px;
         border: 1px solid var(--border);
-        border-radius: 9px;
+        border-radius: 5px;
         font-size: 0.875rem;
         font-family: inherit;
         color: var(--text-primary);
@@ -129,7 +129,7 @@
     .stock-info-banner {
         background: rgba(var(--primary-rgb),.06);
         border: 1px solid rgba(var(--primary-rgb),.15);
-        border-radius: 9px;
+        border-radius: 5px;
         padding: 12px 16px;
         margin-bottom: 20px;
         display: flex;
@@ -165,7 +165,7 @@
         background: var(--primary);
         color: #f0f7fe;
         border: none;
-        border-radius: 9px;
+        border-radius: 5px;
         font-size: 0.875rem;
         font-weight: 600;
         cursor: pointer;
@@ -182,7 +182,7 @@
         background: #f0f7fe;
         color: var(--text-muted);
         border: 1px solid var(--border);
-        border-radius: 9px;
+        border-radius: 5px;
         font-size: 0.875rem;
         font-weight: 600;
         cursor: pointer;
@@ -202,7 +202,7 @@
         width: 100%;
         height: 140px;
         border: 2px dashed var(--border);
-        border-radius: 10px;
+        border-radius: 6px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -222,7 +222,7 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        border-radius: 8px;
+        border-radius: 6px;
     }
 
     .image-hint {

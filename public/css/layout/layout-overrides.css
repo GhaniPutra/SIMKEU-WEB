@@ -81,27 +81,72 @@
         #sidebar,
         #sidebar *,
         #sidebar *::before,
-        #sidebar *::after,
+        #sidebar *::after {
+            border-color: #d3d3d3 !important;
+        }
+
         #topbar,
         #topbar *,
         #topbar *::before,
         #topbar *::after {
-            border-color: #d3d3d3 !important;
+            border-color: var(--topbar-border) !important;
         }
 
         #sidebar,
         #sidebar *:not([class*="icon"]):not(.fa):not([class*="fa-"]),
         #sidebar *:not([class*="icon"]):not(.fa):not([class*="fa-"])::before,
-        #sidebar *:not([class*="icon"]):not(.fa):not([class*="fa-"])::after,
+        #sidebar *:not([class*="icon"]):not(.fa):not([class*="fa-"])::after {
+            color: #1a1a1a !important;
+        }
+
         #topbar,
         #topbar *:not([class*="icon"]):not(.fa):not([class*="fa-"]),
         #topbar *:not([class*="icon"]):not(.fa):not([class*="fa-"])::before,
         #topbar *:not([class*="icon"]):not(.fa):not([class*="fa-"])::after {
-            color: #1a1a1a !important;
+            color: var(--text-primary) !important;
+        }
+
+        #topbar .topbar-breadcrumb > span:not(.page-title) {
+            color: var(--text-muted) !important;
+        }
+
+        #topbar .form-select:not(:disabled) {
+            color: #374151 !important;
+            background-color: #ffffff !important;
+        }
+
+        /* Form fields share a clean white surface and neutral readable text. */
+        #main-content input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+        #main-content select,
+        #main-content textarea,
+        .modal input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+        .modal select,
+        .modal textarea,
+        #topbar input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+        #topbar select,
+        #topbar textarea {
+            color: #374151 !important;
+            background-color: #ffffff !important;
+        }
+
+        #main-content input::placeholder,
+        #main-content textarea::placeholder,
+        .modal input::placeholder,
+        .modal textarea::placeholder,
+        #topbar input::placeholder,
+        #topbar textarea::placeholder {
+            color: #8a94a6 !important;
+            opacity: 1;
+        }
+
+        #topbar .topbar-toggle:hover,
+        #topbar .topbar-btn:hover,
+        #topbar .topbar-user:hover {
+            background-color: var(--topbar-hover) !important;
         }
 
         #topbar ::placeholder {
-            color: #1a1a1a !important;
+            color: var(--text-muted) !important;
         }
 
         #sidebar .sidebar-nav .nav-link:not(.active) .nav-icon,

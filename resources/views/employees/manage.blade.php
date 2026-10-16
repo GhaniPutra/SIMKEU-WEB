@@ -56,25 +56,21 @@
     <section class="employee-tab-panel {{ $activeTab === 'overview' ? 'active' : '' }}" id="tab-overview" role="tabpanel" aria-labelledby="tab-button-overview" tabindex="0">
         <div class="employee-kpis">
             <article class="employee-kpi kpi-revenue">
-                <div class="employee-kpi-icon"><i class="fas fa-wallet"></i></div>
                 <div class="employee-kpi-label">Pendapatan {{ $periodLabel }}</div>
                 <div class="employee-kpi-value">Rp {{ number_format((float) $periodTotals->revenue, 0, ',', '.') }}</div>
                 <div class="employee-kpi-note">Transaksi pegawai ini</div>
             </article>
             <article class="employee-kpi kpi-transactions">
-                <div class="employee-kpi-icon"><i class="fas fa-receipt"></i></div>
                 <div class="employee-kpi-label">Transaksi {{ $periodLabel }}</div>
                 <div class="employee-kpi-value">{{ number_format((int) $periodTotals->transactions) }}</div>
                 <div class="employee-kpi-note">Transaksi pegawai ini</div>
             </article>
             <article class="employee-kpi kpi-units">
-                <div class="employee-kpi-icon"><i class="fas fa-cubes"></i></div>
                 <div class="employee-kpi-label">Unit terjual {{ $periodLabel }}</div>
                 <div class="employee-kpi-value">{{ number_format((int) $periodItemsSold) }}</div>
                 <div class="employee-kpi-note">Dari detail transaksi pegawai ini</div>
             </article>
             <a class="employee-kpi kpi-attention" href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock', 'period' => $analyticsPeriod]) }}">
-                <div class="employee-kpi-icon"><i class="fas fa-triangle-exclamation"></i></div>
                 <div class="employee-kpi-label">Stok Perlu Perhatian</div>
                 <div class="employee-kpi-value">{{ number_format($stockSummary->empty_stock_count + $stockSummary->low_stock_count) }}</div>
                 <div class="employee-kpi-note">{{ $stockSummary->empty_stock_count }} kosong · {{ $stockSummary->low_stock_count }} rendah <span>Lihat stok <i class="fas fa-arrow-right"></i></span></div>
@@ -322,25 +318,21 @@
 
         <div class="employee-kpis sales-kpis">
             <article class="employee-kpi kpi-revenue">
-                <div class="employee-kpi-icon"><i class="fas fa-wallet"></i></div>
                 <div class="employee-kpi-label">Pendapatan {{ $periodLabel }}</div>
                 <div class="employee-kpi-value">Rp {{ number_format((float) $periodTotals->revenue, 0, ',', '.') }}</div>
                 <div class="employee-kpi-note">Transaksi pegawai ini</div>
             </article>
             <article class="employee-kpi kpi-transactions">
-                <div class="employee-kpi-icon"><i class="fas fa-receipt"></i></div>
                 <div class="employee-kpi-label">Transaksi {{ $periodLabel }}</div>
                 <div class="employee-kpi-value">{{ number_format((int) $periodTotals->transactions) }}</div>
                 <div class="employee-kpi-note">Transaksi pegawai ini</div>
             </article>
             <article class="employee-kpi kpi-units">
-                <div class="employee-kpi-icon"><i class="fas fa-cubes"></i></div>
                 <div class="employee-kpi-label">Unit terjual {{ $periodLabel }}</div>
                 <div class="employee-kpi-value">{{ number_format((int) $periodItemsSold) }}</div>
                 <div class="employee-kpi-note">Detail transaksi pegawai ini</div>
             </article>
             <article class="employee-kpi kpi-month">
-                <div class="employee-kpi-icon"><i class="fas fa-calendar-check"></i></div>
                 <div class="employee-kpi-label">Cakupan analisis</div>
                 <div class="employee-kpi-value">{{ $periodLabel }}</div>
                 <div class="employee-kpi-note">Filter global navbar</div>

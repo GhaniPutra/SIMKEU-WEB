@@ -57,7 +57,7 @@
     ============================================================ */
     .amount-highlight {
         background: linear-gradient(135deg, var(--red-700) 0%, var(--red-600) 100%);
-        border-radius: 14px;
+        border-radius: 6px;
         padding: 28px 24px;
         color: #fff;
         margin-bottom: 24px;
@@ -143,7 +143,7 @@
         align-items: center;
         gap: 6px;
         padding: 6px 14px;
-        border-radius: 20px;
+        border-radius: 6px;
         font-size: 0.8rem;
         font-weight: 600;
         color: #fff;
@@ -161,7 +161,7 @@
     ============================================================ */
     .produk-box {
         background: var(--red-50);
-        border-radius: 10px;
+        border-radius: 6px;
         padding: 16px 18px;
         border: 1px solid var(--border);
         display: flex;
@@ -174,7 +174,7 @@
     .produk-icon {
         width: 42px; height: 42px;
         background: rgba(246,36,64,.1);
-        border-radius: 10px;
+        border-radius: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -195,7 +195,7 @@
         align-items: center;
         gap: 7px;
         padding: 9px 16px;
-        border-radius: 9px;
+        border-radius: 5px;
         font-size: 0.82rem;
         font-weight: 600;
         background: var(--red-50);

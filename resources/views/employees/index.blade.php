@@ -15,14 +15,13 @@
     <div class="kpi-card primary fade-up"> {{-- Kartu total user --}}
         <div class="kpi-top"> {{-- Baris atas kartu --}}
             <span class="kpi-label">Total User</span> {{-- Label metrik --}}
-            <div class="kpi-icon"><i class="fas fa-users"></i></div> {{-- Ikon metrik --}}</div>
+        </div>
         <div class="kpi-value">{{ $totalUsers }}</div> {{-- Angka total user --}}
         <div class="kpi-sub">Jumlah total akun terdaftar</div> {{-- Deskripsi singkat --}}
     </div>
     <div class="kpi-card success fade-up"> {{-- Kartu jumlah pegawai --}}
         <div class="kpi-top"> {{-- Baris atas kartu --}}
             <span class="kpi-label">Pegawai</span>
-            <div class="kpi-icon"><i class="fas fa-user-tie"></i></div>
         </div>
         <div class="kpi-value">{{ $totalPegawai }}</div>
         <div class="kpi-sub">Jumlah pegawai aktif</div>
@@ -30,7 +29,6 @@
     <div class="kpi-card danger fade-up"> {{-- Kartu jumlah admin --}}
         <div class="kpi-top"> {{-- Baris atas kartu --}}
             <span class="kpi-label">Admin</span>
-            <div class="kpi-icon"><i class="fas fa-user-shield"></i></div>
         </div>
         <div class="kpi-value">{{ $totalAdmin }}</div>
         <div class="kpi-sub">Jumlah akun admin</div>
@@ -89,16 +87,12 @@
                     </thead>
                     <tbody>
                         @foreach($employees as $employee) {{-- Iterasi setiap pegawai --}}
-                            <tr>
+                            <tr class="employee-row-clickable" tabindex="0"
+                                aria-label="Buka {{ $employee->role === 'pegawai' ? 'kelola' : 'edit' }} {{ $employee->name }}"
+                                data-href="{{ $employee->role === 'pegawai' ? route('employees.manage', $employee) : route('employees.edit', $employee) }}">
                                 <td>{{ $loop->iteration + ($employees->currentPage()-1)*$employees->perPage() }}</td> {{-- Nomor urut tabel --}}
                                 <td>
-                                    @if($employee->role === 'pegawai') {{-- Jika pegawai, buka halaman kelola pegawai --}}
-                                        <a href="{{ route('employees.manage', $employee) }}" class="employee-link">
-                                            {{ $employee->name }}
-                                        </a>
-                                    @else {{-- Jika bukan pegawai, tampilkan nama biasa --}}
-                                        <strong>{{ $employee->name }}</strong>
-                                    @endif
+                                    <strong>{{ $employee->name }}</strong>
                                 </td>
                                 <td>{{ $employee->email }}</td> {{-- Email pegawai --}}
                                 <td>
@@ -106,11 +100,6 @@
                                 </td>
                                 <td>
                                     <div class="table-actions"> {{-- Tombol aksi baris --}}
-                                        @if($employee->role === 'pegawai') {{-- Jika pegawai, tampilkan tombol kelola --}}
-                                            <a href="{{ route('employees.manage', $employee) }}" class="btn-stock">
-                                                <i class="fas fa-boxes"></i> Kelola
-                                            </a>
-                                        @endif
                                         <button type="button" class="btn-edit employee-edit" data-bs-toggle="modal" data-bs-target="#employeeModal" data-mode="edit"
                                                 data-id="{{ $employee->id }}" data-name="{{ $employee->name }}" data-email="{{ $employee->email }}"
                                                 data-role="{{ $employee->role }}" data-update-url="{{ route('employees.update', $employee) }}">

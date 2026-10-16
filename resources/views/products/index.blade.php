@@ -44,7 +44,6 @@
         <div class="kpi-card primary fade-up">
             <div class="kpi-top">
                 <span class="kpi-label">Total Produk</span>
-                <div class="kpi-icon"><i class="fas fa-boxes-stacked"></i></div>
             </div>
             {{-- Tampilkan jumlah total produk dari database --}}
             <div class="kpi-value">{{ number_format($totalProducts) }}</div>
@@ -55,7 +54,6 @@
         <div class="kpi-card success fade-up">
             <div class="kpi-top">
                 <span class="kpi-label">Total Stok</span>
-                <div class="kpi-icon"><i class="fas fa-layer-group"></i></div>
             </div>
             {{-- Total semua unit stok dari seluruh produk --}}
             <div class="kpi-value">{{ number_format($totalStock) }}</div>
@@ -66,7 +64,6 @@
         <div class="kpi-card warning fade-up">
             <div class="kpi-top">
                 <span class="kpi-label">Stok Rendah</span>
-                <div class="kpi-icon"><i class="fas fa-triangle-exclamation"></i></div>
             </div>
             {{-- Jumlah produk dengan stok ≤ 10 unit --}}
             <div class="kpi-value">{{ number_format($lowStockCount) }}</div>
@@ -77,10 +74,9 @@
         <div class="kpi-card danger fade-up">
             <div class="kpi-top">
                 <span class="kpi-label">Nilai Inventori</span>
-                <div class="kpi-icon"><i class="fas fa-coins"></i></div>
             </div>
             {{-- Total nilai inventori = SUM(harga beli × stok) --}}
-            <div class="kpi-value" style="font-size:1.1rem;">
+            <div class="kpi-value">
                 Rp {{ number_format($inventoryValue, 0, ',', '.') }}
             </div>
             <div class="kpi-sub">Nilai total stok (harga beli)</div>
@@ -212,7 +208,7 @@
                                         <span style="
                                             display:inline-block;
                                             padding:3px 10px;
-                                            border-radius:20px;
+                                            border-radius:6px;
                                             font-size:0.72rem;
                                             font-weight:600;
                                             background:rgba(var(--primary-rgb),.08);

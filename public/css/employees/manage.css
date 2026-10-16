@@ -38,7 +38,7 @@
     width: 46px;
     height: 46px;
     flex: 0 0 46px;
-    border-radius: 13px;
+    border-radius: 6px;
     background: linear-gradient(135deg, var(--primary-dark), var(--primary));
     color: #f0f7fe;
     font-size: 1.1rem;
@@ -69,7 +69,7 @@
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    border-radius: 999px;
+    border-radius: 6px;
     padding: 4px 9px;
     font-size: .7rem;
     font-weight: 700;
@@ -96,7 +96,7 @@
     gap: 8px;
     padding: 9px 13px;
     border: 1px solid var(--border);
-    border-radius: 9px;
+    border-radius: 5px;
     background: var(--card-bg);
     color: var(--text-primary);
     text-decoration: none;
@@ -126,7 +126,7 @@
     min-height: 40px;
     padding: 8px 15px;
     border: 0;
-    border-radius: 8px;
+    border-radius: 6px;
     background: transparent;
     color: var(--text-muted);
     font: inherit;
@@ -143,7 +143,7 @@
     left: 50%;
     width: 0;
     height: 2.5px;
-    border-radius: 2px;
+    border-radius: 0px;
     background: var(--primary);
     transform: translateX(-50%);
     transition: width .3s cubic-bezier(.4, 0, .2, 1);
@@ -182,7 +182,7 @@
     min-width: 19px;
     height: 19px;
     padding: 0 5px;
-    border-radius: 999px;
+    border-radius: 6px;
     background: rgba(var(--danger-rgb),.12);
     color: var(--danger);
     font-size: .68rem;
@@ -256,7 +256,7 @@
     width: 38px;
     height: 38px;
     margin-bottom: 14px;
-    border-radius: 10px;
+    border-radius: 6px;
     font-size: 1rem;
 }
 
@@ -272,7 +272,7 @@
 .employee-kpi-value {
     overflow-wrap: anywhere;
     color: var(--text-primary);
-    font-size: 1.55rem;
+    font-size: clamp(1.5rem, 1.8vw, 1.9rem);
     font-weight: 800;
     line-height: 1;
     margin-bottom: 6px;
@@ -408,7 +408,7 @@
     width: 25px;
     height: 25px;
     flex: 0 0 25px;
-    border-radius: 8px;
+    border-radius: 6px;
     background: var(--body-bg);
     color: var(--text-muted);
     font-size: .72rem;
@@ -449,7 +449,7 @@
     align-items: center;
     width: fit-content;
     padding: 4px 8px;
-    border-radius: 999px;
+    border-radius: 6px;
     font-size: .66rem;
     font-weight: 750;
     white-space: nowrap;
@@ -558,7 +558,7 @@
 .stock-quantity {
     min-height: 36px;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 6px;
     background: var(--card-bg);
     color: var(--text-primary);
     font: inherit;
@@ -574,7 +574,7 @@
     min-height: 36px;
     padding: 0 10px;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 6px;
     background: var(--card-bg);
     color: var(--text-primary);
     font: inherit;
@@ -677,7 +677,7 @@
     display: inline-block;
     min-width: 36px;
     padding: 6px 9px;
-    border-radius: 7px;
+    border-radius: 5px;
     font-size: .75rem;
     font-weight: 800;
     text-align: center;
@@ -789,7 +789,7 @@
     max-width: min(420px, calc(100vw - 32px));
     padding: 13px 16px;
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 6px;
     background: var(--card-bg);
     box-shadow: var(--shadow-lg);
     opacity: 0;
@@ -893,7 +893,7 @@
         width: 38px;
         height: 38px;
         flex-basis: 38px;
-        border-radius: 11px;
+        border-radius: 6px;
     }
 
     .employee-identity-copy h1 {
@@ -944,7 +944,7 @@
     }
 
     .employee-kpi-value {
-        font-size: 1.05rem;
+        font-size: 1.25rem;
     }
 
     .employee-kpi-note {
