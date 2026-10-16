@@ -139,10 +139,6 @@ class DashboardController extends Controller
         if ($totalExpenseMonth > $totalRevenueMonth) {
             $alerts[] = ['type' => 'danger', 'message' => "Pengeluaran {$periodLabel} melebihi pendapatan"];
         }
-        if ($transactionsToday > 0) {
-            $alerts[] = ['type' => 'success', 'message' => "{$transactionsToday} transaksi dicatat hari ini"];
-        }
-
         $salesActivities = PeriodFilter::apply(Sale::with('user'), 'transaction_date', $periodStart, $periodEnd)
             ->orderByDesc('transaction_date')
             ->take(5)

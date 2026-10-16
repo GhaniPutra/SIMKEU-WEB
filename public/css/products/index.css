@@ -138,7 +138,7 @@
     align-items: center; /* Rata tengah */
     padding: 14px 20px; /* Padding bar */
     border-bottom: 1px solid var(--border); /* Garis bawah */
-    background: #f0f7fe; /* Latar sedikit abu */
+    background: #ffffff; /* Latar putih bersih */
 }
 
 .toolbar-search { /* Wadah input pencarian */

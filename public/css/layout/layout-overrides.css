@@ -65,7 +65,12 @@
 
         #main-content .content-card,
         #main-content .kpi-card {
-            background-color: #fff !important;
+            background-color: #ffffff !important;
+        }
+
+        #main-content thead,
+        #main-content thead th {
+            background-color: #ffffff !important;
         }
 
         /* Pertahankan warna navigasi sesuai tampilan layout yang ada. */

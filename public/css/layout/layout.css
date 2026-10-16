@@ -576,7 +576,7 @@
             margin-top: var(--topbar-h);
             min-height: calc(100vh - var(--topbar-h));
             padding: 28px 28px 40px;
-            background-color: #fafafa;
+            background-color: #f0f7fe;
             transition: margin-left var(--transition);
         }
 
