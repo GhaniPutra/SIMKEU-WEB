@@ -226,42 +226,22 @@
     transform: translateY(-3px);
 }
 
-.kpi-revenue .employee-kpi-icon {
-    background: rgba(var(--primary-rgb),.12);
-    color: var(--icon-primary);
-}
-
-.kpi-transactions .employee-kpi-icon {
-    background: var(--success-bg);
-    color: var(--icon-success);
-}
-
-.kpi-units .employee-kpi-icon {
-    background: rgba(var(--accent-rgb),.12);
-    color: var(--icon-accent);
-}
-
-.kpi-attention .employee-kpi-icon {
-    background: var(--warning-bg);
-    color: var(--icon-warning);
-}
-
-.kpi-month .employee-kpi-icon {
-    background: rgba(var(--accent-soft-rgb),.13);
-    color: var(--icon-primary);
-}
-
 .employee-kpi-icon {
     display: grid;
     place-items: center;
-    width: 38px;
-    height: 38px;
-    margin-bottom: 14px;
-    border-radius: 6px;
-    font-size: 1rem;
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    margin: 0;
+    border-radius: 8px;
+    background: rgba(var(--primary-rgb),.1);
+    color: var(--icon-primary);
 }
 
 .employee-kpi-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     margin-bottom: 10px;
     color: var(--text-muted);
     font-size: .75rem;
@@ -457,18 +437,18 @@
 }
 
 .status-empty {
-    background: var(--danger-bg);
-    color: var(--danger);
+    background: var(--red-50);
+    color: var(--red-700);
 }
 
 .status-low {
-    background: var(--warning-bg);
-    color: var(--warning);
+    background: var(--yellow-50);
+    color: var(--yellow-700);
 }
 
 .status-normal {
-    background: var(--success-bg);
-    color: var(--success);
+    background: var(--green-50);
+    color: var(--green-700);
 }
 
 .status-unallocated {
@@ -593,17 +573,163 @@
 
 .stock-overview {
     display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1.5fr) minmax(220px, .8fr);
+    align-items: stretch;
+    gap: 14px;
+}
+
+.stock-health-card {
+    display: grid;
+    align-content: start;
+    gap: 16px;
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: #fff;
+    box-shadow: var(--shadow-sm);
+}
+
+.stock-health-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
     gap: 12px;
 }
 
-.stock-total {
+.stock-health-heading h2 {
+    color: var(--text-primary);
+    font-size: .9rem;
+    font-weight: 750;
+}
+
+.stock-health-heading p {
+    margin-top: 3px;
+    color: var(--text-muted);
+    font-size: .72rem;
+}
+
+.stock-health-alert {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex: 0 0 auto;
+    padding: 6px 9px;
+    border-radius: 6px;
+    font-size: .68rem;
+    font-weight: 700;
+}
+
+.stock-health-alert.has-issues {
+    background: var(--yellow-50);
+    color: var(--yellow-700);
+}
+
+.stock-health-alert.all-clear {
+    background: var(--green-50);
+    color: var(--green-700);
+}
+
+.stock-health-progress {
+    display: flex;
+    width: 100%;
+    height: 10px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--grey-100);
+}
+
+.stock-health-progress span {
+    min-width: 3px;
+    height: 100%;
+}
+
+.stock-health-progress .empty-segment { background: var(--red-400); }
+.stock-health-progress .low-segment { background: var(--yellow-400); }
+.stock-health-progress .normal-segment { background: var(--green-400); }
+
+.stock-health-empty {
+    padding: 10px 12px;
+    border-radius: 6px;
+    background: var(--grey-50);
+    color: var(--text-muted);
+    font-size: .75rem;
+}
+
+.stock-health-breakdown {
     display: grid;
-    gap: 7px;
-    padding: 13px 15px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.stock-health-item {
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+    padding: 10px 11px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: border-color .18s ease, transform .18s ease;
+}
+
+.stock-health-item:hover,
+.stock-health-item:focus-visible {
+    border-color: currentColor;
+    transform: translateY(-1px);
+}
+
+.stock-health-item.status-empty {
+    background: var(--red-50);
+    color: var(--red-700);
+}
+
+.stock-health-item.status-low {
+    background: var(--yellow-50);
+    color: var(--yellow-700);
+}
+
+.stock-health-item.status-normal {
+    background: var(--green-50);
+    color: var(--green-700);
+}
+
+.stock-health-item-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .68rem;
+    font-weight: 700;
+}
+
+.stock-health-item > strong {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.stock-health-item > strong small {
+    font-size: .64rem;
+    font-weight: 600;
+}
+
+.stock-overview-metrics {
+    display: grid;
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.stock-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 11px 13px;
 }
 
 .stock-total > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     color: var(--text-muted);
     font-size: .7rem;
     font-weight: 700;
@@ -611,7 +737,8 @@
 
 .stock-total > strong {
     color: var(--text-primary);
-    font-size: 1.15rem;
+    font-size: 1rem;
+    white-space: nowrap;
 }
 
 .stock-total small {
@@ -620,9 +747,6 @@
     font-weight: 500;
 }
 
-.stock-total-empty > strong { color: var(--danger); }
-.stock-total-low > strong { color: var(--primary-dark); }
-.stock-total-normal > strong { color: var(--success); }
 .stock-total-unallocated > strong { color: var(--text-muted); }
 
 .stock-card-header {
@@ -837,9 +961,17 @@
 }
 
 @media (max-width: 1100px) {
-    .employee-kpis,
-    .stock-overview {
+    .employee-kpis {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .stock-overview {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .stock-overview-metrics {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-rows: none;
     }
 
     .employee-content-grid {
@@ -930,6 +1062,19 @@
         gap: 9px;
     }
 
+    .stock-overview-metrics {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .stock-health-card {
+        gap: 12px;
+        padding: 13px;
+    }
+
+    .stock-health-heading {
+        flex-direction: column;
+    }
+
     .employee-kpi {
         padding: 12px 10px 12px 13px;
     }
@@ -941,7 +1086,7 @@
     }
 
     .employee-kpi-label {
-        font-size: .62rem;
+        font-size: .68rem;
     }
 
     .employee-kpi-value {

@@ -33,8 +33,9 @@
 
 .kpi-top { /* Bar atas di dalam kartu yang berisi label dan ikon */
     display: flex; /* Gunakan flex untuk layout */
-    justify-content: space-between; /* Sebelah kiri-kanan */
-    align-items: flex-start; /* Rata atas */
+    justify-content: flex-start; /* Ikon berada di kiri label */
+    align-items: center; /* Rata tengah */
+    gap: 10px;
     margin-bottom: 14px; /* Jarak bawah */
 }
 
@@ -56,10 +57,14 @@
     font-size: 1rem; /* Ukuran ikon */
 }
 
-.kpi-card.primary .kpi-icon { background: rgba(var(--primary-rgb),.12); color: var(--icon-primary); }
-.kpi-card.success .kpi-icon { background: var(--success-bg); color: var(--icon-success); }
-.kpi-card.warning .kpi-icon { background: var(--warning-bg); color: var(--icon-warning); }
-.kpi-card.danger .kpi-icon  { background: var(--danger-bg);  color: var(--icon-danger);  }
+.kpi-card .kpi-icon {
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: rgba(var(--primary-rgb),.1);
+    color: var(--icon-primary);
+}
 
 .kpi-value { /* Angka utama pada kartu */
     font-size: clamp(1.5rem, 1.8vw, 1.9rem); /* Angka utama lebih menonjol */
@@ -257,9 +262,9 @@
     font-weight: 700; /* Tebal */
 }
 
-.stock-ok { background: var(--success-bg); color: var(--success); } /* Normal */
-.stock-low { background: var(--warning-bg); color: var(--warning); } /* Rendah */
-.stock-empty { background: var(--danger-bg); color: var(--danger); } /* Habis */
+.stock-ok { background: var(--green-50); color: var(--green-700); } /* Stok cukup */
+.stock-low { background: var(--yellow-50); color: var(--yellow-700); } /* Rendah */
+.stock-empty { background: var(--red-50); color: var(--red-700); } /* Habis */
 
 /* ============================================================
    TOMBOL AKSI TABEL (Edit, Hapus, Stok)

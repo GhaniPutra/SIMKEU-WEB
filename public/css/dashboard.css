@@ -46,8 +46,9 @@
 
 .kpi-top {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
     margin-bottom: 14px;
 }
 
@@ -69,34 +70,13 @@
     font-size: 1rem;
 }
 
-.kpi-card.primary .kpi-icon {
-    background: rgba(var(--primary-rgb),.12);
+.kpi-card .kpi-icon {
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: rgba(var(--primary-rgb),.1);
     color: var(--icon-primary);
-}
-
-.kpi-card.success .kpi-icon {
-    background: var(--success-bg);
-    color: var(--icon-success);
-}
-
-.kpi-card.warning .kpi-icon {
-    background: var(--warning-bg);
-    color: var(--icon-warning);
-}
-
-.kpi-card.danger .kpi-icon {
-    background: var(--danger-bg);
-    color: var(--icon-danger);
-}
-
-.kpi-card.accent .kpi-icon {
-    background: rgba(var(--accent-rgb),.12);
-    color: var(--icon-accent);
-}
-
-.kpi-card.indigo .kpi-icon {
-    background: rgba(var(--accent-rgb),.12);
-    color: var(--icon-accent);
 }
 
 .kpi-value {
@@ -125,13 +105,18 @@
 }
 
 .trend-up {
-    background: var(--success-bg);
-    color: var(--success);
+    background: var(--green-50);
+    color: var(--green-400);
 }
 
 .trend-down {
-    background: var(--danger-bg);
-    color: var(--danger);
+    background: var(--red-50);
+    color: var(--red-400);
+}
+
+.trend-neutral {
+    background: var(--grey-100);
+    color: var(--grey-400);
 }
 
 /* ============================================================

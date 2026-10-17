@@ -43,6 +43,7 @@
         {{-- Kartu: Total Produk --}}
         <div class="kpi-card primary fade-up">
             <div class="kpi-top">
+                <span class="kpi-icon"><i class="fas fa-box"></i></span>
                 <span class="kpi-label">Total Produk</span>
             </div>
             {{-- Tampilkan jumlah total produk dari database --}}
@@ -53,6 +54,7 @@
         {{-- Kartu: Total Stok Keseluruhan --}}
         <div class="kpi-card success fade-up">
             <div class="kpi-top">
+                <span class="kpi-icon"><i class="fas fa-cubes"></i></span>
                 <span class="kpi-label">Total Stok</span>
             </div>
             {{-- Total semua unit stok dari seluruh produk --}}
@@ -63,6 +65,7 @@
         {{-- Kartu: Stok Rendah (peringatan) --}}
         <div class="kpi-card warning fade-up">
             <div class="kpi-top">
+                <span class="kpi-icon"><i class="fas fa-triangle-exclamation"></i></span>
                 <span class="kpi-label">Stok Rendah</span>
             </div>
             {{-- Jumlah produk dengan stok ≤ 10 unit --}}
@@ -73,6 +76,7 @@
         {{-- Kartu: Nilai Inventori --}}
         <div class="kpi-card danger fade-up">
             <div class="kpi-top">
+                <span class="kpi-icon"><i class="fas fa-warehouse"></i></span>
                 <span class="kpi-label">Nilai Inventori</span>
             </div>
             {{-- Total nilai inventori = SUM(harga beli × stok) --}}

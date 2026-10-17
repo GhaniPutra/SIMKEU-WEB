@@ -50,8 +50,9 @@
     /* Bagian atas kartu: label + ikon di kanan */
     .kpi-top {
         display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 10px;
         margin-bottom: 14px;
     }
 
@@ -63,21 +64,18 @@
         color: var(--text-muted);
     }
 
-    /* Kotak ikon per kartu */
+    /* Ikon KPI diletakkan di samping kiri label */
     .kpi-icon {
-        width: 38px; height: 38px;
-        border-radius: 6px;
+        flex: 0 0 30px;
+        width: 30px; height: 30px;
+        border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1rem;
+        background: var(--red-50);
+        color: var(--red-700);
     }
-
-    /* Warna ikon sesuai tema */
-    .kpi-card.primary .kpi-icon { background: var(--red-50);  color: var(--red-700); }
-    .kpi-card.danger  .kpi-icon { background: var(--danger-bg);  color: var(--icon-danger);  }
-    .kpi-card.warning .kpi-icon { background: var(--warning-bg); color: var(--icon-warning); }
-    .kpi-card.accent  .kpi-icon { background: rgba(var(--accent-rgb),.12);  color: var(--icon-accent);  }
 
     /* Nilai utama kartu (angka besar) */
     .kpi-value {
@@ -106,9 +104,9 @@
         border-radius: 6px;
         margin-left: 4px;
     }
-    /* Pengeluaran naik = merah (buruk), turun = hijau (baik) */
-    .trend-naik  { background: var(--danger-bg);  color: var(--danger);  }
-    .trend-turun { background: var(--success-bg); color: var(--success); }
+    .trend-up      { background: var(--green-50); color: var(--green-400); }
+    .trend-down    { background: var(--red-50); color: var(--red-400); }
+    .trend-neutral { background: var(--grey-100); color: var(--grey-400); }
 
     /* ============================================================
        SECTION TITLE — Judul seksi dengan garis horizontal
@@ -168,9 +166,9 @@
         display: flex;
         flex-direction: column;
         min-width: 0;
-        height: 430px;
-        min-height: 430px;
-        max-height: 430px;
+        height: 360px;
+        min-height: 360px;
+        max-height: 360px;
         overflow: hidden;
     }
     .analytics-card .content-card-body {
@@ -207,7 +205,7 @@
     ============================================================ */
     .two-col-chart {
         display: grid;
-        grid-template-columns: minmax(0, 3fr) minmax(280px, 2fr); /* Tren lebih lebar dari kategori */
+        grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
         align-items: stretch;
         gap: 18px;
         margin-bottom: 28px;
@@ -216,12 +214,12 @@
     /* Satu kolom di layar kecil */
     @media (max-width: 1100px) {
         .two-col-chart { grid-template-columns: minmax(0, 1fr); }
-        .analytics-card { height: 430px; min-height: 430px; max-height: 430px; }
+        .analytics-card { height: 360px; min-height: 360px; max-height: 360px; }
         .analytics-card > .analytics-scroll { max-height: none; }
     }
 
     @media (max-width: 480px) {
-        .analytics-card { height: 400px; min-height: 400px; max-height: 400px; }
+        .analytics-card { height: 360px; min-height: 360px; max-height: 360px; }
         .chart-wrapper { height: 250px; min-height: 250px; }
     }
 
@@ -464,6 +462,7 @@
     {{-- ---- Kartu Total Pengeluaran ---- --}}
     <div class="kpi-card danger fade-up">
         <div class="kpi-top">
+            <span class="kpi-icon"><i class="fas fa-wallet"></i></span>
             <span class="kpi-label">Total Pengeluaran</span>
         </div>
         {{-- Total nominal pengeluaran bulan ini --}}
@@ -471,8 +470,8 @@
         <div class="kpi-sub">
             @if($totalPeriodLalu !== null)
                 vs Periode Lalu: <strong>Rp {{ number_format($totalPeriodLalu, 0, ',', '.') }}</strong>
-                <span class="kpi-trend {{ $persentasePerubahan >= 0 ? 'trend-naik' : 'trend-turun' }}">
-                    <i class="fas fa-caret-{{ $persentasePerubahan >= 0 ? 'up' : 'down' }}"></i>
+                <span class="kpi-trend {{ $persentasePerubahan > 0 ? 'trend-up' : ($persentasePerubahan < 0 ? 'trend-down' : 'trend-neutral') }}">
+                    <i class="fas fa-{{ $persentasePerubahan > 0 ? 'caret-up' : ($persentasePerubahan < 0 ? 'caret-down' : 'minus') }}"></i>
                     {{ number_format(abs($persentasePerubahan), 1, ',', '.') }}%
                 </span>
             @else
@@ -484,6 +483,7 @@
     {{-- ---- Kartu Jumlah Entri ---- --}}
     <div class="kpi-card warning fade-up">
         <div class="kpi-top">
+            <span class="kpi-icon"><i class="fas fa-receipt"></i></span>
             <span class="kpi-label">Jumlah Entri</span>
         </div>
         {{-- Total jumlah baris pengeluaran bulan ini --}}
@@ -494,6 +494,7 @@
     {{-- ---- Kartu Rata-rata per Entri ---- --}}
     <div class="kpi-card primary fade-up">
         <div class="kpi-top">
+            <span class="kpi-icon"><i class="fas fa-calculator"></i></span>
             <span class="kpi-label">Rata-rata / Entri</span>
         </div>
         {{-- Rata-rata nilai setiap entri pengeluaran --}}
@@ -504,6 +505,7 @@
     {{-- ---- Kartu Pengeluaran Terbesar ---- --}}
     <div class="kpi-card accent fade-up">
         <div class="kpi-top">
+            <span class="kpi-icon"><i class="fas fa-arrow-up"></i></span>
             <span class="kpi-label">Pengeluaran Terbesar</span>
         </div>
         {{-- Nilai single entry terbesar di bulan ini --}}

@@ -39,14 +39,15 @@
             {{-- Pendapatan --}}
             <div class="kpi-card success fade-up">
                 <div class="kpi-top">
+                    <span class="kpi-icon"><i class="fas fa-wallet"></i></span>
                     <span class="kpi-label">Pendapatan</span>
                 </div>
                 <div class="kpi-value">Rp {{ number_format($totalRevenueMonth, 0, ',', '.') }}</div>
                 <div class="kpi-sub">
-                    @if($period === 'today')
-                        Hari ini dibanding kemarin
+                    @if($hasComparisonPeriod)
+                        {{ $comparisonLabel }}
                         <span class="kpi-trend {{ $revenueTrendLabel }}">
-                            <i class="fas fa-caret-{{ $revenueTrendLabel === 'trend-up' ? 'up' : 'down' }}"></i>
+                            <i class="fas fa-{{ $revenueTrendLabel === 'trend-up' ? 'caret-up' : ($revenueTrendLabel === 'trend-down' ? 'caret-down' : 'minus') }}"></i>
                             {{ $revenueTrendText }}
                         </span>
                     @else
@@ -58,14 +59,15 @@
             {{-- Pengeluaran --}}
             <div class="kpi-card danger fade-up">
                 <div class="kpi-top">
+                    <span class="kpi-icon"><i class="fas fa-money-bill-wave"></i></span>
                     <span class="kpi-label">Pengeluaran</span>
                 </div>
                 <div class="kpi-value">Rp {{ number_format($totalExpenseMonth, 0, ',', '.') }}</div>
                 <div class="kpi-sub">
-                    @if($period === 'today')
-                        Hari ini dibanding kemarin
+                    @if($hasComparisonPeriod)
+                        {{ $comparisonLabel }}
                         <span class="kpi-trend {{ $expenseTrendLabel }}">
-                            <i class="fas fa-caret-{{ $expenseTrendLabel === 'trend-up' ? 'up' : 'down' }}"></i>
+                            <i class="fas fa-{{ $expenseTrendLabel === 'trend-up' ? 'caret-up' : ($expenseTrendLabel === 'trend-down' ? 'caret-down' : 'minus') }}"></i>
                             {{ $expenseTrendText }}
                         </span>
                     @else
@@ -77,25 +79,34 @@
             {{-- Laba Bersih --}}
             <div class="kpi-card primary fade-up">
                 <div class="kpi-top">
+                    <span class="kpi-icon"><i class="fas fa-chart-line"></i></span>
                     <span class="kpi-label">Laba Bersih</span>
                 </div>
                 <div class="kpi-value">Rp {{ number_format($netProfit, 0, ',', '.') }}</div>
                 <div class="kpi-sub">
                     Kotor: <strong>Rp {{ number_format($grossProfit, 0, ',', '.') }}</strong>
+                    @if($hasComparisonPeriod)
+                        · {{ $comparisonLabel }}
+                        <span class="kpi-trend {{ $netProfitTrendLabel }}">
+                            <i class="fas fa-{{ $netProfitTrendLabel === 'trend-up' ? 'caret-up' : ($netProfitTrendLabel === 'trend-down' ? 'caret-down' : 'minus') }}"></i>
+                            {{ $netProfitTrendText }}
+                        </span>
+                    @endif
                 </div>
             </div>
 
             {{-- Transaksi --}}
             <div class="kpi-card warning fade-up">
                 <div class="kpi-top">
+                    <span class="kpi-icon"><i class="fas fa-receipt"></i></span>
                     <span class="kpi-label">Transaksi</span>
                 </div>
                 <div class="kpi-value">{{ $transactionsPeriod }}</div>
                 <div class="kpi-sub">
-                    @if($period === 'today')
-                        Hari ini dibanding kemarin
+                    @if($hasComparisonPeriod)
+                        {{ $comparisonLabel }}
                         <span class="kpi-trend {{ $transactionsTrendLabel }}">
-                            <i class="fas fa-caret-{{ $transactionsTrendLabel === 'trend-up' ? 'up' : 'down' }}"></i>
+                            <i class="fas fa-{{ $transactionsTrendLabel === 'trend-up' ? 'caret-up' : ($transactionsTrendLabel === 'trend-down' ? 'caret-down' : 'minus') }}"></i>
                             {{ $transactionsTrendText }}
                         </span>
                     @else
@@ -107,6 +118,7 @@
             {{-- Pegawai --}}
             <div class="kpi-card accent fade-up">
                 <div class="kpi-top">
+                    <span class="kpi-icon"><i class="fas fa-users"></i></span>
                     <span class="kpi-label">Pegawai Terdaftar</span>
                 </div>
                 <div class="kpi-value">{{ $activeEmployees }}</div>

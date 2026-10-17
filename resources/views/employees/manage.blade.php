@@ -56,22 +56,22 @@
     <section class="employee-tab-panel {{ $activeTab === 'overview' ? 'active' : '' }}" id="tab-overview" role="tabpanel" aria-labelledby="tab-button-overview" tabindex="0">
         <div class="employee-kpis">
             <article class="employee-kpi kpi-revenue">
-                <div class="employee-kpi-label">Pendapatan {{ $periodLabel }}</div>
+                <div class="employee-kpi-label"><span class="employee-kpi-icon"><i class="fas fa-wallet"></i></span>Pendapatan {{ $periodLabel }}</div>
                 <div class="employee-kpi-value">Rp {{ number_format((float) $periodTotals->revenue, 0, ',', '.') }}</div>
                 <div class="employee-kpi-note">Transaksi pegawai ini</div>
             </article>
             <article class="employee-kpi kpi-transactions">
-                <div class="employee-kpi-label">Transaksi {{ $periodLabel }}</div>
+                <div class="employee-kpi-label"><span class="employee-kpi-icon"><i class="fas fa-receipt"></i></span>Transaksi {{ $periodLabel }}</div>
                 <div class="employee-kpi-value">{{ number_format((int) $periodTotals->transactions) }}</div>
                 <div class="employee-kpi-note">Transaksi pegawai ini</div>
             </article>
             <article class="employee-kpi kpi-units">
-                <div class="employee-kpi-label">Unit terjual {{ $periodLabel }}</div>
+                <div class="employee-kpi-label"><span class="employee-kpi-icon"><i class="fas fa-boxes-stacked"></i></span>Unit terjual {{ $periodLabel }}</div>
                 <div class="employee-kpi-value">{{ number_format((int) $periodItemsSold) }}</div>
                 <div class="employee-kpi-note">Dari detail transaksi pegawai ini</div>
             </article>
             <a class="employee-kpi kpi-attention" href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock', 'period' => $analyticsPeriod]) }}">
-                <div class="employee-kpi-label">Stok Perlu Perhatian</div>
+                <div class="employee-kpi-label"><span class="employee-kpi-icon"><i class="fas fa-triangle-exclamation"></i></span>Stok Perlu Perhatian</div>
                 <div class="employee-kpi-value">{{ number_format($stockSummary->empty_stock_count + $stockSummary->low_stock_count) }}</div>
                 <div class="employee-kpi-note">{{ $stockSummary->empty_stock_count }} kosong · {{ $stockSummary->low_stock_count }} rendah <span>Lihat stok <i class="fas fa-arrow-right"></i></span></div>
             </a>
@@ -186,13 +186,69 @@
     </section>
 
     <section class="employee-tab-panel {{ $activeTab === 'stock' ? 'active' : '' }}" id="tab-stock" role="tabpanel" aria-labelledby="tab-button-stock" tabindex="0">
+        @php
+            $emptyStockCount = (int) $stockSummary->empty_stock_count;
+            $lowStockCount = (int) $stockSummary->low_stock_count;
+            $normalStockCount = (int) $stockSummary->normal_stock_count;
+            $allocatedProductCount = $emptyStockCount + $lowStockCount + $normalStockCount;
+            $stockIssueCount = $emptyStockCount + $lowStockCount;
+            $emptyStockPercent = $allocatedProductCount > 0 ? ($emptyStockCount / $allocatedProductCount) * 100 : 0;
+            $lowStockPercent = $allocatedProductCount > 0 ? ($lowStockCount / $allocatedProductCount) * 100 : 0;
+            $normalStockPercent = $allocatedProductCount > 0 ? ($normalStockCount / $allocatedProductCount) * 100 : 0;
+        @endphp
         <div class="stock-overview">
-            <div class="stock-total"><span>Stok pegawai</span><strong>{{ number_format((int) $stockSummary->employee_stock_total) }} <small>unit</small></strong></div>
-            <div class="stock-total"><span>Stok gudang</span><strong>{{ number_format((int) $stockSummary->master_stock_total) }} <small>unit</small></strong></div>
-            <div class="stock-total stock-total-unallocated"><span>Belum dialokasikan</span><strong>{{ number_format((int) $stockSummary->unallocated_stock_count) }}</strong></div>
-            <div class="stock-total stock-total-empty"><span>Produk kosong</span><strong>{{ number_format((int) $stockSummary->empty_stock_count) }}</strong></div>
-            <div class="stock-total stock-total-low"><span>Produk rendah</span><strong>{{ number_format((int) $stockSummary->low_stock_count) }}</strong></div>
-            <div class="stock-total stock-total-normal"><span>Produk normal</span><strong>{{ number_format((int) $stockSummary->normal_stock_count) }}</strong></div>
+            <div class="stock-health-card">
+                <div class="stock-health-heading">
+                    <div>
+                        <h2>Kondisi stok pegawai</h2>
+                        <p>{{ number_format($allocatedProductCount) }} produk sudah dialokasikan</p>
+                    </div>
+                    <span class="stock-health-alert {{ $stockIssueCount > 0 ? 'has-issues' : 'all-clear' }}">
+                        <i class="fas fa-{{ $stockIssueCount > 0 ? 'triangle-exclamation' : 'circle-check' }}" aria-hidden="true"></i>
+                        {{ number_format($stockIssueCount) }} perlu perhatian
+                    </span>
+                </div>
+
+                @if($allocatedProductCount > 0)
+                    <div class="stock-health-progress" role="img" aria-label="Komposisi stok pegawai: {{ $emptyStockCount }} kosong, {{ $lowStockCount }} rendah, {{ $normalStockCount }} cukup">
+                        @if($emptyStockCount > 0)<span class="empty-segment" style="width: {{ $emptyStockPercent }}%"></span>@endif
+                        @if($lowStockCount > 0)<span class="low-segment" style="width: {{ $lowStockPercent }}%"></span>@endif
+                        @if($normalStockCount > 0)<span class="normal-segment" style="width: {{ $normalStockPercent }}%"></span>@endif
+                    </div>
+                @else
+                    <p class="stock-health-empty">Belum ada stok yang dialokasikan ke pegawai.</p>
+                @endif
+
+                <div class="stock-health-breakdown">
+                    <a class="stock-health-item status-empty" href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock', 'period' => $analyticsPeriod, 'stock_status' => 'empty']) }}">
+                        <span class="stock-health-item-label"><i class="fas fa-circle-xmark" aria-hidden="true"></i> Kosong</span>
+                        <strong>{{ number_format($emptyStockCount) }} <small>produk</small></strong>
+                    </a>
+                    <a class="stock-health-item status-low" href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock', 'period' => $analyticsPeriod, 'stock_status' => 'low']) }}">
+                        <span class="stock-health-item-label"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i> Rendah</span>
+                        <strong>{{ number_format($lowStockCount) }} <small>produk</small></strong>
+                    </a>
+                    <a class="stock-health-item status-normal" href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock', 'period' => $analyticsPeriod, 'stock_status' => 'normal']) }}">
+                        <span class="stock-health-item-label"><i class="fas fa-circle-check" aria-hidden="true"></i> Cukup</span>
+                        <strong>{{ number_format($normalStockCount) }} <small>produk</small></strong>
+                    </a>
+                </div>
+            </div>
+
+            <div class="stock-overview-metrics">
+                <div class="stock-total">
+                    <span><i class="fas fa-boxes-stacked" aria-hidden="true"></i> Stok pegawai</span>
+                    <strong>{{ number_format((int) $stockSummary->employee_stock_total) }} <small>unit</small></strong>
+                </div>
+                <div class="stock-total">
+                    <span><i class="fas fa-warehouse" aria-hidden="true"></i> Stok gudang</span>
+                    <strong>{{ number_format((int) $stockSummary->master_stock_total) }} <small>unit</small></strong>
+                </div>
+                <div class="stock-total stock-total-unallocated">
+                    <span><i class="fas fa-box-open" aria-hidden="true"></i> Belum dialokasikan</span>
+                    <strong>{{ number_format((int) $stockSummary->unallocated_stock_count) }} <small>produk</small></strong>
+                </div>
+            </div>
         </div>
 
         <div class="employee-card">
@@ -318,22 +374,22 @@
 
         <div class="employee-kpis sales-kpis">
             <article class="employee-kpi kpi-revenue">
-                <div class="employee-kpi-label">Pendapatan {{ $periodLabel }}</div>
+                <div class="employee-kpi-label"><span class="employee-kpi-icon"><i class="fas fa-wallet"></i></span>Pendapatan {{ $periodLabel }}</div>
                 <div class="employee-kpi-value">Rp {{ number_format((float) $periodTotals->revenue, 0, ',', '.') }}</div>
                 <div class="employee-kpi-note">Transaksi pegawai ini</div>
             </article>
             <article class="employee-kpi kpi-transactions">
-                <div class="employee-kpi-label">Transaksi {{ $periodLabel }}</div>
+                <div class="employee-kpi-label"><span class="employee-kpi-icon"><i class="fas fa-receipt"></i></span>Transaksi {{ $periodLabel }}</div>
                 <div class="employee-kpi-value">{{ number_format((int) $periodTotals->transactions) }}</div>
                 <div class="employee-kpi-note">Transaksi pegawai ini</div>
             </article>
             <article class="employee-kpi kpi-units">
-                <div class="employee-kpi-label">Unit terjual {{ $periodLabel }}</div>
+                <div class="employee-kpi-label"><span class="employee-kpi-icon"><i class="fas fa-boxes-stacked"></i></span>Unit terjual {{ $periodLabel }}</div>
                 <div class="employee-kpi-value">{{ number_format((int) $periodItemsSold) }}</div>
                 <div class="employee-kpi-note">Detail transaksi pegawai ini</div>
             </article>
             <article class="employee-kpi kpi-month">
-                <div class="employee-kpi-label">Cakupan analisis</div>
+                <div class="employee-kpi-label"><span class="employee-kpi-icon"><i class="fas fa-calendar-days"></i></span>Cakupan analisis</div>
                 <div class="employee-kpi-value">{{ $periodLabel }}</div>
                 <div class="employee-kpi-note">Filter global navbar</div>
             </article>

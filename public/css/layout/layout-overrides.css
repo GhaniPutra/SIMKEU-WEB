@@ -187,26 +187,26 @@
         #main-content .alert-success,
         #main-content .alert-success *,
         #main-content .text-success,
-        #main-content .badge-success,
-        #main-content .stock-ok {
+        #main-content .badge-success {
             color: var(--success) !important;
         }
+        #main-content .stock-ok { color: var(--green-700) !important; }
 
         #main-content .alert-warning,
         #main-content .alert-warning *,
         #main-content .text-warning,
-        #main-content .badge-warning,
-        #main-content .stock-low {
+        #main-content .badge-warning {
             color: var(--warning) !important;
         }
+        #main-content .stock-low { color: var(--yellow-700) !important; }
 
         #main-content .alert-danger,
         #main-content .alert-danger *,
         #main-content .text-danger,
-        #main-content .badge-danger,
-        #main-content .stock-empty {
+        #main-content .badge-danger {
             color: var(--danger) !important;
         }
+        #main-content .stock-empty { color: var(--red-700) !important; }
 
         /* Tombol Reset memakai tampilan sekunder yang seragam di semua halaman. */
         #main-content :is(.btn-reset, .category-reset, .stock-reset, .reset-button):not([class*="icon"]):not(.fa):not([class*="fa-"]) {
@@ -344,22 +344,28 @@
             color: var(--yellow-950) !important;
         }
 
-        /* Pertahankan warna ikon ringkasan berdasarkan jenis status. */
-        #main-content .kpi-card.primary .kpi-icon {
-            color: var(--icon-primary);
+        #main-content .employee-tabs .employee-tab.active {
+            background-color: var(--blue-600) !important;
+            color: var(--blue-50) !important;
         }
 
-        #main-content .kpi-card.success .kpi-icon {
-            color: var(--icon-success);
+        #main-content .employee-tabs .employee-tab.active i {
+            color: var(--blue-50) !important;
         }
 
-        #main-content .kpi-card.warning .kpi-icon,
-        #main-content .kpi-card.accent .kpi-icon {
-            color: var(--icon-warning);
+        #main-content .employee-tabs .employee-tab.active .tab-count {
+            background: rgba(255, 255, 255, .18) !important;
+            color: var(--blue-50) !important;
         }
 
-        #main-content .kpi-card.danger .kpi-icon {
-            color: var(--icon-danger);
+        #main-content .employee-tabs .employee-tab:not(.active) .tab-count {
+            background: var(--grey-100);
+            color: var(--grey-700);
+        }
+
+        #main-content .kpi-card .kpi-icon {
+            background: var(--grey-100);
+            color: var(--grey-500);
         }
 
         #main-content :is(button:disabled, [aria-disabled="true"], .disabled) :is(i[class*="fa-"], svg) {

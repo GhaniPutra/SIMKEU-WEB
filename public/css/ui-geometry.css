@@ -52,16 +52,23 @@
 }
 
 #main-content .kpi-top {
-    gap: var(--ui-space-3);
+    gap: 6px;
     margin-bottom: var(--ui-space-3);
 }
 
 #main-content .kpi-icon,
 #main-content .employee-kpi-icon {
-    width: 36px;
-    height: 36px;
-    flex: 0 0 36px;
-    border-radius: var(--ui-control-radius);
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    border-radius: 8px;
+    background: var(--grey-100);
+    color: var(--grey-500);
+    font-size: 1rem;
+}
+
+#main-content .employee-kpi-label {
+    gap: 6px;
 }
 
 #main-content .section-title {

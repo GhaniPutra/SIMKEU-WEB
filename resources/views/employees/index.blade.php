@@ -14,6 +14,7 @@
 <div class="kpi-grid"> {{-- Grid untuk kartu statistik --}}
     <div class="kpi-card primary fade-up"> {{-- Kartu total user --}}
         <div class="kpi-top"> {{-- Baris atas kartu --}}
+            <span class="kpi-icon"><i class="fas fa-users"></i></span>
             <span class="kpi-label">Total User</span> {{-- Label metrik --}}
         </div>
         <div class="kpi-value">{{ $totalUsers }}</div> {{-- Angka total user --}}
@@ -21,6 +22,7 @@
     </div>
     <div class="kpi-card success fade-up"> {{-- Kartu jumlah pegawai --}}
         <div class="kpi-top"> {{-- Baris atas kartu --}}
+            <span class="kpi-icon"><i class="fas fa-user-tie"></i></span>
             <span class="kpi-label">Pegawai</span>
         </div>
         <div class="kpi-value">{{ $totalPegawai }}</div>
@@ -28,6 +30,7 @@
     </div>
     <div class="kpi-card danger fade-up"> {{-- Kartu jumlah admin --}}
         <div class="kpi-top"> {{-- Baris atas kartu --}}
+            <span class="kpi-icon"><i class="fas fa-user-shield"></i></span>
             <span class="kpi-label">Admin</span>
         </div>
         <div class="kpi-value">{{ $totalAdmin }}</div>

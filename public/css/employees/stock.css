@@ -282,13 +282,13 @@
 }
 
 .badge-low {
-    background: var(--warning-bg); /* Latar badge low */
-    color: var(--warning); /* Warna teks */
+    background: var(--yellow-50); /* Latar badge stok rendah */
+    color: var(--yellow-700); /* Warna teks */
 }
 
 .badge-zero {
-    background: var(--danger-bg); /* Latar badge kosong */
-    color: var(--danger); /* Warna teks */
+    background: var(--red-50); /* Latar badge stok habis */
+    color: var(--red-700); /* Warna teks */
 }
 
 .badge-status {

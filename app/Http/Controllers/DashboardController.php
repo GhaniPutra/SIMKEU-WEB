@@ -35,18 +35,65 @@ class DashboardController extends Controller
         $grossProfit = $totalRevenueMonth - $totalExpenseMonth;
         $netProfit = $grossProfit;
 
-        $transactionsToday = Sale::whereBetween('transaction_date', [$now->copy()->startOfDay(), $now->copy()->endOfDay()])->count();
-        $transactionsTotal = Sale::count();
         $transactionsPeriod = PeriodFilter::apply(Sale::query(), 'transaction_date', $periodStart, $periodEnd)->count();
-        $transactionsYesterday = Sale::whereBetween('transaction_date', [
-            $now->copy()->subDay()->startOfDay(),
-            $now->copy()->subDay()->endOfDay(),
-        ])->count();
-        $transactionsTrendPercent = $transactionsYesterday > 0
-            ? (($transactionsToday - $transactionsYesterday) / $transactionsYesterday) * 100
-            : ($transactionsToday > 0 ? 100 : 0);
-        $transactionsTrendLabel = $transactionsTrendPercent >= 0 ? 'trend-up' : 'trend-down';
+
+        [$comparisonStart, $comparisonEnd] = match ($period) {
+            'today' => [$now->copy()->subDay()->startOfDay(), $now->copy()->subDay()->endOfDay()],
+            'week' => [$now->copy()->subWeek()->startOfWeek(), $now->copy()->subWeek()->endOfWeek()],
+            'month' => [$now->copy()->subMonth()->startOfMonth(), $now->copy()->subMonth()->endOfMonth()],
+            default => [null, null],
+        };
+        $hasComparisonPeriod = $comparisonStart !== null;
+        $comparisonLabel = match ($period) {
+            'today' => 'Dibanding kemarin',
+            'week' => 'Dibanding minggu lalu',
+            'month' => 'Dibanding bulan lalu',
+            default => null,
+        };
+
+        $previousRevenue = $hasComparisonPeriod
+            ? PeriodFilter::apply(Sale::query(), 'transaction_date', $comparisonStart, $comparisonEnd)->sum('total')
+            : null;
+        $previousExpense = $hasComparisonPeriod
+            ? PeriodFilter::apply(
+                Expense::query(),
+                'expense_date',
+                $comparisonStart->toDateString(),
+                $comparisonEnd->toDateString()
+            )->sum('amount')
+            : null;
+        $previousTransactions = $hasComparisonPeriod
+            ? PeriodFilter::apply(Sale::query(), 'transaction_date', $comparisonStart, $comparisonEnd)->count()
+            : null;
+        $previousNetProfit = $hasComparisonPeriod ? $previousRevenue - $previousExpense : null;
+
+        $calculateTrendPercent = static function (float|int $current, float|int|null $previous): float {
+            if ($previous === null) {
+                return 0.0;
+            }
+
+            if ((float) $previous === 0.0) {
+                return (float) $current === 0.0 ? 0.0 : ((float) $current > 0 ? 100.0 : -100.0);
+            }
+
+            return (($current - $previous) / abs($previous)) * 100;
+        };
+        $trendLabelFor = static fn (float $percent): string => $percent > 0
+            ? 'trend-up'
+            : ($percent < 0 ? 'trend-down' : 'trend-neutral');
+
+        $revenueTrendPercent = $calculateTrendPercent($totalRevenueMonth, $previousRevenue);
+        $expenseTrendPercent = $calculateTrendPercent($totalExpenseMonth, $previousExpense);
+        $transactionsTrendPercent = $calculateTrendPercent($transactionsPeriod, $previousTransactions);
+        $netProfitTrendPercent = $calculateTrendPercent($netProfit, $previousNetProfit);
+        $revenueTrendLabel = $trendLabelFor($revenueTrendPercent);
+        $expenseTrendLabel = $trendLabelFor($expenseTrendPercent);
+        $transactionsTrendLabel = $trendLabelFor($transactionsTrendPercent);
+        $netProfitTrendLabel = $trendLabelFor($netProfitTrendPercent);
+        $revenueTrendText = number_format(abs($revenueTrendPercent), 1, ',', '.') . '%';
+        $expenseTrendText = number_format(abs($expenseTrendPercent), 1, ',', '.') . '%';
         $transactionsTrendText = number_format(abs($transactionsTrendPercent), 1, ',', '.') . '%';
+        $netProfitTrendText = number_format(abs($netProfitTrendPercent), 1, ',', '.') . '%';
         $activeEmployees = User::where('role', 'pegawai')->count();
 
         $trendLabels = [];
@@ -112,22 +159,6 @@ class DashboardController extends Controller
                 $expenseTrendData[] = (float) ($expenseByDay[$key] ?? 0);
             }
         }
-
-        $revenueYesterday = Sale::whereBetween('transaction_date', [
-            $now->copy()->subDay()->startOfDay(),
-            $now->copy()->subDay()->endOfDay(),
-        ])->sum('total');
-        $expenseYesterday = Expense::where('expense_date', $now->copy()->subDay()->toDateString())->sum('amount');
-        $revenueTrendPercent = $revenueYesterday > 0
-            ? (($totalRevenueToday - $revenueYesterday) / $revenueYesterday) * 100
-            : ($totalRevenueToday > 0 ? 100 : 0);
-        $expenseTrendPercent = $expenseYesterday > 0
-            ? (($totalExpenseToday - $expenseYesterday) / $expenseYesterday) * 100
-            : ($totalExpenseToday > 0 ? 100 : 0);
-        $revenueTrendLabel = $revenueTrendPercent >= 0 ? 'trend-up' : 'trend-down';
-        $expenseTrendLabel = $expenseTrendPercent >= 0 ? 'trend-up' : 'trend-down';
-        $revenueTrendText = number_format(abs($revenueTrendPercent), 1, ',', '.') . '%';
-        $expenseTrendText = number_format(abs($expenseTrendPercent), 1, ',', '.') . '%';
 
         $alerts = [];
         foreach (Product::where('stock', '<=', 10)->orderBy('stock')->take(3)->get() as $product) {
@@ -204,17 +235,19 @@ class DashboardController extends Controller
             'store',
             'period',
             'periodLabel',
+            'hasComparisonPeriod',
+            'comparisonLabel',
             'totalRevenueToday',
             'totalRevenueMonth',
             'totalExpenseToday',
             'totalExpenseMonth',
             'grossProfit',
             'netProfit',
-            'transactionsToday',
-            'transactionsTotal',
             'transactionsPeriod',
             'transactionsTrendLabel',
             'transactionsTrendText',
+            'netProfitTrendLabel',
+            'netProfitTrendText',
             'activeEmployees',
             'trendLabels',
             'revenueTrendData',
