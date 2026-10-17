@@ -14,14 +14,17 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
+    /** Menyiapkan ringkasan, grafik, peringatan, dan aktivitas untuk halaman dashboard. */
     public function index(Request $request)
     {
         $user = Auth::user();
-        $store = null;
         $now = Carbon::now();
+
+        // Tentukan rentang tanggal dan label periode yang dipilih pengguna.
         ['period' => $period, 'periodLabel' => $periodLabel, 'periodStart' => $periodStart, 'periodEnd' => $periodEnd]
             = PeriodFilter::resolveFromRequest($request, $now);
 
+        // Hitung total keuangan dan jumlah transaksi untuk kartu ringkasan.
         $totalRevenueToday = Sale::whereBetween('transaction_date', [$now->copy()->startOfDay(), $now->copy()->endOfDay()])
             ->sum('total');
         $totalExpenseToday = Expense::where('expense_date', $now->toDateString())->sum('amount');
@@ -37,6 +40,7 @@ class DashboardController extends Controller
 
         $transactionsPeriod = PeriodFilter::apply(Sale::query(), 'transaction_date', $periodStart, $periodEnd)->count();
 
+        // Siapkan periode pembanding untuk menghitung perubahan indikator.
         [$comparisonStart, $comparisonEnd] = match ($period) {
             'today' => [$now->copy()->subDay()->startOfDay(), $now->copy()->subDay()->endOfDay()],
             'week' => [$now->copy()->subWeek()->startOfWeek(), $now->copy()->subWeek()->endOfWeek()],
@@ -67,6 +71,7 @@ class DashboardController extends Controller
             : null;
         $previousNetProfit = $hasComparisonPeriod ? $previousRevenue - $previousExpense : null;
 
+        // Hitung persentase dan label arah perubahan setiap indikator.
         $calculateTrendPercent = static function (float|int $current, float|int|null $previous): float {
             if ($previous === null) {
                 return 0.0;
@@ -100,6 +105,7 @@ class DashboardController extends Controller
         $revenueTrendData = [];
         $expenseTrendData = [];
 
+        // Bentuk data grafik bulanan, harian, atau ringkasan hari ini.
         if ($period === 'all') {
             $driver = DB::connection()->getDriverName();
             $saleMonth = match ($driver) {
@@ -160,6 +166,7 @@ class DashboardController extends Controller
             }
         }
 
+        // Siapkan peringatan stok dan aktivitas terbaru dalam periode aktif.
         $alerts = [];
         foreach (Product::where('stock', '<=', 10)->orderBy('stock')->take(3)->get() as $product) {
             $alerts[] = [
@@ -201,6 +208,7 @@ class DashboardController extends Controller
             ->take(5)
             ->values();
 
+        // Gabungkan lima pemasukan dan pengeluaran terbaru untuk tabel dashboard.
         $recentTransactions = collect();
         foreach (PeriodFilter::apply(Sale::query(), 'transaction_date', $periodStart, $periodEnd)
             ->orderByDesc('transaction_date')->take(5)->get() as $sale) {
@@ -230,9 +238,9 @@ class DashboardController extends Controller
         }
         $recentTransactions = $recentTransactions->sortByDesc('sort_date')->take(5)->values();
 
+        // Kirim semua data yang dibutuhkan Blade tanpa menjalankan kueri di view.
         return view('dashboard', compact(
             'user',
-            'store',
             'period',
             'periodLabel',
             'hasComparisonPeriod',

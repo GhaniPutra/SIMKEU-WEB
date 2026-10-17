@@ -11,226 +11,7 @@
 @section('breadcrumb', 'Manajemen / Produk & Stok / Edit')
 
 @section('css')
-<style>
-    /* ============================================================
-       FORM CARD — Kartu pembungkus form
-       Sama dengan halaman create, styling disalin untuk konsistensi
-    ============================================================ */
-    .form-card {
-        background: var(--card-bg);
-        border-radius: var(--radius);
-        border: 1px solid var(--border);
-        box-shadow: var(--shadow-sm);
-        overflow: hidden;
-        max-width: 720px;
-        margin: 0 auto;
-    }
-
-    .form-card-header {
-        padding: 18px 24px;
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        background: #f0f7fe;
-    }
-
-    .form-card-header i { color: var(--icon-primary); font-size: 1.1rem; }
-
-    .form-card-header h2 {
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        margin: 0;
-    }
-
-    /* Chip nama produk di header —— menampilkan produk yang sedang diedit */
-    .product-chip {
-        margin-left: auto;
-        background: rgba(var(--primary-rgb),.08);
-        color: var(--primary);
-        padding: 4px 12px;
-        border-radius: 6px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 200px;
-    }
-
-    .form-card-body { padding: 28px 24px; }
-
-    /* ============================================================
-       FIELD FORM
-    ============================================================ */
-    .form-group { margin-bottom: 20px; }
-
-    .form-label {
-        display: block;
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 7px;
-    }
-
-    .required-mark { color: var(--danger); margin-left: 3px; }
-
-    .form-input,
-    .form-select {
-        width: 100%;
-        padding: 10px 14px;
-        border: 1px solid var(--border);
-        border-radius: 5px;
-        font-size: 0.875rem;
-        font-family: inherit;
-        color: var(--text-primary);
-        background: #f0f7fe;
-        transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    .form-input:focus,
-    .form-select:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(var(--primary-rgb),0.08);
-    }
-
-    /* Tampilan field yang gagal validasi */
-    .form-input.is-invalid,
-    .form-select.is-invalid { border-color: var(--danger); }
-
-    /* Pesan error per field */
-    .field-error {
-        font-size: 0.75rem;
-        color: var(--danger);
-        margin-top: 5px;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-    }
-
-    /* Grid dua kolom untuk field berdampingan */
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-    }
-
-    @media (max-width: 600px) {
-        .form-row { grid-template-columns: 1fr; }
-    }
-
-    /* ============================================================
-       INFORMASI STOK SAAT INI — Banner info stok aktual
-    ============================================================ */
-    .stock-info-banner {
-        background: rgba(var(--primary-rgb),.06);
-        border: 1px solid rgba(var(--primary-rgb),.15);
-        border-radius: 5px;
-        padding: 12px 16px;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 0.82rem;
-    }
-
-    .stock-info-banner i {
-        color: var(--primary);
-        font-size: 1rem;
-    }
-
-    .stock-info-banner strong {
-        color: var(--text-primary);
-        font-weight: 700;
-    }
-
-    /* ============================================================
-       TOMBOL AKSI
-    ============================================================ */
-    .form-actions {
-        display: flex;
-        gap: 12px;
-        justify-content: flex-end;
-        margin-top: 28px;
-        padding-top: 20px;
-        border-top: 1px solid var(--border);
-    }
-
-    .btn-submit {
-        padding: 10px 24px;
-        background: var(--blue-600);
-        color: #f0f7fe;
-        border: none;
-        border-radius: 5px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 0.2s;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .btn-submit:hover { background: var(--blue-700); }
-
-    .btn-cancel {
-        padding: 10px 24px;
-        background: #f0f7fe;
-        color: var(--text-muted);
-        border: 1px solid var(--border);
-        border-radius: 5px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        transition: all 0.2s;
-    }
-
-    .btn-cancel:hover { background: #f0f7fe; color: var(--text-primary); }
-
-    /* ============================================================
-       PREVIEW GAMBAR PRODUK
-    ============================================================ */
-    .image-preview-box {
-        width: 100%;
-        height: 140px;
-        border: 2px dashed var(--border);
-        border-radius: 6px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        color: var(--text-muted);
-        font-size: 0.8rem;
-        cursor: pointer;
-        transition: border-color 0.2s;
-        margin-bottom: 8px;
-        overflow: hidden;
-    }
-
-    .image-preview-box:hover { border-color: var(--primary); }
-
-    .image-preview-box img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 6px;
-    }
-
-    .image-hint {
-        font-size: 0.72rem;
-        color: var(--text-muted);
-        margin-top: 4px;
-    }
-</style>
+<link rel="stylesheet" href="{{ asset('css/products/edit.css') }}">
 @endsection
 
 @section('content')
@@ -315,12 +96,12 @@
                         @endforelse
                     </select>
                     {{-- Shortcut: link ke halaman Kategori untuk menambah kategori baru --}}
-                    <p style="font-size:0.74rem;color:var(--text-muted);margin-top:5px;">
-                        <i class="fas fa-circle-info" style="color:var(--icon-accent);"></i>
+                    <p class="category-help">
+                        <i class="fas fa-circle-info category-help-icon"></i>
                         Kelola kategori di
                         <a href="{{ route('categories.index') }}" target="_blank"
-                           style="color:var(--primary);font-weight:600;text-decoration:none;">
-                            halaman Kategori <i class="fas fa-arrow-up-right-from-square" style="font-size:0.65rem;"></i>
+                           class="category-help-link">
+                            halaman Kategori <i class="fas fa-arrow-up-right-from-square category-help-link-icon"></i>
                         </a>
                     </p>
                     @error('category_id')
@@ -383,7 +164,7 @@
                     {{-- Tarif Pajak: persentase pajak untuk produk ini --}}
                     <div class="form-group">
                         <label for="tax_rate" class="form-label">
-                            Pajak (%) <span style="color:var(--text-muted);font-weight:400;">(opsional)</span>
+                            Pajak (%) <span class="optional-label">(opsional)</span>
                         </label>
                         <input
                             type="number"
@@ -393,7 +174,7 @@
                             value="{{ old('tax_rate', $product->tax_rate ?? 0) }}"
                             min="0" max="100" step="0.01"
                         >
-                        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">
+                        <p class="field-hint">
                             <i class="fas fa-circle-info"></i> Tarif pajak dalam persen. Contoh: 10 = PPN 10%.
                         </p>
                         @error('tax_rate')
@@ -404,7 +185,7 @@
                     {{-- Tarif Diskon: persentase diskon default untuk produk ini --}}
                     <div class="form-group">
                         <label for="discount_rate" class="form-label">
-                            Diskon (%) <span style="color:var(--text-muted);font-weight:400;">(opsional)</span>
+                            Diskon (%) <span class="optional-label">(opsional)</span>
                         </label>
                         <input
                             type="number"
@@ -414,7 +195,7 @@
                             value="{{ old('discount_rate', $product->discount_rate ?? 0) }}"
                             min="0" max="100" step="0.01"
                         >
-                        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">
+                        <p class="field-hint">
                             <i class="fas fa-circle-info"></i> Diskon default produk. Contoh: 5 = diskon 5%.
                         </p>
                         @error('discount_rate')
@@ -482,19 +263,19 @@
                 ================================================ --}}
                 <div class="form-group">
                     <label class="form-label">
-                        Gambar Produk <span style="color:var(--text-muted);font-weight:400;">(opsional — kosongkan jika tidak ingin diganti)</span>
+                        Gambar Produk <span class="optional-label">(opsional — kosongkan jika tidak ingin diganti)</span>
                     </label>
 
                     {{-- Kotak preview: tampilkan gambar lama atau placeholder --}}
-                    <div class="image-preview-box" id="imagePreviewBox" onclick="document.getElementById('imageInput').click()">
+                    <div class="image-preview-box" id="imagePreviewBox">
                         @if($product->image)
                             {{-- Tampilkan gambar produk yang sudah ada --}}
                             <img src="{{ asset('storage/' . $product->image) }}" alt="Gambar {{ $product->name }}">
                         @else
                             {{-- Placeholder jika tidak ada gambar --}}
-                            <i class="fas fa-image" style="font-size:1.8rem;opacity:.35;"></i>
+                            <i class="fas fa-image image-preview-placeholder-icon"></i>
                             <span>Klik untuk mengganti gambar</span>
-                            <span style="font-size:0.7rem;opacity:.6;">JPEG, PNG, WEBP — Maks. 2MB</span>
+                            <span class="image-preview-file-hint">JPEG, PNG, WEBP — Maks. 2MB</span>
                         @endif
                     </div>
 
@@ -504,8 +285,7 @@
                         id="imageInput"
                         name="image"
                         accept="image/jpeg,image/png,image/jpg,image/webp"
-                        style="display:none;"
-                        onchange="previewImage(this)"
+                        class="image-input-hidden"
                     >
                     <p class="image-hint">
                         <i class="fas fa-circle-info"></i>
@@ -541,28 +321,5 @@
 @endsection
 
 @section('js')
-<script>
-    /**
-     * Menampilkan preview gambar baru yang dipilih user.
-     * Menggantikan preview gambar lama (atau placeholder) dengan gambar baru.
-     *
-     * @param {HTMLInputElement} input - Elemen input file yang berisi gambar baru
-     */
-    function previewImage(input) {
-        // Pastikan ada file yang dipilih
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-
-            // Setelah file selesai dibaca, tampilkan sebagai gambar di kotak preview
-            reader.onload = function(e) {
-                const box = document.getElementById('imagePreviewBox');
-                // Ganti isi kotak preview dengan tag gambar baru
-                box.innerHTML = '<img src="' + e.target.result + '" alt="Preview Gambar Baru">';
-            };
-
-            // Mulai membaca file sebagai URL data (base64)
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-</script>
+<script src="{{ asset('js/products/edit.js') }}"></script>
 @endsection

@@ -1,5 +1,5 @@
 // ============================================================
-// dashboard.js — JavaScript Halaman Dashboard SIMKEU
+// dashboard.js — Logika interaktif halaman Dashboard SIMKEU.
 //
 // File ini bertanggung jawab untuk:
 //   1. Menginisialisasi grafik tren pendapatan vs pengeluaran
@@ -9,15 +9,30 @@
 //      - 'week'  → minggu berjalan, total per hari
 //      - 'today' → 24 jam (pengeluaran tercatat pada jam 00)
 //
-// Data grafik dikirim dari Blade view melalui variabel global
-// window.dashboardData yang didefinisikan di dashboard.blade.php.
+// Data grafik dibaca dari atribut pada elemen #dashboard-data di Blade.
 // ============================================================
 
 // ============================================================
-// Ambil data grafik yang dikirim dari server (via Blade/PHP)
-// Jika window.dashboardData tidak terdefinisi, gunakan array kosong
-// sebagai nilai default agar tidak terjadi error JavaScript
+// Baca data grafik dari HTML dan gunakan nilai aman bila elemennya tidak ada.
 // ============================================================
+const dashboardElement = document.getElementById('dashboard-data');
+const dashboardAttributes = dashboardElement?.dataset;
+const dashboardData = dashboardAttributes ? {
+    period: dashboardAttributes.period,
+    periodLabel: dashboardAttributes.periodLabel,
+    monthDayCount: Number(dashboardAttributes.monthDayCount),
+    trendLabels: JSON.parse(dashboardAttributes.trendLabels),
+    revenueData: JSON.parse(dashboardAttributes.revenueData),
+    expenseData: JSON.parse(dashboardAttributes.expenseData)
+} : {
+    period: 'month',
+    periodLabel: 'Bulan Ini',
+    monthDayCount: 30,
+    trendLabels: [],
+    revenueData: [],
+    expenseData: []
+};
+
 const {
     period,       // Periode aktif: 'all', 'today', 'week', atau 'month'
     periodLabel,  // Label periode: 'Hari Ini', 'Minggu Ini', 'Bulan Ini'
@@ -25,14 +40,7 @@ const {
     trendLabels,  // Array label untuk sumbu X grafik
     revenueData,  // Array angka pendapatan
     expenseData   // Array angka pengeluaran
-} = window.dashboardData || {
-    period      : 'month',
-    periodLabel : 'Bulan Ini',
-    monthDayCount: 30,
-    trendLabels : [],
-    revenueData : [],
-    expenseData : []
-};
+} = dashboardData;
 
 // ============================================================
 // Fungsi: formatRupiah
@@ -216,7 +224,14 @@ function initTrendChart() {
 //         yang perlu dijalankan saat halaman dashboard dimuat.
 // ============================================================
 function initDashboard() {
+    syncPeriodFilter(); // Cocokkan filter navbar dengan periode dashboard.
     initTrendChart();  // Inisialisasi dan render grafik tren keuangan
+}
+
+// Samakan pilihan filter periode navbar dengan periode yang sedang ditampilkan.
+function syncPeriodFilter() {
+    const periodSelect = document.getElementById('global-period');
+    if (periodSelect) periodSelect.value = period;
 }
 
 // ============================================================

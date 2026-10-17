@@ -1,10 +1,10 @@
 /* ============================================================
-   Dashboard CSS untuk halaman utama SIMKEU
-   Semua styling dipisahkan agar file Blade hanya berisi HTML/Blade.
+   Gaya halaman Dashboard SIMKEU.
+   Aturan di bawah menjaga tampilan kartu, grafik, aktivitas, dan tabel.
 ============================================================ */
 
 /* ============================================================
-   KPI Cards
+   Kartu ringkasan indikator utama
 ============================================================ */
 .kpi-grid {
     display: grid;
@@ -120,7 +120,7 @@
 }
 
 /* ============================================================
-   Section Title
+   Judul bagian
 ============================================================ */
 .section-title {
     font-size: 0.95rem;
@@ -139,8 +139,22 @@
     background: var(--border);
 }
 
+/* Warna ikon dan jarak bagian dashboard mengikuti tema utama aplikasi. */
+.dashboard-section-icon { color: var(--icon-primary); }
+.dashboard-chart-section { margin-bottom: 28px; }
+.dashboard-period-label { color: var(--text-muted); font-size: .75rem; }
+.dashboard-view-all {
+    color: var(--primary);
+    font-size: .75rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+.dashboard-view-all:hover { text-decoration: none; }
+.content-card-body.activity-card-body { padding-top: 8px; }
+.dashboard-table-scroll { overflow-x: auto; }
+
 /* ============================================================
-   Content Card
+   Kartu konten dan wadah grafik
 ============================================================ */
 .content-card {
     background: var(--card-bg);
@@ -176,7 +190,7 @@
     padding: 20px;
 }
 
-/* Match the current analytics card dimensions on the income and expense pages. */
+/* Samakan ukuran kartu grafik dengan halaman pemasukan dan pengeluaran. */
 .dashboard-trend-card {
     display: flex;
     flex-direction: column;
@@ -201,35 +215,16 @@
 }
 
 /* ============================================================
-   Chart Wrapper
+   Wadah grafik
 ============================================================ */
 .chart-wrapper {
     position: relative;
     height: 240px;
 }
 
-.chart-wrapper-sm {
-    height: 180px;
-}
-
 /* ============================================================
-   Layout Grids
+   Kisi tata letak
 ============================================================ */
-.two-thirds-col {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 18px;
-    margin-bottom: 28px;
-}
-
-.two-thirds-col-left {
-    min-width: 0;
-}
-
-.two-thirds-col-right {
-    min-width: 0;
-}
-
 .two-col {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -238,7 +233,7 @@
 }
 
 /* ============================================================
-   Activity Feed
+   Daftar aktivitas
 ============================================================ */
 .activity-list {
     list-style: none;
@@ -288,7 +283,7 @@
 }
 
 /* ============================================================
-   Data Table
+   Tabel data
 ============================================================ */
 .data-table {
     width: 100%;
@@ -360,94 +355,7 @@
 }
 
 /* ============================================================
-   Quick Actions
-============================================================ */
-.quick-actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 4px;
-}
-
-.btn-qa {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 9px 16px;
-    border-radius: 5px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btn-qa-primary {
-    background: var(--blue-600);
-    color: var(--surface-light);
-}
-
-.btn-qa-primary:hover {
-    background: var(--blue-700);
-    color: #f0f7fe;
-}
-
-.btn-qa-outline {
-    background: var(--surface-light);
-    color: var(--text-primary);
-    border: 1px solid var(--border);
-}
-
-.btn-qa-outline:hover {
-    background: var(--surface-hover);
-    color: var(--text-primary);
-    border-color: var(--border);
-}
-
-/* ============================================================
-   Profit Highlight
-============================================================ */
-.profit-highlight {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-    border-radius: var(--radius);
-    padding: 24px 22px;
-    color: var(--surface-light);
-    position: relative;
-    overflow: hidden;
-}
-
-.profit-highlight::after {
-    content: '';
-    position: absolute;
-    right: -30px;
-    top: -30px;
-    width: 130px;
-    height: 130px;
-    background: rgba(240,247,254,0.07);
-    border-radius: 50%;
-}
-
-.profit-highlight .ph-label {
-    font-size: 0.78rem;
-    opacity: 0.75;
-    font-weight: 500;
-    margin-bottom: 6px;
-}
-
-.profit-highlight .ph-value {
-    font-size: 1.8rem;
-    font-weight: 800;
-}
-
-.profit-highlight .ph-sub {
-    font-size: 0.78rem;
-    opacity: 0.7;
-    margin-top: 4px;
-}
-
-/* ============================================================
-   Alert Banner
+   Banner peringatan
 ============================================================ */
 .alert-banner {
     padding: 12px 16px;
@@ -465,7 +373,7 @@
 }
 
 /* ============================================================
-   Responsive
+   Tata letak responsif
 ============================================================ */
 @media (max-width: 1100px) {
     .two-thirds-col {

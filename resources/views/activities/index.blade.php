@@ -5,7 +5,8 @@
 @section('breadcrumb', 'Beranda / Aktivitas & Data')
 
 @section('css')
-    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    {{-- Gunakan komponen kartu dan tabel bersama dari gaya dashboard. --}}
+    <link rel="stylesheet" href="{{ asset('css/dashboard/dashboard.css') }}">
 @endsection
 
 @section('content')
@@ -14,7 +15,7 @@
             <span class="content-card-title"><i class="fas fa-clock-rotate-left"></i> Aktivitas & Transaksi</span>
             <span class="text-muted small">{{ $periodLabel }}</span>
         </div>
-        <div style="overflow-x:auto;">
+        <div class="dashboard-table-scroll">
             <table class="data-table">
                 <thead>
                     <tr>

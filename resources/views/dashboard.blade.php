@@ -16,14 +16,24 @@
 @section('breadcrumb', 'Beranda / Dashboard')
 
 @section('css')
-    {{-- CSS khusus halaman dashboard (chart wrappers, KPI cards, dll) --}}
-    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    {{-- Muat gaya khusus dashboard dari folder aset dashboard. --}}
+    <link rel="stylesheet" href="{{ asset('css/dashboard/dashboard.css') }}">
 @endsection
 
 @section('content')
     @auth
+        {{-- Kirim data grafik dari controller ke JavaScript melalui atribut HTML. --}}
+        <div id="dashboard-data"
+            data-period="{{ $period }}"
+            data-period-label="{{ $periodLabel }}"
+            data-month-day-count="{{ now()->daysInMonth }}"
+            data-trend-labels="{{ json_encode($trendLabels, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) }}"
+            data-revenue-data="{{ json_encode($revenueTrendData, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) }}"
+            data-expense-data="{{ json_encode($expenseTrendData, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) }}"
+            hidden></div>
+
         {{-- ============================================================
-        ALERT BANNERS
+        BANNER PERINGATAN
         ============================================================ --}}
         @foreach($alerts as $alert)
             <div class="alert-banner alert-{{ $alert['type'] }} fade-up">
@@ -33,7 +43,7 @@
         @endforeach
 
         {{-- ============================================================
-        KPI CARDS GRID
+        KARTU INDIKATOR UTAMA
         ============================================================ --}}
         <div class="kpi-grid">
             {{-- Pendapatan --}}
@@ -125,42 +135,20 @@
                 <div class="kpi-sub">Akun dengan peran pegawai</div>
             </div>
 
-            <!-- KPI "Cabang" dihapus -->
         </div>
 
         {{-- ============================================================
-        QUICK ACTIONS — Tombol akses cepat ke POS
+        GRAFIK TREN KEUANGAN
         ============================================================ --}}
-        <div class="fade-up" style="margin-bottom: 24px; display: none">
-            <div class="content-card">
-                <div class="content-card-body" style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;">
-                    <div>
-                        <p class="content-card-title" style="margin-bottom:6px;">
-                            <i class="fas fa-bolt"></i> Aksi Cepat
-                        </p>
-                        <p style="margin:0;color:var(--text-muted);font-size:.9rem;">
-                            Mulai transaksi POS cepat tanpa harus membuka menu pemasukan.
-                        </p>
-                    </div>
-                    <a href="{{ route('pos.index') }}" class="btn-qa btn-qa-primary">
-                        <i class="fas fa-cash-register"></i> Buka POS
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        {{-- ============================================================
-        CHART ROW — Trend Full Width
-        ============================================================ --}}
-        <p class="section-title"><i class="fas fa-chart-area" style="color:var(--icon-primary)"></i> Tren Keuangan</p>
-        <div class="fade-up" style="margin-bottom: 28px;">
+        <p class="section-title"><i class="fas fa-chart-area dashboard-section-icon"></i> Tren Keuangan</p>
+        <div class="fade-up dashboard-chart-section">
             <div class="content-card dashboard-trend-card">
                 <div class="content-card-header">
                     <span class="content-card-title">
                         <i class="fas fa-chart-line"></i> Pendapatan vs Pengeluaran
                     </span>
                     {{-- Label periode: menunjukkan rentang data yang sedang ditampilkan --}}
-                    <span style="font-size:.75rem;color:var(--text-muted);">
+                    <span class="dashboard-period-label">
                         {{ $periodLabel }}
                     </span>
                 </div>
@@ -173,9 +161,9 @@
         </div>
 
         {{-- ============================================================
-        ACTIVITY LOG + DATA TABLE
+        DAFTAR AKTIVITAS DAN TABEL DATA
         ============================================================ --}}
-        <p class="section-title"><i class="fas fa-table-list" style="color:var(--icon-primary)"></i> Aktivitas & Data</p>
+        <p class="section-title"><i class="fas fa-table-list dashboard-section-icon"></i> Aktivitas & Data</p>
         <div class="two-col fade-up">
             {{-- Aktivitas Terbaru --}}
             <div class="content-card">
@@ -183,11 +171,11 @@
                     <span class="content-card-title">
                         <i class="fas fa-clock-rotate-left"></i> Aktivitas Terbaru
                     </span>
-                    <a href="{{ route('activities.index', ['period' => $period]) }}" style="font-size:.75rem;color:var(--primary);text-decoration:none;font-weight:600;">
+                    <a href="{{ route('activities.index', ['period' => $period]) }}" class="dashboard-view-all">
                         Lihat semua
                     </a>
                 </div>
-                <div class="content-card-body" style="padding-top:8px;">
+                <div class="content-card-body activity-card-body">
                     <ul class="activity-list">
                         @forelse($latestActivities as $activity)
                             <li class="activity-item">
@@ -215,11 +203,11 @@
                     <span class="content-card-title">
                         <i class="fas fa-receipt"></i> Transaksi Terbaru
                     </span>
-                    <a href="{{ route('activities.index', ['period' => $period]) }}" style="font-size:.75rem;color:var(--primary);text-decoration:none;font-weight:600;">
+                    <a href="{{ route('activities.index', ['period' => $period]) }}" class="dashboard-view-all">
                         Lihat semua
                     </a>
                 </div>
-                <div style="overflow-x:auto;">
+                <div class="dashboard-table-scroll">
                     <table class="data-table">
                         <thead>
                             <tr>
@@ -263,49 +251,8 @@
 @endsection
 
 @section('js')
-    {{-- Library Chart.js untuk menggambar grafik tren --}}
+    {{-- Muat Chart.js sebelum script grafik dashboard. --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <div id="dashboard-data"
-        data-period="{{ $period }}"
-        data-period-label="{{ $periodLabel }}"
-        data-month-day-count="{{ now()->daysInMonth }}"
-        data-trend-labels="{{ json_encode($trendLabels, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) }}"
-        data-revenue-data="{{ json_encode($revenueTrendData, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) }}"
-        data-expense-data="{{ json_encode($expenseTrendData, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) }}"
-        hidden></div>
-    <script>
-        // ============================================================
-        // Kirim data tren dari PHP (server) ke JavaScript (client)
-        // Data ini digunakan oleh dashboard.js untuk menggambar grafik
-        // ============================================================
-        const dashboardData = document.getElementById('dashboard-data').dataset;
-        window.dashboardData = {
-            period: dashboardData.period,
-            periodLabel: dashboardData.periodLabel,
-            monthDayCount: Number(dashboardData.monthDayCount),
-            trendLabels: JSON.parse(dashboardData.trendLabels),
-            revenueData: JSON.parse(dashboardData.revenueData),
-            expenseData: JSON.parse(dashboardData.expenseData),
-        };
-
-        // ============================================================
-        // Sinkronisasi nilai select #global-period dengan periode
-        // yang aktif saat ini ($period dari DashboardController).
-        // Ini memastikan select menampilkan pilihan yang benar setelah
-        // halaman di-reload dengan ?period=<nilai>.
-        // ============================================================
-        document.addEventListener('DOMContentLoaded', function () {
-            // Ambil elemen select filter periode di topbar
-            const periodSelect = document.getElementById('global-period');
-
-            if (periodSelect) {
-                // Paksa nilai select sesuai $period yang dikirim dari controller
-                periodSelect.value = dashboardData.period;
-            }
-        });
-    </script>
-
-    {{-- File JS utama dashboard: animasi fade-up dan inisialisasi grafik --}}
-    <script src="{{ asset('js/dashboard.js') }}"></script>
+    {{-- Jalankan pengolahan data, sinkronisasi filter, dan grafik dashboard. --}}
+    <script src="{{ asset('js/dashboard/dashboard.js') }}"></script>
 @endsection
