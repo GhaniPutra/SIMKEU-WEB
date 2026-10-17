@@ -256,6 +256,11 @@
     color: var(--text-primary);
 }
 
+/* Sejajarkan nilai role dengan judul kolomnya */
+#main-content .data-table .role-column {
+    text-align: left !important;
+}
+
 /* Hover pada baris tabel */
 .data-table tbody tr:hover {
     background: #f0f7fe;
@@ -458,28 +463,22 @@
     align-items: center; /* Rata vertikal teks */
     justify-content: center; /* Tengah teks */
     gap: 6px; /* Jarak ikon / teks jika ada */
-    padding: 5px 10px; /* Jarak dalam badge */
+    padding: 0; /* Tampilkan role sebagai teks sejajar dengan kolom */
     border-radius: 6px; /* Bentuk pill */
     font-size: 0.78rem; /* Ukuran teks kecil */
     font-weight: 700; /* Teks tebal */
     text-transform: capitalize; /* Kapitalisasi huruf pertama */
     letter-spacing: 0.02em; /* Spasi huruf halus */
-    border: 1px solid transparent; /* Untuk menjaga ukuran stabil */
+    border: 0;
     white-space: nowrap; /* Jangan membungkus teks */
 }
 
-/* Badge role pegawai */
-.role-pegawai {
-    background: rgba(var(--accent-rgb),0.12);
-    color: var(--primary-dark);
-    border-color: rgba(var(--accent-rgb),0.2);
-}
-
-/* Badge role admin */
+/* Tampilan role pegawai dan admin */
+.role-pegawai,
 .role-admin {
-    background: rgba(var(--primary-rgb),0.12);
-    color: var(--primary);
-    border-color: rgba(var(--primary-rgb),0.2);
+    background: transparent;
+    color: var(--primary-dark);
+    border-color: transparent;
 }
 
 /* Modal tambah/edit pegawai */

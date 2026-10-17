@@ -84,7 +84,7 @@
                             <th width="5%">#</th>
                             <th width="25%">Nama</th>
                             <th width="30%">Email</th>
-                            <th width="15%">Role</th>
+                            <th width="15%" class="role-column">Role</th>
                             <th width="25%">Aksi</th>
                         </tr>
                     </thead>
@@ -98,7 +98,7 @@
                                     <strong>{{ $employee->name }}</strong>
                                 </td>
                                 <td>{{ $employee->email }}</td> {{-- Email pegawai --}}
-                                <td>
+                                <td class="role-column">
                                     <span class="role-badge role-{{ $employee->role }}">{{ $employee->role }}</span> {{-- Badge role --}}
                                 </td>
                                 <td>

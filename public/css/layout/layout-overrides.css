@@ -57,9 +57,10 @@
             text-shadow: none !important;
         }
 
-        *:not([class*="icon"]):not(.fa):not([class*="fa-"]),
-        *:not([class*="icon"]):not(.fa):not([class*="fa-"])::before,
-        *:not([class*="icon"]):not(.fa):not([class*="fa-"])::after {
+        /* Biarkan halaman detail keuangan memakai hierarki warna desainnya sendiri. */
+        *:not(.finance-detail):not(.finance-detail *):not([class*="icon"]):not(.fa):not([class*="fa-"]),
+        *:not(.finance-detail):not(.finance-detail *):not([class*="icon"]):not(.fa):not([class*="fa-"])::before,
+        *:not(.finance-detail):not(.finance-detail *):not([class*="icon"]):not(.fa):not([class*="fa-"])::after {
             color: var(--text-primary) !important;
         }
 
@@ -385,6 +386,7 @@
         .btn-qa-primary,
         .btn-qa-success,
         .role-pegawai,
+        .role-admin,
         .btn-pull:hover:not(:disabled) {
             border-color: transparent !important;
         }
