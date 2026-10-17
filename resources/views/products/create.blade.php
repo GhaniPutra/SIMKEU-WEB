@@ -61,8 +61,8 @@ Extends: layouts.app (layout utama SIMKEU)
         #main-content .product-create-mark,
         #main-content .form-section-number,
         #main-content .product-create-tag,
-        #main-content .product-create-back:hover,
         #main-content .category-shortcut a { color: var(--primary) !important; }
+        #main-content .product-create-back:hover { color: var(--blue-600) !important; }
         #main-content .product-create-copy,
         #main-content .product-create-page .form-card-header p,
         #main-content .category-shortcut,
@@ -230,10 +230,10 @@ Extends: layouts.app (layout utama SIMKEU)
             cursor: pointer;
             transition: background .2s, border-color .2s, color .2s, transform .2s;
         }
-        .btn-submit { background: var(--primary); color: #fff; }
-        .btn-submit:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        .btn-submit { background: var(--blue-600); color: #fff; }
+        .btn-submit:hover { background: var(--blue-700); transform: translateY(-1px); }
         .product-create-page .btn-cancel { border-color: var(--border); background: #fff; color: var(--text-muted); }
-        .product-create-page .btn-cancel:hover { border-color: var(--blue-200); background: var(--blue-50); color: var(--primary); }
+        .product-create-page .btn-cancel:hover { border-color: var(--blue-50); background: var(--blue-50); color: var(--blue-600); }
 
         @media (max-width: 760px) {
             .product-create-page .form-card-header { padding: 18px 20px; }

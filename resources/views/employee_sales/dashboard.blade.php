@@ -211,7 +211,7 @@ Dashboard Penjualan Pegawai - SIMKEU
             align-items: center;
             gap: 8px;
             padding: 10px 18px;
-            background: var(--text-muted);
+            background: var(--blue-600);
             color: #f0f7fe;
             border: none;
             border-radius: 6px;
@@ -223,7 +223,7 @@ Dashboard Penjualan Pegawai - SIMKEU
         }
 
         .btn-back:hover {
-            background: var(--text-primary);
+            background: var(--blue-700);
             box-shadow: var(--shadow-md);
             transform: translateY(-1px);
         }

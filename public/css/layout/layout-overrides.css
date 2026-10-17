@@ -208,16 +208,120 @@
             color: var(--danger) !important;
         }
 
+        /* Tombol Reset memakai tampilan sekunder yang seragam di semua halaman. */
+        #main-content :is(.btn-reset, .category-reset, .stock-reset, .reset-button):not([class*="icon"]):not(.fa):not([class*="fa-"]) {
+            display: inline-flex;
+            min-height: 36px;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 8px 14px;
+            border: 1px solid #d5deea !important;
+            border-radius: 6px;
+            color: #52627a !important;
+            background: #f8fafc;
+            font-size: .8rem;
+            font-weight: 600;
+            line-height: 1.25;
+            text-decoration: none;
+            box-shadow: none;
+            transition: background-color .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
+        }
+
+        #main-content :is(.btn-reset, .category-reset, .stock-reset, .reset-button):not([class*="icon"]):not(.fa):not([class*="fa-"]):hover,
+        #main-content :is(.btn-reset, .category-reset, .stock-reset, .reset-button):not([class*="icon"]):not(.fa):not([class*="fa-"]):focus-visible {
+            border-color: var(--blue-300) !important;
+            color: var(--blue-800) !important;
+            background: var(--blue-100);
+        }
+
+        #main-content :is(.btn-reset, .category-reset, .stock-reset, .reset-button):active {
+            background: var(--blue-200);
+        }
+
+        /* Tombol berstatus merah dan hijau memakai warna 600, lalu 700 saat hover. */
+        #main-content .btn-danger,
+        .modal .btn-danger {
+            --bs-btn-color: #ffffff;
+            --bs-btn-bg: var(--red-600);
+            --bs-btn-border-color: var(--red-600);
+            --bs-btn-hover-color: #ffffff;
+            --bs-btn-hover-bg: var(--red-700);
+            --bs-btn-hover-border-color: var(--red-700);
+            --bs-btn-focus-shadow-rgb: 246, 36, 64;
+            --bs-btn-active-color: #ffffff;
+            --bs-btn-active-bg: var(--red-700);
+            --bs-btn-active-border-color: var(--red-700);
+            color: #ffffff !important;
+            border-color: var(--red-600) !important;
+        }
+
+        #main-content .btn-danger:hover:not(:disabled),
+        .modal .btn-danger:hover:not(:disabled) {
+            background-color: var(--red-700);
+            border-color: var(--red-700) !important;
+        }
+
+        #main-content .btn-success,
+        .modal .btn-success {
+            --bs-btn-color: #ffffff;
+            --bs-btn-bg: var(--green-600);
+            --bs-btn-border-color: var(--green-600);
+            --bs-btn-hover-color: #ffffff;
+            --bs-btn-hover-bg: var(--green-700);
+            --bs-btn-hover-border-color: var(--green-700);
+            --bs-btn-focus-shadow-rgb: 65, 150, 35;
+            --bs-btn-active-color: #ffffff;
+            --bs-btn-active-bg: var(--green-700);
+            --bs-btn-active-border-color: var(--green-700);
+            color: #ffffff !important;
+            border-color: var(--green-600) !important;
+        }
+
+        #main-content .btn-success:hover:not(:disabled),
+        .modal .btn-success:hover:not(:disabled) {
+            background-color: var(--green-700);
+            border-color: var(--green-700) !important;
+        }
+
+        /* Tombol outline merah dan hijau tetap memakai warna 600 pada teks/border. */
+        #main-content .btn-delete,
+        #main-content .btn-action.delete,
+        #main-content .btn-pull {
+            color: var(--red-600) !important;
+            border-color: var(--red-600) !important;
+        }
+
+        #main-content .btn-delete:hover,
+        #main-content .btn-action.delete:hover,
+        #main-content .btn-pull:hover:not(:disabled) {
+            background-color: var(--red-600);
+            border-color: var(--red-600) !important;
+        }
+
+        #main-content .btn-stock,
+        #main-content .btn-action.stock {
+            color: var(--green-600) !important;
+            border-color: var(--green-600) !important;
+        }
+
+        #main-content .btn-stock:hover,
+        #main-content .btn-action.stock:hover {
+            background-color: var(--green-600);
+            border-color: var(--green-600) !important;
+        }
+
         /* Pastikan teks tombol kontras terhadap latar tombol berwarna. */
         #main-content .btn-primary,
         #main-content .btn-qa-primary,
         #main-content .btn-qa-success,
+        #main-content .btn-danger,
+        #main-content .btn-success,
         #main-content .btn-add,
         #main-content .btn-submit,
         #main-content .btn-setup,
         #main-content .btn-login,
         #main-content .btn-register,
-        #main-content .btn-detail:hover,
         #main-content .btn-back:hover,
         #main-content .btn-stock:hover,
         #main-content .btn-edit:hover,
@@ -264,6 +368,10 @@
 
         #main-content :focus-visible {
             outline-color: var(--primary) !important;
+        }
+
+        #main-content :is(button, [role="button"], [class*="btn"], .page-link):focus-visible {
+            outline-color: var(--blue-600) !important;
         }
 
         .border-transparent,

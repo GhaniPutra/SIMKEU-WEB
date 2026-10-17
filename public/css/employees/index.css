@@ -304,8 +304,8 @@
     padding: 7px 14px;
     border-radius: 4px;
     background: #f0f7fe;
-    color: var(--success);
-    border: 1px solid var(--success);
+    color: var(--green-600);
+    border: 1px solid var(--green-600);
     font-size: 0.75rem;
     font-weight: 600;
     text-decoration: none;
@@ -315,9 +315,9 @@
 
 /* Hover tombol atur stok */
 .btn-stock:hover {
-    background: var(--success);
+    background: var(--green-600);
     color: #f0f7fe;
-    border-color: var(--success);
+    border-color: var(--green-600);
 }
 
 /* Tombol edit */
@@ -328,8 +328,8 @@
     padding: 7px 14px;
     border-radius: 4px;
     background: #f0f7fe;
-    color: var(--primary);
-    border: 1px solid var(--primary);
+    color: var(--blue-600);
+    border: 1px solid var(--blue-600);
     font-size: 0.75rem;
     font-weight: 600;
     text-decoration: none;
@@ -339,7 +339,7 @@
 
 /* Hover tombol edit */
 .btn-edit:hover {
-    background: var(--primary);
+    background: var(--blue-600);
     color: #f0f7fe;
 }
 
@@ -351,8 +351,8 @@
     padding: 7px 14px;
     border-radius: 4px;
     background: #f0f7fe;
-    color: var(--danger, #cf0621);
-    border: 1px solid var(--danger, #cf0621);
+    color: var(--red-600);
+    border: 1px solid var(--red-600);
     font-size: 0.75rem;
     font-weight: 600;
     cursor: pointer;
@@ -361,7 +361,7 @@
 
 /* Hover tombol hapus */
 .btn-delete:hover {
-    background: var(--danger, #cf0621);
+    background: var(--red-600);
     color: #f0f7fe;
 }
 
@@ -388,8 +388,8 @@
     margin: 0 2px;
 }
 .pagination .page-item.active .page-link {
-    background: var(--primary);
-    border-color: var(--primary);
+    background: var(--blue-600);
+    border-color: var(--blue-600);
     color: #f0f7fe;
 }
 
@@ -420,7 +420,7 @@
     align-items: center;
     gap: 7px;
     padding: 8px 16px;
-    background: var(--primary);
+    background: var(--blue-600);
     color: #f0f7fe;
     border: none;
     border-radius: 5px;
@@ -434,7 +434,7 @@
 
 /* Hover tombol tambah pegawai */
 .btn-add:hover {
-    background: var(--primary-dark);
+    background: var(--blue-700);
     color: #f0f7fe;
 }
 
@@ -608,12 +608,12 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    background: var(--primary) !important;
+    background: var(--blue-600) !important;
     color: #ffffff !important;
 }
 
 #employeeModal .btn-modal-save:hover {
-    background: var(--primary-dark) !important;
+    background: var(--blue-700) !important;
     transform: translateY(-1px);
 }
 

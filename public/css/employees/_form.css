@@ -208,7 +208,7 @@ select.form-control:focus {
 }
 
 .password-toggle:hover {
-    color: var(--primary, #2c74e4);
+    color: var(--blue-600, #2c74e4);
     transform: translateY(-50%) scale(1.1);
 }
 

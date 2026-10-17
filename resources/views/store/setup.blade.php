@@ -77,20 +77,21 @@
         /* Styling tombol */
         .btn-setup {
             padding: 12px;
-            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            background: var(--blue-600);
             border: none;
             border-radius: 6px;
             color: #f0f7fe;
             font-weight: 600;
             font-size: 1rem;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
             width: 100%;
             margin-top: 10px;
         }
 
         .btn-setup:hover {
+            background: var(--blue-700);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(var(--primary-rgb),0.3);
+            box-shadow: 0 8px 20px rgba(35, 95, 210, .3);
             color: #f0f7fe;
         }
 

@@ -39,7 +39,7 @@
         <button type="submit" class="btn-add"><i class="fas fa-search"></i> Cari</button>
         @if($categorySearch)
             <a href="{{ route('products.index', array_merge(request()->except(['category_search', 'categories_page']), ['tab' => 'kategori'])) }}"
-               class="btn-add category-reset"><i class="fas fa-xmark"></i> Reset</a>
+               class="btn-add category-reset reset-button"><i class="fas fa-xmark"></i> Reset</a>
         @endif
     </form>
 
@@ -126,7 +126,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn-modal-save"><i class="fas fa-floppy-disk"></i> Simpan Kategori</button>
+                    <button type="submit" class="btn-modal-save"><i class="fas fa-floppy-disk"></i><span>Simpan Kategori</span></button>
                 </div>
             </form>
         </div>

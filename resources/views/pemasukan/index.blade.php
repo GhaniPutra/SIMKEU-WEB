@@ -339,9 +339,9 @@
         transition: all 0.2s;
     }
     .btn-detail:hover {
-        background: var(--primary);
-        color: #f0f7fe;
-        border-color: var(--primary);
+        background: var(--blue-300);
+        color: var(--blue-950);
+        border-color: var(--blue-300) !important;
     }
 
     /* ============================================================
@@ -373,9 +373,22 @@
     }
 
     .pagination-wrapper .page-item.active .page-link {
-        background: var(--primary);
-        border-color: var(--primary);
+        background: var(--blue-600);
+        border-color: var(--blue-600);
         color: #f0f7fe;
+    }
+
+    .filter-bar .btn-primary {
+        background-color: var(--blue-600);
+        border-color: var(--blue-600);
+    }
+    .filter-bar .btn-primary:hover,
+    .filter-bar .btn-primary:focus {
+        background-color: var(--blue-700);
+        border-color: var(--blue-700);
+    }
+    .filter-bar .btn-primary:focus {
+        box-shadow: 0 0 0 .25rem rgba(44, 116, 228, .32);
     }
 
     .pagination-wrapper .page-link:hover {
@@ -601,7 +614,7 @@
 
             {{-- Tombol reset filter (hapus parameter pencarian) --}}
             @if($search || $metode)
-            <a href="{{ route('pemasukan.index', ['period' => request('period', 'month')]) }}" class="btn btn-outline-secondary btn-sm"
+            <a href="{{ route('pemasukan.index', ['period' => request('period', 'month')]) }}" class="btn btn-outline-secondary btn-sm reset-button"
                style="height:36px;border-radius:6px;font-size:.8rem;font-weight:600;">
                 <i class="fas fa-xmark me-1"></i> Reset
             </a>
@@ -756,6 +769,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Warna seri chart mengikuti palet UI.
     // ============================================================
     const chartColors = getComputedStyle(document.documentElement);
+    const trendColor = chartColors.getPropertyValue('--blue-400').trim();
     const tunai = chartColors.getPropertyValue('--blue-600').trim();
     const transfer = chartColors.getPropertyValue('--blue-500').trim();
     const qris = chartColors.getPropertyValue('--blue-400').trim();
@@ -796,7 +810,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 labels: chartLabels,
                 datasets: [{
                     label: 'Pemasukan',
-                    backgroundColor: tunai,
+                    backgroundColor: trendColor,
                     data: chartData,
                     borderRadius: 0,
                     maxBarThickness: 12,

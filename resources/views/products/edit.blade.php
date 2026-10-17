@@ -162,7 +162,7 @@
 
     .btn-submit {
         padding: 10px 24px;
-        background: var(--primary);
+        background: var(--blue-600);
         color: #f0f7fe;
         border: none;
         border-radius: 5px;
@@ -175,7 +175,7 @@
         gap: 8px;
     }
 
-    .btn-submit:hover { background: var(--primary-dark); }
+    .btn-submit:hover { background: var(--blue-700); }
 
     .btn-cancel {
         padding: 10px 24px;

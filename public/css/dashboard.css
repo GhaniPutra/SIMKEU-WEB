@@ -369,9 +369,9 @@
 }
 
 .btn-detail:hover {
-    background: var(--primary);
-    color: var(--surface-light);
-    border-color: var(--primary);
+    background: var(--blue-300);
+    color: var(--blue-950);
+    border-color: var(--blue-300) !important;
 }
 
 /* ============================================================
@@ -399,12 +399,12 @@
 }
 
 .btn-qa-primary {
-    background: var(--primary);
+    background: var(--blue-600);
     color: var(--surface-light);
 }
 
 .btn-qa-primary:hover {
-    background: var(--primary-dark);
+    background: var(--blue-700);
     color: #f0f7fe;
 }
 

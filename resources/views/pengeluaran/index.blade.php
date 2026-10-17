@@ -363,9 +363,9 @@
         transition: all 0.2s;
     }
     .btn-detail:hover {
-        background: var(--danger); /* Hover merah untuk halaman pengeluaran */
-        color: #fff;
-        border-color: var(--danger);
+        background: var(--red-300); /* Hover merah muda untuk halaman pengeluaran */
+        color: var(--blue-950);
+        border-color: var(--red-300) !important;
     }
 
     .btn-qa {
@@ -381,13 +381,13 @@
     }
 
     .btn-qa-primary {
-        background: var(--danger);
+        background: var(--red-600);
         color: #fff;
         border: 1px solid transparent;
     }
 
     .btn-qa-primary:hover {
-        opacity: 0.95;
+        background: var(--red-700);
     }
 
     /* ============================================================
@@ -414,8 +414,8 @@
         transition: all 0.2s;
     }
     .pagination-wrapper .page-item.active .page-link {
-        background: var(--danger); /* Paginasi aktif merah */
-        border-color: var(--danger);
+        background: var(--red-600); /* Paginasi aktif merah */
+        border-color: var(--red-600);
         color: #fff;
     }
     .pagination-wrapper .page-link:hover {
@@ -644,7 +644,7 @@
 
             {{-- Tombol reset (hanya muncul jika ada filter aktif) --}}
             @if($search || $kategori)
-            <a href="{{ route('pengeluaran.index', ['period' => request('period', 'month')]) }}" class="btn btn-outline-secondary btn-sm"
+            <a href="{{ route('pengeluaran.index', ['period' => request('period', 'month')]) }}" class="btn btn-outline-secondary btn-sm reset-button"
                style="height:36px;border-radius:6px;font-size:.8rem;font-weight:600;">
                 <i class="fas fa-xmark me-1"></i> Reset
             </a>
@@ -793,7 +793,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // PALET WARNA — Konsisten dengan tema SIMKEU
     // ============================================================
     const pengeluaranColor = getComputedStyle(document.documentElement)
-        .getPropertyValue('--red-600').trim();
+        .getPropertyValue('--red-400').trim();
 
     // ============================================================
     // DATA DARI HTML — Ambil nilai JSON dari atribut data

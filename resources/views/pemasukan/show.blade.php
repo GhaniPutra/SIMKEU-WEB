@@ -184,9 +184,9 @@
         transition: all 0.2s;
     }
     .btn-back:hover {
-        background: var(--primary);
+        background: var(--blue-600);
         color: #f0f7fe;
-        border-color: var(--primary);
+        border-color: var(--blue-600);
     }
 
 </style>

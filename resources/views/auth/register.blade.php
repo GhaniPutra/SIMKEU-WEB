@@ -1,356 +1,117 @@
-{{-- ====================================
-    Halaman Register - SIMKEU
-    Extends dari layout utama app.blade.php
-    ==================================== --}}
+{{-- Halaman pendaftaran SIMKEU --}}
 @extends('layouts.app')
 
-{{-- Title halaman --}}
-@section('title', 'Register - SIMKEU')
-
-{{-- CSS tambahan untuk halaman register --}}
+@section('title', 'Buat Akun - SIMKEU')
 
 @section('css')
-    <style>
-        /* Dashboard-aligned fullscreen register - matches login */
-        .register-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 24px;
-            background: linear-gradient(135deg, var(--body-bg) 0%, rgba(var(--primary-rgb, 79 70 229), 0.04) 100%);
-        }
-
-        .register-box {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border);
-            padding: 48px;
-            width: 100%;
-            max-width: 480px;
-            position: relative;
-            overflow: hidden;
-        }
-        .register-box::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--primary-light));
-        }
-
-        .register-header {
-            text-align: center;
-            margin-bottom: 36px;
-        }
-        .register-header h1 {
-            color: var(--text-primary);
-            font-size: 2.25rem;
-            font-weight: 800;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
-        .register-header h1 i {
-            color: var(--primary);
-            font-size: 2rem;
-        }
-        .register-header p {
-            color: var(--text-muted);
-            font-size: 1rem;
-            line-height: 1.6;
-        }
-
-        /* Form fields */
-        .mb-3 {
-            margin-bottom: 20px;
-        }
-        .form-label {
-            color: var(--text-primary);
-            font-weight: 600;
-            margin-bottom: 10px;
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .form-control {
-            padding: 16px 20px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            font-size: 1rem;
-            transition: all var(--transition);
-            background: #f0f7fe;
-            font-weight: 500;
-        }
-        .form-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(var(--primary-rgb, 79 70 229), 0.1);
-            background: #f0f7fe;
-            transform: translateY(-1px);
-        }
-        .invalid-feedback {
-            color: var(--danger);
-            font-size: 0.875rem;
-            margin-top: 6px;
-        }
-
-        /* Helper text */
-        .form-text {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            margin-top: 8px;
-            font-style: italic;
-        }
-
-        /* Submit button - dashboard style */
-        .btn-register {
-            padding: 16px 24px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            border: none;
-            border-radius: var(--radius);
-            color: #f0f7fe;
-            font-weight: 700;
-            font-size: 1.05rem;
-            transition: all var(--transition);
-            width: 100%;
-            box-shadow: var(--shadow-md);
-            position: relative;
-            overflow: hidden;
-        }
-        .btn-register:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-lg);
-        }
-        .btn-register i {
-            margin-right: 8px;
-        }
-
-        /* Links */
-        .login-link {
-            text-align: center;
-            margin-top: 28px;
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-        .login-link a {
-            color: var(--primary);
-            font-weight: 600;
-            text-decoration: none;
-            transition: color var(--transition);
-        }
-        .login-link a:hover {
-            color: var(--primary-dark);
-            text-decoration: underline;
-        }
-
-        /* Password view/hide toggle wrapper */
-        .password-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-            width: 100%;
-        }
-        .password-wrapper .form-control {
-            padding-right: 52px;
-            width: 100%;
-        }
-        .password-toggle {
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: 4px;
-            font-size: 1.15rem;
-            transition: all var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-        }
-        .password-toggle:hover {
-            color: var(--primary);
-            transform: translateY(-50%) scale(1.08);
-        }
-        .password-toggle:focus {
-            outline: none;
-        }
-
-        /* Container override */
-        main .container { padding: 0; max-width: 100%; }
-
-        /* Responsive */
-        @media (max-width: 576px) {
-            .register-box { margin: 16px; padding: 32px 24px; }
-            .register-header h1 { font-size: 1.875rem; }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
 @endsection
 
-
-{{-- Content halaman --}}
 @section('content')
-    {{-- Jika sudah login, jangan tampilkan halaman register --}}
     @auth
-        <div class="alert alert-info">
-            Anda sudah login. <a href="{{ route('dashboard') }}">Ke Dashboard</a>
+        <div class="auth-already-signed-in">
+            <i class="fas fa-circle-check" aria-hidden="true"></i>
+            <span>Anda sudah login.</span>
+            <a href="{{ route('dashboard') }}">Buka dashboard <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
         </div>
     @else
-        {{-- Container untuk register form --}}
-        <div class="register-container">
-            <div class="register-box">
-                {{-- Header register --}}
-                <div class="register-header">
-                    <h1><i class="fas fa-user-plus"></i> Daftar</h1>
-                    <p>Buat akun SIMKEU baru</p>
+        <div class="auth-layout auth-layout-register">
+            <aside class="auth-story" aria-label="Tentang SIMKEU">
+                <a class="auth-brand" href="{{ route('home') }}" aria-label="SIMKEU, halaman utama">
+                    <span class="auth-brand-mark"><i class="fas fa-chart-pie" aria-hidden="true"></i></span>
+                    <span class="auth-brand-name">SIMKEU</span>
+                    <span class="auth-brand-divider" aria-hidden="true"></span>
+                    <span class="auth-brand-caption">Keuangan usaha</span>
+                </a>
+
+                <div class="auth-story-copy">
+                    <span class="auth-eyebrow"><span></span> LANGKAH BARU UNTUK USAHA ANDA</span>
+                    <h1>Mulai kelola usaha<br><em>dengan lebih terarah.</em></h1>
+                    <p>Buat akun SIMKEU dan satukan pencatatan transaksi, pemantauan stok, serta ringkasan keuangan dalam satu tempat.</p>
+                    <div class="auth-feature-list" aria-label="Fitur SIMKEU">
+                        <span><i class="fas fa-chart-line" aria-hidden="true"></i> Tren usaha</span>
+                        <span><i class="fas fa-wallet" aria-hidden="true"></i> Arus kas</span>
+                        <span><i class="fas fa-boxes-stacked" aria-hidden="true"></i> Stok produk</span>
+                    </div>
                 </div>
 
-                {{-- Form register --}}
-                <form action="{{ route('register') }}" method="POST">
-                    {{-- CSRF Token untuk keamanan form --}}
-                    @csrf
-
-                    {{-- Field Nama --}}
-                    <div class="mb-3">
-                        {{-- Label nama --}}
-                        <label for="name" class="form-label">
-                            <i class="fas fa-user"></i> Nama Lengkap
-                        </label>
-
-                        {{-- Input nama --}}
-                        <input type="text" 
-                               class="form-control @error('name') is-invalid @enderror" 
-                               id="name" 
-                               name="name" 
-                               value="{{ old('name') }}"
-                               placeholder="Masukkan nama lengkap Anda"
-                               required>
-
-                        {{-- Tampilkan error nama jika ada --}}
-                        @error('name')
-                            <div class="invalid-feedback d-block">
-                                {{ $message }}
-                            </div>
-                        @enderror
+                <div class="auth-preview auth-preview-register" aria-hidden="true">
+                    <div class="auth-preview-top">
+                        <span class="auth-preview-title"><span class="auth-preview-dot"></span> Satu pandangan untuk bisnis Anda</span>
+                        <i class="fas fa-sparkles" aria-hidden="true"></i>
                     </div>
-
-                    {{-- Field Email --}}
-                    <div class="mb-3">
-                        {{-- Label email --}}
-                        <label for="email" class="form-label">
-                            <i class="fas fa-envelope"></i> Email
-                        </label>
-
-                        {{-- Input email --}}
-                        <input type="email" 
-                               class="form-control @error('email') is-invalid @enderror" 
-                               id="email" 
-                               name="email" 
-                               value="{{ old('email') }}"
-                               placeholder="Masukkan email Anda"
-                               required>
-
-                        {{-- Tampilkan error email jika ada --}}
-                        @error('email')
-                            <div class="invalid-feedback d-block">
-                                {{ $message }}
-                            </div>
-                        @enderror
-
-                        {{-- Helper text --}}
-                        <small class="form-text">Gunakan email yang valid dan belum terdaftar</small>
+                    <div class="auth-register-benefits">
+                        <div><span class="auth-benefit-icon"><i class="fas fa-receipt"></i></span><span><strong>Catat transaksi</strong><small>Penjualan dan pengeluaran tersusun rapi</small></span><i class="fas fa-check auth-benefit-check"></i></div>
+                        <div><span class="auth-benefit-icon"><i class="fas fa-chart-simple"></i></span><span><strong>Pahami perkembangan</strong><small>Lihat ringkasan usaha kapan saja</small></span><i class="fas fa-check auth-benefit-check"></i></div>
+                        <div><span class="auth-benefit-icon"><i class="fas fa-box-open"></i></span><span><strong>Pantau persediaan</strong><small>Ketahui stok produk dengan mudah</small></span><i class="fas fa-check auth-benefit-check"></i></div>
                     </div>
-
-                    {{-- tidak ada field toko/cabang karena semua user adalah admin utama --}}
-                    {{-- jika nanti diperlukan, dapat ditambahkan kembali --}}
-                    {{-- Field Password --}}
-                    <div class="mb-3">
-                        {{-- Label password --}}
-                        <label for="password" class="form-label">
-                            <i class="fas fa-key"></i> Password
-                        </label>
-
-                        {{-- Input password dengan toggle lihat password --}}
-                        <div class="password-wrapper">
-                            <input type="password" 
-                                   class="form-control @error('password') is-invalid @enderror" 
-                                   id="password" 
-                                   name="password" 
-                                   placeholder="Masukkan password"
-                                   required>
-                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('password', this)" title="Lihat/Sembunyikan password">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-
-                        {{-- Tampilkan error password jika ada --}}
-                        @error('password')
-                            <div class="invalid-feedback d-block">
-                                {{ $message }}
-                            </div>
-                        @enderror
-
-                        {{-- Helper text --}}
-                        <small class="form-text">Minimal 6 karakter</small>
-                    </div>
-
-                    {{-- Field Konfirmasi Password --}}
-                    <div class="mb-3">
-                        {{-- Label konfirmasi password --}}
-                        <label for="password_confirmation" class="form-label">
-                            <i class="fas fa-check-circle"></i> Konfirmasi Password
-                        </label>
-
-                        {{-- Input konfirmasi password dengan toggle lihat password --}}
-                        <div class="password-wrapper">
-                            <input type="password" 
-                                   class="form-control @error('password_confirmation') is-invalid @enderror" 
-                                   id="password_confirmation" 
-                                   name="password_confirmation" 
-                                   placeholder="Ketik ulang password Anda"
-                                   required>
-                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('password_confirmation', this)" title="Lihat/Sembunyikan password">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-
-                        {{-- Tampilkan error password_confirmation jika ada --}}
-                        @error('password_confirmation')
-                            <div class="invalid-feedback d-block">
-                                {{ $message }}
-                            </div>
-                        @enderror
-
-                        {{-- Helper text --}}
-                        <small class="form-text">Password harus sama dengan field di atas</small>
-                    </div>
-
-                    {{-- Tombol Register --}}
-                    <button type="submit" class="btn btn-register">
-                        <i class="fas fa-user-plus"></i> Daftar Akun
-                    </button>
-                </form>
-
-                {{-- Link Login --}}
-                <div class="login-link">
-                    Sudah punya akun? <a href="{{ route('login') }}">Login di sini</a>
                 </div>
-            </div>
+
+                <div class="auth-story-footer"><span>Mulai dari pencatatan sederhana, bertumbuh dengan percaya diri.</span><span>© {{ date('Y') }} SIMKEU</span></div>
+            </aside>
+
+            <section class="auth-panel auth-panel-register">
+                <div class="auth-form-wrap">
+                    <div class="auth-form-heading">
+                        <span class="auth-form-kicker">DAFTAR GRATIS</span>
+                        <h2>Buat akun SIMKEU</h2>
+                        <p>Isi informasi berikut untuk memulai pengelolaan usaha Anda.</p>
+                    </div>
+
+                    <form class="auth-form" action="{{ route('register') }}" method="POST">
+                        @csrf
+
+                        <div class="auth-field-grid">
+                            <div class="auth-field-group">
+                                <label for="name">Nama lengkap</label>
+                                <div class="auth-input-wrap">
+                                    <i class="fas fa-user auth-input-icon" aria-hidden="true"></i>
+                                    <input class="auth-input @error('name') is-invalid @enderror" id="name" type="text" name="name" value="{{ old('name') }}" placeholder="Nama Anda" autocomplete="name" required autofocus>
+                                </div>
+                                @error('name')<div class="auth-field-error">{{ $message }}</div>@enderror
+                            </div>
+
+                            <div class="auth-field-group">
+                                <label for="email">Email</label>
+                                <div class="auth-input-wrap">
+                                    <i class="fas fa-envelope auth-input-icon" aria-hidden="true"></i>
+                                    <input class="auth-input @error('email') is-invalid @enderror" id="email" type="email" name="email" value="{{ old('email') }}" placeholder="nama@bisnisanda.com" autocomplete="email" required>
+                                </div>
+                                @error('email')<div class="auth-field-error">{{ $message }}</div>@enderror
+                                <small class="auth-field-hint">Gunakan email aktif yang belum terdaftar.</small>
+                            </div>
+
+                            <div class="auth-field-group">
+                                <label for="password">Kata sandi</label>
+                                <div class="auth-input-wrap">
+                                    <i class="fas fa-lock auth-input-icon" aria-hidden="true"></i>
+                                    <input class="auth-input @error('password') is-invalid @enderror" id="password" type="password" name="password" placeholder="Minimal 6 karakter" autocomplete="new-password" required>
+                                    <button class="auth-password-toggle" type="button" onclick="togglePasswordVisibility('password', this)" aria-label="Tampilkan kata sandi" title="Tampilkan/sembunyikan kata sandi"><i class="fas fa-eye" aria-hidden="true"></i></button>
+                                </div>
+                                @error('password')<div class="auth-field-error">{{ $message }}</div>@enderror
+                                <small class="auth-field-hint">Gunakan setidaknya 6 karakter.</small>
+                            </div>
+
+                            <div class="auth-field-group">
+                                <label for="password_confirmation">Konfirmasi kata sandi</label>
+                                <div class="auth-input-wrap">
+                                    <i class="fas fa-shield-halved auth-input-icon" aria-hidden="true"></i>
+                                    <input class="auth-input @error('password_confirmation') is-invalid @enderror" id="password_confirmation" type="password" name="password_confirmation" placeholder="Ulangi kata sandi" autocomplete="new-password" required>
+                                    <button class="auth-password-toggle" type="button" onclick="togglePasswordVisibility('password_confirmation', this)" aria-label="Tampilkan kata sandi" title="Tampilkan/sembunyikan kata sandi"><i class="fas fa-eye" aria-hidden="true"></i></button>
+                                </div>
+                                @error('password_confirmation')<div class="auth-field-error">{{ $message }}</div>@enderror
+                                <small class="auth-field-hint">Pastikan sama dengan kata sandi di atas.</small>
+                            </div>
+                        </div>
+
+                        <button class="auth-submit" type="submit"><span>Buat akun</span><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+                    </form>
+
+                    <div class="auth-switch"><span>Sudah memiliki akun?</span> <a href="{{ route('login') }}">Masuk di sini</a></div>
+                    <div class="auth-secure-note"><i class="fas fa-shield-halved" aria-hidden="true"></i> Informasi akun Anda terlindungi dengan aman</div>
+                </div>
+            </section>
         </div>
-
-        {{-- Hapus padding container bawaan karena register-container sudah fullscreen --}}
-        <style>
-            main .container {
-                padding: 0;
-            }
-        </style>
     @endauth
 @endsection
 
@@ -359,16 +120,12 @@
         function togglePasswordVisibility(inputId, toggleBtn) {
             const passwordInput = document.getElementById(inputId);
             const icon = toggleBtn.querySelector('i');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
+            const showPassword = passwordInput.type === 'password';
+
+            passwordInput.type = showPassword ? 'text' : 'password';
+            icon.classList.toggle('fa-eye', !showPassword);
+            icon.classList.toggle('fa-eye-slash', showPassword);
+            toggleBtn.setAttribute('aria-label', showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi');
         }
     </script>
 @endsection

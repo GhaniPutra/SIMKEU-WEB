@@ -149,8 +149,8 @@ function initTrendChart() {
     const categoryPercentage = getCategoryPercentage(labels.length);
     const barPercentage = 0.7;
     const chartColors = getComputedStyle(document.documentElement);
-    const revenueColor = chartColors.getPropertyValue('--blue-600').trim();
-    const expenseColor = chartColors.getPropertyValue('--red-600').trim();
+    const revenueColor = chartColors.getPropertyValue('--blue-400').trim();
+    const expenseColor = chartColors.getPropertyValue('--red-400').trim();
 
     new Chart(trendCanvas, {
         type: 'bar',

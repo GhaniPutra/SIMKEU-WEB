@@ -205,9 +205,9 @@
         transition: all 0.2s;
     }
     .btn-back:hover {
-        background: var(--danger); /* Hover merah untuk halaman pengeluaran */
+        background: var(--red-600); /* Hover merah untuk halaman pengeluaran */
         color: #fff;
-        border-color: var(--danger);
+        border-color: var(--red-600);
     }
 
 </style>

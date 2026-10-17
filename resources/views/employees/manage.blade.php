@@ -223,7 +223,7 @@
                 </label>
                 <button type="submit" class="btn-add"><i class="fas fa-filter"></i> Terapkan</button>
                 @if($stockSearch !== '' || $stockStatus !== '')
-                    <a href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock', 'period' => $analyticsPeriod]) }}" class="stock-reset">Reset</a>
+                    <a href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock', 'period' => $analyticsPeriod]) }}" class="stock-reset reset-button"><i class="fas fa-xmark" aria-hidden="true"></i> Reset</a>
                 @endif
             </form>
 
@@ -434,6 +434,7 @@
             const trendLabels = JSON.parse(chartData.trendLabels);
             const trendRevenue = JSON.parse(chartData.trendRevenue);
             const trendFullLabels = JSON.parse(chartData.trendFullLabels);
+            const employeeChartBlue = '#65b1f5';
             ['overview-sales-chart', 'sales-tab-chart'].forEach((chartId) => {
                 const canvas = document.getElementById(chartId);
                 if (!canvas) return;
@@ -442,6 +443,10 @@
                     canvas.remove();
                     return;
                 }
+                const context = canvas.getContext('2d');
+                const areaGradient = context.createLinearGradient(0, 0, 0, 250);
+                areaGradient.addColorStop(0, 'rgba(101, 177, 245, 0.28)');
+                areaGradient.addColorStop(1, 'rgba(101, 177, 245, 0)');
                 const chart = new Chart(canvas, {
                     type: 'line',
                     data: {
@@ -449,13 +454,16 @@
                         datasets: [{
                             label: 'Pendapatan',
                             data: trendRevenue,
-                            borderColor: '#2c74e4',
-                            backgroundColor: 'transparent',
-                            pointBackgroundColor: '#2c74e4',
-                            pointRadius: 2,
+                            borderColor: employeeChartBlue,
+                            borderWidth: 2,
+                            backgroundColor: areaGradient,
+                            pointBackgroundColor: employeeChartBlue,
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 1,
+                            pointRadius: 2.5,
                             pointHoverRadius: 4,
-                            fill: false,
-                            tension: 0
+                            fill: true,
+                            tension: 0.25
                         }]
                     },
                     options: {
@@ -472,18 +480,23 @@
                             }
                         },
                         scales: {
-                            x: { grid: { display: false }, ticks: { maxTicksLimit: 8, autoSkip: true, color: '#234eaa' } },
+                            x: {
+                                grid: { display: false },
+                                border: { display: false },
+                                ticks: { maxTicksLimit: 8, autoSkip: true, color: '#8aa3b8' }
+                            },
                             y: {
                                 beginAtZero: true,
                                 ticks: {
-                                    color: '#234eaa',
+                                    color: '#8aa3b8',
                                     callback: (value) => value >= 1000000
                                         ? `Rp ${(value / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 })} jt`
                                         : value >= 1000
                                             ? `Rp ${(value / 1000).toLocaleString('id-ID', { maximumFractionDigits: 0 })} rb`
                                             : currency.format(value)
                                 },
-                                grid: { color: 'rgba(193,224,252,.6)' }
+                                border: { display: false },
+                                grid: { color: 'rgba(193,224,252,.35)' }
                             }
                         }
                     }

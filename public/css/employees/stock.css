@@ -62,9 +62,9 @@
 }
 
 .btn-back:hover {
-    background: var(--primary-light); /* Warna latar hover */
-    border-color: var(--primary); /* Warna border hover */
-    color: var(--primary); /* Warna teks hover */
+    background: var(--blue-600);
+    border-color: var(--blue-600);
+    color: #fff;
     transform: translateY(-2px); /* Gerakan naik kecil */
     box-shadow: var(--shadow-md); /* Bayangan lebih kuat */
 }
@@ -372,23 +372,24 @@
 }
 
 .btn-give {
-    background: linear-gradient(135deg, var(--primary), var(--primary-light)); /* Warna tombol beri */
+    background: var(--blue-600);
     color: #f0f7fe; /* Warna teks tombol */
 }
 
 .btn-give:hover:not(:disabled) {
+    background: var(--blue-700);
     transform: translateY(-2px); /* Naik sedikit saat hover */
     box-shadow: var(--shadow-md); /* Bayangan hover */
 }
 
 .btn-pull {
     background: rgba(var(--danger-rgb, 239 68 68), 0.08); /* Latar tombol tarik */
-    color: var(--danger); /* Warna teks */
+    color: var(--red-600); /* Warna teks */
     border: 1px solid rgba(var(--danger-rgb, 239 68 68), 0.2); /* Border tombol */
 }
 
 .btn-pull:hover:not(:disabled) {
-    background: var(--danger); /* Latar hover */
+    background: var(--red-600); /* Latar tombol saat hover */
     color: #f0f7fe; /* Warna teks hover */
     border-color: transparent; /* Hilangkan border */
     transform: translateY(-2px); /* Naik sedikit */

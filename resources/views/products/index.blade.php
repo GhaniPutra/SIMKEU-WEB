@@ -142,13 +142,13 @@
             </select>
 
             {{-- Tombol terapkan filter --}}
-            <button type="submit" class="btn-add" style="background:var(--text-muted);">
+            <button type="submit" class="btn-add">
                 <i class="fas fa-filter"></i> Filter
             </button>
 
             {{-- Tombol reset filter: hapus semua parameter pencarian --}}
             @if($search || $categoryFilter)
-                <a href="{{ route('products.index', array_merge(request()->except(['search', 'category_id', 'products_page']), ['tab' => 'produk'])) }}" class="btn-add btn-reset">
+                <a href="{{ route('products.index', array_merge(request()->except(['search', 'category_id', 'products_page']), ['tab' => 'produk'])) }}" class="btn-add btn-reset reset-button">
                     <i class="fas fa-xmark"></i> Reset
                 </a>
             @endif
