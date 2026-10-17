@@ -284,7 +284,7 @@
             const defaults = window.Chart.defaults;
             defaults.animation.duration = reducedMotion.matches ? 0 : 400;
             defaults.font.family = 'Poppins, sans-serif';
-            defaults.color = '#434D27';
+            defaults.color = '#374151';
             defaults.elements.line.tension = 0;
             defaults.elements.line.fill = false;
             defaults.elements.point.radius = 2;

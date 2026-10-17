@@ -63,7 +63,7 @@ function getChartTitle() {
 //         Konfigurasi disesuaikan dengan periode filter aktif.
 // ============================================================
 function createChartDefaults() {
-    const gridLine = 'rgba(67,77,39,.18)';
+    const gridLine = 'rgba(55,65,81,.14)';
     const moneyTick = (value) => {
         if (value >= 1000000) return `Rp ${(value / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 })} jt`;
         if (value >= 1000) return `Rp ${(value / 1000).toLocaleString('id-ID', { maximumFractionDigits: 0 })} rb`;
@@ -80,7 +80,7 @@ function createChartDefaults() {
                 display: true,
                 text: getChartTitle(),
                 font: { size: 12, family: 'Poppins', weight: '500' },
-                color: '#434D27',
+                color: '#374151',
                 padding: { bottom: 12 }
             },
             legend: {
