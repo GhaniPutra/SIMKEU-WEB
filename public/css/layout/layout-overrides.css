@@ -111,6 +111,15 @@
             color: var(--text-muted) !important;
         }
 
+        #topbar .notification-empty,
+        #topbar .notification-empty span {
+            color: var(--text-muted) !important;
+        }
+
+        #topbar *:not([class*="icon"]):not(.fa):not([class*="fa-"]).notification-badge {
+            color: #fff !important;
+        }
+
         #topbar .form-select:not(:disabled) {
             color: #374151 !important;
             background-color: #ffffff !important;

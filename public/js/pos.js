@@ -221,9 +221,10 @@ function removeCartItem(index) {
  * Memvalidasi stok dan duplikasi produk.
  */
 function addItemToCart() {
+    const notify = message => window.SimkeuNotifications?.add({ type: 'warning', title: 'Input belum valid', message });
     const selectedOption = productSelect.options[productSelect.selectedIndex];
     if (!selectedOption || !selectedOption.value) {
-        alert('Silakan pilih produk terlebih dahulu.');
+        notify('Silakan pilih produk terlebih dahulu.');
         return;
     }
 
@@ -237,13 +238,13 @@ function addItemToCart() {
 
     // Validasi jumlah minimum
     if (quantity <= 0) {
-        alert('Jumlah produk harus minimal 1.');
+        notify('Jumlah produk harus minimal 1.');
         return;
     }
 
     // Validasi ketersediaan stok
     if (quantity > stock) {
-        alert('Jumlah melebihi stok yang tersedia.');
+        notify('Jumlah melebihi stok yang tersedia.');
         return;
     }
 
@@ -253,7 +254,7 @@ function addItemToCart() {
         const existing = cartItems[existingIndex];
         const newQty = existing.quantity + quantity;
         if (newQty > stock) {
-            alert('Jumlah total melebihi stok yang tersedia.');
+            notify('Jumlah total melebihi stok yang tersedia.');
             return;
         }
         existing.quantity = newQty;

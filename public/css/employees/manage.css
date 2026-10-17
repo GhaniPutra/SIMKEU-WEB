@@ -903,63 +903,6 @@
     width: 100%;
 }
 
-.employee-toast {
-    position: fixed;
-    right: 24px;
-    bottom: 24px;
-    z-index: 1080;
-    display: flex;
-    align-items: center;
-    gap: 11px;
-    max-width: min(420px, calc(100vw - 32px));
-    padding: 13px 16px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    background: var(--card-bg);
-    box-shadow: var(--shadow-lg);
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(8px);
-    transition: opacity .18s ease, transform .18s ease;
-}
-
-.employee-toast.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.employee-toast-icon {
-    display: grid;
-    place-items: center;
-    width: 30px;
-    height: 30px;
-    flex: 0 0 30px;
-    border-radius: 50%;
-    background: var(--success-bg);
-    color: var(--icon-success);
-}
-
-.employee-toast.error .employee-toast-icon {
-    background: var(--danger-bg);
-    color: var(--icon-danger);
-}
-
-.employee-toast strong,
-.employee-toast small {
-    display: block;
-}
-
-.employee-toast strong {
-    color: var(--text-primary);
-    font-size: .8rem;
-}
-
-.employee-toast small {
-    margin-top: 2px;
-    color: var(--text-muted);
-    font-size: .72rem;
-}
-
 @media (max-width: 1100px) {
     .employee-kpis {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1146,15 +1089,10 @@
         flex-direction: column;
     }
 
-    .employee-toast {
-        right: 12px;
-        bottom: 12px;
-    }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .employee-kpi,
-    .employee-toast,
     .employee-tab,
     .employee-tab::after {
         transition: none;

@@ -1,36 +1,17 @@
-// JavaScript khusus untuk halaman stock pegawai
-// File ini memisahkan semua logika interaksi dari file Blade.
+// Interaksi tab stok pada halaman kelola pegawai.
 
-// Ambil ID pegawai dari atribut data di root container.
 function getEmployeeId() {
-    const stockRoot = document.querySelector('.stock-page, .employee-manage');
-    return stockRoot ? stockRoot.dataset.employeeId : null;
+    return document.querySelector('.employee-manage')?.dataset.employeeId || null;
 }
 
 function getTransferUrl(employeeId) {
-    const root = document.querySelector('.stock-page, .employee-manage');
+    const root = document.querySelector('.employee-manage');
     return root?.dataset.stockTransferUrl || `/employees/${employeeId}/stock/transfer`;
 }
 
-// Timer untuk toast notification.
-let toastTimer = null;
-
-// Tampilkan toast dengan tipe, judul, dan pesan yang jelas.
+// Satukan pesan interaktif halaman di panel notifikasi navbar.
 function showToast(type, title, msg) {
-    const toast = document.getElementById('stock-toast'); // Ambil elemen toast
-    const icon = document.getElementById('toast-icon-el'); // Ambil elemen ikon toast
-
-    document.getElementById('toast-title').textContent = title; // Set judul toast
-    document.getElementById('toast-msg').textContent = msg; // Set pesan toast
-
-    toast.classList.remove('success', 'error');
-    toast.classList.add(type);
-    icon.className = type === 'success' ? 'fas fa-check' : 'fas fa-xmark'; // Set ikon
-
-    toast.classList.add('show'); // Tampilkan toast
-
-    clearTimeout(toastTimer); // Hapus timer sebelumnya jika ada
-    toastTimer = setTimeout(() => toast.classList.remove('show'), 3500); // Sembunyikan setelah 3.5 detik
+    window.SimkeuNotifications?.add({ type, title, message: msg });
 }
 
 // Tampilkan status loading pada tombol aksi.
@@ -71,17 +52,6 @@ function setLoading(productId, loading, showSpinner = true) {
         delete btnGive.dataset.loadingHtml;
         delete btnPull.dataset.loadingHtml;
     }
-}
-
-// Animasi badge ketika nilai berubah.
-function animateBadge(el) {
-    if (!el) {
-        return; // Pastikan elemen ada
-    }
-
-    el.classList.remove('num-updated'); // Hapus kelas lama
-    void el.offsetWidth; // Reflow browser untuk memicu animasi ulang
-    el.classList.add('num-updated'); // Tambahkan kembali kelas animasi
 }
 
 // Transfer stok antara gudang dan pegawai.
@@ -133,11 +103,9 @@ async function transferStock(productId, action) {
 
             if (masterEl) {
                 masterEl.querySelector('[data-stock-value]').textContent = Number(result.master_stock).toLocaleString();
-                animateBadge(masterEl); // Animasi badge berubah
             }
             if (empEl) {
                 empEl.querySelector('[data-stock-value]').textContent = Number(result.employee_stock).toLocaleString();
-                animateBadge(empEl); // Animasi badge berubah
             }
 
             if (barEl) {
@@ -178,17 +146,6 @@ async function transferStock(productId, action) {
     }
 }
 
-function initializeStockBarWidths() {
-    const bars = document.querySelectorAll('.stock-bar-fill[data-fill]');
-
-    bars.forEach((bar) => {
-        const fillValue = Number(bar.dataset.fill);
-        if (!Number.isNaN(fillValue)) {
-            bar.style.width = `${Math.min(100, Math.max(0, fillValue))}%`;
-        }
-    });
-}
-
 function bindStockTransferButtons() {
     const transferButtons = document.querySelectorAll('.btn-transfer');
 
@@ -207,81 +164,6 @@ function bindStockTransferButtons() {
     });
 }
 
-async function reviewAllocation(allocationId, decision) {
-    const input = document.querySelector(`.allocation-confirmed-qty[data-allocation-id="${allocationId}"]`);
-    const confirmedQuantity = input ? Number(input.value) : null;
-    const payload = { decision, confirmed_quantity: confirmedQuantity };
-
-    if (decision === 'decline') {
-        const actualInput = window.prompt('Jumlah fisik yang diterima:', '0');
-        if (actualInput === null) return;
-
-        const actualQuantity = Number(actualInput);
-        if (!Number.isInteger(actualQuantity) || actualQuantity < 0) {
-            showToast('error', 'Review Gagal', 'Jumlah fisik harus berupa bilangan bulat nol atau lebih.');
-            return;
-        }
-
-        const reason = window.prompt('Alasan selisih wajib diisi:');
-        if (reason === null) return;
-        if (!reason.trim()) {
-            showToast('error', 'Review Gagal', 'Alasan selisih wajib diisi.');
-            return;
-        }
-
-        payload.actual_received_quantity = actualQuantity;
-        payload.decline_reason = reason.trim();
-    }
-
-    try {
-        const response = await fetch(`/stock-allocations/${allocationId}/review`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            },
-            body: JSON.stringify(payload),
-        });
-
-        const result = await response.json();
-
-        if (!response.ok || !result.success) {
-            showToast('error', 'Review Gagal', result.message || 'Terjadi kesalahan saat meninjau alokasi.');
-            return;
-        }
-
-        showToast('success', 'Review Berhasil', result.message || 'Status alokasi berhasil diperbarui.');
-        const row = document.getElementById(`allocation-row-${allocationId}`);
-        if (row) {
-            row.remove();
-        }
-    } catch (error) {
-        console.error(error);
-        showToast('error', 'Koneksi Error', 'Gagal menghubungi server.');
-    }
-}
-
-function bindAllocationReviewButtons() {
-    const buttons = document.querySelectorAll('.btn-allocation-decision');
-
-    buttons.forEach((button) => {
-        button.addEventListener('click', () => {
-            const allocationId = button.dataset.allocationId;
-            const decision = button.dataset.decision;
-
-            if (!allocationId || !decision) {
-                showToast('error', 'Review Gagal', 'Data alokasi tidak valid.');
-                return;
-            }
-
-            reviewAllocation(allocationId, decision);
-        });
-    });
-}
-
 document.addEventListener('DOMContentLoaded', () => {
-    initializeStockBarWidths();
     bindStockTransferButtons();
-    bindAllocationReviewButtons();
 });

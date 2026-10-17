@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\POSController;         // Controller untuk halaman Point of Sale (POS)
 use App\Http\Controllers\ProductController;   // Controller untuk manajemen produk / stok
@@ -10,6 +11,7 @@ use App\Http\Controllers\CategoryController;  // Controller untuk manajemen kate
 use App\Http\Controllers\PemasukanController;    // Controller untuk halaman pemasukan / penjualan
 use App\Http\Controllers\PengeluaranController;  // Controller untuk halaman pengeluaran operasional
 use App\Http\Middleware\EnsureStoreAdmin;
+use App\Support\NotificationUrl;
 
 // ====================================
 // Route untuk halaman utama
@@ -50,12 +52,28 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 use App\Http\Controllers\StoreController;
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/notifications/unread', function (\Illuminate\Http\Request $request) {
+        $unread = $request->user()->unreadNotifications();
+        return response()->json([
+            'unread_count' => (clone $unread)->count(),
+            'notifications' => $unread->latest()->limit(10)->get()->map(fn ($notification) => [
+                'id' => $notification->id,
+                'data' => NotificationUrl::normalize($notification->data),
+                'created_at' => $notification->created_at->diffForHumans(),
+            ]),
+        ]);
+    })->name('notifications.unread');
+    Route::post('/notifications/read', function (\Illuminate\Http\Request $request) {
+        $request->user()->unreadNotifications()->update(['read_at' => now()]);
+        return response()->json(['success' => true]);
+    })->name('notifications.read');
     // Route setup toko (harus di dalam auth)
     Route::get('/store/setup', [StoreController::class, 'setup'])->name('store.setup');
     Route::post('/store/setup', [StoreController::class, 'store'])->name('store.store');
 
     // Route dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/activities', [ActivityController::class, 'index'])->name('activities.index');
 
         // ====================================
         // Route untuk halaman Pemasukan (Penjualan)
@@ -90,7 +108,6 @@ Route::middleware(['auth'])->group(function () {
             Route::resource('employees', App\Http\Controllers\EmployeeController::class)->except(['show']);
             Route::get('/employees/{employee}/manage', [App\Http\Controllers\EmployeeController::class, 'manage'])->name('employees.manage');
             Route::get('/employees/{employee}/sales-dashboard', [App\Http\Controllers\EmployeeSalesController::class, 'dashboard'])->name('employees.sales-dashboard');
-            Route::get('/employees/{employee}/stock', [App\Http\Controllers\EmployeeStockController::class, 'index'])->name('employees.stock');
             Route::get('/stock-allocations/pending-status', [App\Http\Controllers\EmployeeStockController::class, 'pendingAllocations'])->name('employees.stock.allocations.pending-status');
             Route::post('/employees/{employee}/stock/allocations', [App\Http\Controllers\EmployeeStockController::class, 'createAllocation'])->name('employees.stock.allocations.store');
             Route::post('/stock-allocations/{allocation}/review', [App\Http\Controllers\EmployeeStockController::class, 'reviewAllocation'])->name('employees.stock.allocations.review');

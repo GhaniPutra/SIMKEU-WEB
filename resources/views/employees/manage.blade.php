@@ -445,10 +445,6 @@
         </div>
     </section>
 
-    <div id="stock-toast" class="employee-toast" role="status" aria-live="polite">
-        <span class="employee-toast-icon"><i class="fas fa-check" id="toast-icon-el"></i></span>
-        <span><strong id="toast-title"></strong><small id="toast-msg"></small></span>
-    </div>
 </div>
 @endsection
 

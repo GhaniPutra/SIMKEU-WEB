@@ -183,7 +183,7 @@
                     <span class="content-card-title">
                         <i class="fas fa-clock-rotate-left"></i> Aktivitas Terbaru
                     </span>
-                    <a href="#" style="font-size:.75rem;color:var(--primary);text-decoration:none;font-weight:600;">
+                    <a href="{{ route('activities.index', ['period' => $period]) }}" style="font-size:.75rem;color:var(--primary);text-decoration:none;font-weight:600;">
                         Lihat semua
                     </a>
                 </div>
@@ -215,7 +215,7 @@
                     <span class="content-card-title">
                         <i class="fas fa-receipt"></i> Transaksi Terbaru
                     </span>
-                    <a href="#" style="font-size:.75rem;color:var(--primary);text-decoration:none;font-weight:600;">
+                    <a href="{{ route('activities.index', ['period' => $period]) }}" style="font-size:.75rem;color:var(--primary);text-decoration:none;font-weight:600;">
                         Lihat semua
                     </a>
                 </div>

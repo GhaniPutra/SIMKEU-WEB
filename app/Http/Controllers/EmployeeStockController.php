@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use App\Models\StockAllocation;
 use App\Models\User;
 use App\Services\StockAllocationWorkflow;
@@ -12,30 +11,6 @@ use Illuminate\Validation\Rule;
 
 class EmployeeStockController extends Controller
 {
-    /**
-     * Menampilkan halaman distribusi stok untuk pegawai tertentu.
-     */
-    public function index(User $employee)
-    {
-        if ($employee->role !== 'pegawai') {
-            return redirect()->route('employees.index')->with('error', 'Hanya dapat mengatur stok untuk pegawai.');
-        }
-
-        $products = Product::with(['category', 'users' => function ($query) use ($employee) {
-            $query->where('user_id', $employee->id);
-        }])->orderBy('name')->paginate(15);
-
-        $pendingAllocations = StockAllocation::with(['product', 'owner', 'employee'])
-            ->where('employee_user_id', $employee->id)
-            ->whereHas('owner', fn ($query) => $query->where('store_id', request()->user()->store_id))
-            ->whereHas('product', fn ($query) => $query->where('store_id', request()->user()->store_id))
-            ->where('status', StockAllocation::STATUS_PENDING)
-            ->orderByDesc('created_at')
-            ->get();
-
-        return view('employees.stock', compact('employee', 'products', 'pendingAllocations'));
-    }
-
     public function createAllocation(Request $request, User $employee, StockAllocationWorkflow $workflow)
     {
         $owner = $request->user();

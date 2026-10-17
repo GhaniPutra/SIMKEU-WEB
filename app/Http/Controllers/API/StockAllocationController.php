@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\StockAllocation;
 use App\Models\User;
+use App\Notifications\StockAllocationDeclined;
 use App\Services\StockAllocationWorkflow;
 use Illuminate\Http\Request;
 
@@ -108,6 +109,9 @@ class StockAllocationController extends Controller
         ]);
 
         $allocation = $workflow->reviewByEmployee($user, $allocation->id, $validated);
+        if ($validated['decision'] === 'decline') {
+            $allocation->owner?->notify(new StockAllocationDeclined($allocation));
+        }
 
         return response()->json([
             'success' => true,
