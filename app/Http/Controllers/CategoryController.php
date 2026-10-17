@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 /**
  * CategoryController
@@ -53,7 +54,7 @@ class CategoryController extends Controller
     {
         // Validasi input: nama wajib dan unik di tabel categories
         $data = $request->validate([
-            'name'        => 'required|string|max:100|unique:categories,name',
+            'name'        => ['required', 'string', 'max:100', Rule::unique('categories', 'name')->where('store_id', $request->user()->store_id)],
             'description' => 'nullable|string|max:500',
         ], [
             'name.required' => 'Nama kategori wajib diisi.',
@@ -83,7 +84,7 @@ class CategoryController extends Controller
     {
         // Validasi: nama wajib, unik kecuali untuk kategori yang sedang diedit
         $data = $request->validate([
-            'name'        => 'required|string|max:100|unique:categories,name,' . $category->id,
+            'name'        => ['required', 'string', 'max:100', Rule::unique('categories', 'name')->where('store_id', $request->user()->store_id)->ignore($category->id)],
             'description' => 'nullable|string|max:500',
         ], [
             'name.required' => 'Nama kategori wajib diisi.',

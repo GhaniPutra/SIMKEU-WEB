@@ -9,9 +9,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\User;
 use App\Models\Product;
+use App\Models\Concerns\BelongsToStore;
 
 class Expense extends Model
 {
+    use BelongsToStore;
+
     // ============================================================
     // FILLABLE — Kolom yang boleh diisi secara massal (mass assignment)
     // Sesuai dengan kolom di tabel 'expenses' pada migrasi

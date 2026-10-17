@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductController;   // Controller untuk manajemen prod
 use App\Http\Controllers\CategoryController;  // Controller untuk manajemen kategori produk
 use App\Http\Controllers\PemasukanController;    // Controller untuk halaman pemasukan / penjualan
 use App\Http\Controllers\PengeluaranController;  // Controller untuk halaman pengeluaran operasional
+use App\Http\Middleware\EnsureStoreAdmin;
 
 // ====================================
 // Route untuk halaman utama
@@ -85,17 +86,16 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/pos', [POSController::class, 'store'])->name('pos.store');
 
         // Resource routes untuk manajemen Pegawai
-        Route::resource('employees', App\Http\Controllers\EmployeeController::class)->except(['show']);
-        Route::get('/employees/{employee}/manage', [App\Http\Controllers\EmployeeController::class, 'manage'])->name('employees.manage');
-        // Route untuk dashboard penjualan pegawai
-        Route::get('/employees/{employee}/sales-dashboard', [App\Http\Controllers\EmployeeSalesController::class, 'dashboard'])->name('employees.sales-dashboard');
-
-        // Route untuk distribusi stok pegawai
-        Route::get('/employees/{employee}/stock', [App\Http\Controllers\EmployeeStockController::class, 'index'])->name('employees.stock');
-        Route::get('/stock-allocations/pending-status', [App\Http\Controllers\EmployeeStockController::class, 'pendingAllocations'])->name('employees.stock.allocations.pending-status');
-        Route::post('/employees/{employee}/stock/allocations', [App\Http\Controllers\EmployeeStockController::class, 'createAllocation'])->name('employees.stock.allocations.store');
-        Route::post('/stock-allocations/{allocation}/review', [App\Http\Controllers\EmployeeStockController::class, 'reviewAllocation'])->name('employees.stock.allocations.review');
-        Route::post('/employees/{employee}/stock/transfer', [App\Http\Controllers\EmployeeStockController::class, 'transfer'])->name('employees.stock.transfer');
+        Route::middleware(EnsureStoreAdmin::class)->group(function () {
+            Route::resource('employees', App\Http\Controllers\EmployeeController::class)->except(['show']);
+            Route::get('/employees/{employee}/manage', [App\Http\Controllers\EmployeeController::class, 'manage'])->name('employees.manage');
+            Route::get('/employees/{employee}/sales-dashboard', [App\Http\Controllers\EmployeeSalesController::class, 'dashboard'])->name('employees.sales-dashboard');
+            Route::get('/employees/{employee}/stock', [App\Http\Controllers\EmployeeStockController::class, 'index'])->name('employees.stock');
+            Route::get('/stock-allocations/pending-status', [App\Http\Controllers\EmployeeStockController::class, 'pendingAllocations'])->name('employees.stock.allocations.pending-status');
+            Route::post('/employees/{employee}/stock/allocations', [App\Http\Controllers\EmployeeStockController::class, 'createAllocation'])->name('employees.stock.allocations.store');
+            Route::post('/stock-allocations/{allocation}/review', [App\Http\Controllers\EmployeeStockController::class, 'reviewAllocation'])->name('employees.stock.allocations.review');
+            Route::post('/employees/{employee}/stock/transfer', [App\Http\Controllers\EmployeeStockController::class, 'transfer'])->name('employees.stock.transfer');
+        });
 
         // ====================================
         // Route untuk manajemen Produk / Stok
@@ -107,17 +107,19 @@ Route::middleware(['auth'])->group(function () {
         // PUT    /products/{id}      → update  (simpan perubahan)
         // DELETE /products/{id}      → destroy (hapus produk)
         // ====================================
-        Route::resource('products', ProductController::class)->except(['show']);
+        Route::middleware(EnsureStoreAdmin::class)->group(function () {
+            Route::resource('products', ProductController::class)->except(['show']);
 
         // ====================================
         // CRUD kategori tetap tersedia; route index mengarah ke tab Kategori.
         // ====================================
-        Route::resource('categories', CategoryController::class)->only(['index', 'store', 'update', 'destroy']);
+            Route::resource('categories', CategoryController::class)->only(['index', 'store', 'update', 'destroy']);
 
         // Route khusus untuk penyesuaian stok cepat (tambah / kurangi)
         // PATCH /products/{product}/adjust-stock → adjustStock
-        Route::patch('/products/{product}/adjust-stock', [ProductController::class, 'adjustStock'])
-             ->name('products.adjust-stock');
+            Route::patch('/products/{product}/adjust-stock', [ProductController::class, 'adjustStock'])
+                 ->name('products.adjust-stock');
+        });
 });
 
 // ====================================

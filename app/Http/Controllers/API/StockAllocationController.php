@@ -31,9 +31,12 @@ class StockAllocationController extends Controller
                 'message' => 'Anda hanya dapat melihat alokasi stok milik sendiri.',
             ], 403);
         }
+        abort_unless($user->store_id && $employee->store_id === $user->store_id, 403);
 
         $allocations = StockAllocation::with(['product', 'owner', 'employee', 'reviewer', 'resolver', 'revisedFrom'])
             ->where('employee_user_id', $employee->id)
+            ->whereHas('owner', fn ($query) => $query->where('store_id', $user->store_id))
+            ->whereHas('product', fn ($query) => $query->where('store_id', $user->store_id))
             ->orderByDesc('created_at')
             ->get();
 
@@ -61,6 +64,8 @@ class StockAllocationController extends Controller
 
         $allocations = StockAllocation::with(['product', 'owner', 'employee', 'reviewer', 'resolver', 'revisedFrom'])
             ->where('employee_user_id', $user->id)
+            ->whereHas('owner', fn ($query) => $query->where('store_id', $user->store_id))
+            ->whereHas('product', fn ($query) => $query->where('store_id', $user->store_id))
             ->where('status', StockAllocation::STATUS_PENDING)
             ->orderByDesc('created_at')
             ->get();
@@ -125,6 +130,8 @@ class StockAllocationController extends Controller
 
         $allocations = StockAllocation::with(['product', 'owner', 'employee', 'reviewer', 'revisedFrom'])
             ->where('owner_user_id', $user->id)
+            ->whereHas('employee', fn ($query) => $query->where('store_id', $user->store_id))
+            ->whereHas('product', fn ($query) => $query->where('store_id', $user->store_id))
             ->whereIn('status', [StockAllocation::STATUS_DECLINED, StockAllocation::STATUS_NEEDS_REVIEW])
             ->orderByDesc('created_at')
             ->get();

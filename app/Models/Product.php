@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Concerns\BelongsToStore;
 
 /**
  * Model Product
@@ -12,6 +13,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Product extends Model
 {
+    use BelongsToStore;
+
     public const LOW_STOCK_THRESHOLD = 10;
 
     /**

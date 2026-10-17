@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
@@ -77,7 +78,7 @@ class CategoryController extends Controller
         try {
             // Validasi input
             $validated = $request->validate([
-                'name' => 'required|string|max:100|unique:categories,name',
+                'name' => ['required', 'string', 'max:100', Rule::unique('categories', 'name')->where('store_id', $request->user()->store_id)],
                 'description' => 'nullable|string|max:500',
             ], [
                 'name.required' => 'Nama kategori wajib diisi.',
@@ -118,7 +119,7 @@ class CategoryController extends Controller
         try {
             // Validasi input
             $validated = $request->validate([
-                'name' => 'sometimes|string|max:100|unique:categories,name,' . $category->id,
+                'name' => ['sometimes', 'string', 'max:100', Rule::unique('categories', 'name')->where('store_id', $request->user()->store_id)->ignore($category->id)],
                 'description' => 'nullable|string|max:500',
             ], [
                 'name.unique' => 'Nama kategori sudah digunakan.',

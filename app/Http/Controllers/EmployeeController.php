@@ -18,7 +18,7 @@ class EmployeeController extends Controller
         $search = $request->query('search', '');
         $roleFilter = $request->query('role', '');
 
-        $employeesQuery = User::whereIn('role', ['pegawai', 'admin']);
+        $employeesQuery = User::where('store_id', $request->user()->store_id)->whereIn('role', ['pegawai', 'admin']);
 
         if (!empty($search)) {
             $employeesQuery->where(function ($query) use ($search) {
@@ -32,9 +32,9 @@ class EmployeeController extends Controller
         }
 
         $employees = $employeesQuery->orderBy('id', 'desc')->paginate(15)->withQueryString();
-        $totalUsers = User::whereIn('role', ['pegawai', 'admin'])->count();
-        $totalPegawai = User::where('role', 'pegawai')->count();
-        $totalAdmin = User::where('role', 'admin')->count();
+        $totalUsers = User::where('store_id', $request->user()->store_id)->whereIn('role', ['pegawai', 'admin'])->count();
+        $totalPegawai = User::where('store_id', $request->user()->store_id)->where('role', 'pegawai')->count();
+        $totalAdmin = User::where('store_id', $request->user()->store_id)->where('role', 'admin')->count();
 
         return view('employees.index', compact('employees', 'totalUsers', 'totalPegawai', 'totalAdmin', 'search', 'roleFilter'));
     }
@@ -58,7 +58,7 @@ class EmployeeController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'role' => $data['role'],
-            'store_id' => null,
+            'store_id' => $request->user()->store_id,
         ]);
 
         return redirect()->route('employees.index')->with('success', 'Pegawai berhasil ditambahkan.');
@@ -116,6 +116,7 @@ class EmployeeController extends Controller
             ->first();
         $periodItemsQuery = DB::table('sale_items')
             ->join('sales', 'sales.id', '=', 'sale_items.sale_id')
+            ->where('sales.store_id', $request->user()->store_id)
             ->where('sales.user_id', $employee->id);
         PeriodFilter::apply($periodItemsQuery, 'sales.transaction_date', $periodStart, $periodEnd);
         $periodItemsSold = $periodItemsQuery->sum('sale_items.quantity');
@@ -170,6 +171,8 @@ class EmployeeController extends Controller
         $topProducts = DB::table('sale_items')
             ->join('sales', 'sales.id', '=', 'sale_items.sale_id')
             ->join('products', 'products.id', '=', 'sale_items.product_id')
+            ->where('sales.store_id', $request->user()->store_id)
+            ->where('products.store_id', $request->user()->store_id)
             ->where('sales.user_id', $employee->id)
             ->select('products.id', 'products.name', 'products.unit')
             ->selectRaw('SUM(sale_items.quantity) as units_sold');
@@ -181,7 +184,7 @@ class EmployeeController extends Controller
             ->limit(5)
             ->get();
 
-        $stockSummary = DB::table('products')
+        $stockSummary = DB::table('products')->where('products.store_id', $request->user()->store_id)
             ->leftJoin('product_user as employee_product', function ($join) use ($employee) {
                 $join->on('products.id', '=', 'employee_product.product_id')
                     ->where('employee_product.user_id', '=', $employee->id);
@@ -197,7 +200,7 @@ class EmployeeController extends Controller
             ->first();
         $lowStockThreshold = Product::LOW_STOCK_THRESHOLD;
 
-        $stockAttention = DB::table('products')
+        $stockAttention = DB::table('products')->where('products.store_id', $request->user()->store_id)
             ->leftJoin('product_user as employee_product', function ($join) use ($employee) {
                 $join->on('products.id', '=', 'employee_product.product_id')
                     ->where('employee_product.user_id', '=', $employee->id);

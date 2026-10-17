@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use App\Models\Customer;
 use App\Models\Product;
@@ -54,12 +55,12 @@ class POSController extends Controller
     {
         // Validasi data form POS sebelum diproses
         $validated = $request->validate([
-            'customer_id' => ['nullable', 'exists:customers,id'],
+            'customer_id' => ['nullable', Rule::exists('customers', 'id')->where('store_id', $request->user()->store_id)],
             'payment_method' => ['required', 'in:tunai,transfer,qris'],
             'notes' => ['nullable', 'string', 'max:500'],
             'extra_discount' => ['nullable', 'numeric', 'min:0'],  // Diskon tambahan dari kasir (Rp)
             'items' => ['required', 'array', 'min:1'],
-            'items.*.product_id' => ['required', 'distinct', 'exists:products,id'],
+            'items.*.product_id' => ['required', 'distinct', Rule::exists('products', 'id')->where('store_id', $request->user()->store_id)],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.price_at_sale' => ['required', 'numeric', 'min:0'],
             'items.*.subtotal' => ['required', 'numeric', 'min:0'],

@@ -191,24 +191,23 @@ class EmployeeManageTest extends TestCase
         $this->postJson(route('employees.stock.transfer', $employee), [
             'product_id' => $product->id,
             'amount' => 3,
-        ])->assertOk()
+        ])->assertCreated()
             ->assertJson([
                 'success' => true,
                 'master_stock' => 5,
-                'employee_stock' => 3,
+                'employee_stock' => 0,
             ]);
 
         $this->assertDatabaseHas('products', ['id' => $product->id, 'stock' => 5]);
-        $this->assertDatabaseHas('product_user', ['product_id' => $product->id, 'user_id' => $employee->id, 'stock' => 3]);
+        $this->assertDatabaseMissing('product_user', ['product_id' => $product->id, 'user_id' => $employee->id]);
 
         $this->postJson(route('employees.stock.transfer', $employee), [
             'product_id' => $product->id,
             'amount' => 100,
-        ])->assertBadRequest()
-            ->assertJson(['success' => false]);
+        ])->assertStatus(422);
 
         $this->assertDatabaseHas('products', ['id' => $product->id, 'stock' => 5]);
-        $this->assertDatabaseHas('product_user', ['product_id' => $product->id, 'user_id' => $employee->id, 'stock' => 3]);
+        $this->assertDatabaseMissing('product_user', ['product_id' => $product->id, 'user_id' => $employee->id]);
     }
 
     private function createSale(User $employee, float $total, $date): Sale

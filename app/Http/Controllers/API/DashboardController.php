@@ -39,7 +39,7 @@ class DashboardController extends Controller
             $transactionsMonth = Sale::where('user_id', $user->id)->where('transaction_date', '>=', $monthStart)->count();
 
             // Employee count
-            $activeEmployees = User::where('role', 'pegawai')->count();
+            $activeEmployees = User::where('store_id', $user->store_id)->where('role', 'pegawai')->count();
 
             // Low stock products
             $lowStockProducts = Product::where('stock', '<=', 10)->count();
@@ -97,7 +97,7 @@ class DashboardController extends Controller
             $transactionsToday = Sale::where('user_id', $user->id)->where('transaction_date', '>=', $today)->count();
             $transactionsMonth = Sale::where('user_id', $user->id)->where('transaction_date', '>=', $monthStart)->count();
 
-            $activeEmployees = User::where('role', 'pegawai')->count();
+            $activeEmployees = User::where('store_id', $user->store_id)->where('role', 'pegawai')->count();
             $lowStockProducts = Product::where('stock', '<=', 10)->count();
 
             // ============================================

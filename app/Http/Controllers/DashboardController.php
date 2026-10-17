@@ -94,7 +94,7 @@ class DashboardController extends Controller
         $expenseTrendText = number_format(abs($expenseTrendPercent), 1, ',', '.') . '%';
         $transactionsTrendText = number_format(abs($transactionsTrendPercent), 1, ',', '.') . '%';
         $netProfitTrendText = number_format(abs($netProfitTrendPercent), 1, ',', '.') . '%';
-        $activeEmployees = User::where('role', 'pegawai')->count();
+        $activeEmployees = User::where('store_id', $user->store_id)->where('role', 'pegawai')->count();
 
         $trendLabels = [];
         $revenueTrendData = [];

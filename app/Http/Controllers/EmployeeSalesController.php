@@ -39,6 +39,7 @@ class EmployeeSalesController extends Controller
         $totalRevenue = (clone $periodSales)->sum('total');
         $itemSales = DB::table('sale_items')
             ->join('sales', 'sales.id', '=', 'sale_items.sale_id')
+            ->where('sales.store_id', $request->user()->store_id)
             ->where('sales.user_id', $employee->id);
         PeriodFilter::apply($itemSales, 'sales.transaction_date', $periodStart, $periodEnd);
         $totalItemsSold = $itemSales->sum('sale_items.quantity');

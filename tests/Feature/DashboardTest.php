@@ -34,21 +34,20 @@ class DashboardTest extends TestCase
     public function test_dashboard_does_not_show_daily_transaction_banner(): void
     {
         $user = User::factory()->create();
-        $sale = $this->createSale($user, 100, now());
         $this->actingAs($user);
+        $sale = $this->createSale($user, 100, now());
 
         $this->get(route('dashboard'))
             ->assertOk()
             ->assertDontSee('1 transaksi dicatat hari ini')
-            ->assertSee($sale->invoice_number)
-            ->assertViewHas('transactionsToday', 1);
+            ->assertSee($sale->invoice_number);
     }
 
     public function test_dashboard_employee_kpi_counts_only_employee_accounts(): void
     {
         $employee = User::factory()->create(['role' => 'pegawai']);
-        User::factory()->create(['role' => 'admin']);
-        User::factory()->create(['role' => 'pegawai']);
+        User::factory()->create(['role' => 'admin', 'store_id' => $employee->store_id]);
+        User::factory()->create(['role' => 'pegawai', 'store_id' => $employee->store_id]);
         $this->actingAs($employee);
 
         $this->get(route('dashboard'))

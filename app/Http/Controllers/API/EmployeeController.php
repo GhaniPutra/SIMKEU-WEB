@@ -18,13 +18,15 @@ class EmployeeController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = User::orderBy('name');
+            $query = User::where('store_id', $request->user()->store_id)->orderBy('name');
 
             // Filter pencarian
             if ($request->has('search')) {
                 $search = $request->input('search');
-                $query->where('name', 'like', '%' . $search . '%')
-                      ->orWhere('email', 'like', '%' . $search . '%');
+                $query->where(function ($filter) use ($search) {
+                    $filter->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('email', 'like', '%' . $search . '%');
+                });
             }
 
             // Pagination
@@ -85,7 +87,8 @@ class EmployeeController extends Controller
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'password' => bcrypt($validated['password']),
-                'role' => 'employee',
+                'role' => 'pegawai',
+                'store_id' => $request->user()->store_id,
             ]);
 
             return response()->json([

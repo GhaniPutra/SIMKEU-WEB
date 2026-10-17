@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Concerns\BelongsToStore;
 
 /**
  * Model Category
@@ -12,6 +13,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Category extends Model
 {
+    use BelongsToStore;
+
     /**
      * Kolom yang boleh diisi secara massal (mass assignment).
      *

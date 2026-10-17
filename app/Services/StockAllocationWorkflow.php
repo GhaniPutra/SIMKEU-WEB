@@ -12,6 +12,8 @@ class StockAllocationWorkflow
 {
     public function create(User $owner, User $employee, int $productId, int $quantity): StockAllocation
     {
+        abort_unless($owner->role === 'admin' && $owner->store_id && $employee->store_id === $owner->store_id && $employee->role === 'pegawai', 403);
+
         return DB::transaction(function () use ($owner, $employee, $productId, $quantity) {
             $product = Product::query()->lockForUpdate()->findOrFail($productId);
             $this->ensureAvailableStock($product, $quantity);
@@ -42,6 +44,7 @@ class StockAllocationWorkflow
             $action = $data['action'];
             $product = Product::query()->lockForUpdate()->findOrFail($allocation->product_id);
             $employee = User::query()->findOrFail($allocation->employee_user_id);
+            abort_unless($employee->store_id === $owner->store_id, 403);
 
             if ($action === 'cancel') {
                 if (! in_array($allocation->status, [
@@ -229,14 +232,15 @@ class StockAllocationWorkflow
 
     private function ensureOwner(User $owner, StockAllocation $allocation): void
     {
-        if ($owner->role !== 'admin' || (int) $allocation->owner_user_id !== (int) $owner->id) {
+        if ($owner->role !== 'admin' || ! $owner->store_id || (int) $allocation->owner_user_id !== (int) $owner->id) {
             abort(403, 'Anda tidak berhak mengelola alokasi ini.');
         }
     }
 
     private function ensureEmployee(User $employee, StockAllocation $allocation): void
     {
-        if ($employee->role !== 'pegawai' || (int) $allocation->employee_user_id !== (int) $employee->id) {
+        $owner = User::query()->find($allocation->owner_user_id);
+        if ($employee->role !== 'pegawai' || ! $employee->store_id || $owner?->store_id !== $employee->store_id || (int) $allocation->employee_user_id !== (int) $employee->id) {
             abort(403, 'Anda tidak berhak mengonfirmasi alokasi ini.');
         }
     }

@@ -336,6 +336,7 @@
    NAMA PRODUK — Avatar berwarna otomatis
    ============================================================ */
 .product-avatar { width:34px; height:34px; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem; color:var(--surface-light); flex-shrink:0; background: linear-gradient(135deg, var(--primary), var(--accent)); }
+.product-avatar img { width:100%; height:100%; border-radius:inherit; object-fit:cover; }
 .product-name-cell { display:flex; align-items:center; gap:10px; }
 .product-name-text { font-weight:600; color:var(--text-primary); }
 .product-unit-text { font-size:0.72rem; color:var(--text-muted); margin-top:1px; }

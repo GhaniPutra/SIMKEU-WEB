@@ -6,6 +6,7 @@ use App\Models\Category; // Model kategori produk
 use App\Models\Product;  // Model produk utama
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 /**
  * ProductController
@@ -145,7 +146,7 @@ class ProductController extends Controller
         // Validasi input form sebelum menyimpan ke database
         $data = $request->validate([
             'name' => 'required|string|max:200',           // Nama produk wajib diisi, maks 200 karakter
-            'category_id' => 'nullable|exists:categories,id',     // Kategori opsional, harus ada di tabel categories
+            'category_id' => ['nullable', Rule::exists('categories', 'id')->where('store_id', $request->user()->store_id)],
             'buy_price' => 'required|numeric|min:0',            // Harga beli wajib, angka, tidak boleh negatif
             'sell_price' => 'required|numeric|min:0',            // Harga jual wajib, angka, tidak boleh negatif
             'tax_rate' => 'nullable|numeric|min:0|max:100',   // Tarif pajak opsional, 0–100%
@@ -206,7 +207,7 @@ class ProductController extends Controller
         // Validasi input form (sama seperti store, tapi image opsional)
         $data = $request->validate([
             'name' => 'required|string|max:200',
-            'category_id' => 'nullable|exists:categories,id',
+            'category_id' => ['nullable', Rule::exists('categories', 'id')->where('store_id', $request->user()->store_id)],
             'buy_price' => 'required|numeric|min:0',
             'sell_price' => 'required|numeric|min:0',
             'tax_rate' => 'nullable|numeric|min:0|max:100',   // Tarif pajak opsional, 0–100%

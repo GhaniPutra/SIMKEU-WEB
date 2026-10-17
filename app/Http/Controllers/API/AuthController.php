@@ -4,7 +4,9 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Store;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -23,6 +25,7 @@ class AuthController extends Controller
                 'name' => 'required|string|max:100',
                 'email' => 'required|email|unique:users',
                 'password' => 'required|string|min:6|confirmed',
+                'store_name' => 'nullable|string|max:100',
             ], [
                 'name.required' => 'Nama tidak boleh kosong',
                 'name.max' => 'Nama tidak boleh lebih dari 100 karakter',
@@ -35,13 +38,19 @@ class AuthController extends Controller
             ]);
 
             // Buat user baru
-            $user = User::create([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'password' => Hash::make($validated['password']),
-                'store_id' => null,
-                'role' => 'admin',
-            ]);
+            $user = DB::transaction(function () use ($validated) {
+                $store = Store::create([
+                    'name' => $validated['store_name'] ?? 'Toko ' . $validated['name'],
+                ]);
+
+                return User::create([
+                    'name' => $validated['name'],
+                    'email' => $validated['email'],
+                    'password' => Hash::make($validated['password']),
+                    'store_id' => $store->id,
+                    'role' => 'admin',
+                ]);
+            });
 
             // Generate API token menggunakan Sanctum
             $token = $user->createToken('api-token')->plainTextToken;

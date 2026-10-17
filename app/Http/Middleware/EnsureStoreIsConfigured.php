@@ -16,11 +16,15 @@ class EnsureStoreIsConfigured
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Pastikan user sudah login, rolenya admin, dan store_id-nya null
-        if (Auth::check() && Auth::user()->role === 'admin' && is_null(Auth::user()->store_id)) {
-            // Cek jika request bukan ke route store setup itu sendiri agar tidak terjadi redirect loop
-            if (!$request->routeIs('store.setup') && !$request->routeIs('store.store') && !$request->routeIs('logout')) {
+        if (Auth::check() && is_null(Auth::user()->store_id)) {
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Akun belum terhubung ke toko. Selesaikan setup toko terlebih dahulu.'], 403);
+            }
+            if (Auth::user()->role === 'admin' && ! $request->routeIs('store.setup') && ! $request->routeIs('store.store') && ! $request->routeIs('logout')) {
                 return redirect()->route('store.setup');
+            }
+            if (Auth::user()->role !== 'admin' && ! $request->routeIs('logout')) {
+                abort(403, 'Akun belum terhubung ke toko.');
             }
         }
 

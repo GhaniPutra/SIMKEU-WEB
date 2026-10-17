@@ -9,6 +9,7 @@ use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Builder;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -55,6 +56,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function store()
     {
         return $this->belongsTo(Store::class);
+    }
+
+    public function resolveRouteBindingQuery($query, $value, $field = null): Builder
+    {
+        $query = parent::resolveRouteBindingQuery($query, $value, $field);
+        $storeId = auth()->user()?->store_id;
+
+        return $query->where('store_id', $storeId ?? 0);
     }
 
     /**

@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class ProductController extends Controller
@@ -87,7 +88,7 @@ class ProductController extends Controller
             // Validasi input
             $validated = $request->validate([
                 'name' => 'required|string|max:200',
-                'category_id' => 'nullable|exists:categories,id',
+                'category_id' => ['nullable', Rule::exists('categories', 'id')->where('store_id', $request->user()->store_id)],
                 'buy_price' => 'required|numeric|min:0',
                 'sell_price' => 'required|numeric|min:0',
                 'stock' => 'required|integer|min:0',
@@ -134,7 +135,7 @@ class ProductController extends Controller
             // Validasi input
             $validated = $request->validate([
                 'name' => 'sometimes|string|max:200',
-                'category_id' => 'nullable|exists:categories,id',
+                'category_id' => ['nullable', Rule::exists('categories', 'id')->where('store_id', $request->user()->store_id)],
                 'buy_price' => 'sometimes|numeric|min:0',
                 'sell_price' => 'sometimes|numeric|min:0',
                 'stock' => 'sometimes|integer|min:0',

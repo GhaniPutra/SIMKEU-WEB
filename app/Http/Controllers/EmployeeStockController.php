@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\StockAllocationWorkflow;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class EmployeeStockController extends Controller
 {
@@ -26,6 +27,8 @@ class EmployeeStockController extends Controller
 
         $pendingAllocations = StockAllocation::with(['product', 'owner', 'employee'])
             ->where('employee_user_id', $employee->id)
+            ->whereHas('owner', fn ($query) => $query->where('store_id', request()->user()->store_id))
+            ->whereHas('product', fn ($query) => $query->where('store_id', request()->user()->store_id))
             ->where('status', StockAllocation::STATUS_PENDING)
             ->orderByDesc('created_at')
             ->get();
@@ -45,7 +48,7 @@ class EmployeeStockController extends Controller
         }
 
         $validated = $request->validate([
-            'product_id' => ['required', 'exists:products,id'],
+            'product_id' => ['required', Rule::exists('products', 'id')->where('store_id', $owner->store_id)],
             'requested_quantity' => ['required', 'integer', 'min:1'],
         ]);
 
@@ -67,6 +70,8 @@ class EmployeeStockController extends Controller
 
         $allocations = StockAllocation::with(['product', 'employee'])
             ->where('owner_user_id', $owner->id)
+            ->whereHas('employee', fn ($query) => $query->where('store_id', $owner->store_id))
+            ->whereHas('product', fn ($query) => $query->where('store_id', $owner->store_id))
             ->where('status', StockAllocation::STATUS_PENDING)
             ->orderByDesc('created_at')
             ->get()
@@ -106,7 +111,7 @@ class EmployeeStockController extends Controller
         }
 
         $validated = $request->validate([
-            'product_id' => 'required|exists:products,id',
+            'product_id' => ['required', Rule::exists('products', 'id')->where('store_id', $owner->store_id)],
             'amount' => 'required|integer|not_in:0',
         ]);
 

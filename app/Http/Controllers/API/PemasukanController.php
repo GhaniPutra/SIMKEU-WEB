@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 
 class PemasukanController extends Controller
@@ -118,13 +119,13 @@ class PemasukanController extends Controller
         try {
             // Validasi input
             $validated = $request->validate([
-                'customer_id' => 'nullable|exists:customers,id',
+                'customer_id' => ['nullable', Rule::exists('customers', 'id')->where('store_id', $request->user()->store_id)],
                 'payment_method' => 'required|in:tunai,transfer,qris',
                 'discount' => 'nullable|numeric|min:0',
                 'tax' => 'nullable|numeric|min:0',
                 'notes' => 'nullable|string|max:500',
                 'items' => 'required|array|min:1',
-                'items.*.product_id' => 'required|exists:products,id',
+                'items.*.product_id' => ['required', Rule::exists('products', 'id')->where('store_id', $request->user()->store_id)],
                 'items.*.quantity' => 'required|integer|min:1',
                 'items.*.price' => 'required|numeric|min:0',
             ]);

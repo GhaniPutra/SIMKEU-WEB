@@ -71,7 +71,9 @@ class PemasukanController extends Controller
         // Total diskon produk (dari rate produk) = SUM(price_at_sale * qty * discount_rate/100)
         $totalProductDiscount = (float) PeriodFilter::apply(DB::table('sale_items')
             ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
-            ->join('products', 'sale_items.product_id', '=', 'products.id'), 'sales.transaction_date', $periodStart, $periodEnd)
+            ->join('products', 'sale_items.product_id', '=', 'products.id')
+            ->where('sales.store_id', $request->user()->store_id)
+            ->where('products.store_id', $request->user()->store_id), 'sales.transaction_date', $periodStart, $periodEnd)
             ->selectRaw('COALESCE(SUM(sale_items.price_at_sale * sale_items.quantity * (products.discount_rate / 100.0)),0) as total')
             ->value('total');
 
@@ -79,7 +81,9 @@ class PemasukanController extends Controller
         // SUM( (price * qty - price*qty*discount_rate/100) * (tax_rate/100) )
         $totalProductTax = (float) PeriodFilter::apply(DB::table('sale_items')
             ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
-            ->join('products', 'sale_items.product_id', '=', 'products.id'), 'sales.transaction_date', $periodStart, $periodEnd)
+            ->join('products', 'sale_items.product_id', '=', 'products.id')
+            ->where('sales.store_id', $request->user()->store_id)
+            ->where('products.store_id', $request->user()->store_id), 'sales.transaction_date', $periodStart, $periodEnd)
             ->selectRaw('COALESCE(SUM((sale_items.price_at_sale * sale_items.quantity - (sale_items.price_at_sale * sale_items.quantity * (products.discount_rate / 100.0))) * (products.tax_rate / 100.0)),0) as total')
             ->value('total');
 
@@ -137,7 +141,7 @@ class PemasukanController extends Controller
         $chartData = [];
 
         if ($period === 'all') {
-            $monthlyTotals = DB::table('sales')
+            $monthlyTotals = DB::table('sales')->where('store_id', $request->user()->store_id)
                 ->selectRaw('SUBSTR(transaction_date, 1, 7) as sale_month, SUM(total) as total')
                 ->groupByRaw('SUBSTR(transaction_date, 1, 7)')
                 ->orderBy('sale_month')

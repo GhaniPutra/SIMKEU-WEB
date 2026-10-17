@@ -193,10 +193,14 @@
                                 {{-- Nama produk dengan avatar warna-warni --}}
                                 <td>
                                     <div class="product-name-cell">
-                                        {{-- Avatar: huruf pertama nama produk --}}
+                                        {{-- Gunakan gambar produk jika tersedia; huruf awal menjadi fallback. --}}
                                         <div class="product-avatar"
                                             data-hue="{{ crc32($product->name) % 360 }}">
-                                            {{ strtoupper(substr($product->name, 0, 1)) }}
+                                            @if($product->image)
+                                                <img src="{{ asset('storage/' . $product->image) }}" alt="Gambar {{ $product->name }}">
+                                            @else
+                                                {{ strtoupper(substr($product->name, 0, 1)) }}
+                                            @endif
                                         </div>
                                         <div>
                                             <div class="product-name-text">{{ $product->name }}</div>

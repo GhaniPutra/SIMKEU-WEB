@@ -11,6 +11,8 @@ use App\Http\Controllers\API\POSController;
 use App\Http\Controllers\API\EmployeeController;
 use App\Http\Controllers\API\DashboardController;
 use App\Http\Controllers\API\StockAllocationController;
+use App\Http\Middleware\EnsureStoreIsConfigured;
+use App\Http\Middleware\EnsureStoreAdmin;
 
 // ====================================
 // API Public Routes (tanpa autentikasi)
@@ -22,7 +24,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 // API Protected Routes (memerlukan token autentikasi Sanctum)
 // Middleware sanctum akan memastikan user authenticated dengan token
 // ====================================
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', EnsureStoreIsConfigured::class])->group(function () {
     // ====================================
     // Authentication Routes
     // ====================================
@@ -45,9 +47,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // DELETE /api/products/{id}         → destroy  (hapus produk)
     // GET    /api/products/search       → search   (cari produk)
     // ====================================
-    Route::apiResource('products', ProductController::class)->names('api.products');
+    Route::apiResource('products', ProductController::class)->except(['store', 'update', 'destroy'])->names('api.products');
+    Route::apiResource('products', ProductController::class)->only(['store', 'update', 'destroy'])->middleware(EnsureStoreAdmin::class)->names('api.products');
     Route::get('/products/search/{query}', [ProductController::class, 'search'])->name('api.products.search');
-    Route::put('/products/{product}/stock', [ProductController::class, 'updateStock'])->name('api.products.stock');
+    Route::put('/products/{product}/stock', [ProductController::class, 'updateStock'])->middleware(EnsureStoreAdmin::class)->name('api.products.stock');
 
     // ====================================
     // Category Routes (Kategori Produk)
@@ -57,7 +60,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // PUT    /api/categories/{id}       → update   (ubah kategori)
     // DELETE /api/categories/{id}       → destroy  (hapus kategori)
     // ====================================
-    Route::apiResource('categories', CategoryController::class)->names('api.categories');
+    Route::apiResource('categories', CategoryController::class)->except(['store', 'update', 'destroy'])->names('api.categories');
+    Route::apiResource('categories', CategoryController::class)->only(['store', 'update', 'destroy'])->middleware(EnsureStoreAdmin::class)->names('api.categories');
 
     // ====================================
     // Sales (Pemasukan/Penjualan) Routes
@@ -106,8 +110,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // DELETE /api/employees/{id}        → destroy  (hapus karyawan)
     // GET    /api/employees/{id}/sales  → getSalesData (data penjualan karyawan)
     // ====================================
-    Route::apiResource('employees', EmployeeController::class)->names('api.employees');
-    Route::get('/employees/{employee}/sales', [EmployeeController::class, 'getSalesData'])->name('api.employees.sales');
+    Route::apiResource('employees', EmployeeController::class)->middleware(EnsureStoreAdmin::class)->names('api.employees');
+    Route::get('/employees/{employee}/sales', [EmployeeController::class, 'getSalesData'])->middleware(EnsureStoreAdmin::class)->name('api.employees.sales');
 
     // ====================================
     // Employee Stock Allocation Routes
@@ -116,10 +120,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // POST   /api/stock-allocations/{allocation}/review        -> accept/decline alokasi tertentu
     // ====================================
     Route::get('/stock-allocations/pending', [StockAllocationController::class, 'pending'])->name('api.stock-allocations.pending');
-    Route::get('/stock-allocations/needs-review', [StockAllocationController::class, 'needsReview'])->name('api.stock-allocations.needs-review');
+    Route::get('/stock-allocations/needs-review', [StockAllocationController::class, 'needsReview'])->middleware(EnsureStoreAdmin::class)->name('api.stock-allocations.needs-review');
     Route::get('/employees/{employee}/stock/allocations', [StockAllocationController::class, 'index'])->name('api.employees.stock.allocations');
     Route::post('/stock-allocations/{allocation}/review', [StockAllocationController::class, 'review'])->name('api.stock-allocations.review');
-    Route::post('/stock-allocations/{allocation}/owner-follow-up', [StockAllocationController::class, 'ownerFollowUp'])->name('api.stock-allocations.owner-follow-up');
+    Route::post('/stock-allocations/{allocation}/owner-follow-up', [StockAllocationController::class, 'ownerFollowUp'])->middleware(EnsureStoreAdmin::class)->name('api.stock-allocations.owner-follow-up');
 });
 
 // ====================================
