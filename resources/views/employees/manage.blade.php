@@ -211,9 +211,9 @@
 
                 @if($allocatedProductCount > 0)
                     <div class="stock-health-progress" role="img" aria-label="Komposisi stok pegawai: {{ $emptyStockCount }} kosong, {{ $lowStockCount }} rendah, {{ $normalStockCount }} cukup">
-                        @if($emptyStockCount > 0)<span class="empty-segment" style="width: {{ $emptyStockPercent }}%"></span>@endif
-                        @if($lowStockCount > 0)<span class="low-segment" style="width: {{ $lowStockPercent }}%"></span>@endif
-                        @if($normalStockCount > 0)<span class="normal-segment" style="width: {{ $normalStockPercent }}%"></span>@endif
+                        @if($emptyStockCount > 0)<span class="empty-segment" data-width="{{ $emptyStockPercent }}"></span>@endif
+                        @if($lowStockCount > 0)<span class="low-segment" data-width="{{ $lowStockPercent }}"></span>@endif
+                        @if($normalStockCount > 0)<span class="normal-segment" data-width="{{ $normalStockPercent }}"></span>@endif
                     </div>
                 @else
                     <p class="stock-health-empty">Belum ada stok yang dialokasikan ke pegawai.</p>
@@ -453,6 +453,11 @@
     <script src="{{ asset('js/employees/stock.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Terapkan proporsi segmen stok dari data Blade tanpa CSS inline.
+            document.querySelectorAll('.stock-health-progress [data-width]').forEach((segment) => {
+                segment.style.width = `${segment.dataset.width}%`;
+            });
+
             const tabs = [...document.querySelectorAll('.employee-tab')];
             const panels = [...document.querySelectorAll('.employee-tab-panel')];
             const chartInstances = new Map();
