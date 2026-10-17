@@ -95,7 +95,7 @@ Route::middleware(['auth:sanctum', EnsureStoreIsConfigured::class])->group(funct
     // ====================================
     Route::prefix('pos')->group(function () {
         Route::post('/transaction', [POSController::class, 'createTransaction'])->name('api.pos.transaction');
-        Route::post('/transaction/{transaction}/complete', [POSController::class, 'completeTransaction'])->name('api.pos.complete');
+        Route::post('/transaction/{sale}/complete', [POSController::class, 'completeTransaction'])->name('api.pos.complete');
         Route::get('/items', [POSController::class, 'getItems'])->name('api.pos.items');
         Route::post('/items/{product}/add', [POSController::class, 'addItem'])->name('api.pos.add-item');
         Route::delete('/items/{item}', [POSController::class, 'removeItem'])->name('api.pos.remove-item');
