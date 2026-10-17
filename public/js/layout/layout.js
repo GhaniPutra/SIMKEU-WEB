@@ -122,7 +122,7 @@
             document.cookie = `dashboardPeriod=${activePeriod}; path=/; max-age=31536000; SameSite=Lax`;
 
             function supportsPeriod(path) {
-                return path === '/' || path === '/dashboard'
+                return path === '/' || path === '/dashboard' || path === '/activities'
                     || path === '/pemasukan' || path.startsWith('/pemasukan/')
                     || path === '/pengeluaran' || path.startsWith('/pengeluaran/')
                     || /^\/employees\/[^/]+\/(manage|sales-dashboard)$/.test(path);

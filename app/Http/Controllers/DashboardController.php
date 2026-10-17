@@ -153,9 +153,9 @@ class DashboardController extends Controller
                 $periodStart?->toDateString(),
                 $periodEnd?->toDateString()
             )
-                ->where('expense_date', '<=', $now->toDateString())
-                ->selectRaw('expense_date as day_key, SUM(amount) as amount')
-                ->groupBy('expense_date')
+                ->whereDate('expense_date', '<=', $now->toDateString())
+                ->selectRaw('DATE(expense_date) as day_key, SUM(amount) as amount')
+                ->groupByRaw('DATE(expense_date)')
                 ->pluck('amount', 'day_key');
 
             for ($date = $periodStart->copy(); $date->lte($chartEnd); $date->addDay()) {
