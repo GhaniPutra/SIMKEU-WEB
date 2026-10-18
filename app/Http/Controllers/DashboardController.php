@@ -307,7 +307,7 @@ class DashboardController extends Controller
                 ]);
         }
 
-        // Peringatan finansial tetap ditampilkan di bagian atas dashboard.
+        // Kondisi pengeluaran yang melebihi pemasukan ditampilkan sebagai status di KPI pengeluaran.
         $alerts = [];
         if ($totalExpenseMonth > $totalRevenueMonth) {
             $alerts[] = ['type' => 'danger', 'message' => "Pengeluaran {$periodLabel} melebihi pendapatan"];

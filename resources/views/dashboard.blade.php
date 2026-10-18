@@ -36,16 +36,6 @@
             hidden></div>
 
         {{-- ============================================================
-        BANNER PERINGATAN
-        ============================================================ --}}
-        @foreach($alerts as $alert)
-            <div class="alert-banner alert-{{ $alert['type'] }} fade-up">
-                <i class="fas fa-exclamation-circle"></i>
-                {{ $alert['message'] }}
-            </div>
-        @endforeach
-
-        {{-- ============================================================
         KARTU INDIKATOR UTAMA
         ============================================================ --}}
         <div class="kpi-grid">
@@ -86,6 +76,12 @@
                     @else
                         {{ $periodLabel }}
                     @endif
+                    @foreach($alerts as $alert)
+                        <span class="kpi-alert-note" role="status" aria-label="{{ $alert['message'] }}">
+                            <i class="fas fa-circle-exclamation" aria-hidden="true"></i>
+                            Melebihi pemasukan
+                        </span>
+                    @endforeach
                 </div>
             </div>
 
