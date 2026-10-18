@@ -31,7 +31,7 @@
     <div class="kpi-card danger fade-up"> {{-- Kartu jumlah admin --}}
         <div class="kpi-top"> {{-- Baris atas kartu --}}
             <span class="kpi-icon"><i class="fas fa-user-shield"></i></span>
-            <span class="kpi-label">Admin</span>
+            <span class="kpi-label">Pemilik</span>
         </div>
         <div class="kpi-value">{{ $totalAdmin }}</div>
         <div class="kpi-sub">Jumlah akun admin</div>
@@ -43,9 +43,9 @@
 <div class="content-card"> {{-- Kartu utama konten daftar pegawai --}}
     <div class="content-card-header"> {{-- Header kartu dengan judul dan tombol --}}
         <div class="content-card-title"><i class="fas fa-table-list"></i> Daftar Pegawai</div> {{-- Judul tabel --}}
-        <button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#employeeModal" data-mode="create" data-create-url="{{ route('employees.store') }}">
+        @if(Auth::user()->hasPermission('employees.create'))<button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#employeeModal" data-mode="create" data-create-url="{{ route('employees.store') }}">
             <i class="fas fa-plus"></i> Tambah Pegawai
-        </button>
+        </button>@endif
     </div>
     <div class="content-card-body"> {{-- Badan konten kartu --}}
         <form method="GET" action="{{ route('employees.index') }}" class="toolbar"> {{-- Form filter dan pencarian --}}
@@ -61,8 +61,10 @@
 
             <select name="role"> {{-- Dropdown filter role --}}
                 <option value="">Semua Role</option>
-                <option value="pegawai" {{ (isset($roleFilter) && $roleFilter === 'pegawai') ? 'selected' : '' }}>Pegawai</option>
-                <option value="admin" {{ (isset($roleFilter) && $roleFilter === 'admin') ? 'selected' : '' }}>Admin</option>
+                <option value="owner" @selected($roleFilter === 'owner')>Pemilik</option>
+                @foreach($roles as $role)
+                    <option value="{{ $role->id }}" @selected((string) $roleFilter === (string) $role->id)>{{ $role->name }}</option>
+                @endforeach
             </select>
 
             <button type="submit" class="btn-add"> {{-- Tombol submit filter --}}
@@ -91,30 +93,30 @@
                     <tbody>
                         @foreach($employees as $employee) {{-- Iterasi setiap pegawai --}}
                             <tr class="employee-row-clickable" tabindex="0"
-                                aria-label="Buka {{ $employee->role === 'pegawai' ? 'kelola' : 'edit' }} {{ $employee->name }}"
-                                data-href="{{ $employee->role === 'pegawai' ? route('employees.manage', $employee) : route('employees.edit', $employee) }}">
+                                aria-label="{{ $employee->role_name }}: {{ $employee->name }}"
+                                data-href="{{ $employee->isOwner() ? route('employees.index') : (Auth::user()->hasPermission('employees.sales.view') ? route('employees.manage', $employee) : (Auth::user()->hasPermission('employees.update') ? route('employees.edit', $employee) : '#')) }}">
                                 <td>{{ $loop->iteration + ($employees->currentPage()-1)*$employees->perPage() }}</td> {{-- Nomor urut tabel --}}
                                 <td>
                                     <strong>{{ $employee->name }}</strong>
                                 </td>
                                 <td>{{ $employee->email }}</td> {{-- Email pegawai --}}
                                 <td class="role-column">
-                                    <span class="role-badge role-{{ $employee->role }}">{{ $employee->role }}</span> {{-- Badge role --}}
+                                    <span class="role-badge role-{{ $employee->role }}">{{ $employee->role_name }}</span>
                                 </td>
                                 <td>
                                     <div class="table-actions"> {{-- Tombol aksi baris --}}
-                                        <button type="button" class="btn-edit employee-edit" data-bs-toggle="modal" data-bs-target="#employeeModal" data-mode="edit"
+                                        @if(!$employee->isOwner() && Auth::user()->hasPermission('employees.update'))<button type="button" class="btn-edit employee-edit" data-bs-toggle="modal" data-bs-target="#employeeModal" data-mode="edit"
                                                 data-id="{{ $employee->id }}" data-name="{{ $employee->name }}" data-email="{{ $employee->email }}"
-                                                data-role="{{ $employee->role }}" data-update-url="{{ route('employees.update', $employee) }}">
+                                                data-role="{{ $employee->role_id }}" data-update-url="{{ route('employees.update', $employee) }}">
                                             <i class="fas fa-edit"></i> Edit
-                                        </button>
-                                        <form action="{{ route('employees.destroy', $employee) }}" method="POST" class="inline-form delete-form"> {{-- Form hapus pegawai --}}
+                                        </button>@endif
+                                        @if(!$employee->isOwner() && Auth::user()->hasPermission('employees.delete'))<form action="{{ route('employees.destroy', $employee) }}" method="POST" class="inline-form delete-form">
                                             @csrf {{-- Token CSRF untuk keamanan --}}
                                             @method('DELETE') {{-- Metode DELETE untuk resource --}}
                                             <button type="submit" class="btn-delete"> {{-- Tombol hapus --}}
                                                 <i class="fas fa-trash"></i> Hapus
                                             </button>
-                                        </form>
+                                        </form>@endif
                                     </div>
                                 </td>
                             </tr>
@@ -127,9 +129,9 @@
             <div class="empty-state">
                 <div class="empty-state-icon"><i class="fas fa-inbox"></i></div>
                 <div class="empty-state-text">Belum ada pegawai terdaftar</div>
-                <button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#employeeModal" data-mode="create" data-create-url="{{ route('employees.store') }}">
+                @if(Auth::user()->hasPermission('employees.create'))<button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#employeeModal" data-mode="create" data-create-url="{{ route('employees.store') }}">
                     <i class="fas fa-plus"></i> Tambah Pegawai Pertama
-                </button>
+                </button>@endif
             </div>
         @endif
     </div>
@@ -145,7 +147,7 @@
     @endif
 </div>
 
-<div class="modal fade" id="employeeModal" tabindex="-1" aria-labelledby="employeeModalLabel" aria-hidden="true">
+@if(Auth::user()->hasPermission('employees.create') || Auth::user()->hasPermission('employees.update'))<div class="modal fade" id="employeeModal" tabindex="-1" aria-labelledby="employeeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form method="POST" id="employeeForm">
@@ -165,9 +167,10 @@
                     </div>
                     <div class="form-group">
                         <label for="employeeRole" class="form-label">Role Akses</label>
-                        <select id="employeeRole" name="role" class="form-control" required>
-                            <option value="pegawai">Pegawai</option>
-                            <option value="admin">Admin</option>
+                        <select id="employeeRole" name="role_id" class="form-control" required>
+                            @foreach($assignableRoles as $role)
+                                <option value="{{ $role->id }}">{{ $role->name }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="form-group password-wrapper">
@@ -186,7 +189,7 @@
             </form>
         </div>
     </div>
-</div>
+</div>@endif
 
 @endsection
 

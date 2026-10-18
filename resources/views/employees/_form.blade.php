@@ -23,7 +23,7 @@
             <i class="fas fa-user-tie"></i>
             Informasi Pribadi
         </h2>
-        <p class="section-desc">Atur data profil utama pegawai seperti nama lengkap, alamat email, dan hak akses sistem.</p>
+        <p class="section-desc">Atur data profil utama dan role akses pegawai.</p>
         
         {{-- Field nama pegawai --}}
         <div class="form-group">
@@ -73,21 +73,18 @@
             <div class="input-with-icon">
                 <i class="fas fa-user-shield field-icon"></i>
                 <select
-                    id="role"
-                    name="role"
-                    class="form-control @error('role') is-invalid @enderror"
+                    id="role_id"
+                    name="role_id"
+                    class="form-control @error('role_id') is-invalid @enderror"
                     required
                 >
                     <option value="">-- Pilih Role Akses --</option>
-                    <option value="pegawai" {{ old('role', $employee->role ?? '') === 'pegawai' ? 'selected' : '' }}>
-                        👤 Pegawai (Akses Terbatas)
-                    </option>
-                    <option value="admin" {{ old('role', $employee->role ?? '') === 'admin' ? 'selected' : '' }}>
-                        🔐 Admin (Akses Penuh)
-                    </option>
+                    @foreach($roles as $role)
+                        <option value="{{ $role->id }}" @selected((string) old('role_id', $employee->role_id ?? '') === (string) $role->id)>{{ $role->name }}</option>
+                    @endforeach
                 </select>
             </div>
-            @error('role')
+            @error('role_id')
                 <span class="form-error"><i class="fas fa-circle-info"></i> {{ $message }}</span>
             @enderror
         </div>

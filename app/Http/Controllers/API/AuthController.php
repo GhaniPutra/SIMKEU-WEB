@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Store;
+use App\Models\Role;
+use App\Support\RolePermissions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -41,6 +43,13 @@ class AuthController extends Controller
             $user = DB::transaction(function () use ($validated) {
                 $store = Store::create([
                     'name' => $validated['store_name'] ?? 'Toko ' . $validated['name'],
+                ]);
+
+                Role::create([
+                    'store_id' => $store->id,
+                    'name' => 'Pegawai',
+                    'permissions' => RolePermissions::starterEmployee(),
+                    'is_system' => true,
                 ]);
 
                 return User::create([
@@ -166,9 +175,18 @@ class AuthController extends Controller
     public function currentUser(Request $request)
     {
         try {
+            $user = $request->user()->loadMissing('accessRole');
+            $role = $user->accessRole;
+            $user->setAttribute('role_name', $user->role_name);
+            $user->setAttribute('permissions', $user->isOwner()
+                ? RolePermissions::all()
+                : (($role && (int) $role->store_id === (int) $user->store_id)
+                    ? ($role->permissions ?? [])
+                    : ($user->role_id === null ? RolePermissions::legacyEmployee() : [])));
+
             return response()->json([
                 'success' => true,
-                'data' => $request->user()
+                'data' => $user
             ], 200);
 
         } catch (\Exception $e) {

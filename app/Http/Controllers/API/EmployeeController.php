@@ -4,10 +4,12 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Role;
 use App\Models\Sale;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
+use Illuminate\Validation\Rule;
 
 class EmployeeController extends Controller
 {
@@ -80,7 +82,15 @@ class EmployeeController extends Controller
                 'name' => 'required|string|max:100',
                 'email' => 'required|email|unique:users',
                 'password' => 'required|string|min:6|confirmed',
+                'role_id' => [$request->user()->isOwner() ? 'nullable' : 'required', Rule::exists('roles', 'id')->where('store_id', $request->user()->store_id)],
             ]);
+
+            $role = isset($validated['role_id'])
+                ? Role::findOrFail($validated['role_id'])
+                : Role::where('store_id', $request->user()->store_id)->where('is_system', true)->firstOrFail();
+            if (! $request->user()->canAssignRole($role)) {
+                return response()->json(['success' => false, 'message' => 'Role tersebut memiliki izin di luar kewenangan Anda.'], 403);
+            }
 
             // Buat karyawan baru
             $employee = User::create([
@@ -88,6 +98,7 @@ class EmployeeController extends Controller
                 'email' => $validated['email'],
                 'password' => bcrypt($validated['password']),
                 'role' => 'pegawai',
+                'role_id' => $role->id,
                 'store_id' => $request->user()->store_id,
             ]);
 
@@ -122,7 +133,19 @@ class EmployeeController extends Controller
             $validated = $request->validate([
                 'name' => 'sometimes|string|max:100',
                 'email' => 'sometimes|email|unique:users,email,' . $employee->id,
+                'role_id' => ['sometimes', Rule::exists('roles', 'id')->where('store_id', $request->user()->store_id)],
             ]);
+
+            if ($employee->isOwner()) {
+                return response()->json(['success' => false, 'message' => 'Akun pemilik tidak dapat diubah dari endpoint pegawai.'], 403);
+            }
+            if (isset($validated['role_id'])) {
+                $role = Role::findOrFail($validated['role_id']);
+                if (! $request->user()->canAssignRole($role)) {
+                    return response()->json(['success' => false, 'message' => 'Role tersebut memiliki izin di luar kewenangan Anda.'], 403);
+                }
+                $validated['role'] = 'pegawai';
+            }
 
             // Update karyawan
             $employee->update($validated);
@@ -154,6 +177,9 @@ class EmployeeController extends Controller
     public function destroy(User $employee)
     {
         try {
+            if ($employee->isOwner()) {
+                return response()->json(['success' => false, 'message' => 'Akun pemilik tidak dapat dihapus.'], 403);
+            }
             $name = $employee->name;
             $employee->delete();
 

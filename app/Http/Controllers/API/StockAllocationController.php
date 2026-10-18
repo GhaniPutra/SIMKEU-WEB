@@ -125,7 +125,7 @@ class StockAllocationController extends Controller
     public function needsReview(Request $request)
     {
         $user = $request->user();
-        if (! $user || $user->role !== 'admin') {
+        if (! $user || ! $user->hasPermission('stock_allocations.review')) {
             return response()->json([
                 'success' => false,
                 'message' => 'Hanya pemilik yang dapat melihat alokasi yang memerlukan tinjauan.',
@@ -150,7 +150,7 @@ class StockAllocationController extends Controller
     public function ownerFollowUp(Request $request, StockAllocation $allocation, StockAllocationWorkflow $workflow)
     {
         $user = $request->user();
-        if (! $user || $user->role !== 'admin') {
+        if (! $user || ! $user->hasPermission('stock_allocations.review')) {
             return response()->json([
                 'success' => false,
                 'message' => 'Hanya pemilik yang dapat menindaklanjuti alokasi.',

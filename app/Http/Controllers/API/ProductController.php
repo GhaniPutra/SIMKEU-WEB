@@ -96,6 +96,10 @@ class ProductController extends Controller
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             ]);
 
+            if ((int) $validated['stock'] > 0 && ! $request->user()->hasPermission('products.stock.add')) {
+                return response()->json(['success' => false, 'message' => 'Tidak memiliki izin untuk menambah stok.'], 403);
+            }
+
             // Proses upload gambar jika ada
             if ($request->hasFile('image')) {
                 $validated['image'] = $request->file('image')->store('products', 'public');
@@ -142,6 +146,15 @@ class ProductController extends Controller
                 'unit' => 'sometimes|string|max:20',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             ]);
+
+            if (array_key_exists('stock', $validated) && (int) $validated['stock'] !== (int) $product->stock) {
+                $stockPermission = (int) $validated['stock'] > (int) $product->stock
+                    ? 'products.stock.add'
+                    : 'products.stock.update';
+                if (! $request->user()->hasPermission($stockPermission)) {
+                    return response()->json(['success' => false, 'message' => 'Tidak memiliki izin untuk mengubah stok.'], 403);
+                }
+            }
 
             // Proses upload gambar baru jika ada
             if ($request->hasFile('image')) {
@@ -242,6 +255,12 @@ class ProductController extends Controller
                 'adjustment' => 'required|integer|not_in:0',
                 'notes' => 'nullable|string|max:500',
             ]);
+
+            $stockPermission = (int) $validated['adjustment'] > 0 ? 'products.stock.add' : 'products.stock.update';
+            if (! $request->user()->hasPermission($stockPermission)
+                && ! $request->user()->hasPermission('products.stock.adjust')) {
+                return response()->json(['success' => false, 'message' => 'Tidak memiliki izin untuk mengubah stok.'], 403);
+            }
 
             $result = DB::transaction(function () use ($product, $validated) {
                 $lockedProduct = Product::query()->lockForUpdate()->findOrFail($product->id);

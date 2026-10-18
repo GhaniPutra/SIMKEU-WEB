@@ -16,7 +16,7 @@
             <h1 class="pc-page-title">Tambah produk baru</h1>
             <p class="pc-page-description">Masukkan informasi produk, harga, dan stok awal agar produk siap dikelola dan dijual.</p>
         </div>
-        <a href="{{ route('products.index') }}" class="pc-button">
+        <a href="{{ Auth::user()->hasPermission('products.view') ? route('products.index') : route('home') }}" class="pc-button">
             <i class="fas fa-arrow-left" aria-hidden="true"></i>
             Kembali ke Produk
         </a>
@@ -224,7 +224,7 @@
         </div>
 
         <div class="pc-form-actions">
-            <a href="{{ route('products.index') }}" class="pc-action-button pc-action-button--secondary">
+            <a href="{{ Auth::user()->hasPermission('products.view') ? route('products.index') : route('home') }}" class="pc-action-button pc-action-button--secondary">
                 Batal
             </a>
             <button type="submit" class="pc-action-button pc-action-button--primary">

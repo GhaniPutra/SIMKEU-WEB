@@ -12,7 +12,10 @@ class StockAllocationWorkflow
 {
     public function create(User $owner, User $employee, int $productId, int $quantity): StockAllocation
     {
-        abort_unless($owner->role === 'admin' && $owner->store_id && $employee->store_id === $owner->store_id && $employee->role === 'pegawai', 403);
+        $canAllocate = $owner->hasPermission('stock_allocations.create')
+            || $owner->hasPermission('stock_allocations.review')
+            || $owner->hasPermission('stock_allocations.transfer');
+        abort_unless($canAllocate && $owner->store_id && $employee->store_id === $owner->store_id && $employee->role === 'pegawai', 403);
 
         return DB::transaction(function () use ($owner, $employee, $productId, $quantity) {
             $product = Product::query()->lockForUpdate()->findOrFail($productId);
@@ -232,7 +235,7 @@ class StockAllocationWorkflow
 
     private function ensureOwner(User $owner, StockAllocation $allocation): void
     {
-        if ($owner->role !== 'admin' || ! $owner->store_id || (int) $allocation->owner_user_id !== (int) $owner->id) {
+        if (! $owner->hasPermission('stock_allocations.review') || ! $owner->store_id || (int) $allocation->owner_user_id !== (int) $owner->id) {
             abort(403, 'Anda tidak berhak mengelola alokasi ini.');
         }
     }

@@ -98,9 +98,9 @@
                     Buka form input pengeluaran baru untuk mencatat biaya operasional.
                 </p>
             </div>
-            <a href="{{ route('pengeluaran.create') }}" class="btn-qa btn-qa-primary">
+            @if(Auth::user()->hasPermission('expenses.create'))<a href="{{ route('pengeluaran.create') }}" class="btn-qa btn-qa-primary">
                 <i class="fas fa-plus"></i> Input Pengeluaran
-            </a>
+            </a>@endif
         </div>
     </div>
 </div>

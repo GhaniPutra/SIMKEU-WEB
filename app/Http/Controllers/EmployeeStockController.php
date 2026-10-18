@@ -14,8 +14,8 @@ class EmployeeStockController extends Controller
     public function createAllocation(Request $request, User $employee, StockAllocationWorkflow $workflow)
     {
         $owner = $request->user();
-        if (! $owner || $owner->role !== 'admin') {
-            return response()->json(['success' => false, 'message' => 'Hanya pemilik yang dapat membuat alokasi stok.'], 403);
+        if (! $owner || ! $owner->hasPermission('stock_allocations.create')) {
+            return response()->json(['success' => false, 'message' => 'Anda tidak memiliki izin membuat alokasi stok.'], 403);
         }
 
         if ($employee->role !== 'pegawai') {
@@ -39,7 +39,7 @@ class EmployeeStockController extends Controller
     public function pendingAllocations(Request $request)
     {
         $owner = $request->user();
-        if (! $owner || $owner->role !== 'admin') {
+        if (! $owner || ! $owner->hasPermission('stock_allocations.view')) {
             return response()->json(['success' => false, 'message' => 'Akses ditolak.'], 403);
         }
 
@@ -77,8 +77,8 @@ class EmployeeStockController extends Controller
     public function transfer(Request $request, User $employee, StockAllocationWorkflow $workflow)
     {
         $owner = $request->user();
-        if (! $owner || $owner->role !== 'admin') {
-            return response()->json(['success' => false, 'message' => 'Hanya pemilik yang dapat mengelola stok pegawai.'], 403);
+        if (! $owner || ! $owner->hasPermission('stock_allocations.transfer')) {
+            return response()->json(['success' => false, 'message' => 'Anda tidak memiliki izin mengelola transfer stok.'], 403);
         }
 
         if ($employee->role !== 'pegawai') {

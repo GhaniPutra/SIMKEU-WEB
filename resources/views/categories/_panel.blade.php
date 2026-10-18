@@ -20,9 +20,9 @@
 <div class="content-card fade-up">
     <div class="content-card-header">
         <span class="content-card-title"><i class="fas fa-table-list"></i> Kategori Produk</span>
-        <button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#categoryAddModal">
+        @if(Auth::user()->hasPermission('categories.create'))<button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#categoryAddModal">
             <i class="fas fa-plus"></i> Tambah Kategori
-        </button>
+        </button>@endif
     </div>
     <form method="GET" action="{{ route('products.index') }}" class="toolbar">
         <input type="hidden" name="tab" value="kategori">
@@ -59,7 +59,7 @@
                             <td>{{ $category->created_at->format('d M Y') }}</td>
                             <td>
                                 <div class="category-actions">
-                                    <button type="button" class="btn-action edit category-edit"
+                                    @if(Auth::user()->hasPermission('categories.update'))<button type="button" class="btn-action edit category-edit"
                                             title="Edit kategori"
                                             data-bs-toggle="modal" data-bs-target="#categoryEditModal"
                                             data-id="{{ $category->id }}"
@@ -67,15 +67,15 @@
                                             data-description="{{ $category->description ?? '' }}"
                                             data-update-url="{{ route('categories.update', array_merge(request()->query(), ['category' => $category->id])) }}">
                                         <i class="fas fa-pen"></i>
-                                    </button>
-                                    <button type="button" class="btn-action delete category-delete"
+                                    </button>@endif
+                                    @if(Auth::user()->hasPermission('categories.delete'))<button type="button" class="btn-action delete category-delete"
                                             title="Hapus kategori"
                                             data-bs-toggle="modal" data-bs-target="#categoryDeleteModal"
                                             data-name="{{ $category->name }}"
                                             data-products-count="{{ $category->products_count }}"
                                             data-delete-url="{{ route('categories.destroy', array_merge(request()->query(), ['category' => $category->id])) }}">
                                         <i class="fas fa-trash-can"></i>
-                                    </button>
+                                    </button>@endif
                                 </div>
                             </td>
                         </tr>
@@ -105,7 +105,7 @@
     @endif
 </div>
 
-<div class="modal fade category-modal" id="categoryAddModal" tabindex="-1" aria-labelledby="categoryAddTitle" aria-hidden="true">
+@if(Auth::user()->hasPermission('categories.create'))<div class="modal fade category-modal" id="categoryAddModal" tabindex="-1" aria-labelledby="categoryAddTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form method="POST" action="{{ route('categories.store', request()->query()) }}">
@@ -131,9 +131,9 @@
             </form>
         </div>
     </div>
-</div>
+</div>@endif
 
-<div class="modal fade category-modal" id="categoryEditModal" tabindex="-1" aria-labelledby="categoryEditTitle" aria-hidden="true">
+@if(Auth::user()->hasPermission('categories.update'))<div class="modal fade category-modal" id="categoryEditModal" tabindex="-1" aria-labelledby="categoryEditTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form method="POST" action="" id="categoryEditForm">
@@ -161,9 +161,9 @@
             </form>
         </div>
     </div>
-</div>
+</div>@endif
 
-<div class="modal fade category-modal" id="categoryDeleteModal" tabindex="-1" aria-labelledby="categoryDeleteTitle" aria-hidden="true">
+@if(Auth::user()->hasPermission('categories.delete'))<div class="modal fade category-modal" id="categoryDeleteModal" tabindex="-1" aria-labelledby="categoryDeleteTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form method="POST" action="" id="categoryDeleteForm">
@@ -184,7 +184,7 @@
             </form>
         </div>
     </div>
-</div>
+</div>@endif
 
 <div id="category-modal-state" data-modal="{{ old('_category_modal') }}"
      data-id="{{ old('_category_id') }}" hidden></div>

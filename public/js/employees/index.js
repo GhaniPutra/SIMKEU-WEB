@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     const modal = document.getElementById('employeeModal');
+    if (!modal) return;
     const form = document.getElementById('employeeForm');
     const modalTitle = document.getElementById('employeeModalLabel');
     const submitButton = form.querySelector('button[type="submit"]');
@@ -82,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             nameInput.value = name || '';
             emailInput.value = email || '';
-            roleInput.value = role || 'pegawai';
+            roleInput.value = role || '';
             passwordInput.value = '';
             passwordConfirmationInput.value = '';
             passwordInput.required = false;

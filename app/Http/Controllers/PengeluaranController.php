@@ -275,7 +275,7 @@ class PengeluaranController extends Controller
         ]);
 
         // Redirect kembali ke halaman daftar pengeluaran dengan pesan sukses
-        return redirect()->route('pengeluaran.index')
+        return redirect()->route($request->user()->hasPermission('expenses.view') ? 'pengeluaran.index' : 'pengeluaran.create')
             ->with('success', 'Pengeluaran baru berhasil disimpan.');
     }
 

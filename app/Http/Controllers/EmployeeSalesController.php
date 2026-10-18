@@ -14,7 +14,7 @@ class EmployeeSalesController extends Controller
     public function dashboard(Request $request, User $employee)
     {
         // Pastikan hanya admin yang bisa akses
-        if (Auth::user()->role !== 'admin') {
+        if (! Auth::user()->hasPermission('employees.sales.view')) {
             abort(403, 'Unauthorized');
         }
 

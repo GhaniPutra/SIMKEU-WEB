@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Store;
+use App\Models\Role;
+use App\Support\RolePermissions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -48,6 +50,13 @@ class StoreController extends Controller
             'name' => $validated['name'],
             'address' => $validated['address'],
             'phone' => $validated['phone'],
+        ]);
+
+        Role::create([
+            'store_id' => $store->id,
+            'name' => 'Pegawai',
+            'permissions' => RolePermissions::starterEmployee(),
+            'is_system' => true,
         ]);
 
         // Update user dengan store_id yang baru dibuat

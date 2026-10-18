@@ -35,6 +35,7 @@ class ProductController extends Controller
         $categorySearch = $request->input('category_search');
 
         if ($activeTab === 'kategori') {
+            abort_unless($request->user()->hasPermission('categories.view') || $request->user()->hasPermission('categories.create'), 403);
             $categoryQuery = Category::withCount('products')->orderBy('name', 'asc');
             if ($categorySearch) {
                 $categoryQuery->where(function ($q) use ($categorySearch) {
@@ -57,6 +58,8 @@ class ProductController extends Controller
                 'categoryFilter'
             ));
         }
+
+        abort_unless($request->user()->hasPermission('products.view'), 403);
 
         // Ambil kata kunci pencarian dari query string (opsional)
         // Ambil filter kategori dari query string (opsional)
@@ -156,6 +159,8 @@ class ProductController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048', // Gambar opsional, maks 2MB
         ]);
 
+        abort_if((int) $data['stock'] > 0 && ! $request->user()->hasPermission('products.stock.add'), 403);
+
         // Pastikan tax_rate dan discount_rate memiliki nilai default 0 jika kosong
         $data['tax_rate'] = $data['tax_rate'] ?? 0;
         $data['discount_rate'] = $data['discount_rate'] ?? 0;
@@ -170,7 +175,8 @@ class ProductController extends Controller
         Product::create($data);
 
         // Redirect ke halaman daftar produk dengan pesan sukses
-        return redirect()->route('products.index')->with('success', 'Produk berhasil ditambahkan.');
+        return redirect()->route($request->user()->hasPermission('products.view') ? 'products.index' : 'products.create')
+            ->with('success', 'Produk berhasil ditambahkan.');
     }
 
     // =====================================================================
@@ -216,6 +222,13 @@ class ProductController extends Controller
             'unit' => 'required|string|max:20',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
+
+        if ((int) $data['stock'] !== (int) $product->stock) {
+            $stockPermission = (int) $data['stock'] > (int) $product->stock
+                ? 'products.stock.add'
+                : 'products.stock.update';
+            abort_unless($request->user()->hasPermission($stockPermission), 403);
+        }
 
         // Pastikan tax_rate dan discount_rate memiliki nilai default 0 jika kosong
         $data['tax_rate'] = $data['tax_rate'] ?? 0;
@@ -272,6 +285,13 @@ class ProductController extends Controller
             // Angka penyesuaian: boleh positif (tambah) atau negatif (kurangi)
             'adjustment' => 'required|integer|not_in:0',
         ]);
+
+        $stockPermission = (int) $data['adjustment'] > 0 ? 'products.stock.add' : 'products.stock.update';
+        abort_unless(
+            $request->user()->hasPermission($stockPermission)
+                || $request->user()->hasPermission('products.stock.adjust'),
+            403,
+        );
 
         $newStock = DB::transaction(function () use ($product, $data) {
             $lockedProduct = Product::query()->lockForUpdate()->findOrFail($product->id);

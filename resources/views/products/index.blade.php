@@ -105,10 +105,10 @@
                 Stok Utama
             </span>
             {{-- Tombol untuk membuka halaman form tambah produk --}}
-            <a href="{{ route('products.create') }}" class="btn-add">
+            @if(Auth::user()->hasPermission('products.create'))<a href="{{ route('products.create') }}" class="btn-add">
                 <i class="fas fa-plus"></i>
                 Tambah Produk
-            </a>
+            </a>@endif
         </div>
 
         {{-- ============================================================
@@ -262,14 +262,14 @@
                                     <div style="display:flex;gap:5px;align-items:center;">
 
                                         {{-- Tombol Edit: arahkan ke halaman form edit --}}
-                                        <a href="{{ route('products.edit', $product->id) }}"
+                                        @if(Auth::user()->hasPermission('products.update'))<a href="{{ route('products.edit', $product->id) }}"
                                            class="btn-action edit"
                                            title="Edit Produk">
                                             <i class="fas fa-pencil"></i>
-                                        </a>
+                                        </a>@endif
 
                                         {{-- Tombol Sesuaikan Stok: buka modal --}}
-                                        <button
+                                        @if(Auth::user()->hasPermission('products.stock.adjust'))<button
                                             class="btn-action stock"
                                             title="Sesuaikan Stok"
                                             data-product-id="{{ $product->id }}"
@@ -278,10 +278,10 @@
                                             data-product-unit="{{ e($product->unit) }}"
                                         >
                                             <i class="fas fa-sliders"></i>
-                                        </button>
+                                        </button>@endif
 
                                         {{-- Tombol Hapus: kirim form DELETE dengan konfirmasi --}}
-                                        <form method="POST"
+                                        @if(Auth::user()->hasPermission('products.delete'))<form method="POST"
                                               action="{{ route('products.destroy', $product->id) }}"
                                               id="delete-form-{{ $product->id }}"
                                               style="display:inline;">
@@ -297,7 +297,7 @@
                                             >
                                                 <i class="fas fa-trash-can"></i>
                                             </button>
-                                        </form>
+                                        </form>@endif
 
                                     </div>
                                 </td>
@@ -311,7 +311,7 @@
                                     @if($search || $categoryFilter)
                                         Tidak ada produk yang cocok dengan filter yang dipilih.
                                     @else
-                                        Belum ada produk. <a href="{{ route('products.create') }}" style="color:var(--primary);">Tambah produk pertama</a>.
+                                        Belum ada produk.@if(Auth::user()->hasPermission('products.create')) <a href="{{ route('products.create') }}" style="color:var(--primary);">Tambah produk pertama</a>.@endif
                                     @endif
                                 </td>
                             </tr>

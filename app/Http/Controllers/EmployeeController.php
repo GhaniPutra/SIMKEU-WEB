@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Role;
 use App\Models\Sale;
 use App\Models\StockAllocation;
 use App\Models\User;
@@ -10,6 +11,7 @@ use App\Support\PeriodFilter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class EmployeeController extends Controller
 {
@@ -18,7 +20,7 @@ class EmployeeController extends Controller
         $search = $request->query('search', '');
         $roleFilter = $request->query('role', '');
 
-        $employeesQuery = User::where('store_id', $request->user()->store_id)->whereIn('role', ['pegawai', 'admin']);
+        $employeesQuery = User::with('accessRole')->where('store_id', $request->user()->store_id);
 
         if (!empty($search)) {
             $employeesQuery->where(function ($query) use ($search) {
@@ -27,21 +29,21 @@ class EmployeeController extends Controller
             });
         }
 
-        if (in_array($roleFilter, ['pegawai', 'admin'], true)) {
-            $employeesQuery->where('role', $roleFilter);
+        if ($roleFilter === 'owner') {
+            $employeesQuery->where('role', 'admin');
+        } elseif (ctype_digit((string) $roleFilter)) {
+            $employeesQuery->where('role_id', (int) $roleFilter);
         }
 
         $employees = $employeesQuery->orderBy('id', 'desc')->paginate(15)->withQueryString();
-        $totalUsers = User::where('store_id', $request->user()->store_id)->whereIn('role', ['pegawai', 'admin'])->count();
+        $totalUsers = User::where('store_id', $request->user()->store_id)->count();
         $totalPegawai = User::where('store_id', $request->user()->store_id)->where('role', 'pegawai')->count();
         $totalAdmin = User::where('store_id', $request->user()->store_id)->where('role', 'admin')->count();
 
-        return view('employees.index', compact('employees', 'totalUsers', 'totalPegawai', 'totalAdmin', 'search', 'roleFilter'));
-    }
+        $roles = Role::where('store_id', $request->user()->store_id)->orderBy('name')->get();
+        $assignableRoles = $roles->filter(fn (Role $role) => $request->user()->canAssignRole($role));
 
-    public function create()
-    {
-        return view('employees.create');
+        return view('employees.index', compact('employees', 'roles', 'assignableRoles', 'totalUsers', 'totalPegawai', 'totalAdmin', 'search', 'roleFilter'));
     }
 
     public function store(Request $request)
@@ -50,23 +52,32 @@ class EmployeeController extends Controller
             'name' => 'required|string|max:100',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6|confirmed',
-            'role' => 'required|in:pegawai,admin',
+            'role_id' => ['required', Rule::exists('roles', 'id')->where('store_id', $request->user()->store_id)],
         ]);
+
+        $role = Role::findOrFail($data['role_id']);
+        abort_unless($request->user()->canAssignRole($role), 403, 'Role yang dipilih memiliki izin di luar kewenangan Anda.');
 
         User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'role' => $data['role'],
+            'role' => 'pegawai',
+            'role_id' => $role->id,
             'store_id' => $request->user()->store_id,
         ]);
 
-        return redirect()->route('employees.index')->with('success', 'Pegawai berhasil ditambahkan.');
+        return redirect()->route('employees.index')
+            ->with('success', 'Pegawai berhasil ditambahkan.');
     }
 
-    public function edit(User $employee)
+    public function edit(Request $request, User $employee)
     {
-        return view('employees.edit', compact('employee'));
+        abort_if($employee->isOwner(), 403, 'Akun pemilik tidak dapat diubah dari daftar pegawai.');
+        $roles = Role::where('store_id', $request->user()->store_id)->orderBy('name')->get()
+            ->filter(fn (Role $role) => $request->user()->canAssignRole($role));
+
+        return view('employees.edit', compact('employee', 'roles'));
     }
 
     public function update(Request $request, User $employee)
@@ -75,12 +86,17 @@ class EmployeeController extends Controller
             'name' => 'required|string|max:100',
             'email' => 'required|email|unique:users,email,' . $employee->id,
             'password' => 'nullable|string|min:6|confirmed',
-            'role' => 'required|in:pegawai,admin',
+            'role_id' => ['required', Rule::exists('roles', 'id')->where('store_id', $request->user()->store_id)],
         ]);
+
+        abort_if($employee->isOwner(), 403, 'Akun pemilik tidak dapat diubah dari daftar pegawai.');
+        $role = Role::findOrFail($data['role_id']);
+        abort_unless($request->user()->canAssignRole($role), 403, 'Role yang dipilih memiliki izin di luar kewenangan Anda.');
 
         $employee->name = $data['name'];
         $employee->email = $data['email'];
-        $employee->role = $data['role'];
+        $employee->role = 'pegawai';
+        $employee->role_id = $role->id;
         if (!empty($data['password'])) {
             $employee->password = Hash::make($data['password']);
         }
@@ -91,6 +107,7 @@ class EmployeeController extends Controller
 
     public function destroy(User $employee)
     {
+        abort_if($employee->isOwner(), 403, 'Akun pemilik tidak dapat dihapus dari daftar pegawai.');
         $employee->delete();
         return redirect()->route('employees.index')->with('success', 'User berhasil dihapus.');
     }

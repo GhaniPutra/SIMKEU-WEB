@@ -25,9 +25,9 @@ class AuthController extends Controller
      */
     public function showLoginForm()
     {
-        // Jika user sudah login, redirect ke dashboard
+        // Jika user sudah login, arahkan ke halaman pertama yang diizinkan.
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            return redirect()->route('home');
         }
 
         // Tampilkan view login.blade.php
@@ -63,8 +63,7 @@ class AuthController extends Controller
             // Jika login berhasil, regenerate session untuk keamanan
             $request->session()->regenerate();
 
-            // Redirect ke halaman dashboard
-            return redirect()->route('dashboard')->with('success', 'Login berhasil');
+            return redirect()->route('home')->with('success', 'Login berhasil');
         }
 
         // ====================================
@@ -83,9 +82,9 @@ class AuthController extends Controller
      */
     public function showRegisterForm()
     {
-        // Jika user sudah login, redirect ke dashboard
+        // Jika user sudah login, arahkan ke halaman pertama yang diizinkan.
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            return redirect()->route('home');
         }
 
         // Tidak perlu ambil toko lagi karena semua user adalah admin utama

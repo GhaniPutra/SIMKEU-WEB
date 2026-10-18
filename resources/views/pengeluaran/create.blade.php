@@ -19,7 +19,7 @@
             <p class="page-description">Catat biaya operasional seperti beli stok, gaji, listrik, sewa, atau transportasi.</p>
         </div>
         <div>
-            <a href="{{ route('pengeluaran.index') }}" class="btn-qa btn-qa-outline">
+            <a href="{{ Auth::user()->hasPermission('expenses.view') ? route('pengeluaran.index') : route('home') }}" class="btn-qa btn-qa-outline">
                 <i class="fas fa-arrow-left"></i> Kembali ke Daftar
             </a>
         </div>
