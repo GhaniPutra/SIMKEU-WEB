@@ -8,21 +8,15 @@
 ============================================================ */
 .kpi-grid {
     display: grid;
-    /* Tetap default 5 kolom pada dashboard besar, responsif turun pada breakpoints */
-    grid-template-columns: repeat(5, 1fr);
+    /* Empat kartu dibagi rata memenuhi lebar konten utama. */
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 18px;
     margin-bottom: 28px;
 }
 
 /* Responsif: sesuaikan jumlah kolom di layar lebih kecil */
-@media (max-width: 1400px) {
-    .kpi-grid { grid-template-columns: repeat(4, 1fr); }
-}
 @media (max-width: 1100px) {
-    .kpi-grid { grid-template-columns: repeat(3, 1fr); }
-}
-@media (max-width: 768px) {
-    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 480px) {
     .kpi-grid { grid-template-columns: 1fr; }
@@ -143,6 +137,87 @@
 .dashboard-section-icon { color: var(--icon-primary); }
 .dashboard-chart-section { margin-bottom: 28px; }
 .dashboard-period-label { color: var(--text-muted); font-size: .75rem; }
+.dashboard-chart-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+    grid-template-rows: repeat(2, minmax(321px, 1fr));
+    gap: 18px;
+}
+.dashboard-chart-card {
+    height: 390px;
+    min-height: 390px;
+    max-height: 390px;
+    min-width: 0;
+}
+.dashboard-donut-wrapper {
+    max-width: 560px;
+    margin-inline: auto;
+}
+.dashboard-trend-card .content-card-body.dashboard-expense-legend-body {
+    display: grid;
+    flex: 1 1 auto;
+    grid-template-columns: minmax(112px, .95fr) minmax(0, 1.05fr);
+    grid-template-rows: minmax(0, 1fr);
+    align-items: center;
+    gap: 14px;
+    min-height: 0;
+    overflow: hidden;
+}
+.dashboard-expense-donut-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 220px;
+    height: 220px;
+    min-width: 0;
+    justify-self: center;
+}
+.dashboard-expense-donut-wrapper canvas {
+    display: block;
+}
+.dashboard-expense-legend-list {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    padding-right: 4px;
+}
+.dashboard-expense-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: .72rem;
+    flex-wrap: wrap;
+}
+.dashboard-expense-legend-item:last-child { border-bottom: none; }
+.dashboard-expense-legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex: 0 0 10px;
+}
+.dashboard-expense-legend-name {
+    flex: 1 1 72px;
+    min-width: 0;
+    color: var(--text-muted);
+}
+.dashboard-expense-legend-value {
+    margin-left: auto;
+    color: var(--text-primary);
+    font-size: .68rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.dashboard-expense-legend-percent {
+    width: 100%;
+    padding-left: 18px;
+    margin-top: -5px;
+    color: var(--text-muted);
+    font-size: .68rem;
+}
 .dashboard-view-all {
     color: var(--primary);
     font-size: .75rem;
@@ -152,6 +227,275 @@
 .dashboard-view-all:hover { text-decoration: none; }
 .content-card-body.activity-card-body { padding-top: 8px; }
 .dashboard-table-scroll { overflow-x: auto; }
+.dashboard-operations-grid {
+    display: grid;
+    /* Dua kolom ringkasan dibuat seimbang dan sejajar dengan lebar konten utama. */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 18px;
+}
+.dashboard-operations-main,
+.dashboard-operations-side {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 0;
+}
+.dashboard-operations-card {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+}
+/* Tinggi dua tumpukan dibuat sama: 486+18+384 = 240+18+630. */
+.dashboard-sales-summary-card { height: 486px; }
+.dashboard-allocation-card { height: 384px; }
+.dashboard-stock-summary-card { height: 240px; }
+.dashboard-activity-card { height: 630px; }
+.dashboard-sales-list-body,
+.dashboard-activity-card .activity-card-body,
+.dashboard-stock-summary-body,
+.dashboard-allocation-body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+.dashboard-sales-list-body { padding-top: 8px; padding-bottom: 12px; }
+.dashboard-sales-list,
+.dashboard-stock-list,
+.dashboard-allocation-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.dashboard-sales-list,
+.dashboard-activity-card .activity-list,
+.dashboard-stock-list,
+.dashboard-allocation-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-color: var(--border) transparent;
+    scrollbar-width: thin;
+}
+.dashboard-sales-list:focus-visible,
+.dashboard-activity-card .activity-list:focus-visible,
+.dashboard-stock-list:focus-visible,
+.dashboard-allocation-list:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
+    border-radius: 4px;
+}
+.dashboard-sale-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+}
+.dashboard-sale-item:last-child { border-bottom: none; }
+.dashboard-sale-heading,
+.dashboard-sale-details {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-width: 0;
+}
+.dashboard-sale-heading { margin-bottom: 7px; }
+.dashboard-sale-employee-group {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+}
+.dashboard-sale-employee {
+    overflow: hidden;
+    color: var(--text-primary);
+    font-size: .82rem;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.dashboard-sale-invoice {
+    flex-shrink: 0;
+    color: var(--text-muted);
+    font-size: .66rem;
+}
+.dashboard-sale-heading time {
+    flex-shrink: 0;
+    color: var(--text-muted);
+    font-size: .7rem;
+}
+.dashboard-sale-details { justify-content: flex-start; }
+.dashboard-sale-items {
+    min-width: 0;
+    color: var(--text-muted);
+    font-size: .72rem;
+}
+.dashboard-payment-badge {
+    flex-shrink: 0;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: var(--surface-light);
+    color: var(--text-muted);
+    font-size: .66rem;
+    font-weight: 600;
+}
+.dashboard-sale-details strong {
+    margin-left: auto;
+    color: var(--text-primary);
+    font-size: .78rem;
+    white-space: nowrap;
+}
+.dashboard-ops-footer-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 8px;
+    color: var(--primary);
+    font-size: .75rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+.dashboard-ops-footer-link:hover { text-decoration: underline; }
+.dashboard-ops-empty {
+    padding: 22px 8px;
+    color: var(--text-muted);
+    font-size: .8rem;
+    text-align: center;
+}
+.dashboard-stock-summary-body,
+.dashboard-allocation-body { padding-top: 14px; }
+.dashboard-stock-count {
+    display: flex;
+    align-items: baseline;
+    gap: 9px;
+    flex: 0 0 auto;
+    margin-bottom: 10px;
+}
+.dashboard-stock-count strong {
+    color: var(--text-primary);
+    font-size: 1.55rem;
+    line-height: 1;
+}
+.dashboard-stock-count span {
+    color: var(--text-muted);
+    font-size: .76rem;
+    font-weight: 600;
+}
+.dashboard-stock-count small { font-size: .68rem; font-weight: 500; }
+.dashboard-stock-count.has-low-stock strong { color: var(--danger, var(--red-600)); }
+.dashboard-stock-count.stock-is-healthy strong { color: var(--success); }
+.dashboard-stock-list li,
+.dashboard-allocation-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 0;
+    border-top: 1px solid var(--border);
+}
+.dashboard-stock-list a,
+.dashboard-allocation-item-main a {
+    overflow: hidden;
+    min-width: 0;
+    color: var(--text-primary);
+    font-size: .75rem;
+    font-weight: 600;
+    text-decoration: none;
+    text-overflow: ellipsis;
+}
+.dashboard-stock-list a:hover,
+.dashboard-allocation-item-main a:hover { color: var(--primary); text-decoration: underline; }
+.dashboard-stock-quantity {
+    flex-shrink: 0;
+    color: var(--text-muted);
+    font-size: .7rem;
+    font-weight: 700;
+}
+.dashboard-stock-quantity.is-empty { color: var(--danger, var(--red-600)); }
+.dashboard-stock-more {
+    display: block;
+    flex: 0 0 auto;
+    padding-top: 8px;
+    color: var(--text-muted);
+    font-size: .7rem;
+}
+.dashboard-stock-clear,
+.dashboard-allocation-clear {
+    justify-content: flex-start !important;
+    color: var(--success);
+    font-size: .75rem;
+}
+.dashboard-allocation-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex: 0 0 auto;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.dashboard-allocation-metrics > div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: var(--surface-light);
+}
+.dashboard-allocation-metrics strong {
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    line-height: 1;
+}
+.dashboard-allocation-metrics span {
+    color: var(--text-muted);
+    font-size: .66rem;
+    line-height: 1.35;
+}
+.dashboard-allocation-metrics .has-follow-up strong { color: var(--danger, var(--red-600)); }
+.dashboard-allocation-list li { align-items: flex-start; }
+.dashboard-allocation-item-main {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+.dashboard-allocation-item-main strong {
+    overflow: hidden;
+    color: var(--text-primary);
+    font-size: .74rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.dashboard-allocation-item-main span {
+    overflow: hidden;
+    color: var(--text-muted);
+    font-size: .68rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.dashboard-allocation-item-main a { font-size: inherit; }
+.dashboard-allocation-status {
+    flex-shrink: 0;
+    padding: 4px 7px;
+    border-radius: 999px;
+    background: var(--yellow-50);
+    color: var(--yellow-800);
+    font-size: .62rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.dashboard-allocation-status.status-needs_review,
+.dashboard-allocation-status.status-declined {
+    background: var(--red-50);
+    color: var(--red-700);
+}
+.dashboard-allocation-status.status-accepted {
+    background: var(--green-50);
+    color: var(--green-700);
+}
 
 /* ============================================================
    Kartu konten dan wadah grafik
@@ -214,6 +558,24 @@
     min-height: 0;
 }
 
+.dashboard-trend-card.dashboard-chart-card {
+    height: 390px;
+    min-height: 390px;
+    max-height: 390px;
+}
+
+.dashboard-chart-layout .dashboard-comparison-card {
+    grid-row: 1 / span 2;
+    height: auto;
+    min-height: 660px;
+    max-height: none;
+}
+.dashboard-chart-layout .dashboard-side-chart-card {
+    height: 321px;
+    min-height: 321px;
+    max-height: 321px;
+}
+
 /* ============================================================
    Wadah grafik
 ============================================================ */
@@ -263,6 +625,8 @@
 
 .activity-sale { background: var(--success); }
 .activity-expense { background: var(--warning); }
+.activity-product { background: var(--blue-500); }
+.activity-allocation { background: var(--accent); }
 .activity-default { background: var(--primary); }
 
 .activity-content {
@@ -336,6 +700,16 @@
     color: var(--danger);
 }
 
+.type-product {
+    background: var(--blue-50);
+    color: var(--blue-800);
+}
+
+.type-allocation {
+    background: var(--yellow-50);
+    color: var(--yellow-800);
+}
+
 .btn-detail {
     padding: 5px 12px;
     border-radius: 5px;
@@ -391,12 +765,93 @@
     }
 }
 
-@media (max-width: 480px) {
-    .dashboard-trend-card {
-        height: 400px;
-        min-height: 400px;
-        max-height: 400px;
+@media (max-width: 850px) {
+    .dashboard-chart-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
     }
+
+    .dashboard-chart-layout .dashboard-comparison-card {
+        grid-row: auto;
+        height: 390px;
+        min-height: 390px;
+        max-height: 390px;
+    }
+
+    .dashboard-chart-layout .dashboard-side-chart-card {
+        height: 390px;
+        min-height: 390px;
+        max-height: 390px;
+    }
+}
+
+@media (max-width: 1100px) {
+    .dashboard-operations-grid { grid-template-columns: 1fr; }
+
+    .dashboard-operations-card {
+        flex: initial;
+        height: auto;
+    }
+
+    .dashboard-sales-list-body,
+    .dashboard-activity-card .activity-card-body,
+    .dashboard-stock-summary-body,
+    .dashboard-allocation-body {
+        display: block;
+        flex: initial;
+        overflow: visible;
+    }
+
+    .dashboard-sales-list,
+    .dashboard-activity-card .activity-list,
+    .dashboard-stock-list,
+    .dashboard-allocation-list {
+        flex: initial;
+        overflow: visible;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-trend-card.dashboard-chart-card {
+        height: 360px;
+        min-height: 360px;
+        max-height: 360px;
+    }
+
+    .dashboard-chart-layout .dashboard-comparison-card,
+    .dashboard-chart-layout .dashboard-side-chart-card {
+        height: 360px;
+        min-height: 360px;
+        max-height: 360px;
+    }
+
+    .dashboard-trend-card .content-card-body.dashboard-expense-legend-body {
+        grid-template-columns: minmax(104px, .85fr) minmax(0, 1.15fr);
+        gap: 8px;
+        padding-inline: 14px;
+    }
+
+    .dashboard-expense-donut-wrapper {
+        height: 190px;
+    }
+
+    .dashboard-expense-legend-item {
+        gap: 6px;
+        padding: 8px 0;
+    }
+
+    .dashboard-sale-details {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 6px;
+    }
+
+    .dashboard-sale-details strong {
+        grid-column: 1 / -1;
+        justify-self: end;
+    }
+
+    .dashboard-allocation-metrics { gap: 7px; }
 
     .kpi-grid {
         grid-template-columns: 1fr;

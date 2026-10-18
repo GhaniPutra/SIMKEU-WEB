@@ -1,194 +1,284 @@
-// ============================================================
-// dashboard.js — Logika interaktif halaman Dashboard SIMKEU.
-//
-// File ini bertanggung jawab untuk:
-//   1. Menginisialisasi grafik tren pendapatan vs pengeluaran
-//      dengan tampilan yang berbeda sesuai periode filter:
-//      - 'all'   → seluruh riwayat, agregat per bulan
-//      - 'month' → bulan berjalan, total per hari
-//      - 'week'  → minggu berjalan, total per hari
-//      - 'today' → 24 jam (pengeluaran tercatat pada jam 00)
-//
-// Data grafik dibaca dari atribut pada elemen #dashboard-data di Blade.
-// ============================================================
-
-// ============================================================
-// Baca data grafik dari HTML dan gunakan nilai aman bila elemennya tidak ada.
-// ============================================================
 const dashboardElement = document.getElementById('dashboard-data');
 const dashboardAttributes = dashboardElement?.dataset;
+const parseDashboardData = (value) => {
+    try {
+        return JSON.parse(value || '[]');
+    } catch {
+        return [];
+    }
+};
+
 const dashboardData = dashboardAttributes ? {
     period: dashboardAttributes.period,
     periodLabel: dashboardAttributes.periodLabel,
-    monthDayCount: Number(dashboardAttributes.monthDayCount),
-    trendLabels: JSON.parse(dashboardAttributes.trendLabels),
-    revenueData: JSON.parse(dashboardAttributes.revenueData),
-    expenseData: JSON.parse(dashboardAttributes.expenseData)
+    allPeriodMonthCount: Number(dashboardAttributes.allPeriodMonthCount),
+    trendLabels: parseDashboardData(dashboardAttributes.trendLabels),
+    revenueData: parseDashboardData(dashboardAttributes.revenueData).map(Number),
+    expenseData: parseDashboardData(dashboardAttributes.expenseData).map(Number),
+    expenseCategoryLabels: parseDashboardData(dashboardAttributes.expenseCategoryLabels),
+    expenseCategoryData: parseDashboardData(dashboardAttributes.expenseCategoryData).map(Number),
+    expenseCategoryColors: parseDashboardData(dashboardAttributes.expenseCategoryColors)
 } : {
     period: 'month',
     periodLabel: 'Bulan Ini',
-    monthDayCount: 30,
+    allPeriodMonthCount: 0,
     trendLabels: [],
     revenueData: [],
-    expenseData: []
+    expenseData: [],
+    expenseCategoryLabels: [],
+    expenseCategoryData: [],
+    expenseCategoryColors: []
 };
 
-const {
-    period,       // Periode aktif: 'all', 'today', 'week', atau 'month'
-    periodLabel,  // Label periode: 'Hari Ini', 'Minggu Ini', 'Bulan Ini'
-    monthDayCount,
-    trendLabels,  // Array label untuk sumbu X grafik
-    revenueData,  // Array angka pendapatan
-    expenseData   // Array angka pengeluaran
-} = dashboardData;
-
-// ============================================================
-// Fungsi: formatRupiah
-// Tujuan: Format angka menjadi string Rupiah untuk tooltip
-// ============================================================
 function formatRupiah(value) {
     return 'Rp ' + Math.round(value).toLocaleString('id-ID');
 }
 
-// ============================================================
-// Fungsi: getChartTitle
-// Tujuan: Mengembalikan subtitle grafik sesuai periode aktif
-// ============================================================
-function getChartTitle() {
-    switch (period) {
-        case 'all':   return 'Per Bulan — Seluruh Riwayat';
-        case 'today': return 'Total Hari Ini';
-        case 'week':  return 'Per Hari — Minggu Ini';
-        case 'month': return 'Per Hari — Bulan Ini';
-        default:      return periodLabel;
-    }
+function chartEmptyState(canvas, message) {
+    if (!canvas) return;
+    canvas.insertAdjacentHTML('afterend', `<p class="chart-empty-state">${message}</p>`);
+    canvas.remove();
 }
 
-// ============================================================
-// Fungsi: createChartDefaults
-// Tujuan: Menghasilkan objek konfigurasi default untuk Chart.js
-//         yang digunakan secara konsisten oleh semua grafik.
-//         Konfigurasi disesuaikan dengan periode filter aktif.
-// ============================================================
-function createChartDefaults() {
-    const gridLine = 'rgba(55,65,81,.14)';
-    const moneyTick = (value) => {
-        if (value >= 1000000) return `Rp ${(value / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 })} jt`;
-        if (value >= 1000) return `Rp ${(value / 1000).toLocaleString('id-ID', { maximumFractionDigits: 0 })} rb`;
-        return `Rp ${value.toLocaleString('id-ID')}`;
-    };
+const FINANCIAL_BAR_GAP_PX = 3;
+const DASHBOARD_REVENUE_COLOR = getComputedStyle(document.documentElement)
+    .getPropertyValue('--green-400').trim() || '#88d66c';
+const FINANCIAL_REVENUE_COLOR = getComputedStyle(document.documentElement)
+    .getPropertyValue('--blue-400').trim() || '#65b1f5';
+const DASHBOARD_EXPENSE_COLOR = getComputedStyle(document.documentElement)
+    .getPropertyValue('--red-400').trim() || '#ff5e73';
 
-    return {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: { mode: 'index', intersect: false },
-
-        plugins: {
-            subtitle: {
-                display: true,
-                text: getChartTitle(),
-                font: { size: 12, family: 'Poppins', weight: '500' },
-                color: '#374151',
-                padding: { bottom: 12 }
-            },
-            legend: {
-                position: 'bottom',
-                labels: { font: { size: 11, family: 'Poppins' } }
-            },
-            tooltip: {
-                mode: 'index',
-                intersect: false,
-                callbacks: {
-                    label: (context) => `${context.dataset.label}: ${formatRupiah(context.parsed.y ?? 0)}`
-                }
-            }
-        },
-        scales: {
-            x: {
-                type: 'category',
-                stacked: false,
-                grid: { display: false },
-                ticks: { font: { size: 10, family: 'Poppins' }, maxTicksLimit: period === 'today' ? 9 : 12, autoSkip: true }
-            },
-            y: {
-                stacked: false,
-                grid: { color: gridLine },
-                ticks: { font: { size: 10, family: 'Poppins' }, callback: moneyTick },
-                beginAtZero: true,
-                grace: '5%'
-            }
-        }
-    };
-}
-
-// ============================================================
-// Fungsi: getCategoryPercentage
-// Tujuan: Menyesuaikan proporsi lebar grup kategori berdasarkan
-//         jumlah data pada sumbu X agar batang perbandingan tetap
-//         berdekatan dan proporsional di semua periode.
-// ============================================================
-function getCategoryPercentage(numLabels) {
-    if (numLabels <= 1) return 0.10;
-    if (numLabels <= 3) return 0.20;
-    if (numLabels <= 7) return 0.30;
-    if (numLabels <= 14) return 0.40;
+function getFinancialBarCategoryPercentage(labelCount) {
+    if (labelCount <= 1) return 0.10;
+    if (labelCount <= 3) return 0.20;
+    if (labelCount <= 7) return 0.30;
+    if (labelCount <= 14) return 0.40;
     return 0.60;
 }
 
-// ============================================================
-// Fungsi: initTrendChart
-// Tujuan: Menginisialisasi grafik tren keuangan yang
-//         membandingkan pendapatan vs pengeluaran per periode.
-// ============================================================
-function initTrendChart() {
-    const trendCanvas = document.getElementById('trendChart');
-    if (!trendCanvas) return;
+function initExpenseCompositionChart() {
+    const canvas = document.getElementById('expenseCompositionChart');
+    if (!canvas) return;
 
-    const labels = trendLabels;
-    const revenue = revenueData;
-    const expenses = expenseData;
+    const { expenseCategoryLabels, expenseCategoryData, expenseCategoryColors, periodLabel } = dashboardData;
+    const totalExpenses = expenseCategoryData.reduce((total, amount) => total + amount, 0);
+    const legend = document.getElementById('expenseCompositionLegend');
 
-    if (!revenue.some((value) => value > 0) && !expenses.some((value) => value > 0)) {
-        trendCanvas.insertAdjacentHTML('afterend', '<p class="chart-empty-state">Belum ada data pada periode ini.</p>');
-        trendCanvas.remove();
+    if (totalExpenses <= 0) {
+        chartEmptyState(canvas, `Belum ada pengeluaran pada ${periodLabel.toLowerCase()}.`);
+        if (legend) {
+            const emptyState = document.createElement('p');
+            emptyState.className = 'chart-empty-state';
+            emptyState.textContent = 'Belum ada rincian kategori.';
+            legend.replaceChildren(emptyState);
+        }
         return;
     }
 
-    const categoryPercentage = getCategoryPercentage(labels.length);
-    const barPercentage = 0.7;
-    const chartColors = getComputedStyle(document.documentElement);
-    const revenueColor = chartColors.getPropertyValue('--blue-400').trim();
-    const expenseColor = chartColors.getPropertyValue('--red-400').trim();
+    if (legend) {
+        const legendItems = expenseCategoryLabels.map((label, index) => {
+            const amount = Number(expenseCategoryData[index] || 0);
+            const item = document.createElement('div');
+            item.className = 'dashboard-expense-legend-item';
 
-    new Chart(trendCanvas, {
+            const dot = document.createElement('span');
+            dot.className = 'dashboard-expense-legend-dot';
+            dot.style.backgroundColor = expenseCategoryColors[index] || '#94a3b8';
+
+            const name = document.createElement('span');
+            name.className = 'dashboard-expense-legend-name';
+            name.textContent = label;
+
+            const value = document.createElement('span');
+            value.className = 'dashboard-expense-legend-value';
+            value.textContent = formatRupiah(amount);
+
+            const percentage = document.createElement('span');
+            percentage.className = 'dashboard-expense-legend-percent';
+            percentage.textContent = `${((amount / totalExpenses) * 100).toLocaleString('id-ID', { maximumFractionDigits: 1 })}% dari pengeluaran`;
+
+            item.append(dot, name, value, percentage);
+            return item;
+        });
+
+        legend.replaceChildren(...legendItems);
+    }
+
+    const centerTotalPlugin = {
+        id: 'expenseCenterTotal',
+        afterDraw(chart) {
+            const { ctx, chartArea } = chart;
+            if (!chartArea) return;
+            const centerX = (chartArea.left + chartArea.right) / 2;
+            const centerY = (chartArea.top + chartArea.bottom) / 2;
+            const cardStyle = getComputedStyle(chart.canvas.closest('.content-card'));
+            const totalFontSize = Math.max(12, Math.min(16, chartArea.width * 0.11));
+
+            ctx.save();
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = cardStyle.getPropertyValue('--text-primary').trim() || '#192b52';
+            ctx.font = `700 ${totalFontSize}px Poppins, sans-serif`;
+            ctx.fillText(formatRupiah(totalExpenses), centerX, centerY - 8, chartArea.width * 0.82);
+            ctx.fillStyle = cardStyle.getPropertyValue('--text-muted').trim() || '#718096';
+            ctx.font = '11px Poppins, sans-serif';
+            ctx.fillText('Total Pengeluaran', centerX, centerY + 11, chartArea.width * 0.82);
+            ctx.restore();
+        }
+    };
+
+    new Chart(canvas, {
+        type: 'doughnut',
+        data: {
+            labels: expenseCategoryLabels,
+            datasets: [{
+                data: expenseCategoryData,
+                backgroundColor: expenseCategoryColors,
+                borderColor: getComputedStyle(canvas.closest('.content-card')).backgroundColor,
+                borderWidth: 2,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label(context) {
+                            const amount = Number(context.raw || 0);
+                            const percent = totalExpenses > 0 ? (amount / totalExpenses) * 100 : 0;
+                            return ` ${context.label}: ${formatRupiah(amount)} (${percent.toLocaleString('id-ID', { maximumFractionDigits: 1 })}%)`;
+                        }
+                    }
+                }
+            }
+        },
+        plugins: [centerTotalPlugin]
+    });
+}
+
+function initRevenueTrendChart() {
+    const canvas = document.getElementById('revenueTrendChart');
+    if (!canvas) return;
+
+    const { trendLabels, revenueData, periodLabel } = dashboardData;
+    if (!revenueData.some((amount) => amount > 0)) {
+        chartEmptyState(canvas, `Belum ada pemasukan pada ${periodLabel.toLowerCase()}.`);
+        return;
+    }
+
+    const context = canvas.getContext('2d');
+    const gradient = context.createLinearGradient(0, 0, 0, 320);
+    gradient.addColorStop(0, 'rgba(136, 214, 108, 0.24)');
+    gradient.addColorStop(1, 'rgba(136, 214, 108, 0.01)');
+
+    new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: trendLabels,
+            datasets: [{
+                label: 'Pemasukan',
+                data: revenueData,
+                borderColor: DASHBOARD_REVENUE_COLOR,
+                backgroundColor: gradient,
+                borderWidth: 3,
+                fill: true,
+                tension: 0.35,
+                pointRadius: trendLabels.length > 20 ? 0 : 3,
+                pointHoverRadius: 5,
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: DASHBOARD_REVENUE_COLOR,
+                pointBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: (context) => ` Pemasukan: ${formatRupiah(context.parsed.y || 0)}`
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: {
+                        font: { family: 'Poppins', size: 10 },
+                        maxTicksLimit: 10,
+                        autoSkip: true
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(55, 65, 81, .12)' },
+                    ticks: {
+                        font: { family: 'Poppins', size: 10 },
+                        callback(value) {
+                            if (value >= 1000000) return `Rp ${(value / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 })} jt`;
+                            if (value >= 1000) return `Rp ${(value / 1000).toLocaleString('id-ID', { maximumFractionDigits: 0 })} rb`;
+                            return `Rp ${Number(value).toLocaleString('id-ID')}`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function initFinancialComparisonChart() {
+    const canvas = document.getElementById('financialComparisonChart');
+    if (!canvas) return;
+
+    const { trendLabels, revenueData, expenseData, periodLabel } = dashboardData;
+    if (![...revenueData, ...expenseData].some((amount) => amount > 0)) {
+        chartEmptyState(canvas, `Belum ada data keuangan pada ${periodLabel.toLowerCase()}.`);
+        return;
+    }
+
+    const referenceMonthCount = Math.max(1, dashboardData.allPeriodMonthCount || trendLabels.length);
+    const categoryPercentage = getFinancialBarCategoryPercentage(referenceMonthCount);
+    const barPercentage = 0.7;
+
+    new Chart(canvas, {
         type: 'bar',
         plugins: [{
-            id: 'fixed-grouped-bar-gap',
+            id: 'fixed-financial-bar-gap',
             beforeDatasetsDraw(chart) {
-                const monthCategoryChunk = chart.chartArea.width * getCategoryPercentage(monthDayCount) / monthDayCount / 2;
-                const gap = monthCategoryChunk - Math.min(12, monthCategoryChunk * 0.7);
                 const revenueBars = chart.getDatasetMeta(0).data;
                 const expenseBars = chart.getDatasetMeta(1).data;
+                const referenceCategoryWidth = chart.chartArea.width / referenceMonthCount;
+                const referenceBarWidth = Math.min(
+                    12,
+                    referenceCategoryWidth * categoryPercentage * barPercentage / 2
+                );
 
                 revenueBars.forEach((revenueBar, index) => {
                     const expenseBar = expenseBars[index];
                     if (!expenseBar) return;
 
                     const center = chart.scales.x.getPixelForValue(index);
-                    revenueBar.x = center - (revenueBar.width + gap) / 2;
-                    expenseBar.x = center + (expenseBar.width + gap) / 2;
+                    revenueBar.width = referenceBarWidth;
+                    expenseBar.width = referenceBarWidth;
+                    revenueBar.x = center - (revenueBar.width + FINANCIAL_BAR_GAP_PX) / 2;
+                    expenseBar.x = center + (expenseBar.width + FINANCIAL_BAR_GAP_PX) / 2;
                 });
             }
         }],
-
         data: {
-            labels,
+            labels: trendLabels,
             datasets: [
                 {
-                    label: 'Pendapatan',
-                    backgroundColor: revenueColor,
-                    data: revenue,
-                    borderRadius: 0,
+                    label: 'Pemasukan',
+                    data: revenueData,
+                    backgroundColor: FINANCIAL_REVENUE_COLOR,
+                    borderRadius: 4,
                     maxBarThickness: 12,
                     categoryPercentage,
                     barPercentage,
@@ -196,9 +286,9 @@ function initTrendChart() {
                 },
                 {
                     label: 'Pengeluaran',
-                    backgroundColor: expenseColor,
-                    data: expenses,
-                    borderRadius: 0,
+                    data: expenseData,
+                    backgroundColor: DASHBOARD_EXPENSE_COLOR,
+                    borderRadius: 4,
                     maxBarThickness: 12,
                     categoryPercentage,
                     barPercentage,
@@ -207,38 +297,56 @@ function initTrendChart() {
             ]
         },
         options: {
-            ...createChartDefaults(),
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
             datasets: {
-                bar: {
-                    categoryPercentage,
-                    barPercentage
+                bar: { categoryPercentage, barPercentage }
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { usePointStyle: true, pointStyle: 'circle', font: { family: 'Poppins', size: 10 } }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: (context) => ` ${context.dataset.label}: ${formatRupiah(context.parsed.y || 0)}`
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { font: { family: 'Poppins', size: 10 }, maxTicksLimit: 12, autoSkip: true }
+                },
+                y: {
+                    beginAtZero: true,
+                    afterFit(axis) {
+                        axis.width = 72;
+                    },
+                    grid: { color: 'rgba(55, 65, 81, .12)' },
+                    ticks: {
+                        font: { family: 'Poppins', size: 10 },
+                        callback(value) {
+                            if (value >= 1000000) return `Rp ${(value / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 })} jt`;
+                            if (value >= 1000) return `Rp ${(value / 1000).toLocaleString('id-ID', { maximumFractionDigits: 0 })} rb`;
+                            return `Rp ${Number(value).toLocaleString('id-ID')}`;
+                        }
+                    }
                 }
             }
         }
     });
 }
 
-// ============================================================
-// Fungsi: initDashboard
-// Tujuan: Entry point utama — memanggil semua fungsi inisialisasi
-//         yang perlu dijalankan saat halaman dashboard dimuat.
-// ============================================================
-function initDashboard() {
-    syncPeriodFilter(); // Cocokkan filter navbar dengan periode dashboard.
-    initTrendChart();  // Inisialisasi dan render grafik tren keuangan
-}
-
-// Samakan pilihan filter periode navbar dengan periode yang sedang ditampilkan.
 function syncPeriodFilter() {
     const periodSelect = document.getElementById('global-period');
-    if (periodSelect) periodSelect.value = period;
+    if (periodSelect) periodSelect.value = dashboardData.period;
 }
 
-// ============================================================
-// Event: DOMContentLoaded
-// Jalankan initDashboard() setelah seluruh elemen DOM selesai
-// diparse oleh browser (sebelum gambar dan stylesheet selesai).
-// Ini memastikan semua elemen canvas sudah tersedia saat
-// Chart.js mencoba mengaksesnya.
-// ============================================================
-document.addEventListener('DOMContentLoaded', initDashboard);
+document.addEventListener('DOMContentLoaded', () => {
+    syncPeriodFilter();
+    initExpenseCompositionChart();
+    initRevenueTrendChart();
+    initFinancialComparisonChart();
+});

@@ -81,11 +81,16 @@ class DashboardTest extends TestCase
             ->assertViewHas('totalRevenueMonth', 100)
             ->assertViewHas('totalExpenseMonth', 50)
             ->assertViewHas('transactionsPeriod', 1)
+            ->assertViewHas('expenseCategoryLabels', ['Air'])
+            ->assertViewHas('expenseCategoryData', [50.0])
+            ->assertViewHas('revenueTrendData', fn ($data) => array_sum($data) === 100.0)
+            ->assertViewHas('expenseTrendData', fn ($data) => array_sum($data) === 50.0)
             ->assertViewHas('recentTransactions', fn ($transactions) => $transactions->count() === 2
                 && $transactions->contains(fn ($item) => str_contains($item['url'], (string) $recentSale->id))
                 && $transactions->contains(fn ($item) => $item['type'] === 'expense'));
 
-        $this->get(route('dashboard', ['period' => 'all']))
+        $allPeriodResponse = $this->get(route('dashboard', ['period' => 'all']));
+        $allPeriodResponse
             ->assertOk()
             ->assertViewHas('periodLabel', 'Semua Periode')
             ->assertViewHas('totalRevenueMonth', 600)
@@ -93,9 +98,16 @@ class DashboardTest extends TestCase
             ->assertViewHas('transactionsPeriod', 2)
             ->assertViewHas('trendLabels', fn ($labels) => count($labels) >= 8)
             ->assertViewHas('revenueTrendData', fn ($data) => array_sum($data) === 600.0)
+            ->assertViewHas('expenseCategoryLabels', ['Listrik', 'Air'])
+            ->assertViewHas('expenseCategoryData', [300.0, 50.0])
+            ->assertViewHas('expenseTrendData', fn ($data) => array_sum($data) === 350.0)
             ->assertViewHas('recentTransactions', fn ($transactions) => $transactions->contains(
                 fn ($item) => str_contains($item['url'], (string) $historicalSale->id)
             ));
+        $this->assertSame(
+            count($allPeriodResponse->viewData('trendLabels')),
+            $allPeriodResponse->viewData('allPeriodMonthCount')
+        );
 
         $this->withCookie('dashboardPeriod', 'all')
             ->get(route('dashboard'))

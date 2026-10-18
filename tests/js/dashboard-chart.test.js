@@ -3,50 +3,58 @@ import { readFile } from 'node:fs/promises';
 import { runInNewContext } from 'node:vm';
 import test from 'node:test';
 
-test('keeps the Bulan Ini gap across category counts without resizing bars', async () => {
+test('keeps the Pemasukan vs Pengeluaran bar gap fixed across periods', async () => {
     let config;
     const canvas = {};
+    const labels = Array.from({ length: 31 }, (_, index) => String(index + 1));
+    const dashboardElement = {
+        dataset: {
+            period: 'month',
+            periodLabel: 'Bulan Ini',
+            allPeriodMonthCount: '10',
+            trendLabels: JSON.stringify(labels),
+            revenueData: JSON.stringify(labels.map(() => 1)),
+            expenseData: JSON.stringify(labels.map(() => 1)),
+            expenseCategoryLabels: '[]',
+            expenseCategoryData: '[]',
+            expenseCategoryColors: '[]'
+        }
+    };
     const context = {
-        window: {
-            dashboardData: {
-                period: 'month',
-                periodLabel: 'Bulan Ini',
-                monthDayCount: 31,
-                trendLabels: ['day'],
-                revenueData: [1],
-                expenseData: [1],
-            },
-        },
         document: {
-            documentElement: {},
-            getElementById: () => canvas,
-            addEventListener: (_, callback) => callback(),
+            getElementById(id) {
+                if (id === 'dashboard-data') return dashboardElement;
+                return id === 'financialComparisonChart' ? canvas : null;
+            },
+            addEventListener(_, callback) {
+                callback();
+            }
         },
-        getComputedStyle: () => ({ getPropertyValue: () => '#000' }),
         Chart: function (_, chartConfig) {
             config = chartConfig;
-        },
+        }
     };
-    const source = await readFile(new URL('../../public/js/dashboard.js', import.meta.url), 'utf8');
+    const source = await readFile(new URL('../../public/js/dashboard/dashboard.js', import.meta.url), 'utf8');
     runInNewContext(source, context);
 
-    const plugin = config.plugins[0];
+    const gapPlugin = config.plugins.find((plugin) => plugin.id === 'fixed-financial-bar-gap');
+    assert.ok(gapPlugin);
+
     const gaps = [1, 7, 31, 120].map((count) => {
-        const revenueBars = Array.from({ length: count }, () => ({ x: 0, width: 4 }));
-        const expenseBars = Array.from({ length: count }, () => ({ x: 0, width: 12 }));
+        const revenueBars = Array.from({ length: count }, (_, index) => ({ x: 0, width: index % 2 ? 12 : 6.5 }));
+        const expenseBars = Array.from({ length: count }, (_, index) => ({ x: 0, width: index % 2 ? 8 : 11 }));
         const chart = {
-            chartArea: { width: 1000 },
+            chartArea: { width: 600 },
             scales: { x: { getPixelForValue: (index) => index * 20 } },
-            getDatasetMeta: (index) => ({ data: index === 0 ? revenueBars : expenseBars }),
+            getDatasetMeta: (index) => ({ data: index === 0 ? revenueBars : expenseBars })
         };
 
-        plugin.beforeDatasetsDraw(chart);
-        assert.equal(revenueBars[0].width, 4);
-        assert.equal(expenseBars[0].width, 12);
-        return expenseBars[0].x - expenseBars[0].width / 2
-            - revenueBars[0].x - revenueBars[0].width / 2;
-    });
+        gapPlugin.beforeDatasetsDraw(chart);
+        revenueBars.forEach((bar) => assert.ok(Math.abs(bar.width - 8.4) < 1e-9));
+        expenseBars.forEach((bar) => assert.ok(Math.abs(bar.width - 8.4) < 1e-9));
+        return expenseBars.map((expenseBar, index) => expenseBar.x - expenseBar.width / 2
+            - revenueBars[index].x - revenueBars[index].width / 2);
+    }).flat();
 
-    assert.ok(Math.abs(gaps[0] - (1000 * 0.6 / 31 / 2 * 0.3)) < 1e-9);
-    assert.ok(gaps.every((gap) => Math.abs(gap - gaps[0]) < 1e-9));
+    assert.ok(gaps.every((gap) => Math.abs(gap - 3) < 1e-9));
 });

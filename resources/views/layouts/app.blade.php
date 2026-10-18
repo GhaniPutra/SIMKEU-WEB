@@ -70,7 +70,6 @@
         {{-- Tautan navigasi utama aplikasi. --}}
         <nav class="sidebar-nav">
             <ul class="list-unstyled">
-                <li class="nav-section-label">Utama</li>
                 @if(Auth::user()?->hasPermission('dashboard.view') || Auth::user()?->hasPermission('dashboard.mobile.view'))
                 <li class="nav-item">
                     <a href="{{ route('dashboard', array_filter(['period' => request('period')])) }}"
@@ -80,45 +79,56 @@
                     </a>
                 </li>
                 @endif
+                @php
+                    $user = Auth::user();
+                    $isOwner = $user?->isOwner();
+                    $isFinanceOpen = request()->routeIs('pemasukan.*', 'pengeluaran.*');
+                    $isProductsOpen = request()->routeIs('products.*', 'categories.*');
+                    $isDistributionOpen = request()->routeIs('employees.stock.*');
+                    $isEmployeesOpen = request()->routeIs('employees.*', 'roles.*') && !$isDistributionOpen;
+                @endphp
 
-                @if(Auth::user()?->hasPermission('sales.view') || Auth::user()?->hasPermission('expenses.view') || Auth::user()?->hasPermission('expenses.create'))
-                <li class="nav-section-label" style="margin-top:8px;">Keuangan</li>
-                @endif
-                @if(Auth::user()?->hasPermission('sales.view'))
-                <li class="nav-item">
-                    <a href="{{ route('pemasukan.index', array_filter(['period' => request('period')])) }}"
-                       class="nav-link {{ request()->routeIs('pemasukan.*') ? 'active' : '' }}">
-                        <span class="nav-icon"><i class="fas fa-arrow-trend-up"></i></span>
-                        <span class="nav-label">Pemasukan</span>
-                    </a>
-                </li>
-                @endif
-                @if(Auth::user()?->hasPermission('expenses.view'))
-                <li class="nav-item">
-                    <a href="{{ route('pengeluaran.index', array_filter(['period' => request('period')])) }}"
-                       class="nav-link {{ request()->routeIs('pengeluaran.*') ? 'active' : '' }}">
-                        <span class="nav-icon"><i class="fas fa-arrow-trend-down"></i></span>
-                        <span class="nav-label">Pengeluaran</span>
-                    </a>
-                </li>
-                @endif
-                @if(Auth::user()?->hasPermission('expenses.create') && !Auth::user()?->hasPermission('expenses.view'))
-                    <li class="nav-item"><a href="{{ route('pengeluaran.create') }}" class="nav-link"><span class="nav-icon"><i class="fas fa-circle-plus"></i></span><span class="nav-label">Tambah Pengeluaran</span></a></li>
-                @endif
-                @if(Auth::user()?->hasPermission('activities.view'))
-                    <li class="nav-item"><a href="{{ route('activities.index') }}" class="nav-link {{ request()->routeIs('activities.*') ? 'active' : '' }}"><span class="nav-icon"><i class="fas fa-clock-rotate-left"></i></span><span class="nav-label">Aktivitas</span></a></li>
+                @if($user?->hasPermission('sales.view') || $user?->hasPermission('expenses.view') || $user?->hasPermission('expenses.create'))
+                <li class="nav-item"><details {{ $isFinanceOpen ? 'open' : '' }}>
+                    <summary class="nav-link {{ $isFinanceOpen ? 'active' : '' }}"><span class="nav-icon"><i class="fas fa-wallet"></i></span><span class="nav-label">Keuangan</span><i class="fas fa-chevron-right nav-chevron" aria-hidden="true"></i></summary>
+                    <div class="nav-submenu">
+                        @if($user?->hasPermission('sales.view'))<a href="{{ route('pemasukan.index', array_filter(['period' => request('period')])) }}" class="nav-link {{ request()->routeIs('pemasukan.*') ? 'active' : '' }}">Pemasukan</a>@endif
+                        @if($user?->hasPermission('expenses.view'))<a href="{{ route('pengeluaran.index', array_filter(['period' => request('period')])) }}" class="nav-link {{ request()->routeIs('pengeluaran.*') ? 'active' : '' }}">Pengeluaran</a>@elseif($user?->hasPermission('expenses.create'))<a href="{{ route('pengeluaran.create') }}" class="nav-link">Pengeluaran</a>@endif
+                        @if($user?->hasPermission('sales.view'))<a href="{{ route('pemasukan.index') }}" class="nav-link">Laporan Keuangan</a><a href="{{ route('pemasukan.index') }}" class="nav-link">Analisis Keuangan</a>@endif
+                    </div>
+                </details></li>
                 @endif
 
-                @if(Auth::user()?->hasPermission('employees.view') || Auth::user()?->hasPermission('employees.create') || Auth::user()?->hasPermission('products.view') || Auth::user()?->hasPermission('products.create') || Auth::user()?->hasPermission('categories.view') || Auth::user()?->isOwner())
-                <li class="nav-section-label" style="margin-top:8px;">Manajemen</li>
+                @if($user?->hasPermission('sales.view'))
+                <li class="nav-item"><a href="{{ route('pemasukan.index') }}" class="nav-link {{ request()->routeIs('pemasukan.*') ? 'active' : '' }}"><span class="nav-icon"><i class="fas fa-cart-shopping"></i></span><span class="nav-label">Riwayat Penjualan</span></a></li>
                 @endif
+
+                @if($user?->hasPermission('products.view') || $user?->hasPermission('products.create') || $user?->hasPermission('categories.view') || $user?->hasPermission('categories.create'))
+                <li class="nav-item"><details {{ $isProductsOpen ? 'open' : '' }}>
+                    <summary class="nav-link {{ $isProductsOpen ? 'active' : '' }}"><span class="nav-icon"><i class="fas fa-box-open"></i></span><span class="nav-label">Produk dan Persediaan</span><i class="fas fa-chevron-right nav-chevron" aria-hidden="true"></i></summary>
+                    <div class="nav-submenu">
+                        @if($user?->hasPermission('products.view'))<a href="{{ route('products.index', ['tab' => 'produk']) }}" class="nav-link {{ request()->routeIs('products.*') && request('tab') !== 'kategori' ? 'active' : '' }}">Daftar Produk</a>@endif
+                        @if($user?->hasPermission('categories.view') || $user?->hasPermission('categories.create'))<a href="{{ route('products.index', ['tab' => 'kategori']) }}" class="nav-link {{ request('tab') === 'kategori' || request()->routeIs('categories.*') ? 'active' : '' }}">Kategori Produk</a>@endif
+                        @if($user?->hasPermission('products.view'))<a href="{{ route('products.index') }}" class="nav-link">Stok Gudang</a>@endif
+                    </div>
+                </details></li>
+                @endif
+
+                @if($user?->hasPermission('stock_allocations.view') || $user?->hasPermission('stock_allocations.create') || $user?->hasPermission('stock_allocations.transfer'))
+                <li class="nav-item"><details {{ $isDistributionOpen ? 'open' : '' }}>
+                    <summary class="nav-link {{ $isDistributionOpen ? 'active' : '' }}"><span class="nav-icon"><i class="fas fa-truck-fast"></i></span><span class="nav-label">Distribusi Stok</span><i class="fas fa-chevron-right nav-chevron" aria-hidden="true"></i></summary>
+                    <div class="nav-submenu">
+                        @if($user?->hasPermission('stock_allocations.view'))<a href="{{ route('employees.index') }}" class="nav-link {{ $isDistributionOpen ? 'active' : '' }}">Persetujuan Alokasi</a><a href="{{ route('employees.index') }}" class="nav-link">Riwayat Distribusi</a>@endif
+                    </div>
+                </details></li>
+                @endif
+
                 @if(Auth::user()?->hasPermission('employees.view') || Auth::user()?->hasPermission('employees.create') || Auth::user()?->isOwner())
-                @php $isEmployeeSectionOpen = request()->routeIs('employees.*', 'roles.*'); @endphp
                 <li class="nav-item">
-                    <details {{ $isEmployeeSectionOpen ? 'open' : '' }}>
-                        <summary class="nav-link {{ $isEmployeeSectionOpen ? 'active' : '' }}">
+                    <details {{ $isEmployeesOpen ? 'open' : '' }}>
+                        <summary class="nav-link {{ $isEmployeesOpen ? 'active' : '' }}">
                             <span class="nav-icon"><i class="fas fa-users"></i></span>
-                            <span class="nav-label">Pegawai</span>
+                            <span class="nav-label">Pegawai dan Akses</span>
                             <i class="fas fa-chevron-right nav-chevron" aria-hidden="true"></i>
                         </summary>
                         <div class="nav-submenu">
@@ -127,49 +137,7 @@
                                     Daftar Pegawai
                                 </a>
                             @endif
-                            @if(Auth::user()?->isOwner())
-                                <a href="{{ route('roles.index') }}" class="nav-link {{ request()->routeIs('roles.*') ? 'active' : '' }}" @if(request()->routeIs('roles.*')) aria-current="page" @endif>
-                                    Role &amp; izin
-                                </a>
-                            @endif
-                        </div>
-                    </details>
-                </li>
-                @endif
-                @if(Auth::user()?->hasPermission('products.view') || Auth::user()?->hasPermission('products.create') || Auth::user()?->hasPermission('categories.view') || Auth::user()?->hasPermission('categories.create'))
-                {{-- Menu cabang belum ditampilkan pada navigasi. --}}
-                {{-- Tentukan apakah bagian produk harus terbuka dan kategori sedang dipilih. --}}
-                @php
-                    $isProductCategoryPage = request()->routeIs('categories.*')
-                        || (request()->routeIs('products.index') && request('tab') === 'kategori');
-                    $isProductSectionOpen = request()->routeIs('products.*', 'categories.*');
-                @endphp
-                <li class="nav-item">
-                    <details {{ $isProductSectionOpen ? 'open' : '' }}>
-                        <summary class="nav-link {{ $isProductSectionOpen ? 'active' : '' }}">
-                            <span class="nav-icon"><i class="fas fa-box-open"></i></span>
-                            <span class="nav-label">Produk</span>
-                            <i class="fas fa-chevron-right nav-chevron" aria-hidden="true"></i>
-                        </summary>
-                        <div class="nav-submenu">
-                            @if(Auth::user()?->hasPermission('products.view'))<a href="{{ route('products.index', ['tab' => 'produk']) }}"
-                               class="nav-link {{ request()->routeIs('products.index', 'products.edit') && !$isProductCategoryPage ? 'active' : '' }}"
-                               @if(request()->routeIs('products.index', 'products.edit') && !$isProductCategoryPage) aria-current="page" @endif>
-                                Daftar Produk
-                            </a>
-                            @endif
-                            @if(Auth::user()?->hasPermission('products.create'))<a href="{{ route('products.create') }}"
-                               class="nav-link {{ request()->routeIs('products.create') ? 'active' : '' }}"
-                               @if(request()->routeIs('products.create')) aria-current="page" @endif>
-                                Tambah Produk
-                            </a>
-                            @endif
-                            @if(Auth::user()?->hasPermission('categories.view') || Auth::user()?->hasPermission('categories.create'))<a href="{{ route('products.index', ['tab' => 'kategori']) }}"
-                               class="nav-link {{ $isProductCategoryPage ? 'active' : '' }}"
-                               @if($isProductCategoryPage) aria-current="page" @endif>
-                                Daftar Kategori
-                            </a>
-                            @endif
+                            @if($isOwner)<a href="{{ route('roles.index') }}" class="nav-link {{ request()->routeIs('roles.*') ? 'active' : '' }}">Role dan Permission</a>@endif
                         </div>
                     </details>
                 </li>

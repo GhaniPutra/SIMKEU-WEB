@@ -5,11 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Expense;
 use App\Models\Product;
 use App\Models\Sale;
-use App\Models\User;
+use App\Models\StockAllocation;
 use App\Support\PeriodFilter;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -17,7 +16,6 @@ class DashboardController extends Controller
     /** Menyiapkan ringkasan, grafik, peringatan, dan aktivitas untuk halaman dashboard. */
     public function index(Request $request)
     {
-        $user = Auth::user();
         $now = Carbon::now();
 
         // Tentukan rentang tanggal dan label periode yang dipilih pengguna.
@@ -35,8 +33,7 @@ class DashboardController extends Controller
             $periodStart?->toDateString(),
             $periodEnd?->toDateString()
         )->sum('amount');
-        $grossProfit = $totalRevenueMonth - $totalExpenseMonth;
-        $netProfit = $grossProfit;
+        $netProfit = $totalRevenueMonth - $totalExpenseMonth;
 
         $transactionsPeriod = PeriodFilter::apply(Sale::query(), 'transaction_date', $periodStart, $periodEnd)->count();
 
@@ -99,8 +96,6 @@ class DashboardController extends Controller
         $expenseTrendText = number_format(abs($expenseTrendPercent), 1, ',', '.') . '%';
         $transactionsTrendText = number_format(abs($transactionsTrendPercent), 1, ',', '.') . '%';
         $netProfitTrendText = number_format(abs($netProfitTrendPercent), 1, ',', '.') . '%';
-        $activeEmployees = User::where('store_id', $user->store_id)->where('role', 'pegawai')->count();
-
         $trendLabels = [];
         $revenueTrendData = [];
         $expenseTrendData = [];
@@ -113,19 +108,22 @@ class DashboardController extends Controller
                 'pgsql' => "TO_CHAR(transaction_date, 'YYYY-MM')",
                 default => "strftime('%Y-%m', transaction_date)",
             };
-            $expenseMonth = str_replace('transaction_date', 'expense_date', $saleMonth);
             $revenueByMonth = Sale::query()
                 ->selectRaw("$saleMonth as month_key, SUM(total) as amount")
                 ->groupByRaw($saleMonth)
                 ->orderBy('month_key')
                 ->pluck('amount', 'month_key');
+            $expenseMonth = match ($driver) {
+                'mysql', 'mariadb' => "DATE_FORMAT(expense_date, '%Y-%m')",
+                'pgsql' => "TO_CHAR(expense_date, 'YYYY-MM')",
+                default => "strftime('%Y-%m', expense_date)",
+            };
             $expenseByMonth = Expense::query()
                 ->selectRaw("$expenseMonth as month_key, SUM(amount) as amount")
                 ->groupByRaw($expenseMonth)
                 ->orderBy('month_key')
                 ->pluck('amount', 'month_key');
-
-            $months = $revenueByMonth->keys()->merge($expenseByMonth->keys())->sort()->values();
+            $months = $revenueByMonth->keys()->merge($expenseByMonth->keys())->unique()->sort()->values();
             if ($months->isNotEmpty()) {
                 $firstMonth = Carbon::createFromFormat('!Y-m', $months->first());
                 $lastMonth = Carbon::createFromFormat('!Y-m', $months->last());
@@ -157,7 +155,6 @@ class DashboardController extends Controller
                 ->selectRaw('DATE(expense_date) as day_key, SUM(amount) as amount')
                 ->groupByRaw('DATE(expense_date)')
                 ->pluck('amount', 'day_key');
-
             for ($date = $periodStart->copy(); $date->lte($chartEnd); $date->addDay()) {
                 $key = $date->toDateString();
                 $trendLabels[] = $period === 'week' ? $date->translatedFormat('D') : $date->format('d/m');
@@ -166,81 +163,274 @@ class DashboardController extends Controller
             }
         }
 
-        // Siapkan peringatan stok dan aktivitas terbaru dalam periode aktif.
-        $alerts = [];
-        foreach (Product::where('stock', '<=', 10)->orderBy('stock')->take(3)->get() as $product) {
-            $alerts[] = [
-                'type' => 'warning',
-                'message' => "Stok produk {$product->name} tinggal {$product->stock} {$product->unit}",
-            ];
+        if ($period === 'all') {
+            $allPeriodMonthCount = count($trendLabels);
+        } else {
+            $salesDateRange = Sale::query()
+                ->selectRaw('MIN(transaction_date) as first_date, MAX(transaction_date) as last_date')
+                ->first();
+            $expensesDateRange = Expense::query()
+                ->selectRaw('MIN(expense_date) as first_date, MAX(expense_date) as last_date')
+                ->first();
+            $recordDates = array_values(array_filter([
+                $salesDateRange?->first_date,
+                $salesDateRange?->last_date,
+                $expensesDateRange?->first_date,
+                $expensesDateRange?->last_date,
+            ]));
+
+            if ($recordDates === []) {
+                $allPeriodMonthCount = 0;
+            } else {
+                sort($recordDates, SORT_STRING);
+                $firstMonth = Carbon::parse($recordDates[0]);
+                $lastMonth = Carbon::parse($recordDates[array_key_last($recordDates)]);
+                $allPeriodMonthCount = (($lastMonth->year - $firstMonth->year) * 12)
+                    + ($lastMonth->month - $firstMonth->month)
+                    + 1;
+            }
         }
-        if ($totalExpenseMonth > $totalRevenueMonth) {
-            $alerts[] = ['type' => 'danger', 'message' => "Pengeluaran {$periodLabel} melebihi pendapatan"];
-        }
-        $salesActivities = PeriodFilter::apply(Sale::with('user'), 'transaction_date', $periodStart, $periodEnd)
-            ->orderByDesc('transaction_date')
-            ->take(5)
-            ->get()
-            ->map(fn ($sale) => [
-                'type' => 'sale',
-                'message' => "Transaksi {$sale->invoice_number} berhasil diproses oleh {$sale->user->name}",
-                'date' => $sale->transaction_date,
-            ])
-            ->toBase();
-        $expenseActivities = PeriodFilter::apply(
-            Expense::with('user'),
+
+        $expenseCategories = [
+            'beli_stok' => ['label' => 'Pembelian Stok', 'color' => '#cf0621'],
+            'gaji' => ['label' => 'Gaji', 'color' => '#d71e37'],
+            'transport' => ['label' => 'Transportasi', 'color' => '#df374e'],
+            'sewa' => ['label' => 'Sewa', 'color' => '#e75064'],
+            'listrik' => ['label' => 'Listrik', 'color' => '#ef687a'],
+            'air' => ['label' => 'Air', 'color' => '#f78091'],
+            'lainnya' => ['label' => 'Lainnya', 'color' => '#ff99a7'],
+        ];
+        $expensesByCategory = PeriodFilter::apply(
+            Expense::query(),
             'expense_date',
             $periodStart?->toDateString(),
             $periodEnd?->toDateString()
         )
-            ->orderByDesc('expense_date')
-            ->take(5)
-            ->get()
-            ->map(fn ($expense) => [
-                'type' => 'expense',
-                'message' => "Pengeluaran {$expense->category} sebesar Rp " . number_format($expense->amount, 0, ',', '.') . " dicatat oleh {$expense->user->name}",
-                'date' => Carbon::parse($expense->expense_date),
-            ])
-            ->toBase();
+            ->selectRaw('category, SUM(amount) as total')
+            ->groupBy('category')
+            ->pluck('total', 'category');
+        $expenseCategoryLabels = [];
+        $expenseCategoryData = [];
+        $expenseCategoryColors = [];
+        foreach ($expenseCategories as $category => $info) {
+            $total = (float) ($expensesByCategory[$category] ?? 0);
+            if ($total <= 0) {
+                continue;
+            }
+
+            $expenseCategoryLabels[] = $info['label'];
+            $expenseCategoryData[] = $total;
+            $expenseCategoryColors[] = $info['color'];
+        }
+
+        $currentUser = $request->user();
+        $canViewSales = $currentUser->hasPermission('sales.view');
+        $canViewExpenses = $currentUser->hasPermission('expenses.view');
+        $canViewProducts = $currentUser->hasPermission('products.view');
+        $canViewStockAllocations = $currentUser->hasPermission('stock_allocations.view');
+        $canViewActivityHistory = $currentUser->hasPermission('activities.view');
+        $canShowActivitySummary = $canViewActivityHistory || $canViewSales || $canViewExpenses || $canViewProducts || $canViewStockAllocations;
+        $canViewEmployeeDetails = $currentUser->hasPermission('employees.sales.view');
+        $isAllocationManager = $currentUser->isOwner() || $currentUser->hasPermission('stock_allocations.review');
+
+        // Ringkasan operasional memakai snapshot stok dan penjualan pada periode aktif.
+        $lowStockCount = $canViewProducts
+            ? Product::where('stock', '<=', Product::LOW_STOCK_THRESHOLD)->count()
+            : 0;
+        $lowStockThreshold = Product::LOW_STOCK_THRESHOLD;
+        $lowStockProducts = $canViewProducts
+            ? Product::where('stock', '<=', Product::LOW_STOCK_THRESHOLD)
+                ->orderBy('stock')
+                ->orderBy('name')
+                ->take(4)
+                ->get()
+            : collect();
+
+        $recentSales = $canViewSales
+            ? PeriodFilter::apply(
+                Sale::with('user')->withSum('saleItems', 'quantity')->withCount('saleItems'),
+                'transaction_date',
+                $periodStart,
+                $periodEnd
+            )
+                ->orderByDesc('transaction_date')
+                ->take(5)
+                ->get()
+            : collect();
+
+        // Alokasi milik pengelola toko menampilkan tugas tertunda dan yang perlu ditinjau.
+        // Pegawai hanya melihat alokasi yang menunggu konfirmasi dirinya sendiri.
+        $allocationBaseQuery = StockAllocation::query()
+            ->whereHas('employee', fn ($query) => $query->where('store_id', $currentUser->store_id))
+            ->whereHas('product', fn ($query) => $query->where('store_id', $currentUser->store_id));
+        if ($isAllocationManager) {
+            $allocationBaseQuery->where('owner_user_id', $currentUser->id);
+        } else {
+            $allocationBaseQuery->where('employee_user_id', $currentUser->id);
+        }
+
+        $pendingAllocationCount = $canViewStockAllocations
+            ? (clone $allocationBaseQuery)->where('status', StockAllocation::STATUS_PENDING)->count()
+            : 0;
+        $allocationFollowUpCount = $canViewStockAllocations && $isAllocationManager
+            ? (clone $allocationBaseQuery)->whereIn('status', [
+                StockAllocation::STATUS_NEEDS_REVIEW,
+                StockAllocation::STATUS_DECLINED,
+            ])->count()
+            : 0;
+        $allocationAttention = collect();
+        if ($canViewStockAllocations) {
+            $actionableStatuses = $isAllocationManager
+                ? [StockAllocation::STATUS_PENDING, StockAllocation::STATUS_NEEDS_REVIEW, StockAllocation::STATUS_DECLINED]
+                : [StockAllocation::STATUS_PENDING];
+            $allocationAttention = (clone $allocationBaseQuery)
+                ->with(['employee', 'product'])
+                ->whereIn('status', $actionableStatuses)
+                ->orderByRaw("CASE status WHEN 'needs_review' THEN 0 WHEN 'declined' THEN 1 ELSE 2 END")
+                ->orderByDesc('updated_at')
+                ->take(4)
+                ->get()
+                ->map(fn (StockAllocation $allocation) => [
+                    'product' => $allocation->product?->name ?? 'Produk dihapus',
+                    'unit' => $allocation->product?->unit ?? 'unit',
+                    'quantity' => (int) $allocation->requested_quantity,
+                    'employee' => $allocation->employee?->name ?? 'Pegawai tidak tersedia',
+                    'status' => $allocation->status,
+                    'statusLabel' => match ($allocation->status) {
+                        StockAllocation::STATUS_NEEDS_REVIEW => 'Perlu ditinjau',
+                        StockAllocation::STATUS_DECLINED => 'Ditolak',
+                        default => 'Menunggu konfirmasi',
+                    },
+                    'employeeUrl' => $canViewEmployeeDetails && $allocation->employee
+                        ? route('employees.manage', ['employee' => $allocation->employee, 'period' => $period])
+                        : null,
+                ]);
+        }
+
+        // Peringatan finansial tetap ditampilkan di bagian atas dashboard.
+        $alerts = [];
+        if ($totalExpenseMonth > $totalRevenueMonth) {
+            $alerts[] = ['type' => 'danger', 'message' => "Pengeluaran {$periodLabel} melebihi pendapatan"];
+        }
+
+        // Gabungkan aktivitas keuangan, perubahan produk, dan status alokasi terbaru.
+        $salesActivities = $recentSales->map(function ($sale) use ($period) {
+            $wasUpdated = $sale->updated_at && $sale->created_at && $sale->updated_at->gt($sale->created_at);
+            $amount = ' sebesar Rp ' . number_format($sale->total, 0, ',', '.');
+            $message = $wasUpdated
+                ? "Data penjualan {$sale->invoice_number} diperbarui{$amount}"
+                : "Penjualan {$sale->invoice_number}{$amount} dicatat oleh " . ($sale->user?->name ?? 'pengguna');
+
+            return [
+                'type' => 'sale',
+                'message' => $message,
+                'date' => $sale->updated_at ?? $sale->transaction_date,
+                'url' => route('pemasukan.show', ['sale' => $sale->id, 'period' => $period]),
+            ];
+        });
+        $expenseActivities = $canViewExpenses
+            ? PeriodFilter::apply(
+                Expense::with('user'),
+                'expense_date',
+                $periodStart?->toDateString(),
+                $periodEnd?->toDateString()
+            )
+                ->orderByDesc('updated_at')
+                ->take(5)
+                ->get()
+                ->map(function ($expense) use ($period) {
+                    $wasUpdated = $expense->updated_at && $expense->created_at && $expense->updated_at->gt($expense->created_at);
+                    $amount = ' sebesar Rp ' . number_format($expense->amount, 0, ',', '.');
+                    $message = $wasUpdated
+                        ? "Data pengeluaran {$expense->category} diperbarui{$amount}"
+                        : "Pengeluaran {$expense->category}{$amount} dicatat oleh " . ($expense->user?->name ?? 'pengguna');
+
+                    return [
+                        'type' => 'expense',
+                        'message' => $message,
+                        'amount' => (float) $expense->amount,
+                        'transactionDate' => Carbon::parse($expense->expense_date),
+                        'date' => $expense->updated_at ?? Carbon::parse($expense->expense_date),
+                        'url' => route('pengeluaran.show', ['expense' => $expense->id, 'period' => $period]),
+                    ];
+                })
+            : collect();
+        $productActivities = $canViewProducts
+            ? PeriodFilter::apply(Product::query(), 'updated_at', $periodStart, $periodEnd)
+                ->where('updated_at', '<=', $now)
+                ->orderByDesc('updated_at')
+                ->take(5)
+                ->get()
+                ->map(fn ($product) => [
+                    'type' => 'product',
+                    'message' => $product->created_at?->equalTo($product->updated_at)
+                        ? "Produk {$product->name} ditambahkan"
+                        : "Data atau stok produk {$product->name} diperbarui",
+                    'date' => $product->updated_at,
+                    'url' => route('products.index', ['period' => $period]),
+                ])
+            : collect();
+        $allocationActivities = $canViewStockAllocations
+            ? PeriodFilter::apply((clone $allocationBaseQuery)->with(['employee', 'product']), 'updated_at', $periodStart, $periodEnd)
+                ->orderByDesc('updated_at')
+                ->take(5)
+                ->get()
+                ->map(function (StockAllocation $allocation) use ($isAllocationManager, $canViewEmployeeDetails, $period) {
+                    $employeeName = $allocation->employee?->name ?? 'pegawai';
+                    $productName = $allocation->product?->name ?? 'produk';
+                    $message = match ($allocation->status) {
+                        StockAllocation::STATUS_PENDING => $isAllocationManager
+                            ? "Alokasi {$productName} untuk {$employeeName} menunggu konfirmasi"
+                            : "Alokasi {$productName} menunggu konfirmasi Anda",
+                        StockAllocation::STATUS_ACCEPTED => "Alokasi {$productName} dikonfirmasi oleh {$employeeName}",
+                        StockAllocation::STATUS_DECLINED => "Alokasi {$productName} ditolak oleh {$employeeName}",
+                        StockAllocation::STATUS_NEEDS_REVIEW => "Alokasi {$productName} untuk {$employeeName} perlu ditinjau",
+                        StockAllocation::STATUS_CANCELLED => "Alokasi {$productName} untuk {$employeeName} dibatalkan",
+                        default => "Status alokasi {$productName} diperbarui",
+                    };
+
+                    return [
+                        'type' => 'allocation',
+                        'message' => $message,
+                        'date' => $allocation->updated_at,
+                        'url' => $canViewEmployeeDetails && $allocation->employee
+                            ? route('employees.manage', ['employee' => $allocation->employee, 'period' => $period])
+                            : null,
+                    ];
+                })
+            : collect();
         $latestActivities = $salesActivities
             ->merge($expenseActivities)
+            ->merge($productActivities)
+            ->merge($allocationActivities)
             ->sortByDesc('date')
-            ->take(5)
+            ->take(7)
             ->values();
 
-        // Gabungkan lima pemasukan dan pengeluaran terbaru untuk tabel dashboard.
-        $recentTransactions = collect();
-        foreach (PeriodFilter::apply(Sale::query(), 'transaction_date', $periodStart, $periodEnd)
-            ->orderByDesc('transaction_date')->take(5)->get() as $sale) {
-            $recentTransactions->push([
+        // Pertahankan data transaksi gabungan untuk konsumen view lama tanpa query penjualan ulang.
+        $recentTransactions = $recentSales
+            ->map(fn ($sale) => [
                 'sort_date' => $sale->transaction_date,
                 'date' => $sale->transaction_date->format('d M Y'),
                 'type' => 'revenue',
                 'label' => 'Pemasukan',
                 'amount' => $sale->total,
                 'url' => route('pemasukan.show', ['sale' => $sale->id, 'period' => $period]),
-            ]);
-        }
-        foreach (PeriodFilter::apply(
-            Expense::query(),
-            'expense_date',
-            $periodStart?->toDateString(),
-            $periodEnd?->toDateString()
-        )->orderByDesc('expense_date')->take(5)->get() as $expense) {
-            $recentTransactions->push([
-                'sort_date' => Carbon::parse($expense->expense_date),
-                'date' => Carbon::parse($expense->expense_date)->format('d M Y'),
+            ])
+            ->merge($expenseActivities->map(fn ($expenseActivity) => [
+                'sort_date' => $expenseActivity['transactionDate'],
+                'date' => $expenseActivity['transactionDate']->format('d M Y'),
                 'type' => 'expense',
                 'label' => 'Pengeluaran',
-                'amount' => $expense->amount,
-                'url' => route('pengeluaran.show', ['expense' => $expense->id, 'period' => $period]),
-            ]);
-        }
-        $recentTransactions = $recentTransactions->sortByDesc('sort_date')->take(5)->values();
+                'amount' => $expenseActivity['amount'],
+                'url' => $expenseActivity['url'],
+            ]))
+            ->sortByDesc('sort_date')
+            ->take(5)
+            ->values();
 
         // Kirim semua data yang dibutuhkan Blade tanpa menjalankan kueri di view.
         return view('dashboard', compact(
-            'user',
             'period',
             'periodLabel',
             'hasComparisonPeriod',
@@ -249,22 +439,40 @@ class DashboardController extends Controller
             'totalRevenueMonth',
             'totalExpenseToday',
             'totalExpenseMonth',
-            'grossProfit',
             'netProfit',
             'transactionsPeriod',
             'transactionsTrendLabel',
             'transactionsTrendText',
             'netProfitTrendLabel',
             'netProfitTrendText',
-            'activeEmployees',
             'trendLabels',
+            'allPeriodMonthCount',
             'revenueTrendData',
             'expenseTrendData',
+            'expenseCategoryLabels',
+            'expenseCategoryData',
+            'expenseCategoryColors',
             'revenueTrendLabel',
             'revenueTrendText',
             'expenseTrendLabel',
             'expenseTrendText',
             'alerts',
+            'currentUser',
+            'canViewSales',
+            'canViewExpenses',
+            'recentSales',
+            'canViewProducts',
+            'lowStockCount',
+            'lowStockThreshold',
+            'lowStockProducts',
+            'canViewStockAllocations',
+            'isAllocationManager',
+            'pendingAllocationCount',
+            'allocationFollowUpCount',
+            'allocationAttention',
+            'canViewEmployeeDetails',
+            'canViewActivityHistory',
+            'canShowActivitySummary',
             'latestActivities',
             'recentTransactions'
         ));
