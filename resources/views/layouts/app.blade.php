@@ -97,31 +97,26 @@
                     <div class="nav-submenu">
                         @if($user?->hasPermission('sales.view'))<a href="{{ route('pemasukan.index', array_filter(['period' => request('period')])) }}" class="nav-link {{ request()->routeIs('pemasukan.*') ? 'active' : '' }}">Pemasukan</a>@endif
                         @if($user?->hasPermission('expenses.view'))<a href="{{ route('pengeluaran.index', array_filter(['period' => request('period')])) }}" class="nav-link {{ request()->routeIs('pengeluaran.*') ? 'active' : '' }}">Pengeluaran</a>@elseif($user?->hasPermission('expenses.create'))<a href="{{ route('pengeluaran.create') }}" class="nav-link">Pengeluaran</a>@endif
-                        @if($user?->hasPermission('sales.view'))<a href="{{ route('pemasukan.index') }}" class="nav-link">Laporan Keuangan</a><a href="{{ route('pemasukan.index') }}" class="nav-link">Analisis Keuangan</a>@endif
+                        @if($user?->hasPermission('sales.view'))<span class="nav-link" aria-disabled="true" title="Halaman akan dikembangkan">Laporan Keuangan</span>@endif
                     </div>
                 </details></li>
                 @endif
 
-                @if($user?->hasPermission('sales.view'))
-                <li class="nav-item"><a href="{{ route('pemasukan.index') }}" class="nav-link {{ request()->routeIs('pemasukan.*') ? 'active' : '' }}"><span class="nav-icon"><i class="fas fa-cart-shopping"></i></span><span class="nav-label">Riwayat Penjualan</span></a></li>
-                @endif
-
-                @if($user?->hasPermission('products.view') || $user?->hasPermission('products.create') || $user?->hasPermission('categories.view') || $user?->hasPermission('categories.create'))
+                @if($user?->hasPermission('products.view') || $user?->hasPermission('categories.view') || $user?->hasPermission('categories.create'))
                 <li class="nav-item"><details {{ $isProductsOpen ? 'open' : '' }}>
                     <summary class="nav-link {{ $isProductsOpen ? 'active' : '' }}"><span class="nav-icon"><i class="fas fa-box-open"></i></span><span class="nav-label">Produk dan Persediaan</span><i class="fas fa-chevron-right nav-chevron" aria-hidden="true"></i></summary>
                     <div class="nav-submenu">
                         @if($user?->hasPermission('products.view'))<a href="{{ route('products.index', ['tab' => 'produk']) }}" class="nav-link {{ request()->routeIs('products.*') && request('tab') !== 'kategori' ? 'active' : '' }}">Daftar Produk</a>@endif
                         @if($user?->hasPermission('categories.view') || $user?->hasPermission('categories.create'))<a href="{{ route('products.index', ['tab' => 'kategori']) }}" class="nav-link {{ request('tab') === 'kategori' || request()->routeIs('categories.*') ? 'active' : '' }}">Kategori Produk</a>@endif
-                        @if($user?->hasPermission('products.view'))<a href="{{ route('products.index') }}" class="nav-link">Stok Gudang</a>@endif
                     </div>
                 </details></li>
                 @endif
 
-                @if($user?->hasPermission('stock_allocations.view') || $user?->hasPermission('stock_allocations.create') || $user?->hasPermission('stock_allocations.transfer'))
+                @if($user?->hasPermission('stock_allocations.view'))
                 <li class="nav-item"><details {{ $isDistributionOpen ? 'open' : '' }}>
                     <summary class="nav-link {{ $isDistributionOpen ? 'active' : '' }}"><span class="nav-icon"><i class="fas fa-truck-fast"></i></span><span class="nav-label">Distribusi Stok</span><i class="fas fa-chevron-right nav-chevron" aria-hidden="true"></i></summary>
                     <div class="nav-submenu">
-                        @if($user?->hasPermission('stock_allocations.view'))<a href="{{ route('employees.index') }}" class="nav-link {{ $isDistributionOpen ? 'active' : '' }}">Persetujuan Alokasi</a><a href="{{ route('employees.index') }}" class="nav-link">Riwayat Distribusi</a>@endif
+                        <span class="nav-link" aria-disabled="true" title="Halaman akan dikembangkan">Riwayat Distribusi</span>
                     </div>
                 </details></li>
                 @endif
