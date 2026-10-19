@@ -62,9 +62,12 @@
     @unless ($isAuthPage)
         <aside id="sidebar">
         {{-- Identitas aplikasi dan toko. --}}
-        <a class="sidebar-brand" href="{{ route('home') }}">
-            <div class="brand-icon"><i class="fas fa-chart-line"></i></div>
-            <span class="brand-text">{{ strtoupper(Auth::check() && Auth::user()->store ? Auth::user()->store->name : 'SIMKEU') }}</span>
+        @php
+            $storeBrandName = Auth::user()?->store?->name ?? 'SIMKEU';
+        @endphp
+        <a class="sidebar-brand" href="{{ route('home') }}" title="{{ $storeBrandName }}" aria-label="{{ $storeBrandName }}">
+            <div class="brand-icon" aria-hidden="true"><i class="fas fa-chart-line"></i></div>
+            <span class="brand-text">{{ $storeBrandName }}</span>
         </a>
 
         {{-- Tautan navigasi utama aplikasi. --}}

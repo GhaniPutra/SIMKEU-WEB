@@ -192,9 +192,10 @@
         .sidebar-brand {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 0 20px;
-            height: var(--topbar-h);
+            gap: 10px;
+            min-width: 0;
+            min-height: var(--topbar-h);
+            padding: 12px 16px;
             text-decoration: none;
             flex-shrink: 0;
         }
@@ -213,12 +214,23 @@
         }
 
         .sidebar-brand .brand-text {
-            font-weight: 800;
-            font-size: 1.1rem;
+            flex: 1 1 0;
+            min-width: 0;
+            font-weight: 700;
+            font-size: 1rem;
             color: var(--sidebar-text);
-            letter-spacing: 0.5px;
-            white-space: nowrap;
+            letter-spacing: 0.15px;
+            line-height: 1.25;
+            white-space: normal;
+            overflow-wrap: anywhere;
             transition: opacity var(--transition);
+        }
+
+        #sidebar.collapsed .sidebar-brand {
+            height: var(--topbar-h);
+            min-height: var(--topbar-h);
+            gap: 12px;
+            padding: 0 20px;
         }
 
         #sidebar.collapsed .brand-text {

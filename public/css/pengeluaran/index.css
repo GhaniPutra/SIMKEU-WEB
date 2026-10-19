@@ -212,41 +212,86 @@
     }
 
     /* ============================================================
-       RANKING KATEGORI — Ringkasan pengeluaran yang ringkas
+       PERBANDINGAN KATEGORI — Nilai periode aktif dan pembanding
     ============================================================ */
-    .kategori-item {
-        padding: 11px 0;
+    .analytics-card > .comparison-list {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-gutter: stable;
+        padding: 12px 16px;
+    }
+    .comparison-note {
+        margin: 0 0 7px;
+        color: var(--text-muted);
+        font-size: 0.65rem;
+        line-height: 1.45;
+    }
+    .comparison-note i { margin-right: 3px; }
+    .comparison-rows { min-width: 0; }
+    .comparison-row {
+        padding: 9px 0 8px;
         border-bottom: 1px solid var(--border);
     }
-    .kategori-item:last-child { border-bottom: none; }
-    .kategori-topline {
+    .comparison-row:last-child { border-bottom: 0; }
+    .comparison-row-top {
         display: flex;
-        align-items: baseline;
+        align-items: center;
         justify-content: space-between;
-        gap: 12px;
+        gap: 8px;
+        margin-bottom: 6px;
     }
-    .kategori-name { font-size: 0.825rem; font-weight: 600; color: var(--text-primary); }
-    .kategori-metrics { display: inline-flex; align-items: baseline; justify-content: flex-end; gap: 8px; white-space: nowrap; }
-    .kategori-amount { font-size: 0.825rem; font-weight: 700; color: var(--text-primary); }
-    .kategori-percent { font-size: 0.72rem; color: var(--text-muted); }
-
-    /* Progress bar persentase kategori */
-    .kategori-bar {
-        height: 4px;
-        background: var(--border);
-        border-radius: 1px;
-        margin-top: 5px;
-        overflow: hidden;
+    .comparison-category {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        min-width: 0;
+        color: var(--text-primary);
+        font-size: 0.76rem;
+        font-weight: 650;
     }
-    .kategori-bar-fill {
-        height: 100%;
-        border-radius: 1px;
-        transition: width 0.6s ease;
+    .comparison-category i { width: 14px; text-align: center; }
+    .comparison-category span { overflow-wrap: anywhere; }
+    .comparison-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        flex: 0 0 auto;
+        padding: 3px 6px;
+        border-radius: 6px;
+        font-size: 0.62rem;
+        font-weight: 650;
+        line-height: 1.2;
+        white-space: nowrap;
     }
-    @media (max-width: 480px) {
-        .kategori-topline { align-items: flex-start; flex-direction: column; gap: 3px; }
-        .kategori-metrics { justify-content: flex-start; }
+    .comparison-status--up { background: var(--green-50); color: var(--green-400); }
+    .comparison-status--down { background: var(--red-50); color: var(--red-400); }
+    .comparison-status--neutral { background: var(--grey-100); color: var(--grey-400); }
+    .comparison-metrics {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        padding-left: 21px;
     }
+    .comparison-metric { min-width: 0; }
+    .comparison-metric-label {
+        display: block;
+        margin-bottom: 2px;
+        color: var(--text-muted);
+        font-size: 0.59rem;
+        line-height: 1.2;
+    }
+    .comparison-metric-value {
+        display: block;
+        color: var(--text-primary);
+        font-size: 0.68rem;
+        font-weight: 650;
+        line-height: 1.25;
+        overflow-wrap: anywhere;
+    }
+    .comparison-difference--up { color: var(--green-400); }
+    .comparison-difference--down { color: var(--red-400); }
 
     /* ============================================================
        FILTER BAR — Panel filter pencarian

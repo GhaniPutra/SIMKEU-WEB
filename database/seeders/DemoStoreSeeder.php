@@ -136,6 +136,7 @@ class DemoStoreSeeder extends Seeder
 
             $soldByProduct = array_fill_keys(array_column($products, 'id'), 0);
             $paymentMethods = ['tunai', 'transfer', 'qris'];
+            $expenseCategories = ['beli_stok', 'gaji', 'listrik', 'air', 'sewa', 'transport', 'lainnya'];
             $dailySalesTotals = [];
             $saleIndex = 0;
 
@@ -253,12 +254,15 @@ class DemoStoreSeeder extends Seeder
             foreach ($dailySalesTotals as $date => $salesTotal) {
                 $expenseDate = Carbon::parse($date);
                 $description = "Pengeluaran penyeimbang demo {$date}.";
+                // Sebarkan kategori secara deterministik agar data analitik demo bervariasi.
+                $category = $expenseCategories[($expenseDate->dayOfYear - 1) % count($expenseCategories)];
+
                 DB::table('expenses')->updateOrInsert(
                     ['store_id' => $storeId, 'user_id' => $employeeId, 'description' => $description],
                     [
                         'expense_date' => $expenseDate->toDateString(),
                         'amount' => $salesTotal,
-                        'category' => 'lainnya',
+                        'category' => $category,
                         'updated_at' => $expenseDate,
                         'created_at' => $expenseDate,
                     ]

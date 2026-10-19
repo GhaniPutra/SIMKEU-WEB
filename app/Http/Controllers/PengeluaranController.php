@@ -157,49 +157,80 @@ class PengeluaranController extends Controller
         }
 
         // ============================================================
-        // DATA CHART — Distribusi per kategori (bar chart)
+        // PERBANDINGAN PER KATEGORI — gunakan rentang berjalan sampai hari ini
+        // agar dibandingkan dengan rentang yang sama pada periode sebelumnya.
+        // Untuk semua periode, hanya nominal aktif yang tersedia.
         // ============================================================
-        $distribusiKategori = $periodExpenses()
-            ->selectRaw('category, SUM(amount) as total, COUNT(*) as jumlah')
+        $comparisonCurrentEnd = $periodEnd?->copy()->min($now)->startOfDay();
+        $currentKategoriTotals = PeriodFilter::apply(
+            Expense::query(),
+            'expense_date',
+            $periodStart?->toDateString(),
+            $comparisonCurrentEnd?->toDateString()
+        )
+            ->selectRaw('category, SUM(amount) as total')
             ->groupBy('category')
             ->get()
             ->keyBy('category'); // Berindeks nama kategori
 
-        // Susun label, data, dan warna untuk chart kategori
-        $kategoriChartLabels = [];
-        $kategoriChartData   = [];
-        $kategoriChartColors = [];
+        $previousKategoriTotals = $periodLaluStart
+            ? PeriodFilter::apply(
+                Expense::query(),
+                'expense_date',
+                $periodLaluStart->toDateString(),
+                $periodLaluEnd->toDateString()
+            )
+                ->selectRaw('category, SUM(amount) as total')
+                ->groupBy('category')
+                ->get()
+                ->keyBy('category')
+            : collect();
 
+        $perbandinganKategori = [];
         foreach (self::KATEGORI_LABEL as $key => $info) {
-            $kategoriChartLabels[] = $info['label'];                                   // Nama kategori (Indonesia)
-            $kategoriChartData[]   = (float) ($distribusiKategori[$key]->total ?? 0); // Total nominal
-            $kategoriChartColors[] = $info['warna'];                                   // Warna bar
-        }
+            $current = (float) ($currentKategoriTotals[$key]->total ?? 0);
+            $previous = $periodLaluStart
+                ? (float) ($previousKategoriTotals[$key]->total ?? 0)
+                : null;
+            $difference = $previous !== null ? $current - $previous : null;
 
-        // ============================================================
-        // RINGKASAN PER KATEGORI untuk tabel breakdown
-        // ============================================================
-        $ringkasanKategori = [];
-        foreach (self::KATEGORI_LABEL as $key => $info) {
-            $total  = (float) ($distribusiKategori[$key]->total  ?? 0);
-            $jumlah = (int)   ($distribusiKategori[$key]->jumlah ?? 0);
-            if ($total > 0) {
-                // Hitung persentase dari total bulan ini (hindari pembagian nol)
-                $persen = $totalBulanIni > 0 ? ($total / $totalBulanIni) * 100 : 0;
-                $ringkasanKategori[] = [
-                    'key'    => $key,
-                    'label'  => $info['label'],
-                    'icon'   => $info['icon'],
-                    'warna'  => $info['warna'],
-                    'total'  => $total,
-                    'jumlah' => $jumlah,
-                    'persen' => $persen,
-                ];
+            // Jika nilai pembanding nol, persentase tidak terdefinisi.
+            // Tampilkan status "Baru" untuk kenaikan dari nol tanpa membagi nol.
+            $percentage = $previous !== null && $previous > 0
+                ? ($difference / $previous) * 100
+                : ($previous === 0.0 && $current === 0.0 ? 0 : null);
+
+            if ($previous === null) {
+                [$status, $statusIcon, $statusClass] = ['Tidak tersedia', 'fa-minus', 'neutral'];
+            } elseif ($previous === 0.0 && $current > 0) {
+                [$status, $statusIcon, $statusClass] = ['Baru', 'fa-circle-plus', 'up'];
+            } elseif ($difference > 0) {
+                [$status, $statusIcon, $statusClass] = ['Naik', 'fa-arrow-up', 'up'];
+            } elseif ($difference < 0) {
+                [$status, $statusIcon, $statusClass] = ['Turun', 'fa-arrow-down', 'down'];
+            } else {
+                [$status, $statusIcon, $statusClass] = ['Tetap', 'fa-minus', 'neutral'];
             }
+
+            $perbandinganKategori[] = [
+                'key' => $key,
+                'label' => $info['label'],
+                'icon' => $info['icon'],
+                'warna' => $info['warna'],
+                'current' => $current,
+                'previous' => $previous,
+                'difference' => $difference,
+                'percentage' => $percentage,
+                'status' => $status,
+                'statusIcon' => $statusIcon,
+                'statusClass' => $statusClass,
+            ];
         }
 
-        // Urutkan kategori dari yang terbesar nominalnya
-        usort($ringkasanKategori, fn($a, $b) => $b['total'] <=> $a['total']);
+        // Tampilkan kategori dengan pengeluaran periode berjalan terbesar lebih dahulu.
+        usort($perbandinganKategori, fn ($a, $b) =>
+            ($b['current'] <=> $a['current']) ?: (($b['previous'] ?? 0) <=> ($a['previous'] ?? 0))
+        );
 
         // ============================================================
         // Siapkan mapping label kategori sebagai variabel lokal
@@ -215,6 +246,7 @@ class PengeluaranController extends Controller
             'pengeluaranList',       // Koleksi paginasi pengeluaran
             'period',                // Periode aktif filter
             'periodLabel',           // Label periode aktif filter
+            'periodStart',           // Awal periode aktif untuk keterangan perbandingan
             'search',                // Kata kunci pencarian
             'kategori',              // Kategori aktif filter
             'totalBulanIni',         // Total nominal semua pengeluaran dalam periode
@@ -225,10 +257,10 @@ class PengeluaranController extends Controller
             'persentasePerubahan',   // Persentase naik/turun vs bulan lalu
             'chartLabels',           // Label chart tren harian
             'chartData',             // Data chart tren harian
-            'kategoriChartLabels',   // Label chart kategori
-            'kategoriChartData',     // Data chart kategori
-            'kategoriChartColors',   // Warna chart kategori
-            'ringkasanKategori',     // Ringkasan breakdown per kategori
+            'comparisonCurrentEnd',  // Batas tanggal berjalan untuk perbandingan kategori
+            'periodLaluStart',       // Awal rentang periode pembanding
+            'periodLaluEnd',         // Akhir rentang periode pembanding
+            'perbandinganKategori',  // Nominal dan perubahan per kategori
             'kategoriLabel'          // Mapping kategori (key → label/icon/warna)
         ));
     }

@@ -135,38 +135,78 @@
         </div>
     </div>
 
-    {{-- ---- Ranking pengeluaran per kategori ---- --}}
+    {{-- ---- Perbandingan pengeluaran per kategori ---- --}}
     <div class="content-card analytics-card">
         <div class="content-card-header">
             <span class="content-card-title">
-                <i class="fas fa-chart-bar"></i> Per Kategori
+                <i class="fas fa-scale-balanced"></i> Perbandingan Pengeluaran per Kategori
             </span>
             <span class="period-label">{{ $periodLabel }}</span>
         </div>
-        <div class="content-card-body analytics-scroll">
-            {{-- Data agregat periode aktif, sudah diurutkan dari total terbesar --}}
-            @forelse($ringkasanKategori as $kat)
-            <div class="kategori-item">
-                <div class="kategori-topline">
-                    <div class="kategori-name">{{ $kat['label'] }}</div>
-                    <div class="kategori-metrics">
-                        <span class="kategori-amount">Rp {{ number_format($kat['total'], 0, ',', '.') }}</span>
-                        <span class="kategori-percent">{{ number_format($kat['persen'], 1, ',', '.') }}%</span>
+        <div class="content-card-body comparison-list">
+            @if($period === 'all')
+                <p class="comparison-note">
+                    <i class="fas fa-circle-info" aria-hidden="true"></i>
+                    Perbandingan periode tidak tersedia untuk semua periode.
+                </p>
+            @else
+                <p class="comparison-note">
+                    Periode berjalan {{ $periodStart->translatedFormat('d M Y') }}–{{ $comparisonCurrentEnd->translatedFormat('d M Y') }}
+                    <span aria-hidden="true">·</span>
+                    pembanding {{ $periodLaluStart->translatedFormat('d M Y') }}–{{ $periodLaluEnd->translatedFormat('d M Y') }}.
+                    Persentase tidak dihitung jika nominal sebelumnya Rp 0.
+                </p>
+            @endif
+
+            <div class="comparison-rows">
+                @foreach($perbandinganKategori as $kat)
+                @php
+                    $differencePrefix = $kat['difference'] === null
+                        ? ''
+                        : ($kat['difference'] > 0 ? '+' : ($kat['difference'] < 0 ? '−' : ''));
+                @endphp
+                <article class="comparison-row">
+                    <div class="comparison-row-top">
+                        <div class="comparison-category">
+                            <i class="fas {{ $kat['icon'] }}" style="color: {{ $kat['warna'] }}" aria-hidden="true"></i>
+                            <span>{{ $kat['label'] }}</span>
+                        </div>
+                        @if($kat['previous'] !== null)
+                            <span class="comparison-status comparison-status--{{ $kat['statusClass'] }}">
+                                <i class="fas {{ $kat['statusIcon'] }}" aria-hidden="true"></i>
+                                {{ $kat['status'] }}
+                                @if($kat['percentage'] !== null)
+                                    <span>
+                                        ({{ $kat['percentage'] > 0 ? '+' : ($kat['percentage'] < 0 ? '−' : '') }}{{ number_format(abs($kat['percentage']), 1, ',', '.') }}%)
+                                    </span>
+                                @elseif($kat['current'] > 0)
+                                    <span>(persentase —)</span>
+                                @endif
+                            </span>
+                        @endif
                     </div>
-                </div>
-                <div class="kategori-bar" aria-label="{{ number_format($kat['persen'], 1, ',', '.') }}% dari total pengeluaran">
-                    <div class="kategori-bar-fill"
-                         data-width="{{ min(100, max(0, $kat['persen'])) }}"
-                         data-bg="{{ $kat['warna'] }}"></div>
-                </div>
+
+                    <div class="comparison-metrics">
+                        <div class="comparison-metric">
+                            <span class="comparison-metric-label">Periode aktif</span>
+                            <strong class="comparison-metric-value">Rp {{ number_format($kat['current'], 0, ',', '.') }}</strong>
+                        </div>
+                        <div class="comparison-metric">
+                            <span class="comparison-metric-label">Sebelumnya</span>
+                            <strong class="comparison-metric-value">
+                                {{ $kat['previous'] === null ? '—' : 'Rp ' . number_format($kat['previous'], 0, ',', '.') }}
+                            </strong>
+                        </div>
+                        <div class="comparison-metric">
+                            <span class="comparison-metric-label">Selisih</span>
+                            <strong class="comparison-metric-value {{ $kat['statusClass'] === 'up' ? 'comparison-difference--up' : ($kat['statusClass'] === 'down' ? 'comparison-difference--down' : '') }}">
+                                {{ $kat['difference'] === null ? '—' : $differencePrefix . 'Rp ' . number_format(abs($kat['difference']), 0, ',', '.') }}
+                            </strong>
+                        </div>
+                    </div>
+                </article>
+                @endforeach
             </div>
-            @empty
-            {{-- Tampilkan pesan jika belum ada pengeluaran same sekali --}}
-            <div class="category-empty-state">
-                <i class="fas fa-inbox category-empty-icon"></i>
-                Belum ada data pengeluaran.
-            </div>
-            @endforelse
         </div>
     </div>
 
