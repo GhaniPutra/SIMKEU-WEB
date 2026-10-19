@@ -92,15 +92,22 @@ class PengeluaranController extends Controller
             $periodLaluStart = $now->copy()->subDay()->startOfDay();
             $periodLaluEnd = $now->copy()->subDay()->endOfDay();
         } elseif ($period === 'week') {
-            $periodLaluStart = $now->copy()->subWeek()->startOfWeek();
-            $periodLaluEnd = $now->copy()->subWeek()->endOfWeek();
+            $previousPeriod = $periodStart->copy()->subWeek();
+            $periodLaluStart = $previousPeriod->copy()->startOfWeek();
+            // Bandingkan jumlah hari yang sama dalam minggu sebelumnya.
+            $elapsedDays = $periodStart->diffInDays($now->copy()->startOfDay());
+            $periodLaluEnd = $periodLaluStart->copy()->addDays($elapsedDays)->min($previousPeriod->copy()->endOfWeek());
         } else {
-            $periodLaluStart = $now->copy()->subMonth()->startOfMonth();
-            $periodLaluEnd = $now->copy()->subMonth()->endOfMonth();
+            $previousPeriod = $periodStart->copy()->subMonth();
+            $periodLaluStart = $previousPeriod->copy()->startOfMonth();
+            // Bulan berjalan dihitung sampai hari ini; samakan jumlah harinya
+            // dengan periode lalu dan batasi jika bulan lalu lebih pendek.
+            $elapsedDays = $periodStart->diffInDays($now->copy()->startOfDay());
+            $periodLaluEnd = $periodLaluStart->copy()->addDays($elapsedDays)->min($previousPeriod->copy()->endOfMonth());
         }
 
         $totalPeriodLalu = $periodLaluStart
-            ? Expense::whereBetween('expense_date', [$periodLaluStart->toDateString(), $periodLaluEnd->toDateString()])->sum('amount')
+            ? PeriodFilter::apply(Expense::query(), 'expense_date', $periodLaluStart->toDateString(), $periodLaluEnd->toDateString())->sum('amount')
             : null;
 
         $persentasePerubahan = $totalPeriodLalu !== null && $totalPeriodLalu > 0
@@ -112,9 +119,11 @@ class PengeluaranController extends Controller
         // ============================================================
         $chartLabels = [];
         $chartData = [];
+        $chartEnd = $periodEnd?->copy()->min($now)->startOfDay();
 
         if ($period === 'all') {
             $monthlyTotals = Expense::selectRaw('SUBSTR(expense_date, 1, 7) as expense_month, SUM(amount) as amount')
+                ->whereDate('expense_date', '<=', $now->toDateString())
                 ->groupByRaw('SUBSTR(expense_date, 1, 7)')
                 ->orderBy('expense_month')
                 ->pluck('amount', 'expense_month');
@@ -125,15 +134,14 @@ class PengeluaranController extends Controller
             }
         } elseif ($period === 'today') {
             $chartLabels[] = 'Hari ini';
-            $chartData[] = (float) $totalBulanIni;
-        } elseif ($period === 'week') {
-            $dailyTotals = $periodExpenses()
-                ->selectRaw('expense_date, SUM(amount) as amount')
-                ->groupBy('expense_date')
-                ->orderBy('expense_date')
-                ->pluck('amount', 'expense_date');
+            $chartData[] = (float) Expense::whereDate('expense_date', $now->toDateString())->sum('amount');
         } else {
-            $dailyTotals = $periodExpenses()
+            $dailyTotals = PeriodFilter::apply(
+                Expense::query(),
+                'expense_date',
+                $periodStart?->toDateString(),
+                $chartEnd?->toDateString()
+            )
                 ->selectRaw('expense_date, SUM(amount) as amount')
                 ->groupBy('expense_date')
                 ->orderBy('expense_date')
@@ -141,7 +149,7 @@ class PengeluaranController extends Controller
         }
 
         if (in_array($period, ['week', 'month'], true)) {
-            for ($date = $periodStart->copy()->startOfDay(); $date->lte($periodEnd->copy()->startOfDay()); $date->addDay()) {
+            for ($date = $periodStart->copy()->startOfDay(); $chartEnd && $date->lte($chartEnd); $date->addDay()) {
                 $key = $date->toDateString();
                 $chartLabels[] = $period === 'week' ? $date->translatedFormat('D') : $date->format('d/m');
                 $chartData[] = (float) ($dailyTotals[$key] ?? 0);

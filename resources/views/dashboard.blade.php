@@ -343,6 +343,7 @@
 @section('js')
     {{-- Muat Chart.js sebelum script grafik dashboard. --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ asset('js/financial-bar-zoom.js') }}"></script>
     {{-- Jalankan pengolahan data, sinkronisasi filter, dan grafik dashboard. --}}
     <script src="{{ asset('js/dashboard/dashboard.js') }}"></script>
 @endsection

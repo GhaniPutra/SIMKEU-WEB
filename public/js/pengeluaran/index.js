@@ -49,16 +49,18 @@ document.addEventListener('DOMContentLoaded', function () {
     // ============================================================
     const trendCtx = document.getElementById('trendHarianChart');
     if (trendCtx) {
-        const trendLabels = period === 'today' ? ['Hari ini'] : chartLabels;
-        const trendValues = period === 'today'
-            ? [chartData.reduce((sum, value) => sum + value, 0)]
-            : chartData;
+        const trendLabels = chartLabels;
+        const trendValues = chartData;
 
         if (!trendValues.some((value) => value > 0)) {
             trendCtx.insertAdjacentHTML('afterend', '<p class="chart-empty-state">Belum ada pengeluaran pada periode ini.</p>');
             trendCtx.remove();
         } else {
-        new Chart(trendCtx, {
+        const categoryPercentage = trendValues.length <= 1 ? 0.10
+            : trendValues.length <= 3 ? 0.20
+                : trendValues.length <= 7 ? 0.30
+                    : trendValues.length <= 14 ? 0.40 : 0.60;
+        const trendChart = new Chart(trendCtx, {
             type: 'bar',
             data: {
                 labels: trendLabels,
@@ -66,9 +68,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     label: 'Pengeluaran',
                     backgroundColor: pengeluaranColor,
                     data: trendValues,
-                    borderRadius: 0,
+                    borderRadius: 4,
                     maxBarThickness: 12,
-                    categoryPercentage: 0.55,
+                    categoryPercentage,
                     barPercentage: 0.7,
                 }]
             },
@@ -87,6 +89,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
                 scales: {
                     x: {
+                        min: 0,
+                        max: trendValues.length - 1,
                         grid: { display: false },
                         ticks: {
                             font: { size: 10, family: 'Poppins' },
@@ -96,17 +100,20 @@ document.addEventListener('DOMContentLoaded', function () {
                     },
                     y: {
                         beginAtZero: true,
-                        grid: { color: 'rgba(246,36,64,.16)' },
+                        grid: { color: 'rgba(55, 65, 81, .12)' },
                         ticks: {
                             font: { size: 10, family: 'Poppins' },
                             callback: (value) => value >= 1000000
                                 ? `Rp ${(value / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 })} jt`
-                                : `Rp ${value.toLocaleString('id-ID')}`
+                                : value >= 1000
+                                    ? `Rp ${(value / 1000).toLocaleString('id-ID', { maximumFractionDigits: 0 })} rb`
+                                    : `Rp ${Number(value).toLocaleString('id-ID')}`
                         }
                     }
                 }
             }
         });
+        window.attachFinancialBarZoom(trendChart, trendCtx);
         }
     }
 

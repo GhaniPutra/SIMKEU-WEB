@@ -345,5 +345,6 @@
 @section('js')
 {{-- Chart.js dimuat lebih dulu sebagai dependensi grafik. --}}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ asset('js/financial-bar-zoom.js') }}"></script>
 <script src="{{ asset('js/pengeluaran/index.js') }}"></script>
 @endsection
