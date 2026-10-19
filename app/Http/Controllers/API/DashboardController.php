@@ -162,7 +162,7 @@ class DashboardController extends Controller
             // RECENT SALES
             // ============================================
             $recentSales = Sale::where('user_id', $user->id)
-                ->with(['user', 'customer', 'saleItems.product'])
+                ->with(['user', 'saleItems.product'])
                 ->orderByDesc('transaction_date')
                 ->limit(10)
                 ->get();

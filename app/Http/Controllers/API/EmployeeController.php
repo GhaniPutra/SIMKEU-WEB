@@ -208,7 +208,7 @@ class EmployeeController extends Controller
 
             $sales = Sale::where('user_id', $employee->id)
                 ->whereBetween('transaction_date', [$startDate, $endDate])
-                ->with(['customer', 'saleItems.product'])
+                ->with('saleItems.product')
                 ->orderByDesc('transaction_date')
                 ->get();
 

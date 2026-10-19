@@ -156,6 +156,10 @@ Response:
 | POST | `/api/pos/items/{product}/add` | Tambah item ke cart |
 | DELETE | `/api/pos/items/{item}` | Hapus item dari cart |
 
+Pada `POST /api/pos/transaction`, harga dan tarif produk dihitung ulang oleh server dari data produk toko saat transaksi dibuat. `items.*.price` tetap diterima untuk kompatibilitas klien, tetapi tidak menjadi sumber nilai transaksi. `extra_discount` bersifat opsional dan berisi diskon tambahan dalam Rupiah.
+
+Perhitungan transaksi memakai subtotal harga item sebelum diskon, diskon produk ditambah diskon tambahan, pajak item setelah diskon produk, dan total `subtotal - discount + tax`. Nilai subtotal, diskon, pajak, serta snapshot diskon/pajak tiap item disimpan pada transaksi.
+
 ### Employees (Karyawan)
 
 | Method | Endpoint | Deskripsi |
@@ -230,7 +234,6 @@ curl -X POST http://127.0.0.1:8000/api/sales \
   -H "Authorization: Bearer YOUR_TOKEN_HERE" \
   -H "Content-Type: application/json" \
   -d '{
-    "customer_id": null,
     "payment_method": "tunai",
     "items": [
       {

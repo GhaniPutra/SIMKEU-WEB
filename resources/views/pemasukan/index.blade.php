@@ -107,6 +107,16 @@
     .trend-down    { background: var(--red-50); color: var(--red-400); }
     .trend-neutral { background: var(--grey-100); color: var(--grey-400); }
 
+    .financial-data-note {
+        margin: -10px 0 24px;
+        padding: 12px 16px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--surface-light);
+        color: var(--text-muted);
+        font-size: .78rem;
+    }
+
     /* ============================================================
        SECTION TITLE — Judul antar seksi dengan garis
     ============================================================ */
@@ -221,7 +231,7 @@
     .chart-wrapper-sm canvas { display: block; }
 
     /* ============================================================
-       GRID DUA KOLOM (chart tren + pie chart metode)
+       GRID DUA KOLOM (produk terlaris + metode pembayaran)
     ============================================================ */
     .two-col-chart {
         display: grid;
@@ -474,7 +484,7 @@
 @section('content')
 
 {{-- ============================================================
-     KPI CARDS — Kartu ringkasan statistik pemasukan bulan ini
+     KPI CARDS — Kartu ringkasan statistik pemasukan periode terpilih
 ============================================================ --}}
 <div class="kpi-grid">
 
@@ -534,8 +544,14 @@
 
 </div>{{-- /kpi-grid --}}
 
+@if($hasIncompleteItemFinancials || $hasUnreconciledFinancials)
+    <div class="financial-data-note" role="note">
+        Sebagian transaksi memiliki rincian item yang tidak lengkap atau memakai definisi subtotal lama. Ringkasan memakai nilai yang tersimpan pada transaksi; riwayat tidak dihitung ulang berdasarkan tarif produk saat ini.
+    </div>
+@endif
+
 {{-- ============================================================
-     CHART ROW — Grafik tren harian + pie chart metode pembayaran
+     CHART ROW — Produk dengan nilai penjualan tertinggi + metode pembayaran
 ============================================================ --}}
 <p class="section-title">
     <i class="fas fa-chart-area" style="color:var(--icon-primary)"></i>
@@ -548,7 +564,7 @@
     <div class="content-card analytics-card">
         <div class="content-card-header">
             <span class="content-card-title">
-                <i class="fas fa-chart-line"></i> Tren Pemasukan
+                <i class="fas fa-ranking-star"></i> Produk dengan Pemasukan Tertinggi
             </span>
             {{-- Label periode yang sedang ditampilkan --}}
             <span style="font-size:.75rem;color:var(--text-muted);">
@@ -556,9 +572,9 @@
             </span>
         </div>
         <div class="content-card-body chart-body">
-            {{-- Canvas untuk line chart — diinisialisasi di section JS --}}
+            {{-- Grafik produk dengan nilai penjualan tertinggi pada periode aktif. --}}
             <div class="chart-wrapper">
-                <canvas id="trendHarianChart"></canvas>
+                <canvas id="topProductsChart"></canvas>
             </div>
         </div>
     </div>
@@ -655,8 +671,9 @@
                     <th>Pelanggan</th>         {{-- Nama pelanggan (atau ritel) --}}
                     <th>Kasir</th>             {{-- User yang memproses transaksi --}}
                     <th>Metode</th>            {{-- Metode pembayaran --}}
-                    <th class="text-end">Subtotal</th>  {{-- Subtotal sebelum pajak --}}
-                    <th class="text-end">Diskon</th>    {{-- Potongan harga --}}
+                    <th class="text-end">Subtotal</th>  {{-- Total harga item sebelum diskon --}}
+                    <th class="text-end">Diskon</th>    {{-- Total potongan yang diterapkan --}}
+                    <th class="text-end">Pajak</th>     {{-- Pajak yang diterapkan --}}
                     <th class="text-end">Total</th>     {{-- Total akhir yang dibayar --}}
                     <th class="text-center">Aksi</th>   {{-- Tombol detail --}}
                 </tr>
@@ -679,7 +696,7 @@
                     </td>
 
                     {{-- Nama pelanggan; tampilkan "Ritel / Umum" jika tidak ada --}}
-                    <td>{{ $sale->customer?->name ?? '— Ritel / Umum' }}</td>
+                    <td>Ritel / Umum</td>
 
                     {{-- Nama kasir yang memproses --}}
                     <td>{{ $sale->user?->name ?? '—' }}</td>
@@ -711,6 +728,15 @@
                         @endif
                     </td>
 
+                    {{-- Pajak yang benar-benar tersimpan pada transaksi --}}
+                    <td class="text-end">
+                        @if($sale->tax > 0)
+                            Rp {{ number_format($sale->tax, 0, ',', '.') }}
+                        @else
+                            <span style="color:var(--text-muted);">—</span>
+                        @endif
+                    </td>
+
                     {{-- Total akhir yang dibayar dengan gaya tebal --}}
                     <td class="text-end">
                         <strong style="color:var(--success);">
@@ -728,7 +754,7 @@
                 @empty
                 {{-- Tampilan saat tidak ada data yang cocok --}}
                 <tr>
-                    <td colspan="9">
+                    <td colspan="10">
                         <div class="empty-state">
                             <i class="fas fa-inbox"></i>
                             <p>Tidak ada transaksi pemasukan ditemukan.</p>
@@ -759,8 +785,9 @@
 </div>{{-- /content-card tabel --}}
 
 <div id="pemasukan-chart-data" style="display:none" data-period="{{ $period }}"
-     data-chart-labels='{{ json_encode($chartLabels) }}'
-     data-chart-data='{{ json_encode($chartData) }}'
+     data-product-labels="{{ json_encode($topProductLabels) }}"
+     data-product-values="{{ json_encode($topProductValues) }}"
+     data-product-units="{{ json_encode($topProductUnits) }}"
      data-metode-labels='{{ json_encode($metodeLabels) }}'
      data-metode-data='{{ json_encode($metodeData) }}'>
 </div>
@@ -791,7 +818,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Warna seri chart mengikuti palet UI.
     // ============================================================
     const chartColors = getComputedStyle(document.documentElement);
-    const trendColor = chartColors.getPropertyValue('--blue-400').trim();
+    const productColor = chartColors.getPropertyValue('--blue-400').trim();
     const tunai = chartColors.getPropertyValue('--blue-600').trim();
     const transfer = chartColors.getPropertyValue('--blue-500').trim();
     const qris = chartColors.getPropertyValue('--blue-400').trim();
@@ -800,8 +827,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // DATA DARI HTML — Ambil nilai JSON dari atribut data
     // ============================================================
     const pemasukanChartData = document.getElementById('pemasukan-chart-data');
-    const chartLabels  = pemasukanChartData ? JSON.parse(pemasukanChartData.dataset.chartLabels || '[]') : [];
-    const chartData    = pemasukanChartData ? JSON.parse(pemasukanChartData.dataset.chartData || '[]') : [];
+    const productLabels = pemasukanChartData ? JSON.parse(pemasukanChartData.dataset.productLabels || '[]') : [];
+    const productValues = pemasukanChartData ? JSON.parse(pemasukanChartData.dataset.productValues || '[]') : [];
+    const productUnits  = pemasukanChartData ? JSON.parse(pemasukanChartData.dataset.productUnits || '[]') : [];
     const metodeLabels = pemasukanChartData ? JSON.parse(pemasukanChartData.dataset.metodeLabels || '[]') : [];
     const metodeData   = pemasukanChartData ? JSON.parse(pemasukanChartData.dataset.metodeData || '[]') : [];
 
@@ -818,29 +846,30 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // ============================================================
-    // BAR CHART — Perbandingan pemasukan per periode
+    // BAR CHART — Produk dengan pemasukan tertinggi
     // ============================================================
-    const trendCtx = document.getElementById('trendHarianChart');
-    if (trendCtx) {
-        if (!chartData.some((value) => value > 0)) {
-            trendCtx.insertAdjacentHTML('afterend', '<p class="chart-empty-state">Belum ada pemasukan pada periode ini.</p>');
-            trendCtx.remove();
+    const topProductsCtx = document.getElementById('topProductsChart');
+    if (topProductsCtx) {
+        if (productValues.length === 0) {
+            topProductsCtx.insertAdjacentHTML('afterend', '<p class="chart-empty-state">Belum ada detail penjualan produk pada periode ini.</p>');
+            topProductsCtx.remove();
         } else {
-        new Chart(trendCtx, {
+        new Chart(topProductsCtx, {
             type: 'bar',
             data: {
-                labels: chartLabels,
+                labels: productLabels,
                 datasets: [{
-                    label: 'Pemasukan',
-                    backgroundColor: trendColor,
-                    data: chartData,
-                    borderRadius: 0,
-                    maxBarThickness: 12,
-                    categoryPercentage: 0.55,
-                    barPercentage: 0.7,
+                    label: 'Nilai Penjualan',
+                    backgroundColor: productColor,
+                    data: productValues,
+                    borderRadius: 4,
+                    maxBarThickness: 18,
+                    categoryPercentage: 0.8,
+                    barPercentage: 0.85,
                 }]
             },
             options: {
+                indexAxis: 'y',
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
@@ -848,21 +877,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     tooltip: {
                         ...tooltipDefaults,
                         callbacks: {
-                            title: (items) => chartLabels[items[0].dataIndex],
-                            label: (ctx) => 'Pemasukan: Rp ' + ctx.parsed.y.toLocaleString('id-ID')
+                            title: (items) => productLabels[items[0].dataIndex],
+                            label: (ctx) => 'Penjualan: Rp ' + ctx.parsed.x.toLocaleString('id-ID'),
+                            afterLabel: (ctx) => 'Terjual: ' + (productUnits[ctx.dataIndex] ?? 0).toLocaleString('id-ID') + ' unit'
                         }
                     }
                 },
                 scales: {
                     x: {
-                        grid: { display: false },
-                        ticks: {
-                            font: { size: 10, family: 'Poppins' },
-                            maxTicksLimit: chartData.length > 12 ? 8 : undefined,
-                            autoSkip: true,
-                        }
-                    },
-                    y: {
                         beginAtZero: true,
                         grid: { color: 'rgba(193,224,252,.6)' },
                         ticks: {
@@ -870,6 +892,16 @@ document.addEventListener('DOMContentLoaded', function () {
                             callback: (value) => value >= 1000000
                                 ? `Rp ${(value / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 })} jt`
                                 : `Rp ${value.toLocaleString('id-ID')}`
+                        }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: {
+                            font: { size: 10, family: 'Poppins' },
+                            callback: (value) => {
+                                const label = productLabels[value] ?? '';
+                                return label.length > 24 ? `${label.slice(0, 21)}…` : label;
+                            }
                         }
                     }
                 }

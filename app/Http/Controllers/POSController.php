@@ -8,10 +8,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
-use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\SaleItem;
+use App\Support\SaleCalculator;
 
 class POSController extends Controller
 {
@@ -27,11 +27,7 @@ class POSController extends Controller
             ->orderBy('name')
             ->get();
 
-        // Ambil daftar pelanggan untuk opsi customer pada POS
-        $customers = Customer::orderBy('name')->get();
-
-        // Tampilkan halaman POS dengan data produk dan pelanggan
-        return view('pos.index', compact('products', 'customers'));
+        return view('pos.index', compact('products'));
     }
 
     // ============================================================
@@ -39,23 +35,13 @@ class POSController extends Controller
     //         pajak dan diskon server-side.
     // POST /pos
     //
-    // Alur Perhitungan:
-    //   Per Item:
-    //     harga_setelah_diskon = sell_price × (1 - discount_rate/100)
-    //     subtotal_item        = harga_setelah_diskon × quantity
-    //     pajak_item           = subtotal_item × (tax_rate/100)
-    //
-    //   Total Transaksi:
-    //     subtotal         = Σ subtotal_item (setelah diskon produk)
-    //     total_pajak      = Σ pajak_item
-    //     diskon_tambahan  = input kasir (Rp)
-    //     grand_total      = subtotal + total_pajak - diskon_tambahan
+    // Subtotal selalu bruto sebelum diskon; semua nilai item dihitung ulang
+    // di server dengan aturan yang sama seperti transaksi POS mobile.
     // ============================================================
     public function store(Request $request)
     {
         // Validasi data form POS sebelum diproses
         $validated = $request->validate([
-            'customer_id' => ['nullable', Rule::exists('customers', 'id')->where('store_id', $request->user()->store_id)],
             'payment_method' => ['required', 'in:tunai,transfer,qris'],
             'notes' => ['nullable', 'string', 'max:500'],
             'extra_discount' => ['nullable', 'numeric', 'min:0'],  // Diskon tambahan dari kasir (Rp)
@@ -70,13 +56,7 @@ class POSController extends Controller
         $productIds = collect($validated['items'])->pluck('product_id');
         $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
 
-        // Diskon tambahan dari kasir (nilai Rupiah, bukan persen)
-        $extraDiscount = round($validated['extra_discount'] ?? 0, 2);
-
-        // Hitung ulang subtotal, pajak, dan diskon agar aman dari manipulasi client-side
-        $subtotalBeforeDiscount = 0;  // Total harga asli × jumlah
-        $totalProductDiscount = 0;    // Total diskon dari produk (%)
-        $totalTax = 0;                // Total pajak dari produk (%)
+        $calculationInputs = [];
 
         foreach ($validated['items'] as $item) {
             if (!isset($products[$item['product_id']])) {
@@ -90,62 +70,42 @@ class POSController extends Controller
                 return back()->withErrors(['items' => "Stok untuk produk {$product->name} tidak mencukupi."])->withInput();
             }
 
-            // Hitung harga setelah diskon produk
-            $rawSubtotal = round($product->sell_price * $item['quantity'], 2);
-            $discountRate = $product->discount_rate ?? 0;
-            $taxRate = $product->tax_rate ?? 0;
-
-            // Diskon produk = harga asli × discount_rate%
-            $itemDiscount = round($rawSubtotal * ($discountRate / 100), 2);
-            // Subtotal setelah diskon
-            $afterDiscount = $rawSubtotal - $itemDiscount;
-            // Pajak dihitung setelah diskon
-            $itemTax = round($afterDiscount * ($taxRate / 100), 2);
-
-            $subtotalBeforeDiscount += $rawSubtotal;
-            $totalProductDiscount += $itemDiscount;
-            $totalTax += $itemTax;
+            $calculationInputs[] = [
+                'product_id' => $product->id,
+                'quantity' => $item['quantity'],
+                'price' => $product->sell_price,
+                'discount_rate' => $product->discount_rate,
+                'tax_rate' => $product->tax_rate,
+            ];
         }
 
-        // Subtotal final = subtotal setelah diskon produk
-        $subtotal = $subtotalBeforeDiscount - $totalProductDiscount;
-
-        // Total diskon = diskon produk + diskon tambahan kasir
-        $totalDiscount = $totalProductDiscount + $extraDiscount;
-
-        // Grand total = subtotal + pajak - diskon tambahan
-        $grandTotal = max(0, $subtotal + $totalTax - $extraDiscount);
+        $calculation = SaleCalculator::calculate($calculationInputs, $validated['extra_discount'] ?? 0);
 
         // Gunakan transaksi database untuk menjamin konsistensi stok dan sale
-        DB::transaction(function () use ($validated, $products, $subtotal, $totalTax, $totalDiscount, $grandTotal) {
+        DB::transaction(function () use ($validated, $products, $calculation) {
             $sale = Sale::create([
                 'user_id' => Auth::id(),
-                'customer_id' => $validated['customer_id'] ?? null,
                 'invoice_number' => 'INV-' . now()->format('Ymd-His') . '-' . Str::upper(Str::random(4)),
                 'transaction_date' => now(),
-                'subtotal' => $subtotal,
-                'tax' => $totalTax,
-                'discount' => $totalDiscount,
-                'total' => $grandTotal,
+                'subtotal' => $calculation['subtotal'],
+                'tax' => $calculation['tax'],
+                'discount' => $calculation['discount'],
+                'total' => $calculation['total'],
                 'payment_method' => $validated['payment_method'],
                 'notes' => $validated['notes'] ?? null,
             ]);
 
-            foreach ($validated['items'] as $item) {
+            foreach ($calculation['items'] as $item) {
                 $product = $products[$item['product_id']];
-
-                // Hitung subtotal per item setelah diskon produk
-                $rawSubtotal = round($product->sell_price * $item['quantity'], 2);
-                $discountRate = $product->discount_rate ?? 0;
-                $itemDiscount = round($rawSubtotal * ($discountRate / 100), 2);
-                $afterDiscount = $rawSubtotal - $itemDiscount;
 
                 SaleItem::create([
                     'sale_id' => $sale->id,
                     'product_id' => $product->id,
                     'quantity' => $item['quantity'],
-                    'price_at_sale' => $product->sell_price,
-                    'subtotal' => $afterDiscount,
+                    'price_at_sale' => $item['price_at_sale'],
+                    'subtotal' => $item['subtotal'],
+                    'discount' => $item['discount'],
+                    'tax' => $item['tax'],
                 ]);
 
                 $deducted = DB::table('products')

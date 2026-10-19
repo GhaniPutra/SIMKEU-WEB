@@ -281,7 +281,6 @@ class EmployeeController extends Controller
             ->all();
 
         $sales = (clone $periodSales)
-            ->with('customer')
             ->withSum('saleItems', 'quantity')
             ->orderByDesc('transaction_date')
             ->orderByDesc('id')
@@ -290,7 +289,6 @@ class EmployeeController extends Controller
             ->appends(['tab' => 'sales']);
 
         $recentSales = (clone $periodSales)
-            ->with('customer')
             ->withSum('saleItems', 'quantity')
             ->orderByDesc('transaction_date')
             ->orderByDesc('id')

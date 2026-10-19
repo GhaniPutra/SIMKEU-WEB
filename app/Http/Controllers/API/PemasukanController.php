@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\Product;
-use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
@@ -31,7 +30,7 @@ class PemasukanController extends Controller
             $akhirBulan = $awalBulan->copy()->endOfMonth();
 
             // Query dasar
-            $query = Sale::with(['user', 'customer', 'saleItems.product'])
+            $query = Sale::with(['user', 'saleItems.product'])
                 ->where('user_id', auth()->id())
                 ->whereBetween('transaction_date', [$awalBulan, $akhirBulan]);
 
@@ -94,7 +93,7 @@ class PemasukanController extends Controller
                 ], 403);
             }
 
-            $sale->load(['user', 'customer', 'saleItems.product']);
+            $sale->load(['user', 'saleItems.product']);
 
             return response()->json([
                 'success' => true,
@@ -119,7 +118,6 @@ class PemasukanController extends Controller
         try {
             // Validasi input
             $validated = $request->validate([
-                'customer_id' => ['nullable', Rule::exists('customers', 'id')->where('store_id', $request->user()->store_id)],
                 'payment_method' => 'required|in:tunai,transfer,qris',
                 'discount' => 'nullable|numeric|min:0',
                 'tax' => 'nullable|numeric|min:0',
@@ -130,27 +128,36 @@ class PemasukanController extends Controller
                 'items.*.price' => 'required|numeric|min:0',
             ]);
 
-            // Buat transaksi penjualan
+            $itemSubtotals = collect($validated['items'])
+                ->map(fn ($item) => round((float) $item['quantity'] * (float) $item['price'], 2));
+            $subtotal = round($itemSubtotals->sum(), 2);
+            $discount = round((float) ($validated['discount'] ?? 0), 2);
+            $tax = round((float) ($validated['tax'] ?? 0), 2);
+
+            if ($discount > $subtotal) {
+                throw ValidationException::withMessages([
+                    'discount' => 'Diskon tidak boleh melebihi subtotal transaksi.',
+                ]);
+            }
+
+            // Nilai diskon/pajak yang dikirim merupakan nominal aktual transaksi.
+            // Rincian item tetap ditandai tidak tersedia karena endpoint ini
+            // hanya menerima nilai diskon dan pajak pada tingkat transaksi.
             $sale = Sale::create([
                 'user_id' => auth()->id(),
-                'customer_id' => $validated['customer_id'] ?? null,
                 'invoice_number' => 'INV-' . now()->format('YmdHis'),
                 'transaction_date' => now(),
                 'payment_method' => $validated['payment_method'],
-                'subtotal' => collect($validated['items'])->sum(function ($item) {
-                    return $item['quantity'] * $item['price'];
-                }),
-                'discount' => $validated['discount'] ?? 0,
-                'tax' => $validated['tax'] ?? 0,
-                'total' => 0, // Will be updated below
+                'subtotal' => $subtotal,
+                'discount' => $discount,
+                'tax' => $tax,
+                'total' => round($subtotal - $discount + $tax, 2),
                 'notes' => $validated['notes'] ?? null,
             ]);
 
             // Buat item penjualan
-            $subtotal = 0;
-            foreach ($validated['items'] as $item) {
-                $itemTotal = $item['quantity'] * $item['price'];
-                $subtotal += $itemTotal;
+            foreach ($validated['items'] as $index => $item) {
+                $itemTotal = $itemSubtotals[$index];
 
                 SaleItem::create([
                     'sale_id' => $sale->id,
@@ -158,6 +165,8 @@ class PemasukanController extends Controller
                     'quantity' => $item['quantity'],
                     'price_at_sale' => $item['price'],
                     'subtotal' => $itemTotal,
+                    'discount' => null,
+                    'tax' => null,
                 ]);
 
                 // Kurangi stok produk
@@ -165,14 +174,13 @@ class PemasukanController extends Controller
                 $product->update(['stock' => $product->stock - $item['quantity']]);
             }
 
-            // Update total penjualan
-            $total = $subtotal - ($validated['discount'] ?? 0) + ($validated['tax'] ?? 0);
+            // Reuse the normalized item total and preserve the requested header amounts.
             $sale->update([
                 'subtotal' => $subtotal,
-                'total' => $total,
+                'total' => round($subtotal - $discount + $tax, 2),
             ]);
 
-            $sale->load(['user', 'customer', 'saleItems.product']);
+            $sale->load(['user', 'saleItems.product']);
 
             return response()->json([
                 'success' => true,
@@ -211,9 +219,12 @@ class PemasukanController extends Controller
                 ], 400);
             }
 
+            $periodStart = Carbon::parse($startDate)->startOfDay();
+            $periodEnd = Carbon::parse($endDate)->endOfDay();
+
             $sales = Sale::where('user_id', auth()->id())
-                ->whereBetween('transaction_date', [$startDate, $endDate])
-                ->with(['user', 'customer', 'saleItems.product'])
+                ->whereBetween('transaction_date', [$periodStart, $periodEnd])
+                ->with(['user', 'saleItems.product'])
                 ->orderByDesc('transaction_date')
                 ->get();
 
@@ -253,14 +264,19 @@ class PemasukanController extends Controller
         try {
             $startDate = $request->input('start_date', now()->startOfMonth());
             $endDate = $request->input('end_date', now());
+            $periodStart = Carbon::parse($startDate)->startOfDay();
+            $periodEnd = Carbon::parse($endDate)->endOfDay();
 
-            $products = Product::with(['saleItems' => function ($query) use ($startDate, $endDate) {
-                $query->whereHas('sale', function($q) {
-                    $q->where('user_id', auth()->id());
-                })->whereBetween('created_at', [$startDate, $endDate]);
+            $products = Product::with(['saleItems' => function ($query) use ($periodStart, $periodEnd) {
+                $query->whereHas('sale', function ($q) use ($periodStart, $periodEnd) {
+                    $q->where('user_id', auth()->id())
+                        ->whereBetween('transaction_date', [$periodStart, $periodEnd]);
+                });
             }])->get()->map(function ($product) {
                 $totalQuantity = $product->saleItems->sum('quantity');
-                $totalRevenue = $product->saleItems->sum('subtotal');
+                $totalRevenue = $product->saleItems->sum(fn ($item) =>
+                    (float) $item->subtotal - (float) ($item->discount ?? 0)
+                );
 
                 return [
                     'id' => $product->id,

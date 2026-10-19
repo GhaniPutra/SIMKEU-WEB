@@ -314,7 +314,7 @@ class DashboardController extends Controller
         }
 
         // Gabungkan aktivitas keuangan, perubahan produk, dan status alokasi terbaru.
-        $salesActivities = $recentSales->map(function ($sale) use ($period) {
+        $salesActivities = $recentSales->toBase()->map(function ($sale) use ($period) {
             $wasUpdated = $sale->updated_at && $sale->created_at && $sale->updated_at->gt($sale->created_at);
             $amount = ' sebesar Rp ' . number_format($sale->total, 0, ',', '.');
             $message = $wasUpdated
@@ -338,6 +338,7 @@ class DashboardController extends Controller
                 ->orderByDesc('updated_at')
                 ->take(5)
                 ->get()
+                ->toBase()
                 ->map(function ($expense) use ($period) {
                     $wasUpdated = $expense->updated_at && $expense->created_at && $expense->updated_at->gt($expense->created_at);
                     $amount = ' sebesar Rp ' . number_format($expense->amount, 0, ',', '.');
@@ -361,6 +362,7 @@ class DashboardController extends Controller
                 ->orderByDesc('updated_at')
                 ->take(5)
                 ->get()
+                ->toBase()
                 ->map(fn ($product) => [
                     'type' => 'product',
                     'message' => $product->created_at?->equalTo($product->updated_at)
@@ -375,6 +377,7 @@ class DashboardController extends Controller
                 ->orderByDesc('updated_at')
                 ->take(5)
                 ->get()
+                ->toBase()
                 ->map(function (StockAllocation $allocation) use ($isAllocationManager, $canViewEmployeeDetails, $period) {
                     $employeeName = $allocation->employee?->name ?? 'pegawai';
                     $productName = $allocation->product?->name ?? 'produk';
@@ -408,7 +411,7 @@ class DashboardController extends Controller
             ->values();
 
         // Pertahankan data transaksi gabungan untuk konsumen view lama tanpa query penjualan ulang.
-        $recentTransactions = $recentSales
+        $recentTransactions = $recentSales->toBase()
             ->map(fn ($sale) => [
                 'sort_date' => $sale->transaction_date,
                 'date' => $sale->transaction_date->format('d M Y'),

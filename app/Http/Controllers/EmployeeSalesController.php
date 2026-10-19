@@ -30,7 +30,7 @@ class EmployeeSalesController extends Controller
         $periodSales = PeriodFilter::apply(clone $employeeSales, 'transaction_date', $periodStart, $periodEnd);
 
         $sales = (clone $periodSales)
-            ->with(['saleItems.product', 'customer'])
+            ->with('saleItems.product')
             ->orderByDesc('transaction_date')
             ->paginate(15)
             ->withQueryString();

@@ -14,7 +14,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Data contoh memiliki seeder tersendiri dan tidak dimuat otomatis,
-        // agar KPI selalu menghitung data yang benar-benar dimasukkan pengguna.
+        $this->call(DemoStoreSeeder::class);
     }
 }

@@ -6,12 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\Product;
-use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use App\Support\SaleCalculator;
 
 class POSController extends Controller
 {
@@ -58,9 +58,9 @@ class POSController extends Controller
         try {
             // Validasi input
             $validated = $request->validate([
-                'customer_id' => ['nullable', Rule::exists('customers', 'id')->where('store_id', $request->user()->store_id)],
                 'payment_method' => 'required|in:tunai,transfer,qris',
                 'notes' => 'nullable|string|max:500',
+                'extra_discount' => ['nullable', 'numeric', 'min:0'],
                 'items' => 'required|array|min:1',
                 'items.*.product_id' => ['required', Rule::exists('products', 'id')->where('store_id', $request->user()->store_id)],
                 'items.*.quantity' => 'required|integer|min:1',
@@ -71,8 +71,9 @@ class POSController extends Controller
             $productIds = collect($validated['items'])->pluck('product_id')->unique();
             $products = auth()->user()->products()->whereIn('product_id', $productIds)->get()->keyBy('id');
 
-            // Validasi stok dan hitung subtotal
-            $subtotal = 0;
+            // Validasi stok sekaligus siapkan harga dan tarif produk dari server.
+            $requiredStock = [];
+            $calculationInputs = [];
             foreach ($validated['items'] as $item) {
                 if (!isset($products[$item['product_id']])) {
                     return response()->json([
@@ -83,41 +84,54 @@ class POSController extends Controller
 
                 $product = $products[$item['product_id']];
 
-                if ($product->pivot->stock < $item['quantity']) {
+                $requiredStock[$product->id] = ($requiredStock[$product->id] ?? 0) + $item['quantity'];
+                $calculationInputs[] = [
+                    'product_id' => $product->id,
+                    'quantity' => $item['quantity'],
+                    'price' => $product->sell_price,
+                    'discount_rate' => $product->discount_rate,
+                    'tax_rate' => $product->tax_rate,
+                ];
+            }
+
+            foreach ($requiredStock as $productId => $quantity) {
+                $product = $products[$productId];
+                if ($product->pivot->stock < $quantity) {
                     return response()->json([
                         'success' => false,
                         'message' => "Stok untuk produk {$product->name} tidak mencukupi. Stok tersedia: {$product->pivot->stock}"
                     ], 400);
                 }
-
-                $subtotal += $product->sell_price * $item['quantity'];
             }
 
+            $calculation = SaleCalculator::calculate($calculationInputs, $validated['extra_discount'] ?? 0);
+
             // Buat transaksi dalam database transaction
-            $sale = DB::transaction(function () use ($validated, $products, $subtotal) {
+            $sale = DB::transaction(function () use ($validated, $products, $calculation) {
                 $sale = Sale::create([
                     'user_id' => auth()->id(),
-                    'customer_id' => $validated['customer_id'] ?? null,
                     'invoice_number' => 'INV-' . now()->format('Ymd-His') . '-' . Str::upper(Str::random(4)),
                     'transaction_date' => now(),
-                    'subtotal' => $subtotal,
-                    'tax' => 0,
-                    'discount' => 0,
-                    'total' => $subtotal,
+                    'subtotal' => $calculation['subtotal'],
+                    'tax' => $calculation['tax'],
+                    'discount' => $calculation['discount'],
+                    'total' => $calculation['total'],
                     'payment_method' => $validated['payment_method'],
                     'notes' => $validated['notes'] ?? null,
                 ]);
 
-                // Buat sale items dan update stok produk
-                foreach ($validated['items'] as $index => $item) {
+                // Simpan snapshot item dan kurangi stok dengan jumlah tervalidasi.
+                foreach ($calculation['items'] as $index => $item) {
                     $product = $products[$item['product_id']];
 
                     SaleItem::create([
                         'sale_id' => $sale->id,
                         'product_id' => $product->id,
                         'quantity' => $item['quantity'],
-                        'price_at_sale' => $product->sell_price,
-                        'subtotal' => $product->sell_price * $item['quantity'],
+                        'price_at_sale' => $item['price_at_sale'],
+                        'subtotal' => $item['subtotal'],
+                        'discount' => $item['discount'],
+                        'tax' => $item['tax'],
                     ]);
 
                     $deducted = DB::table('product_user')
@@ -135,7 +149,7 @@ class POSController extends Controller
                 return $sale;
             });
 
-            $sale->load(['user', 'customer', 'saleItems.product']);
+            $sale->load(['user', 'saleItems.product']);
 
             return response()->json([
                 'success' => true,
@@ -178,14 +192,41 @@ class POSController extends Controller
                 'tax' => 'sometimes|numeric|min:0',
             ]);
 
-            // Update transaksi
-            $sale->update($validated);
+            foreach (['discount', 'tax'] as $amountField) {
+                if (isset($validated[$amountField])) {
+                    $validated[$amountField] = round((float) $validated[$amountField], 2);
+                }
+            }
 
-            // Recalculate total
-            $total = $sale->subtotal - ($validated['discount'] ?? $sale->discount) + ($validated['tax'] ?? $sale->tax);
-            $sale->update(['total' => $total]);
+            if (isset($validated['discount']) && (float) $validated['discount'] > (float) $sale->subtotal) {
+                throw ValidationException::withMessages([
+                    'discount' => 'Diskon tidak boleh melebihi subtotal transaksi.',
+                ]);
+            }
+            if (isset($validated['discount']) && (float) $validated['discount'] < (float) $sale->saleItems()->sum('discount')) {
+                throw ValidationException::withMessages([
+                    'discount' => 'Diskon transaksi tidak boleh lebih kecil dari diskon produk yang sudah diterapkan.',
+                ]);
+            }
 
-            $sale->load(['user', 'customer', 'saleItems.product']);
+            // API completion values are final transaction-level amounts. When a
+            // tax override no longer matches the item snapshots, mark the
+            // per-item tax breakdown as unavailable instead of showing stale data.
+            if (array_key_exists('tax', $validated)) {
+                $itemTax = (float) $sale->saleItems()->sum('tax');
+                if (abs($itemTax - (float) $validated['tax']) >= 0.005) {
+                    $sale->saleItems()->update(['tax' => null]);
+                }
+            }
+
+            $sale->fill($validated);
+            $sale->total = round(
+                (float) $sale->subtotal - (float) $sale->discount + (float) $sale->tax,
+                2
+            );
+            $sale->save();
+
+            $sale->load(['user', 'saleItems.product']);
 
             return response()->json([
                 'success' => true,

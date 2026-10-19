@@ -16,6 +16,12 @@
         'qris' => ['label' => 'QRIS', 'icon' => 'fa-qrcode'],
         default => ['label' => ucfirst($sale->payment_method), 'icon' => 'fa-wallet'],
     };
+    $itemDiscountTotal = $hasItemFinancialSnapshots
+        ? (float) $sale->saleItems->sum('discount')
+        : null;
+    $extraDiscount = $itemDiscountTotal !== null
+        ? max(0, (float) $sale->discount - $itemDiscountTotal)
+        : null;
 @endphp
 
 <div class="finance-detail finance-detail--income">
@@ -58,12 +64,8 @@
             <div class="fd-overview-item">
                 <div class="fd-overview-label">Pelanggan</div>
                 <div class="fd-overview-value">
-                    {{ $sale->customer?->name ?? 'Ritel / Umum' }}
-                    @if($sale->customer?->phone)
-                        <small>{{ $sale->customer->phone }}</small>
-                    @elseif(!$sale->customer)
-                        <small>Transaksi tanpa pelanggan</small>
-                    @endif
+                    Ritel / Umum
+                    <small>Transaksi tanpa data pelanggan</small>
                 </div>
             </div>
             <div class="fd-overview-item">
@@ -87,6 +89,24 @@
         </aside>
     @endif
 
+    @if(!$hasItemFinancialSnapshots || !$headerTotalsReconcile)
+        <aside class="fd-note" aria-label="Keterbatasan rincian transaksi">
+            <span class="fd-note-icon"><i class="fas fa-circle-info" aria-hidden="true"></i></span>
+            <div>
+                <span class="fd-note-label">Rincian item terbatas</span>
+                <p class="fd-note-text">
+                    @if(!$hasItemFinancialSnapshots)
+                        Nilai diskon dan pajak per item tidak tersimpan pada transaksi ini.
+                    @endif
+                    @if(!$headerTotalsReconcile)
+                        Komponen header transaksi menggunakan definisi lama dan tidak cocok dengan rumus saat ini; total dibayar ditampilkan sesuai nilai yang tersimpan.
+                    @endif
+                    Nilai tidak dihitung ulang dari pengaturan produk saat ini.
+                </p>
+            </div>
+        </aside>
+    @endif
+
     <section class="fd-card" aria-labelledby="items-title">
         <div class="fd-card-header">
             <h2 class="fd-section-heading" id="items-title">
@@ -105,7 +125,9 @@
                         <th scope="col">Produk</th>
                         <th scope="col" class="fd-align-right">Harga satuan</th>
                         <th scope="col" class="fd-align-center">Jumlah</th>
-                        <th scope="col" class="fd-align-right">Subtotal</th>
+                        <th scope="col" class="fd-align-right">{{ $hasItemFinancialSnapshots ? 'Subtotal sebelum diskon' : 'Nilai item tersimpan' }}</th>
+                        <th scope="col" class="fd-align-right">Diskon produk</th>
+                        <th scope="col" class="fd-align-right">Pajak item</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -126,10 +148,24 @@
                                 @endif
                             </td>
                             <td class="fd-align-right"><strong class="fd-table-total">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</strong></td>
+                            <td class="fd-align-right">
+                                @if($item->discount !== null)
+                                    −Rp {{ number_format($item->discount, 0, ',', '.') }}
+                                @else
+                                    —
+                                @endif
+                            </td>
+                            <td class="fd-align-right">
+                                @if($item->tax !== null)
+                                    +Rp {{ number_format($item->tax, 0, ',', '.') }}
+                                @else
+                                    —
+                                @endif
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="fd-empty">Belum ada produk pada transaksi ini.</td>
+                            <td colspan="7" class="fd-empty">Belum ada produk pada transaksi ini.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -142,18 +178,19 @@
                     <span>Subtotal</span>
                     <strong>Rp {{ number_format($sale->subtotal, 0, ',', '.') }}</strong>
                 </div>
-                @if($sale->discount > 0)
-                    <div class="fd-summary-row">
-                        <span>Diskon</span>
-                        <strong class="fd-discount">−Rp {{ number_format($sale->discount, 0, ',', '.') }}</strong>
-                    </div>
-                @endif
-                @if($sale->tax > 0)
-                    <div class="fd-summary-row">
-                        <span>Pajak (PPN)</span>
-                        <strong>+Rp {{ number_format($sale->tax, 0, ',', '.') }}</strong>
-                    </div>
-                @endif
+                <div class="fd-summary-row">
+                    <span>
+                        Diskon
+                        @if($hasItemFinancialSnapshots)
+                            <small class="fd-product-meta d-block">Produk Rp {{ number_format($itemDiscountTotal, 0, ',', '.') }} · tambahan Rp {{ number_format($extraDiscount, 0, ',', '.') }}</small>
+                        @endif
+                    </span>
+                    <strong class="fd-discount">−Rp {{ number_format($sale->discount, 0, ',', '.') }}</strong>
+                </div>
+                <div class="fd-summary-row">
+                    <span>Pajak</span>
+                    <strong>+Rp {{ number_format($sale->tax, 0, ',', '.') }}</strong>
+                </div>
                 <div class="fd-summary-row fd-summary-row--total">
                     <span>Total dibayar</span>
                     <strong>Rp {{ number_format($sale->total, 0, ',', '.') }}</strong>

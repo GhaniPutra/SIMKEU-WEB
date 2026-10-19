@@ -11,7 +11,6 @@ use Carbon\Carbon;                 // Untuk manipulasi dan format tanggal/waktu
 use App\Models\Sale;               // Model transaksi penjualan (pemasukan)
 use App\Models\SaleItem;          // Model detail item per transaksi
 use App\Models\Product;           // Model produk, dipakai untuk dropdown pilih produk
-use App\Models\Customer;          // Model pelanggan, dipakai untuk dropdown
 use Illuminate\Support\Facades\DB;
 use App\Support\PeriodFilter;
 
@@ -36,7 +35,7 @@ class PemasukanController extends Controller
         // ----------------------------------------------------------
         // Query dasar: ambil semua penjualan dalam rentang periode terpilih
         // ----------------------------------------------------------
-        $query = PeriodFilter::apply(Sale::with(['user', 'customer']), 'transaction_date', $periodStart, $periodEnd);
+        $query = PeriodFilter::apply(Sale::with('user'), 'transaction_date', $periodStart, $periodEnd);
 
         // Filter pencarian
         if ($search !== '') {
@@ -62,50 +61,19 @@ class PemasukanController extends Controller
         $periodSales = fn () => PeriodFilter::apply(Sale::query(), 'transaction_date', $periodStart, $periodEnd);
         $totalSubtotal = $periodSales()->sum('subtotal');
 
-        // ---------- Perhitungan diskon dan pajak yang lebih akurat ----------
-        // Beberapa transaksi mungkin tidak menyimpan breakdown per-item dengan
-        // konsisten di kolom sales.discount / sales.tax. Untuk memastikan KPI
-        // merefleksikan perhitungan nyata (sama seperti POS), hitung ulang dari
-        // sale_items bergabung dengan products menggunakan tax_rate & discount_rate.
-
-        // Total diskon produk (dari rate produk) = SUM(price_at_sale * qty * discount_rate/100)
-        $totalProductDiscount = (float) PeriodFilter::apply(DB::table('sale_items')
-            ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
-            ->join('products', 'sale_items.product_id', '=', 'products.id')
-            ->where('sales.store_id', $request->user()->store_id)
-            ->where('products.store_id', $request->user()->store_id), 'sales.transaction_date', $periodStart, $periodEnd)
-            ->selectRaw('COALESCE(SUM(sale_items.price_at_sale * sale_items.quantity * (products.discount_rate / 100.0)),0) as total')
-            ->value('total');
-
-        // Total pajak dihitung setelah diskon produk per item:
-        // SUM( (price * qty - price*qty*discount_rate/100) * (tax_rate/100) )
-        $totalProductTax = (float) PeriodFilter::apply(DB::table('sale_items')
-            ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
-            ->join('products', 'sale_items.product_id', '=', 'products.id')
-            ->where('sales.store_id', $request->user()->store_id)
-            ->where('products.store_id', $request->user()->store_id), 'sales.transaction_date', $periodStart, $periodEnd)
-            ->selectRaw('COALESCE(SUM((sale_items.price_at_sale * sale_items.quantity - (sale_items.price_at_sale * sale_items.quantity * (products.discount_rate / 100.0))) * (products.tax_rate / 100.0)),0) as total')
-            ->value('total');
-
-        // Beberapa transaksi menyimpan diskon tambahan (extra discount) di kolom
-        // sales.discount (total diskon produk + extra). Kita ambil total dari
-        // kolom sales.discount sebagai fallback/penyesuaian.
-        $sumSaleDiscounts = (float) $periodSales()->sum('discount');
-        $sumSaleTax = (float) $periodSales()->sum('tax');
-
-        // Jika kolom sales.discount terisi (mis. import lama), gunakan nilainya.
-        // Jika tidak (atau nol), gunakan hasil perhitungan berdasarkan item.
-        // Untuk diskon: prioritaskan nilai dari DB jika > 0, tapi tetap pastikan
-        // minimal sama dengan totalProductDiscount.
-        if ($sumSaleDiscounts > 0) {
-            $totalDiskon = $sumSaleDiscounts;
-        } else {
-            $totalDiskon = $totalProductDiscount;
-        }
-
-        // Untuk pajak: gunakan nilai di kolom sales.tax bila tersedia, selain itu
-        // gunakan perhitungan berbasis produk.
-        $totalPajak = $sumSaleTax > 0 ? $sumSaleTax : $totalProductTax;
+        // Header sale menyimpan nilai yang benar-benar diterapkan saat transaksi.
+        // Data historis yang kosong tidak diestimasi dari tarif produk terkini.
+        $totalDiskon = $periodSales()->sum('discount');
+        $totalPajak = $periodSales()->sum('tax');
+        $hasIncompleteItemFinancials = $periodSales()
+            ->where(function ($query) {
+                $query->whereDoesntHave('saleItems')
+                    ->orWhereHas('saleItems', fn ($items) => $items->whereNull('discount')->orWhereNull('tax'));
+            })
+            ->exists();
+        $hasUnreconciledFinancials = $periodSales()
+            ->whereRaw('ABS(subtotal - discount + tax - total) > 0.005')
+            ->exists();
         $totalBersih = $periodSales()->sum('total');
         $jumlahTransaksi = $periodSales()->count();
         $rataRataTransaksi = $jumlahTransaksi > 0 ? $totalBersih / $jumlahTransaksi : 0;
@@ -135,44 +103,27 @@ class PemasukanController extends Controller
             : ($totalPeriodLalu !== null && $totalBersih > 0 ? 100 : 0);
 
         // ============================================================
-        // DATA CHART — Sesuai periode (seperti dashboard)
+        // DATA GRAFIK — 10 produk dengan nilai penjualan terbesar
         // ============================================================
-        $chartLabels = [];
-        $chartData = [];
-
-        if ($period === 'all') {
-            $monthlyTotals = DB::table('sales')->where('store_id', $request->user()->store_id)
-                ->selectRaw('SUBSTR(transaction_date, 1, 7) as sale_month, SUM(total) as total')
-                ->groupByRaw('SUBSTR(transaction_date, 1, 7)')
-                ->orderBy('sale_month')
-                ->pluck('total', 'sale_month');
-
-            foreach ($monthlyTotals as $month => $total) {
-                $chartLabels[] = Carbon::createFromFormat('!Y-m', $month)->format('m/Y');
-                $chartData[] = (float) $total;
-            }
-        } elseif ($period === 'today') {
-            $hourlyTotals = $periodSales()
-                ->get(['transaction_date', 'total'])
-                ->groupBy(fn ($sale) => Carbon::parse($sale->transaction_date)->format('G'))
-                ->map(fn ($sales) => $sales->sum('total'));
-
-            for ($hour = 0; $hour < 24; $hour++) {
-                $chartLabels[] = str_pad((string) $hour, 2, '0', STR_PAD_LEFT) . ':00';
-                $chartData[] = (float) ($hourlyTotals[$hour] ?? 0);
-            }
-        } else {
-            $dailyTotals = $periodSales()
-                ->selectRaw('DATE(transaction_date) as sale_date, SUM(total) as total')
-                ->groupByRaw('DATE(transaction_date)')
-                ->orderBy('sale_date')
-                ->pluck('total', 'sale_date');
-
-            for ($date = $periodStart->copy(); $date->lte($periodEnd); $date->addDay()) {
-                $chartLabels[] = $date->format('d/m');
-                $chartData[] = (float) ($dailyTotals[$date->toDateString()] ?? 0);
-            }
-        }
+        $topSellingProducts = PeriodFilter::apply(
+            DB::table('sale_items')
+                ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
+                ->join('products', 'sale_items.product_id', '=', 'products.id')
+                ->where('sales.store_id', $request->user()->store_id)
+                ->where('products.store_id', $request->user()->store_id),
+            'sales.transaction_date',
+            $periodStart,
+            $periodEnd
+        )
+            ->selectRaw('products.id, products.name, SUM(sale_items.subtotal - COALESCE(sale_items.discount, 0)) as sales_value, SUM(sale_items.quantity) as units_sold')
+            ->groupBy('products.id', 'products.name')
+            ->orderByDesc('sales_value')
+            ->orderBy('products.name')
+            ->limit(10)
+            ->get();
+        $topProductLabels = $topSellingProducts->pluck('name')->all();
+        $topProductValues = $topSellingProducts->map(fn ($product) => (float) $product->sales_value)->all();
+        $topProductUnits = $topSellingProducts->map(fn ($product) => (int) $product->units_sold)->all();
 
         // ============================================================
         // DATA PIE CHART — Distribusi metode pembayaran
@@ -206,13 +157,16 @@ class PemasukanController extends Controller
             'totalSubtotal',
             'totalDiskon',
             'totalPajak',
+            'hasIncompleteItemFinancials',
+            'hasUnreconciledFinancials',
             'totalBersih',
             'jumlahTransaksi',
             'rataRataTransaksi',
             'persentasePerubahan',
             'totalPeriodLalu',
-            'chartLabels',
-            'chartData',
+            'topProductLabels',
+            'topProductValues',
+            'topProductUnits',
             'metodeLabels',
             'metodeData'
         ));
@@ -224,11 +178,14 @@ class PemasukanController extends Controller
     // ============================================================
     public function show(Sale $sale)
     {
-        // Muat relasi: user (kasir), customer (pelanggan),
-        // saleItems beserta produknya masing-masing
-        $sale->load(['user', 'customer', 'saleItems.product']);
+        $sale->load(['user', 'saleItems.product']);
+        $hasItemFinancialSnapshots = $sale->saleItems->isNotEmpty()
+            && $sale->saleItems->every(fn ($item) => $item->discount !== null && $item->tax !== null);
+        $headerTotalsReconcile = abs(
+            (float) $sale->subtotal - (float) $sale->discount + (float) $sale->tax - (float) $sale->total
+        ) < 0.005;
 
         // Tampilkan view detail dengan data penjualan
-        return view('pemasukan.show', compact('sale'));
+        return view('pemasukan.show', compact('sale', 'hasItemFinancialSnapshots', 'headerTotalsReconcile'));
     }
 }

@@ -112,7 +112,7 @@
                     </div>
                 </div>
 
-                {{-- Informasi Pembeli --}}
+                {{-- Informasi Transaksi --}}
                 <div class="content-card">
                     <div class="content-card-header">
                         <span class="content-card-title">
@@ -120,19 +120,6 @@
                         </span>
                     </div>
                     <div class="content-card-body">
-
-                        <div class="form-group">
-                            <label class="form-label" for="customerSelect">Pelanggan</label>
-                            <div class="select-wrapper">
-                                <select id="customerSelect" name="customer_id" class="form-control">
-                                    <option value="">Umum / Tanpa pelanggan</option>
-                                    @foreach($customers as $customer)
-                                        <option value="{{ $customer->id }}">{{ $customer->name }}</option>
-                                    @endforeach
-                                </select>
-                                <i class="fas fa-chevron-down select-arrow"></i>
-                            </div>
-                        </div>
 
                         <div class="form-group">
                             <label class="form-label" for="paymentMethod">Metode Pembayaran</label>

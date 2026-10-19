@@ -5,17 +5,17 @@
 //
 // Alur Perhitungan:
 //   Per Item:
-//     harga_setelah_diskon = sell_price × (1 - discount_rate/100)
-//     subtotal_item        = harga_setelah_diskon × quantity
-//     pajak_item           = subtotal_item × (tax_rate/100)
+//     subtotal_item        = sell_price × quantity (sebelum diskon)
+//     diskon_item          = subtotal_item × discount_rate/100
+//     pajak_item           = (subtotal_item - diskon_item) × tax_rate/100
 //
 //   Total Transaksi:
 //     subtotal_sebelum_diskon = Σ (sell_price × quantity)
 //     total_diskon_produk     = Σ (sell_price × quantity × discount_rate/100)
-//     subtotal                = subtotal_sebelum_diskon - total_diskon_produk
+//     subtotal                = subtotal_sebelum_diskon
 //     total_pajak             = Σ pajak_item
-//     diskon_tambahan         = input kasir (Rp)
-//     grand_total             = subtotal + total_pajak - diskon_tambahan
+//     diskon                  = total_diskon_produk + diskon_tambahan
+//     grand_total             = subtotal - diskon + total_pajak
 // ============================================================
 
 const productSelect = document.getElementById('productSelect');
@@ -44,7 +44,11 @@ let cartItems = [];
  * @returns {string} String format Rupiah (contoh: "150.000")
  */
 function formatRupiah(value) {
-    return Math.round(value).toLocaleString('id-ID');
+    return Number(value || 0).toLocaleString('id-ID', { maximumFractionDigits: 2 });
+}
+
+function roundCurrency(value) {
+    return Math.round((Number(value || 0) + Number.EPSILON) * 100) / 100;
 }
 
 /**
@@ -97,24 +101,25 @@ function updateCartSummary() {
     let totalTax = 0;
 
     cartItems.forEach(item => {
-        const rawSubtotal = item.price * item.quantity;
-        const itemDiscount = rawSubtotal * (item.discount_rate / 100);
+        const rawSubtotal = roundCurrency(item.price * item.quantity);
+        const itemDiscount = roundCurrency(rawSubtotal * (item.discount_rate / 100));
         const afterDiscount = rawSubtotal - itemDiscount;
-        const itemTax = afterDiscount * (item.tax_rate / 100);
+        const itemTax = roundCurrency(afterDiscount * (item.tax_rate / 100));
 
-        subtotalBeforeDiscount += rawSubtotal;
-        totalProductDiscount += itemDiscount;
-        totalTax += itemTax;
+        subtotalBeforeDiscount = roundCurrency(subtotalBeforeDiscount + rawSubtotal);
+        totalProductDiscount = roundCurrency(totalProductDiscount + itemDiscount);
+        totalTax = roundCurrency(totalTax + itemTax);
     });
 
-    // Subtotal setelah diskon produk
-    const subtotalAfterDiscount = subtotalBeforeDiscount - totalProductDiscount;
-
     // Diskon tambahan dari kasir
-    const extraDiscount = Number(extraDiscountInput.value || 0);
+    const requestedExtraDiscount = roundCurrency(extraDiscountInput.value);
+    const extraDiscount = Math.min(
+        Math.max(0, requestedExtraDiscount),
+        Math.max(0, roundCurrency(subtotalBeforeDiscount - totalProductDiscount))
+    );
 
-    // Grand total = subtotal setelah diskon + pajak - diskon tambahan
-    const grandTotal = Math.max(0, subtotalAfterDiscount + totalTax - extraDiscount);
+    // Total = subtotal sebelum diskon - seluruh diskon + pajak
+    const grandTotal = roundCurrency(subtotalBeforeDiscount - totalProductDiscount - extraDiscount + totalTax);
 
     // Update tampilan ringkasan
     cartSubtotal.textContent = `Rp ${formatRupiah(subtotalBeforeDiscount)}`;
@@ -157,18 +162,8 @@ function renderCart() {
         return;
     }
 
-    // Hitung total pajak dan diskon untuk hidden inputs
-    let totalTax = 0;
-    let totalDiscount = 0;
-
     cartItems.forEach((item, index) => {
-        const rawSubtotal = item.price * item.quantity;
-        const itemDiscount = rawSubtotal * (item.discount_rate / 100);
-        const afterDiscount = rawSubtotal - itemDiscount;
-        const itemTax = afterDiscount * (item.tax_rate / 100);
-
-        totalDiscount += itemDiscount;
-        totalTax += itemTax;
+        const rawSubtotal = roundCurrency(item.price * item.quantity);
 
         // Buat baris tabel untuk item ini
         const row = document.createElement('tr');
@@ -182,7 +177,7 @@ function renderCart() {
                 </div>
             </td>
             <td class="text-center" style="font-weight:700;">${item.quantity}</td>
-            <td class="text-right" style="font-weight:700;color:var(--primary);">Rp ${formatRupiah(afterDiscount)}</td>
+            <td class="text-right" style="font-weight:700;color:var(--primary);">Rp ${formatRupiah(rawSubtotal)}</td>
             <td><button type="button" class="cart-remove" data-index="${index}"><i class="fas fa-trash"></i></button></td>
         `;
         cartBody.appendChild(row);
@@ -192,7 +187,7 @@ function renderCart() {
             { name: `items[${index}][product_id]`, value: item.product_id },
             { name: `items[${index}][quantity]`, value: item.quantity },
             { name: `items[${index}][price_at_sale]`, value: item.price },
-            { name: `items[${index}][subtotal]`, value: Number(afterDiscount.toFixed(2)) },
+            { name: `items[${index}][subtotal]`, value: rawSubtotal },
         ];
 
         fields.forEach(f => {

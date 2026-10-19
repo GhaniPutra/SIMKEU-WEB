@@ -51,7 +51,6 @@ class DummySalesJanuaryToOctober2026Seeder extends Seeder
                     [
                         'store_id' => 5,
                         'user_id' => 11,
-                        'customer_id' => null,
                         'transaction_date' => $date,
                         'subtotal' => $subtotal,
                         'tax' => 0,

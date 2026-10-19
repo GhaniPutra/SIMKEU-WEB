@@ -85,7 +85,7 @@ Dashboard Penjualan Pegawai - SIMKEU
                         <tr>
                             <th class="column-number">#</th>
                             <th class="column-date">Tanggal</th>
-                            <th class="column-customer">Customer</th>
+                            <th class="column-customer">Pelanggan</th>
                             <th class="column-product">Produk</th>
                             <th class="column-quantity">Qty</th>
                             <th class="column-total">Total</th>
@@ -97,7 +97,7 @@ Dashboard Penjualan Pegawai - SIMKEU
                             <tr>
                                 <td>{{ $loop->iteration + ($sales->currentPage()-1)*$sales->perPage() }}</td>
                                 <td>{{ $sale->transaction_date?->format('d/m/Y H:i') ?? '—' }}</td>
-                                <td>{{ $sale->customer ? $sale->customer->name : 'N/A' }}</td>
+                                <td>Umum</td>
                                 <td>
                                     @if($sale->saleItems->count() > 0)
                                         {{ $sale->saleItems->first()->product->name }}

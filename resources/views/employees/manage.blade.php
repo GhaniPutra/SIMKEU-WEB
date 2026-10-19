@@ -165,7 +165,7 @@
                             <tbody>
                                 @foreach($recentSales as $sale)
                                     <tr>
-                                        <td><strong>{{ $sale->invoice_number }}</strong><span class="table-subtext">{{ $sale->customer->name ?? 'Umum' }}</span></td>
+                                        <td><strong>{{ $sale->invoice_number }}</strong><span class="table-subtext">Ritel / Umum</span></td>
                                         <td>{{ $sale->transaction_date?->format('d/m/Y H:i') ?? '—' }}</td>
                                         <td>{{ number_format((int) ($sale->sale_items_sum_quantity ?? 0)) }}</td>
                                         <td class="text-end">Rp {{ number_format((float) $sale->total, 0, ',', '.') }}</td>
@@ -419,7 +419,7 @@
                             @foreach($sales as $sale)
                                 <tr>
                                     <td><strong>{{ $sale->invoice_number }}</strong></td>
-                                    <td>{{ $sale->customer->name ?? 'Umum' }}</td>
+                                    <td>Ritel / Umum</td>
                                     <td>{{ $sale->transaction_date?->format('d/m/Y H:i') ?? '—' }}</td>
                                     <td>{{ ucfirst($sale->payment_method ?? '—') }}</td>
                                     <td>{{ number_format((int) ($sale->sale_items_sum_quantity ?? 0)) }}</td>
