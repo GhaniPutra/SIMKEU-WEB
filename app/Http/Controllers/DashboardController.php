@@ -136,26 +136,36 @@ class DashboardController extends Controller
             }
         } elseif ($period === 'today') {
             $trendLabels[] = $periodLabel;
-            $revenueTrendData[] = (float) $totalRevenueToday;
-            $expenseTrendData[] = (float) $totalExpenseToday;
+            $revenueTrendData[] = (float) PeriodFilter::apply(
+                Sale::query(),
+                'transaction_date',
+                $periodStart,
+                $periodEnd
+            )->sum('total');
+            $expenseTrendData[] = (float) Expense::query()
+                ->whereDate('expense_date', $now->toDateString())
+                ->sum('amount');
         } else {
-            $chartEnd = $periodEnd;
-            $revenueByDay = PeriodFilter::apply(Sale::query(), 'transaction_date', $periodStart, $periodEnd)
-                ->where('transaction_date', '<=', $now)
+            // Rentang grafik harian berakhir pada tanggal hari ini, bukan akhir
+            // minggu/bulan kalender, agar tanggal mendatang tidak ikut ditampilkan.
+            $chartStart = $periodStart->copy()->startOfDay();
+            $chartEnd = $periodEnd->copy()->min($now)->startOfDay();
+            $revenueByDay = PeriodFilter::apply(
+                Sale::query(),
+                'transaction_date',
+                $chartStart,
+                $chartEnd->copy()->endOfDay()
+            )
                 ->selectRaw('DATE(transaction_date) as day_key, SUM(total) as amount')
                 ->groupByRaw('DATE(transaction_date)')
                 ->pluck('amount', 'day_key');
-            $expenseByDay = PeriodFilter::apply(
-                Expense::query(),
-                'expense_date',
-                $periodStart?->toDateString(),
-                $periodEnd?->toDateString()
-            )
-                ->whereDate('expense_date', '<=', $now->toDateString())
+            $expenseByDay = Expense::query()
+                ->whereDate('expense_date', '>=', $chartStart->toDateString())
+                ->whereDate('expense_date', '<=', $chartEnd->toDateString())
                 ->selectRaw('DATE(expense_date) as day_key, SUM(amount) as amount')
                 ->groupByRaw('DATE(expense_date)')
                 ->pluck('amount', 'day_key');
-            for ($date = $periodStart->copy(); $date->lte($chartEnd); $date->addDay()) {
+            for ($date = $chartStart->copy(); $date->lte($chartEnd); $date->addDay()) {
                 $key = $date->toDateString();
                 $trendLabels[] = $period === 'week' ? $date->translatedFormat('D') : $date->format('d/m');
                 $revenueTrendData[] = (float) ($revenueByDay[$key] ?? 0);

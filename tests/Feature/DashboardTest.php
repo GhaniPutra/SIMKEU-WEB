@@ -4,13 +4,23 @@ namespace Tests\Feature;
 
 use App\Models\Expense;
 use App\Models\Sale;
+use App\Models\Store;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class DashboardTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function tearDown(): void
+    {
+        Carbon::setTestNow();
+
+        parent::tearDown();
+    }
 
     public function test_guests_are_redirected_to_the_login_page()
     {
@@ -116,9 +126,108 @@ class DashboardTest extends TestCase
             ->assertViewHas('totalRevenueMonth', 600);
     }
 
-    private function createSale(User $user, float $total, $date): Sale
+    public function test_today_chart_groups_income_and_expense_into_one_day_without_changing_kpis(): void
     {
-        return Sale::create([
+        $this->freezeDashboardDate();
+        $user = User::factory()->create();
+        $this->actingAs($user);
+        $this->createSale($user, 300, Carbon::parse('2026-10-14 09:00:00', 'Asia/Jakarta'));
+        $this->createExpense($user, 100, '2026-10-14');
+        $this->createSale($user, 900, Carbon::parse('2026-10-13 09:00:00', 'Asia/Jakarta'));
+
+        $response = $this->get(route('dashboard', ['period' => 'today']))->assertOk();
+
+        $this->assertSame(['Hari Ini'], $response->viewData('trendLabels'));
+        $this->assertSame([300.0], $response->viewData('revenueTrendData'));
+        $this->assertSame([100.0], $response->viewData('expenseTrendData'));
+        $this->assertSame(300, $response->viewData('totalRevenueToday'));
+        $this->assertSame(100, $response->viewData('totalExpenseToday'));
+        $this->assertSame(300, $response->viewData('totalRevenueMonth'));
+        $this->assertSame(100, $response->viewData('totalExpenseMonth'));
+    }
+
+    public function test_week_chart_shows_monday_through_today_and_keeps_empty_days_at_zero(): void
+    {
+        $this->freezeDashboardDate();
+        $user = User::factory()->create();
+        $this->actingAs($user);
+        $this->createSale($user, 100, Carbon::parse('2026-10-12 09:00:00', 'Asia/Jakarta'));
+        $this->createSale($user, 300, Carbon::parse('2026-10-14 09:00:00', 'Asia/Jakarta'));
+        $this->createExpense($user, 50, '2026-10-12');
+        $this->createExpense($user, 20, '2026-10-14');
+
+        $response = $this->get(route('dashboard', ['period' => 'week']))->assertOk();
+
+        $this->assertSame(['Mon', 'Tue', 'Wed'], $response->viewData('trendLabels'));
+        $this->assertSame([100.0, 0.0, 300.0], $response->viewData('revenueTrendData'));
+        $this->assertSame([50.0, 0.0, 20.0], $response->viewData('expenseTrendData'));
+        $this->assertSame(400, $response->viewData('totalRevenueMonth'));
+        $this->assertSame(70, $response->viewData('totalExpenseMonth'));
+        $this->assertSame(2, $response->viewData('transactionsPeriod'));
+    }
+
+    public function test_month_chart_shows_only_dates_from_first_to_today_and_keeps_kpis_unchanged(): void
+    {
+        $this->freezeDashboardDate();
+        $user = User::factory()->create();
+        $this->actingAs($user);
+        $this->createSale($user, 100, Carbon::parse('2026-10-01 09:00:00', 'Asia/Jakarta'));
+        $this->createSale($user, 300, Carbon::parse('2026-10-14 09:00:00', 'Asia/Jakarta'));
+        $this->createExpense($user, 20, '2026-10-01');
+        $this->createExpense($user, 30, '2026-10-14');
+
+        $response = $this->get(route('dashboard', ['period' => 'month']))->assertOk();
+        $expectedLabels = array_map(
+            fn (int $day): string => sprintf('%02d/10', $day),
+            range(1, 14)
+        );
+
+        $this->assertSame($expectedLabels, $response->viewData('trendLabels'));
+        $this->assertSame([100.0, ...array_fill(0, 12, 0.0), 300.0], $response->viewData('revenueTrendData'));
+        $this->assertSame([20.0, ...array_fill(0, 12, 0.0), 30.0], $response->viewData('expenseTrendData'));
+        $this->assertSame(400, $response->viewData('totalRevenueMonth'));
+        $this->assertSame(50, $response->viewData('totalExpenseMonth'));
+        $this->assertSame(2, $response->viewData('transactionsPeriod'));
+    }
+
+    public function test_all_period_chart_keeps_contiguous_historical_months_and_store_isolation(): void
+    {
+        $this->freezeDashboardDate();
+        $user = User::factory()->create();
+        $this->actingAs($user);
+        $this->createSale($user, 100, Carbon::parse('2026-01-10 09:00:00', 'Asia/Jakarta'));
+        $this->createSale($user, 300, Carbon::parse('2026-03-10 09:00:00', 'Asia/Jakarta'));
+        $this->createExpense($user, 20, '2026-01-10');
+        $this->createExpense($user, 30, '2026-03-10');
+
+        $otherStore = Store::create(['name' => 'Toko lain']);
+        $this->createSale(
+            $user,
+            5000,
+            Carbon::parse('2026-04-10 09:00:00', 'Asia/Jakarta'),
+            $otherStore->id
+        );
+        $this->createExpense($user, 6000, '2026-04-10', $otherStore->id);
+
+        $response = $this->get(route('dashboard', ['period' => 'all']))->assertOk();
+
+        $this->assertSame(['01/2026', '02/2026', '03/2026'], $response->viewData('trendLabels'));
+        $this->assertSame([100.0, 0.0, 300.0], $response->viewData('revenueTrendData'));
+        $this->assertSame([20.0, 0.0, 30.0], $response->viewData('expenseTrendData'));
+        $this->assertSame(3, $response->viewData('allPeriodMonthCount'));
+        $this->assertSame(400, $response->viewData('totalRevenueMonth'));
+        $this->assertSame(50, $response->viewData('totalExpenseMonth'));
+        $this->assertSame(2, $response->viewData('transactionsPeriod'));
+    }
+
+    private function freezeDashboardDate(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-10-14 12:30:00', 'Asia/Jakarta'));
+    }
+
+    private function createSale(User $user, float $total, $date, ?int $storeId = null): Sale
+    {
+        $sale = Sale::create([
             'user_id' => $user->id,
             'invoice_number' => 'INV-' . uniqid(),
             'transaction_date' => $date,
@@ -127,6 +236,27 @@ class DashboardTest extends TestCase
             'discount' => 0,
             'total' => $total,
             'payment_method' => 'tunai',
+        ]);
+
+        if ($storeId !== null && $storeId !== $user->store_id) {
+            $sale->store_id = $storeId;
+            $sale->save();
+        }
+
+        return $sale;
+    }
+
+    private function createExpense(User $user, float $amount, string $date, ?int $storeId = null): void
+    {
+        DB::table('expenses')->insert([
+            'user_id' => $user->id,
+            'store_id' => $storeId ?? $user->store_id,
+            'expense_date' => $date,
+            'amount' => $amount,
+            'category' => 'listrik',
+            'description' => 'Data uji grafik',
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
     }
 }

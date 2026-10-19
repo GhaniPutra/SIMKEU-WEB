@@ -60,14 +60,7 @@
     </section>
 
     <section class="fd-card" aria-label="Ringkasan transaksi">
-        <div class="fd-overview-grid">
-            <div class="fd-overview-item">
-                <div class="fd-overview-label">Pelanggan</div>
-                <div class="fd-overview-value">
-                    Ritel / Umum
-                    <small>Transaksi tanpa data pelanggan</small>
-                </div>
-            </div>
+        <div class="fd-overview-grid fd-overview-grid--two">
             <div class="fd-overview-item">
                 <div class="fd-overview-label">Kasir</div>
                 <div class="fd-overview-value">{{ $sale->user?->name ?? '—' }}</div>

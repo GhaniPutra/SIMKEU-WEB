@@ -668,7 +668,6 @@
                 <tr>
                     <th>No. Invoice</th>       {{-- Nomor unik transaksi --}}
                     <th>Tanggal</th>           {{-- Tanggal transaksi --}}
-                    <th>Pelanggan</th>         {{-- Nama pelanggan (atau ritel) --}}
                     <th>Kasir</th>             {{-- User yang memproses transaksi --}}
                     <th>Metode</th>            {{-- Metode pembayaran --}}
                     <th class="text-end">Subtotal</th>  {{-- Total harga item sebelum diskon --}}
@@ -694,9 +693,6 @@
                         <div style="font-weight:600;">{{ $sale->transaction_date->format('d M Y') }}</div>
                         <div style="font-size:.72rem;color:var(--text-muted);">{{ $sale->transaction_date->format('H:i') }}</div>
                     </td>
-
-                    {{-- Nama pelanggan; tampilkan "Ritel / Umum" jika tidak ada --}}
-                    <td>Ritel / Umum</td>
 
                     {{-- Nama kasir yang memproses --}}
                     <td>{{ $sale->user?->name ?? '—' }}</td>
@@ -754,7 +750,7 @@
                 @empty
                 {{-- Tampilan saat tidak ada data yang cocok --}}
                 <tr>
-                    <td colspan="10">
+                    <td colspan="9">
                         <div class="empty-state">
                             <i class="fas fa-inbox"></i>
                             <p>Tidak ada transaksi pemasukan ditemukan.</p>

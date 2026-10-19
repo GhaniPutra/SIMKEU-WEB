@@ -62,7 +62,7 @@ class SaleFinancialConsistencyTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.0.total_revenue', fn ($value) => (float) $value === 180.0);
 
-        $this->actingAs($user)
+        $incomeResponse = $this->actingAs($user)
             ->get(route('pemasukan.index', ['period' => 'month']))
             ->assertOk()
             ->assertViewHas('totalSubtotal', 200)
@@ -70,6 +70,16 @@ class SaleFinancialConsistencyTest extends TestCase
             ->assertViewHas('totalPajak', 18)
             ->assertViewHas('totalBersih', 193)
             ->assertViewHas('topProductValues', [180.0]);
+        $incomeResponse
+            ->assertDontSee('Pelanggan')
+            ->assertDontSee('Ritel / Umum')
+            ->assertSee($sale->invoice_number)
+            ->assertSee('Tanggal')
+            ->assertSee('Metode')
+            ->assertSee('Subtotal')
+            ->assertSee('Diskon')
+            ->assertSee('Pajak')
+            ->assertSee('Total');
     }
 
     public function test_income_period_and_store_filters_use_saved_legacy_amounts_without_repricing(): void
@@ -189,8 +199,16 @@ class SaleFinancialConsistencyTest extends TestCase
 
         $this->get(route('pemasukan.show', ['sale' => $sale->id]))
             ->assertOk()
+            ->assertDontSee('Pelanggan')
+            ->assertDontSee('Ritel / Umum')
+            ->assertSee($sale->invoice_number)
+            ->assertSee('Kasir')
+            ->assertSee('Metode pembayaran')
+            ->assertSee('Produk dalam transaksi')
             ->assertSee('Subtotal sebelum diskon')
             ->assertSee('Diskon produk')
+            ->assertSee('Pajak item')
+            ->assertSee('Total dibayar')
             ->assertDontSee('Rincian item terbatas')
             ->assertSee('tambahan Rp 5');
     }

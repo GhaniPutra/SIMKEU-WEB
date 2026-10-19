@@ -134,7 +134,7 @@ class EmployeeManageTest extends TestCase
             $this->createSale($employee, 10 + $saleIndex, now()->subDays(1));
         }
 
-        $this->get(route('employees.manage', [
+        $response = $this->get(route('employees.manage', [
             'employee' => $employee,
             'tab' => 'sales',
             'period' => 'month',
@@ -143,6 +143,15 @@ class EmployeeManageTest extends TestCase
             ->assertOk()
             ->assertViewHas('sales', fn ($sales) => $sales->total() === 16 && $sales->currentPage() === 2 && $sales->getPageName() === 'sales_page')
             ->assertViewHas('products', fn ($products) => $products->getPageName() === 'products_page');
+
+        $response
+            ->assertDontSee('Pelanggan')
+            ->assertDontSee('Ritel / Umum')
+            ->assertSee('Invoice')
+            ->assertSee('Tanggal transaksi')
+            ->assertSee('Metode')
+            ->assertSee('Unit')
+            ->assertSee('Total');
     }
 
     public function test_global_all_period_includes_employee_history_without_mixing_other_employees(): void

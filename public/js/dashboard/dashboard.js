@@ -56,17 +56,24 @@ function getFinancialBarCategoryPercentage(labelCount) {
     return 0.60;
 }
 
-function isFinancialZoomGesture(event) {
-    if (event.ctrlKey) return true;
+function getFinancialZoomDelta(event) {
+    const deltaY = Number(event.deltaY) || 0;
+    if (deltaY === 0) return null;
 
-    // deltaMode describes units, not hardware. Line units are a useful
-    // best-effort signal for discrete mouse wheels (including Firefox); page
-    // units and unmodified pixel events are ambiguous, so leave them to the
-    // browser unless it also exposes a legacy wheel notch.
-    if (event.deltaMode === 1) return true;
+    // Ctrl+wheel is the browser signal most consistently emitted for a
+    // trackpad pinch. Keep its pixel delta at high resolution for accumulation.
+    if (event.ctrlKey) return deltaY * (event.deltaMode === 1 ? 40 : 1);
 
     const legacyWheelDelta = Number(event.wheelDeltaY || event.wheelDelta || 0);
-    return legacyWheelDelta !== 0 && Math.abs(legacyWheelDelta) % 120 === 0;
+    const hasDiscreteLegacyNotch = legacyWheelDelta !== 0
+        && Math.abs(legacyWheelDelta) % 120 === 0;
+    // Firefox commonly reports a physical wheel as integral line units and
+    // does not expose wheelDelta. Pixel-mode scrolls stay with the page unless
+    // a browser also reports a legacy wheel notch.
+    const hasFirefoxLineWheel = event.deltaMode === 1 && Number.isInteger(deltaY);
+    if (!hasDiscreteLegacyNotch && !hasFirefoxLineWheel) return null;
+
+    return deltaY * (event.deltaMode === 1 ? 40 : 1);
 }
 
 function attachFinancialBarZoom(chart, canvas) {
@@ -74,6 +81,7 @@ function attachFinancialBarZoom(chart, canvas) {
     if (lastIndex < 1) return;
 
     let visibleRange = { min: 0, max: lastIndex };
+    let cumulativeZoomLog = 0;
     let previousTouchDistance = null;
     let dragState = null;
     let pendingTrackpadPan = 0;
@@ -151,9 +159,14 @@ function attachFinancialBarZoom(chart, canvas) {
         }
     };
 
-    const zoom = (factor, anchor) => {
+    const zoomByLogDelta = (logDelta, anchor) => {
+        if (!Number.isFinite(logDelta) || logDelta === 0) return false;
+
+        const totalCount = lastIndex + 1;
+        const minimumZoomLog = Math.log(1 / totalCount);
+        cumulativeZoomLog = clamp(cumulativeZoomLog + clamp(logDelta, -0.24, 0.24), minimumZoomLog, 0);
         const currentCount = visibleRange.max - visibleRange.min + 1;
-        const nextCount = Math.round(clamp(currentCount * factor, 1, lastIndex + 1));
+        const nextCount = clamp(Math.round(totalCount * Math.exp(cumulativeZoomLog)), 1, totalCount);
         if (nextCount === currentCount) return false;
 
         const anchorIndex = clamp(Math.round(anchor), visibleRange.min, visibleRange.max);
@@ -179,6 +192,7 @@ function attachFinancialBarZoom(chart, canvas) {
 
     const reset = () => {
         visibleRange = { min: 0, max: lastIndex };
+        cumulativeZoomLog = 0;
         chart.options.scales.x.min = 0;
         chart.options.scales.x.max = lastIndex;
         delete chart.options.scales.y.max;
@@ -200,19 +214,13 @@ function attachFinancialBarZoom(chart, canvas) {
         }
 
         pendingTrackpadPan = 0;
-        if (!isFinancialZoomGesture(event)) return;
-        if (event.deltaY === 0) {
-            if (event.ctrlKey) event.preventDefault();
-            return;
-        }
+        const zoomDelta = getFinancialZoomDelta(event);
+        if (zoomDelta === null) return;
 
-        // Unmodified pixel/page scroll events are left to the page. Ctrl+wheel
-        // identifies pinch zoom; line units and 120-unit notches are best-effort
-        // physical mouse-wheel signals where browsers expose those signals.
-        const unitScale = event.deltaMode === 1 ? 40 : 1;
-        const delta = clamp(event.deltaY * unitScale, -240, 240);
-        const changed = zoom(Math.exp(delta * 0.0015), getAnchor(event.clientX));
-        if (changed || event.ctrlKey) event.preventDefault();
+        // A recognized zoom gesture belongs to the chart even when rounding
+        // has not yet crossed a whole-category boundary or a limit is reached.
+        zoomByLogDelta(zoomDelta * 0.0015, getAnchor(event.clientX));
+        event.preventDefault();
     }, { passive: false });
 
     canvas.addEventListener('pointerdown', (event) => {
@@ -274,7 +282,7 @@ function attachFinancialBarZoom(chart, canvas) {
         const [first, second] = event.touches;
         const distance = Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
         const midpointX = (first.clientX + second.clientX) / 2;
-        zoom(previousTouchDistance / distance, getAnchor(midpointX));
+        zoomByLogDelta(Math.log(previousTouchDistance / distance), getAnchor(midpointX));
         previousTouchDistance = distance;
         event.preventDefault();
     }, { passive: false });
@@ -546,6 +554,8 @@ function initFinancialComparisonChart() {
             },
             scales: {
                 x: {
+                    min: 0,
+                    max: trendLabels.length - 1,
                     grid: { display: false },
                     ticks: { font: { family: 'Poppins', size: 10 }, maxTicksLimit: 12, autoSkip: true }
                 },
