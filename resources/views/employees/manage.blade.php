@@ -199,9 +199,12 @@
                             <p>Periksa jumlah yang dilaporkan sebelum memilih tindakan.</p>
                         </div>
                     </div>
-                    <span class="stock-result-count"><i class="far fa-file-alt" aria-hidden="true"></i> {{ $allocationsNeedingReview->count() }} laporan</span>
+                    <button type="button" class="allocation-review-toggle" aria-expanded="true" aria-controls="allocation-review-list-{{ $employee->id }}" aria-label="Sembunyikan daftar laporan">
+                        <span class="stock-result-count"><i class="far fa-file-alt" aria-hidden="true"></i> {{ $allocationsNeedingReview->count() }} laporan</span>
+                        <i class="fas fa-chevron-up allocation-review-chevron" aria-hidden="true"></i>
+                    </button>
                 </div>
-                <div class="employee-card-body">
+                <div class="employee-card-body" id="allocation-review-list-{{ $employee->id }}">
                     @foreach($allocationsNeedingReview as $allocation)
                         @php
                             $requested = (int) $allocation->requested_quantity;

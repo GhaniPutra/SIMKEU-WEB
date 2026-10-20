@@ -801,7 +801,24 @@
     line-height: 1.4;
 }
 
-.allocation-review-header .stock-result-count {
+.allocation-review-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+}
+
+.allocation-review-toggle:focus-visible {
+    outline: 2px solid var(--blue-600);
+    outline-offset: 3px;
+    border-radius: 999px;
+}
+
+.allocation-review-toggle .stock-result-count {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -815,6 +832,16 @@
     font-weight: 700;
 }
 
+.allocation-review-chevron {
+    color: #526b8c;
+    font-size: .68rem;
+    transition: transform .18s ease;
+}
+
+.allocation-review-toggle[aria-expanded="false"] .allocation-review-chevron {
+    transform: rotate(180deg);
+}
+
 .allocation-review-card {
     display: flex;
     flex-direction: column;
@@ -823,6 +850,10 @@
 
 .allocation-review-card > .allocation-review-header {
     flex: 0 0 auto;
+}
+
+.allocation-review-card.is-collapsed > .employee-card-body {
+    display: none;
 }
 
 .allocation-review-card .employee-card-body {
@@ -1530,7 +1561,7 @@
         font-size: .8rem;
     }
 
-    .allocation-review-header .stock-result-count {
+    .allocation-review-toggle .stock-result-count {
         gap: 5px;
         padding: 5px 8px;
         font-size: .68rem;

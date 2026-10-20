@@ -216,9 +216,29 @@ function limitAllocationReviewItems() {
     });
 }
 
+function bindAllocationReviewToggles() {
+    document.querySelectorAll('.allocation-review-toggle').forEach((button) => {
+        button.addEventListener('click', () => {
+            const card = button.closest('.allocation-review-card');
+            if (!card) return;
+
+            const expanded = button.getAttribute('aria-expanded') === 'true';
+            const nextExpanded = !expanded;
+            button.setAttribute('aria-expanded', String(nextExpanded));
+            button.setAttribute('aria-label', `${nextExpanded ? 'Sembunyikan' : 'Tampilkan'} daftar laporan`);
+            card.classList.toggle('is-collapsed', !nextExpanded);
+
+            if (nextExpanded) {
+                window.requestAnimationFrame(limitAllocationReviewItems);
+            }
+        });
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     bindStockTransferButtons();
     bindAllocationReturnSteppers();
+    bindAllocationReviewToggles();
     limitAllocationReviewItems();
 
     let allocationReviewResizeFrame;
