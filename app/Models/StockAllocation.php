@@ -44,26 +44,6 @@ class StockAllocation extends Model
         'returned_quantity' => 'integer',
     ];
 
-    public function isPending(): bool
-    {
-        return $this->status === self::STATUS_PENDING;
-    }
-
-    public function isAccepted(): bool
-    {
-        return $this->status === self::STATUS_ACCEPTED;
-    }
-
-    public function isDeclined(): bool
-    {
-        return $this->status === self::STATUS_DECLINED;
-    }
-
-    public function isNeedsReview(): bool
-    {
-        return $this->status === self::STATUS_NEEDS_REVIEW;
-    }
-
     public function owner()
     {
         return $this->belongsTo(User::class, 'owner_user_id');

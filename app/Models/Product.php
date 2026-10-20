@@ -72,28 +72,6 @@ class Product extends Model
     }
 
     /**
-     * Atribut virtual: apakah stok produk tergolong rendah.
-     * Stok dianggap rendah jika kurang dari atau sama dengan 10 unit.
-     *
-     * @return bool
-     */
-    public function getLowStockAttribute(): bool
-    {
-        return $this->stock <= self::LOW_STOCK_THRESHOLD;
-    }
-
-    /**
-     * Atribut virtual: nilai total inventori produk ini.
-     * Dihitung dari harga beli × jumlah stok.
-     *
-     * @return float
-     */
-    public function getInventoryValueAttribute(): float
-    {
-        return (float) $this->buy_price * $this->stock;
-    }
-
-    /**
      * Relasi belongsToMany ke model User.
      * Merepresentasikan distribusi stok ke kasir.
      *

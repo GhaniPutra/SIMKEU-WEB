@@ -135,16 +135,10 @@ class DashboardController extends Controller
                 }
             }
         } elseif ($period === 'today') {
+            // Gunakan hasil ringkasan hari ini agar grafik tidak mengulang dua query agregasi yang sama.
             $trendLabels[] = $periodLabel;
-            $revenueTrendData[] = (float) PeriodFilter::apply(
-                Sale::query(),
-                'transaction_date',
-                $periodStart,
-                $periodEnd
-            )->sum('total');
-            $expenseTrendData[] = (float) Expense::query()
-                ->whereDate('expense_date', $now->toDateString())
-                ->sum('amount');
+            $revenueTrendData[] = (float) $totalRevenueToday;
+            $expenseTrendData[] = (float) $totalExpenseToday;
         } else {
             // Rentang grafik harian berakhir pada tanggal hari ini, bukan akhir
             // minggu/bulan kalender, agar tanggal mendatang tidak ikut ditampilkan.

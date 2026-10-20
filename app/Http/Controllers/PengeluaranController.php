@@ -76,12 +76,16 @@ class PengeluaranController extends Controller
         // ============================================================
         // STATISTIK KESELURUHAN PERIODE TERPILIH
         // ============================================================
-        $totalBulanIni = $periodExpenses()->sum('amount');
-        $jumlahEntri = $periodExpenses()->count();
+        // Ambil total, jumlah, dan nilai maksimum dalam satu query agregat untuk periode yang sama.
+        $periodStatistics = $periodExpenses()
+            ->selectRaw('COALESCE(SUM(amount), 0) as total, COUNT(*) as count, MAX(amount) as largest')
+            ->first();
+        $totalBulanIni = $periodStatistics->total;
+        $jumlahEntri = (int) $periodStatistics->count;
 
         $rataRata = $jumlahEntri > 0 ? $totalBulanIni / $jumlahEntri : 0;
 
-        $terbesarAmount = $periodExpenses()->max('amount') ?? 0;
+        $terbesarAmount = $periodStatistics->largest ?? 0;
 
         // ============================================================
         // PERBANDINGAN VS PERIODE SEBELUMNYA
@@ -319,12 +323,4 @@ class PengeluaranController extends Controller
             ->with('success', 'Pengeluaran baru berhasil disimpan.');
     }
 
-    // ============================================================
-    // Helper publik — Kembalikan mapping label kategori
-    // Bisa dipanggil dari manapun jika diperlukan
-    // ============================================================
-    public static function getKategoriLabel(): array
-    {
-        return self::KATEGORI_LABEL;
-    }
 }

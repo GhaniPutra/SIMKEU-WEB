@@ -59,12 +59,18 @@ class PemasukanController extends Controller
         // STATISTIK PERIODE TERPILIH
         // ============================================================
         $periodSales = fn () => PeriodFilter::apply(Sale::query(), 'transaction_date', $periodStart, $periodEnd);
-        $totalSubtotal = $periodSales()->sum('subtotal');
+        // Gabungkan agregasi nilai dan jumlah transaksi agar satu periode hanya dibaca sekali.
+        $periodStatistics = $periodSales()
+            ->selectRaw('SUM(subtotal) as subtotal, SUM(discount) as discount, SUM(tax) as tax, SUM(total) as total, COUNT(*) as count')
+            ->first();
+        $totalSubtotal = $periodStatistics->subtotal ?? 0;
+        $totalDiskon = $periodStatistics->discount ?? 0;
+        $totalPajak = $periodStatistics->tax ?? 0;
+        $totalBersih = $periodStatistics->total ?? 0;
+        $jumlahTransaksi = (int) $periodStatistics->count;
 
         // Header sale menyimpan nilai yang benar-benar diterapkan saat transaksi.
         // Data historis yang kosong tidak diestimasi dari tarif produk terkini.
-        $totalDiskon = $periodSales()->sum('discount');
-        $totalPajak = $periodSales()->sum('tax');
         $hasIncompleteItemFinancials = $periodSales()
             ->where(function ($query) {
                 $query->whereDoesntHave('saleItems')
@@ -74,8 +80,6 @@ class PemasukanController extends Controller
         $hasUnreconciledFinancials = $periodSales()
             ->whereRaw('ABS(subtotal - discount + tax - total) > 0.005')
             ->exists();
-        $totalBersih = $periodSales()->sum('total');
-        $jumlahTransaksi = $periodSales()->count();
         $rataRataTransaksi = $jumlahTransaksi > 0 ? $totalBersih / $jumlahTransaksi : 0;
 
         // ============================================================
