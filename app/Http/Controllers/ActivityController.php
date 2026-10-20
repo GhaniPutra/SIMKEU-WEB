@@ -77,7 +77,7 @@ class ActivityController extends Controller
                     . "CASE allocations.status "
                     . "WHEN 'pending' THEN 'Menunggu konfirmasi pegawai' "
                     . "WHEN 'accepted' THEN 'Alokasi dikonfirmasi pegawai' "
-                    . "WHEN 'declined' THEN 'Alokasi ditolak pegawai' "
+                    . "WHEN 'declined' THEN 'Selisih stok dilaporkan pegawai' "
                     . "WHEN 'needs_review' THEN 'Perlu tindak lanjut' "
                     . "WHEN 'cancelled' THEN 'Alokasi dibatalkan' ELSE 'Status alokasi diperbarui' END as description, "
                     . 'allocations.requested_quantity as amount, employees.name as actor, allocations.employee_user_id as related_user_id'

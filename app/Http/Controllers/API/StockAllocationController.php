@@ -117,7 +117,7 @@ class StockAllocationController extends Controller
             'success' => true,
             'message' => $validated['decision'] === 'accept'
                 ? 'Alokasi stok diterima dan stok aktif pegawai diperbarui.'
-                : 'Selisih dicatat dan alokasi menunggu tindak lanjut pemilik.',
+                : 'Selisih dicatat. Stok menunggu keputusan pemilik.',
             'data' => $allocation->load(['product', 'employee', 'owner']),
         ], 200);
     }
@@ -158,8 +158,7 @@ class StockAllocationController extends Controller
         }
 
         $validated = $request->validate([
-            'action' => ['required', 'in:accept_actual,resolve_difference,resend,cancel'],
-            'confirmed_quantity' => ['required_if:action,resolve_difference', 'integer', 'min:0'],
+            'action' => ['required', 'in:accept_actual,resend,cancel'],
             'returned_quantity' => ['required_if:action,cancel', 'integer', 'min:0'],
         ]);
 
@@ -168,10 +167,9 @@ class StockAllocationController extends Controller
         return response()->json([
             'success' => true,
             'message' => match ($validated['action']) {
-                'accept_actual' => 'Jumlah aktual diperbarui; alokasi menunggu konfirmasi ulang karyawan.',
-                'resolve_difference' => 'Selisih dicatat; alokasi menunggu konfirmasi ulang karyawan.',
-                'resend' => 'Alokasi pengiriman ulang dibuat; stok menunggu konfirmasi karyawan.',
-                'cancel' => 'Alokasi dibatalkan dan hanya jumlah yang dikembalikan ditambahkan ke stok pemilik.',
+                'accept_actual' => 'Jumlah yang diterima disetujui; pegawai diminta mengonfirmasi stoknya.',
+                'resend' => 'Alokasi kekurangan dibuat; pegawai diminta mengonfirmasi stok yang diterima.',
+                'cancel' => 'Alokasi dibatalkan dan stok yang kembali dicatat ke stok pemilik.',
             },
             'data' => [
                 'allocation' => $result['allocation']->load(['product', 'employee', 'owner', 'reviewer', 'resolver', 'revisedFrom']),

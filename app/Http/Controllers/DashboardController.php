@@ -318,15 +318,16 @@ class DashboardController extends Controller
                     'product' => $allocation->product?->name ?? 'Produk dihapus',
                     'unit' => $allocation->product?->unit ?? 'unit',
                     'quantity' => (int) $allocation->requested_quantity,
+                    'actualQuantity' => $allocation->actual_received_quantity === null ? null : (int) $allocation->actual_received_quantity,
+                    'reason' => $allocation->decline_reason,
                     'employee' => $allocation->employee?->name ?? 'Pegawai tidak tersedia',
                     'status' => $allocation->status,
                     'statusLabel' => match ($allocation->status) {
-                        StockAllocation::STATUS_NEEDS_REVIEW => 'Perlu ditinjau',
-                        StockAllocation::STATUS_DECLINED => 'Ditolak',
+                        StockAllocation::STATUS_NEEDS_REVIEW, StockAllocation::STATUS_DECLINED => 'Perlu ditindaklanjuti',
                         default => 'Menunggu konfirmasi',
                     },
                     'employeeUrl' => $canViewEmployeeDetails && $allocation->employee
-                        ? route('employees.manage', ['employee' => $allocation->employee, 'period' => $period])
+                        ? route('employees.manage', ['employee' => $allocation->employee, 'period' => $period, 'tab' => 'stock'])
                         : null,
                 ]);
         }

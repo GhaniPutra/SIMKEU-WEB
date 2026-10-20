@@ -759,6 +759,353 @@
     white-space: nowrap;
 }
 
+.allocation-review-header {
+    min-height: 58px;
+    align-items: center;
+    padding: 7px 14px;
+    border-bottom: 1px solid #dce9fb;
+    background: linear-gradient(110deg, #f8fbff 0%, #edf5ff 100%);
+}
+
+.allocation-review-header h2 {
+    margin: 0;
+    color: #162d55;
+    font-size: .9rem;
+    font-weight: 750;
+}
+
+.allocation-review-heading {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+}
+
+.allocation-review-icon {
+    display: grid;
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+    place-items: center;
+    border-radius: 7px;
+    background: linear-gradient(145deg, #76b5ff, #1767e8);
+    box-shadow: 0 8px 18px #1767e833;
+    color: #fff;
+    font-size: .8rem;
+}
+
+.allocation-review-heading p {
+    margin: 2px 0 0;
+    color: #607695;
+    font-size: .68rem;
+    line-height: 1.4;
+}
+
+.allocation-review-header .stock-result-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border-radius: 999px;
+    border: 1px solid #d7e6fa;
+    background: #ffffffaa;
+    box-shadow: 0 4px 12px #214d8210;
+    color: #526b8c;
+    font-size: .68rem;
+    font-weight: 700;
+}
+
+.allocation-review-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.allocation-review-card > .allocation-review-header {
+    flex: 0 0 auto;
+}
+
+.allocation-review-card .employee-card-body {
+    min-height: 100px;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    scrollbar-color: #b9cce6 transparent;
+    scrollbar-width: thin;
+    padding: 0 16px;
+}
+
+.allocation-review-card .employee-card-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.allocation-review-card .employee-card-body::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: #b9cce6;
+    background-clip: content-box;
+}
+
+.allocation-review-item {
+    display: grid;
+    grid-template-columns: minmax(250px, .95fr) minmax(260px, 1fr) minmax(440px, 1.38fr);
+    align-items: center;
+    padding: 4px 0;
+    border-bottom: 1px solid #e5edf7;
+}
+
+.allocation-review-item:last-child {
+    border-bottom: 0;
+}
+
+.allocation-review-product {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    min-height: 44px;
+    padding: 0 10px 0 8px;
+    border-right: 1px solid #e3ebf6;
+}
+
+.allocation-product-thumb {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    overflow: hidden;
+    place-items: center;
+    border: 1px solid #e1e8f0;
+    border-radius: 8px;
+    background: linear-gradient(145deg, #f4f7fb, #e5edf7);
+    color: #617b9c;
+    font-size: .8rem;
+}
+
+.allocation-product-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.allocation-product-copy {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
+.allocation-review-product strong {
+    overflow-wrap: anywhere;
+    color: #142d55;
+    font-size: .76rem;
+    font-weight: 750;
+    line-height: 1.35;
+}
+
+.allocation-category-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 5px;
+    border-radius: 999px;
+    background: #eaf3ff;
+    color: #286dc2;
+    font-size: .58rem;
+    font-weight: 650;
+}
+
+.allocation-review-product .allocation-review-reason {
+    overflow-wrap: anywhere;
+    color: #6b7d98;
+    font-size: .62rem;
+    line-height: 1.25;
+}
+
+.allocation-review-counts {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(7px, .7vw, 12px);
+    min-height: 44px;
+    padding: 0 8px;
+    border-right: 1px solid #e3ebf6;
+}
+
+.allocation-review-count {
+    display: flex;
+    min-width: 44px;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.allocation-review-count span {
+    color: #667c9b;
+    font-size: .62rem;
+    font-weight: 600;
+    line-height: 1.25;
+    white-space: nowrap;
+}
+
+.allocation-review-count strong {
+    color: #122d58;
+    font-size: .95rem;
+    font-weight: 750;
+    line-height: 1.05;
+}
+
+.allocation-review-count small {
+    color: #7184a0;
+    font-size: .6rem;
+}
+
+.allocation-review-arrow {
+    display: grid;
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+    place-items: center;
+    border-radius: 50%;
+    background: #edf5ff;
+    color: #347be3;
+    font-size: .64rem;
+}
+
+.allocation-review-difference {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    min-height: 24px;
+    padding: 2px 5px;
+    border-radius: 999px;
+    background: #fff2f2;
+    color: #df394a;
+    font-size: .64rem;
+    font-weight: 750;
+}
+
+.allocation-review-difference.is-extra {
+    background: #eff6ff;
+    color: #2871d1;
+}
+
+.allocation-review-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 0 8px 0 10px;
+}
+
+.allocation-review-action-form {
+    margin: 0;
+}
+
+.allocation-review-actions .btn-stock,
+.allocation-review-actions .btn-delete,
+.allocation-review-actions .btn-edit {
+    min-height: 30px;
+    padding: 4px 7px;
+    border-radius: 5px;
+    font-size: .66rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.allocation-review-actions .btn-stock {
+    border: 1px solid #69d48d;
+    background: #eaf9ef;
+    color: #16843b;
+}
+
+.allocation-review-actions .btn-delete {
+    border: 1px solid #ffb8bd;
+    background: #fff0f1;
+    color: #d92f3e;
+}
+
+.allocation-review-actions .btn-edit {
+    border: 1px solid #b6d3fb;
+    background: #f0f6ff;
+    color: #286dc2;
+}
+
+.allocation-return-field {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    margin: 0;
+}
+
+.allocation-return-field label {
+    position: absolute;
+    top: -12px;
+    left: 0;
+    color: #5f7594;
+    font-size: .6rem;
+    font-weight: 650;
+    white-space: nowrap;
+}
+
+.allocation-return-stepper {
+    display: inline-flex;
+    height: 30px;
+    overflow: hidden;
+    align-items: stretch;
+    border: 1px solid #dce7f5;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 2px 6px #28496c0c;
+}
+
+.allocation-return-stepper button {
+    width: 26px;
+    border: 0;
+    background: #f8fbff;
+    color: #8295b0;
+    cursor: pointer;
+    font-size: .78rem;
+    font-weight: 650;
+}
+
+.allocation-return-stepper button:hover {
+    background: #edf5ff;
+    color: #286dc2;
+}
+
+.allocation-return-stepper input {
+    width: 38px;
+    min-height: 28px;
+    padding: 0 4px;
+    border: 0;
+    border-right: 1px solid #e8eef7;
+    border-left: 1px solid #e8eef7;
+    border-radius: 0;
+    color: #1d365b;
+    font-size: .7rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.allocation-return-stepper input::-webkit-inner-spin-button,
+.allocation-return-stepper input::-webkit-outer-spin-button {
+    display: none;
+    margin: 0;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.allocation-return-stepper input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
 .stock-toolbar {
     display: flex;
     align-items: center;
@@ -903,6 +1250,41 @@
     width: 100%;
 }
 
+@media (min-width: 1101px) and (max-width: 1300px) {
+    .allocation-review-card .employee-card-body {
+        padding-right: 18px;
+        padding-left: 18px;
+    }
+
+    .allocation-review-item {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+        gap: 0;
+    }
+
+    .allocation-review-product {
+        grid-column: 1 / -1;
+        min-height: 0;
+        margin-bottom: 6px;
+        padding: 0 0 18px;
+        border-right: 0;
+        border-bottom: 1px solid #e8eef7;
+    }
+
+    .allocation-review-counts {
+        grid-column: 1;
+        min-height: 84px;
+        justify-content: flex-start;
+        padding: 12px 18px 12px 0;
+    }
+
+    .allocation-review-actions {
+        grid-column: 2;
+        justify-content: flex-end;
+        gap: 10px;
+        padding: 12px 0 12px 18px;
+    }
+}
+
 @media (max-width: 1100px) {
     .employee-kpis {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -920,6 +1302,39 @@
     .employee-content-grid {
         grid-template-columns: minmax(0, 1fr) minmax(260px, .85fr);
     }
+
+    .allocation-review-item {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+        gap: 0;
+    }
+
+    .allocation-review-card .employee-card-body {
+        padding-right: 18px;
+        padding-left: 18px;
+    }
+
+    .allocation-review-product {
+        grid-column: 1 / -1;
+        min-height: 0;
+        margin-bottom: 6px;
+        padding: 0 0 18px;
+        border-right: 0;
+        border-bottom: 1px solid #e8eef7;
+    }
+
+    .allocation-review-counts {
+        grid-column: 1;
+        min-height: 84px;
+        justify-content: flex-start;
+        padding: 12px 18px 12px 0;
+    }
+
+    .allocation-review-actions {
+        grid-column: 2;
+        justify-content: flex-end;
+        gap: 10px;
+        padding: 12px 0 12px 18px;
+    }
 }
 
 @media (max-width: 760px) {
@@ -929,6 +1344,35 @@
 
     .employee-card-header {
         align-items: flex-start;
+    }
+
+    .allocation-review-card .employee-card-body {
+        padding: 0 10px;
+    }
+
+    .allocation-review-item {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 6px;
+    }
+
+    .allocation-review-product {
+        grid-column: 1;
+        margin: 0;
+        padding: 0 0 10px;
+    }
+
+    .allocation-review-counts {
+        grid-column: 1;
+        min-height: 0;
+        padding: 5px 0 8px;
+        border-right: 0;
+    }
+
+    .allocation-review-actions {
+        grid-column: 1;
+        justify-content: flex-start;
+        padding: 7px 0 0;
+        border-top: 1px solid #e8eef7;
     }
 
     .stock-toolbar {
@@ -1050,8 +1494,156 @@
         font-size: .78rem;
     }
 
+    .allocation-review-header h2 {
+        font-size: .86rem;
+    }
+
     .employee-card-header p {
         font-size: .66rem;
+    }
+
+    .allocation-review-header {
+        min-height: 0;
+        padding: 8px 12px;
+        flex-wrap: wrap;
+        row-gap: 6px;
+    }
+
+    .allocation-review-heading {
+        gap: 8px;
+    }
+
+    .allocation-review-header .allocation-review-heading h2 {
+        font-size: .86rem;
+    }
+
+    .allocation-review-header .allocation-review-heading p {
+        margin-top: 2px;
+        font-size: .68rem;
+    }
+
+    .allocation-review-icon {
+        width: 28px;
+        height: 28px;
+        flex-basis: 28px;
+        border-radius: 7px;
+        font-size: .8rem;
+    }
+
+    .allocation-review-header .stock-result-count {
+        gap: 5px;
+        padding: 5px 8px;
+        font-size: .68rem;
+    }
+
+    .allocation-review-item {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .allocation-review-counts,
+    .allocation-review-actions {
+        grid-column: 1;
+    }
+
+    .allocation-review-counts {
+        justify-content: flex-start;
+        gap: 8px;
+    }
+
+    .allocation-review-product {
+        gap: 8px;
+    }
+
+    .allocation-product-thumb {
+        width: 36px;
+        height: 36px;
+        flex-basis: 36px;
+        border-radius: 8px;
+        font-size: .8rem;
+    }
+
+    .allocation-review-product strong {
+        font-size: .76rem;
+    }
+
+    .allocation-review-product .allocation-review-reason {
+        font-size: .62rem;
+    }
+
+    .allocation-review-count {
+        min-width: 48px;
+    }
+
+    .allocation-review-count span {
+        font-size: .65rem;
+    }
+
+    .allocation-review-count strong {
+        font-size: .95rem;
+    }
+
+    .allocation-review-count small {
+        font-size: .6rem;
+    }
+
+    .allocation-review-arrow {
+        width: 22px;
+        height: 22px;
+        flex-basis: 22px;
+        font-size: .64rem;
+    }
+
+    .allocation-review-difference {
+        min-width: 24px;
+        min-height: 24px;
+        font-size: .64rem;
+    }
+
+    .allocation-review-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .allocation-return-field {
+        grid-column: 1 / -1;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .allocation-return-field label {
+        position: static;
+    }
+
+    .allocation-return-stepper {
+        height: 30px;
+    }
+
+    .allocation-return-stepper button {
+        width: 26px;
+    }
+
+    .allocation-return-stepper input {
+        width: 38px;
+        min-height: 28px;
+    }
+
+    .allocation-review-actions .btn-stock,
+    .allocation-review-actions .btn-delete,
+    .allocation-review-actions .btn-edit {
+        width: 100%;
+        min-height: 32px;
+        padding: 4px 7px;
+        font-size: .7rem;
+    }
+
+    .allocation-review-actions .allocation-review-action-form {
+        min-width: 0;
+    }
+
+    .allocation-review-actions .allocation-review-action-form button {
+        white-space: normal;
     }
 
     .employee-card-body {

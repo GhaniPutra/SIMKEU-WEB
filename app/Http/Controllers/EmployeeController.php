@@ -292,6 +292,14 @@ class EmployeeController extends Controller
             ->map(static fn ($productId) => (int) $productId)
             ->all();
 
+        $allocationsNeedingReview = StockAllocation::query()
+            ->with('product.category')
+            ->where('owner_user_id', $request->user()->id)
+            ->where('employee_user_id', $employee->id)
+            ->whereIn('status', [StockAllocation::STATUS_NEEDS_REVIEW, StockAllocation::STATUS_DECLINED])
+            ->orderByDesc('reviewed_at')
+            ->get();
+
         $sales = (clone $periodSales)
             ->withSum('saleItems', 'quantity')
             ->orderByDesc('transaction_date')
@@ -316,6 +324,7 @@ class EmployeeController extends Controller
             'employee',
             'products',
             'pendingProductIds',
+            'allocationsNeedingReview',
             'analyticsPeriod',
             'periodLabel',
             'periodStart',

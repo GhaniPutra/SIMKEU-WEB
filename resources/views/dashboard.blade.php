@@ -246,6 +246,9 @@
                                         <div class="dashboard-allocation-item-main">
                                             <strong>{{ $allocation['product'] }}</strong>
                                             <span>{{ number_format($allocation['quantity']) }} {{ $allocation['unit'] }} ·
+                                                @if($allocation['actualQuantity'] !== null)
+                                                    diterima {{ number_format($allocation['actualQuantity']) }} {{ $allocation['unit'] }} ·
+                                                @endif
                                                 @if($allocation['employeeUrl'])
                                                     <a href="{{ $allocation['employeeUrl'] }}">{{ $allocation['employee'] }}</a>
                                                 @else

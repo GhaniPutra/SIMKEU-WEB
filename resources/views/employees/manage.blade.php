@@ -186,6 +186,110 @@
     </section>
 
     <section class="employee-tab-panel {{ $activeTab === 'stock' ? 'active' : '' }}" id="tab-stock" role="tabpanel" aria-labelledby="tab-button-stock" tabindex="0">
+        @if(session('success'))
+            <div class="employee-card" role="status"><div class="employee-card-body">{{ session('success') }}</div></div>
+        @endif
+        @if($allocationsNeedingReview->isNotEmpty())
+            <div class="employee-card allocation-review-card">
+                <div class="employee-card-header allocation-review-header">
+                    <div class="allocation-review-heading">
+                        <span class="allocation-review-icon" aria-hidden="true"><i class="fas fa-triangle-exclamation"></i></span>
+                        <div>
+                            <h2>Perlu ditindaklanjuti</h2>
+                            <p>Periksa jumlah yang dilaporkan sebelum memilih tindakan.</p>
+                        </div>
+                    </div>
+                    <span class="stock-result-count"><i class="far fa-file-alt" aria-hidden="true"></i> {{ $allocationsNeedingReview->count() }} laporan</span>
+                </div>
+                <div class="employee-card-body">
+                    @foreach($allocationsNeedingReview as $allocation)
+                        @php
+                            $requested = (int) $allocation->requested_quantity;
+                            $actual = (int) ($allocation->actual_received_quantity ?? 0);
+                            $shortfall = max(0, $requested - $actual);
+                            $difference = $actual - $requested;
+                            $reason = trim((string) $allocation->decline_reason);
+                            $hasReason = preg_match('/[\p{L}\p{N}]/u', $reason) === 1;
+                            $product = $allocation->product;
+                            $unit = $product?->unit ?: 'unit';
+                            $cancelFormId = 'cancel-allocation-' . $allocation->id;
+                        @endphp
+                        <article class="allocation-review-item">
+                            <div class="allocation-review-product">
+                                <span class="allocation-product-thumb" aria-hidden="true">
+                                    @if($product?->image)
+                                        <img src="{{ asset('storage/' . $product->image) }}" alt="">
+                                    @else
+                                        <i class="fas fa-mug-hot"></i>
+                                    @endif
+                                </span>
+                                <div class="allocation-product-copy">
+                                    <strong>{{ $product?->name ?? 'Produk' }}</strong>
+                                    @if($product?->category?->name)
+                                        <span class="allocation-category-pill"><i class="fas fa-tag" aria-hidden="true"></i> {{ $product->category->name }}</span>
+                                    @endif
+                                    <span class="allocation-review-reason">{{ $hasReason ? $reason : 'Laporan selisih stok pegawai' }}</span>
+                                </div>
+                            </div>
+                            <div class="allocation-review-counts" aria-label="Jumlah alokasi dan diterima">
+                                <div class="allocation-review-count">
+                                    <span><i class="fas fa-box" aria-hidden="true"></i> Alokasi</span>
+                                    <strong>{{ number_format($requested) }}</strong>
+                                    <small>{{ $unit }}</small>
+                                </div>
+                                <i class="fas fa-arrow-right allocation-review-arrow" aria-hidden="true"></i>
+                                <div class="allocation-review-count">
+                                    <span><i class="far fa-calendar-check" aria-hidden="true"></i> Diterima</span>
+                                    <strong>{{ number_format($actual) }}</strong>
+                                    <small>{{ $unit }}</small>
+                                </div>
+                                @if($difference !== 0)
+                                    <span class="allocation-review-difference {{ $difference > 0 ? 'is-extra' : 'is-short' }}" title="Selisih {{ $difference > 0 ? '+' : '' }}{{ number_format($difference) }} {{ $unit }}" aria-label="Selisih {{ $difference > 0 ? '+' : '' }}{{ number_format($difference) }} {{ $unit }}">
+                                        {{ $difference > 0 ? '+' : '' }}{{ number_format($difference) }}
+                                    </span>
+                                @endif
+                            </div>
+                            <div class="allocation-review-actions">
+                                <div class="allocation-return-field">
+                                    <label for="returned-quantity-{{ $allocation->id }}">Dikembalikan</label>
+                                    <span class="allocation-return-stepper">
+                                        <button type="button" data-return-step="-1" aria-label="Kurangi jumlah dikembalikan">−</button>
+                                        <input id="returned-quantity-{{ $allocation->id }}" type="number" class="stock-quantity" name="returned_quantity" form="{{ $cancelFormId }}" min="0" max="{{ $actual }}" value="{{ $actual }}" step="1" required data-return-quantity>
+                                        <button type="button" data-return-step="1" aria-label="Tambah jumlah dikembalikan">+</button>
+                                    </span>
+                                </div>
+                                @if($actual > 0)
+                                    <form class="allocation-review-action-form allocation-accept-form" method="POST" action="{{ route('employees.stock.allocations.follow-up', [$employee, $allocation]) }}">
+                                        @csrf
+                                        <input type="hidden" name="action" value="accept_actual">
+                                        <button type="submit" class="btn-stock" title="{{ $actual > $requested ? 'Selisih +' . number_format($difference) . ' akan mengurangi stok gudang.' : 'Pegawai perlu mengonfirmasi jumlah ini di aplikasi.' }}">
+                                            <i class="fas fa-check" aria-hidden="true"></i> Setujui {{ number_format($actual) }}
+                                        </button>
+                                    </form>
+                                @endif
+                                <form id="{{ $cancelFormId }}" class="allocation-review-action-form allocation-cancel-form" method="POST" action="{{ route('employees.stock.allocations.follow-up', [$employee, $allocation]) }}" onsubmit="return confirm('Batalkan alokasi? Pastikan stok yang diterima dan dicatat sebagai dikembalikan sudah benar.');">
+                                    @csrf
+                                    <input type="hidden" name="action" value="cancel">
+                                    <button type="submit" class="btn-delete">
+                                        <i class="fas fa-ban" aria-hidden="true"></i> Batalkan
+                                    </button>
+                                </form>
+                                @if($shortfall > 0)
+                                    <form class="allocation-review-action-form allocation-resend-form" method="POST" action="{{ route('employees.stock.allocations.follow-up', [$employee, $allocation]) }}" onsubmit="return confirm('Pastikan pengiriman susulan {{ $shortfall }} {{ $unit }} sudah disiapkan. Pegawai akan diminta mengonfirmasi penerimaan di aplikasi.');">
+                                        @csrf
+                                        <input type="hidden" name="action" value="resend">
+                                        <button type="submit" class="btn-edit">
+                                            <i class="fas fa-truck-fast" aria-hidden="true"></i> Kirim {{ number_format($shortfall) }}
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
         @php
             $emptyStockCount = (int) $stockSummary->empty_stock_count;
             $lowStockCount = (int) $stockSummary->low_stock_count;
@@ -255,7 +359,7 @@
             <div class="employee-card-header stock-card-header">
                 <div>
                     <h2><i class="fas fa-boxes-stacked"></i> Alokasi & Pemantauan Stok</h2>
-                    <p>Stok gudang dan pegawai ditampilkan terpisah. Stok rendah pegawai: 1–{{ $lowStockThreshold }} unit.</p>
+                    <p>Stok gudang dan pegawai ditampilkan terpisah. Alokasi tambahan menunggu konfirmasi pegawai; stok rendah: 1–{{ $lowStockThreshold }} unit.</p>
                 </div>
                 <span class="stock-result-count">{{ $products->total() }} produk</span>
             </div>
@@ -334,14 +438,18 @@
                                     </td>
                                     <td><input type="number" id="amount-{{ $product->id }}" class="stock-quantity" min="1" step="1" value="1" aria-label="Jumlah transfer {{ $product->name }}"></td>
                                     <td>
-                                        <div class="stock-actions">
-                                            <button type="button" class="btn-stock btn-transfer" id="btn-give-{{ $product->id }}" data-product-id="{{ $product->id }}" data-action="push" {{ $masterStock <= 0 ? 'disabled' : '' }}>
-                                                <i class="fas fa-arrow-right"></i> Berikan
-                                            </button>
-                                            <button type="button" class="btn-edit btn-transfer" id="btn-pull-{{ $product->id }}" data-product-id="{{ $product->id }}" data-action="pull" {{ $employeeStock <= 0 ? 'disabled' : '' }}>
-                                                <i class="fas fa-arrow-left"></i> Tarik
-                                            </button>
-                                        </div>
+                                        @if(auth()->user()?->hasPermission('stock_allocations.transfer'))
+                                            <div class="stock-actions">
+                                                <button type="button" class="btn-stock btn-transfer" id="btn-give-{{ $product->id }}" data-product-id="{{ $product->id }}" data-action="push" {{ $masterStock <= 0 ? 'disabled' : '' }}>
+                                                    <i class="fas fa-arrow-right"></i> Berikan
+                                                </button>
+                                                <button type="button" class="btn-edit btn-transfer" id="btn-pull-{{ $product->id }}" data-product-id="{{ $product->id }}" data-action="pull" {{ $employeeStock <= 0 ? 'disabled' : '' }}>
+                                                    <i class="fas fa-arrow-left"></i> Tarik
+                                                </button>
+                                            </div>
+                                        @else
+                                            <span class="table-subtext">Tidak memiliki akses transfer stok</span>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
@@ -368,7 +476,7 @@
         <div class="sales-period-heading">
             <div>
                 <h2>Analisis Penjualan</h2>
-                <p>{{ $periodLabel }}{{ $periodStart && $periodEnd ? ' · ' . $periodStart->format('d/m/Y') . '–' . $periodEnd->format('d/m/Y') : '' }} · tanggal transaksi pegawai ini</p>
+                <p>{{ $periodLabel }}{{ $periodStart && $periodEnd ? ' · ' . $periodStart->format('d/m/Y') . '–' . $periodEnd->format('d/m/Y') : '' }} · tanggal transaksi pegawai ini.</p>
             </div>
         </div>
 

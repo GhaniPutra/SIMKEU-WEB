@@ -25,13 +25,15 @@ class StockAllocationDeclined extends Notification
 
         return [
             'type' => 'warning',
-            'title' => 'Alokasi stok ditolak',
-            'message' => $allocation->employee->name.' menolak alokasi '.$allocation->requested_quantity.' unit produk '.$allocation->product->name.'.',
+            'title' => 'Selisih stok dilaporkan',
+            'message' => $allocation->employee->name.' menerima '.$allocation->actual_received_quantity.' dari '.$allocation->requested_quantity.' unit produk '.$allocation->product->name.'.',
             'reason' => $allocation->decline_reason,
             'allocation_id' => $allocation->id,
             'employee_name' => $allocation->employee->name,
             'product_name' => $allocation->product->name,
             'requested_quantity' => $allocation->requested_quantity,
+            'actual_received_quantity' => $allocation->actual_received_quantity,
+            'difference_quantity' => $allocation->difference_quantity,
             'url' => route('employees.manage', [
                 'employee' => $allocation->employee,
                 'period' => 'all',

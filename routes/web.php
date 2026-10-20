@@ -132,6 +132,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/employees/{employee}/sales-dashboard', [App\Http\Controllers\EmployeeSalesController::class, 'dashboard'])->middleware('permission:employees.sales.view')->name('employees.sales-dashboard');
         Route::get('/stock-allocations/pending-status', [App\Http\Controllers\EmployeeStockController::class, 'pendingAllocations'])->middleware('permission:stock_allocations.view')->name('employees.stock.allocations.pending-status');
         Route::post('/employees/{employee}/stock/allocations', [App\Http\Controllers\EmployeeStockController::class, 'createAllocation'])->middleware('permission:stock_allocations.create')->name('employees.stock.allocations.store');
+        Route::post('/employees/{employee}/stock/allocations/{allocation}/follow-up', [App\Http\Controllers\EmployeeStockController::class, 'followUpAllocation'])->middleware('permission:stock_allocations.review')->name('employees.stock.allocations.follow-up');
         Route::post('/employees/{employee}/stock/transfer', [App\Http\Controllers\EmployeeStockController::class, 'transfer'])->middleware('permission:stock_allocations.transfer')->name('employees.stock.transfer');
 
         // ====================================

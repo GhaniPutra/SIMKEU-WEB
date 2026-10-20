@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Models\StockAllocation;
 use App\Models\User;
 use App\Services\StockAllocationWorkflow;
@@ -71,6 +72,37 @@ class EmployeeStockController extends Controller
         ], 403);
     }
 
+    public function followUpAllocation(
+        Request $request,
+        User $employee,
+        StockAllocation $allocation,
+        StockAllocationWorkflow $workflow
+    ) {
+        $owner = $request->user();
+        abort_unless(
+            $owner
+                && $owner->hasPermission('stock_allocations.review')
+                && $employee->store_id === $owner->store_id
+                && (int) $allocation->employee_user_id === (int) $employee->id,
+            403
+        );
+
+        $validated = $request->validate([
+            'action' => ['required', 'in:accept_actual,resend,cancel'],
+            'returned_quantity' => ['required_if:action,cancel', 'integer', 'min:0'],
+        ]);
+
+        $workflow->followUpByOwner($owner, $allocation->id, $validated);
+
+        $message = match ($validated['action']) {
+            'accept_actual' => 'Jumlah fisik disetujui. Pegawai perlu mengonfirmasi alokasi di aplikasi.',
+            'resend' => 'Alokasi kekurangan dibuat. Pegawai perlu mengonfirmasi penerimaan di aplikasi.',
+            'cancel' => 'Alokasi dibatalkan dan stok gudang diperbarui.',
+        };
+
+        return redirect()->back()->with('success', $message);
+    }
+
     /**
      * Mentransfer stok dari master ke pegawai atau sebaliknya.
      */
@@ -81,13 +113,13 @@ class EmployeeStockController extends Controller
             return response()->json(['success' => false, 'message' => 'Anda tidak memiliki izin mengelola transfer stok.'], 403);
         }
 
-        if ($employee->role !== 'pegawai') {
+        if ($employee->role !== 'pegawai' || (int) $employee->store_id !== (int) $owner->store_id) {
             return response()->json(['success' => false, 'message' => 'Hanya dapat mengatur stok untuk pegawai.'], 403);
         }
 
         $validated = $request->validate([
             'product_id' => ['required', Rule::exists('products', 'id')->where('store_id', $owner->store_id)],
-            'amount' => 'required|integer|not_in:0',
+            'amount' => 'required|integer|between:-2147483647,2147483647|not_in:0',
         ]);
 
         if ($validated['amount'] > 0) {
@@ -139,7 +171,7 @@ class EmployeeStockController extends Controller
                 'master_stock' => $product->fresh()->stock,
                 'employee_stock' => $newEmployeeStock,
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
 
             return response()->json(['success' => false, 'message' => $e->getMessage()], 400);

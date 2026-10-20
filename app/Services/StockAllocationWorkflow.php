@@ -59,20 +59,29 @@ class StockAllocationWorkflow
                 }
 
                 $returned = (int) $data['returned_quantity'];
-                $maximumReturn = match ($allocation->status) {
-                    StockAllocation::STATUS_PENDING => (int) $allocation->requested_quantity,
-                    StockAllocation::STATUS_NEEDS_REVIEW => min(
-                        (int) $allocation->actual_received_quantity,
-                        (int) $allocation->requested_quantity
-                    ),
-                    default => 0,
-                };
+                $maximumReturn = $allocation->status === StockAllocation::STATUS_NEEDS_REVIEW
+                    ? (int) ($allocation->actual_received_quantity ?? 0)
+                    : (int) $allocation->requested_quantity;
 
                 if ($returned > $maximumReturn) {
                     $this->invalid('returned_quantity', "Jumlah yang dikembalikan tidak boleh melebihi {$maximumReturn}.");
                 }
 
-                if ($returned > 0) {
+                if ($allocation->status === StockAllocation::STATUS_NEEDS_REVIEW) {
+                    // The amount not received never left the owner's physical stock,
+                    // but was reserved when the original allocation was created.
+                    $notReceived = max(
+                        0,
+                        (int) $allocation->requested_quantity - (int) ($allocation->actual_received_quantity ?? 0)
+                    );
+                    $product->increment('stock', $notReceived + $returned);
+                } elseif ($allocation->status === StockAllocation::STATUS_DECLINED) {
+                    // Older reports returned the full allocation to the owner already.
+                    // Add only any amount physically returned after that legacy flow.
+                    if ($returned > 0) {
+                        $product->increment('stock', $returned);
+                    }
+                } elseif ($returned > 0) {
                     $product->increment('stock', $returned);
                 }
 
@@ -92,28 +101,30 @@ class StockAllocationWorkflow
             }
 
             $actual = (int) $allocation->actual_received_quantity;
-            $quantityToAccept = match ($action) {
-                'accept_actual' => $actual,
-                'resolve_difference' => (int) $data['confirmed_quantity'],
-                'resend' => $actual,
-            };
+            $requested = (int) $allocation->requested_quantity;
+            $legacyDeclined = $allocation->status === StockAllocation::STATUS_DECLINED;
 
-            if (in_array($action, ['accept_actual', 'resolve_difference'], true)) {
-                if ($quantityToAccept < 1) {
-                    $this->invalid('confirmed_quantity', 'Jumlah yang disetujui harus minimal 1. Batalkan alokasi jika tidak ada stok yang diterima.');
-                }
-                $quantityToReserve = $allocation->status === StockAllocation::STATUS_DECLINED
-                    ? $quantityToAccept
-                    : max(0, $quantityToAccept - (int) $allocation->requested_quantity);
-                if ($quantityToReserve > 0) {
-                    $this->ensureAvailableStock($product, $quantityToReserve, 'confirmed_quantity');
-                    $product->decrement('stock', $quantityToReserve);
+            if ($action === 'accept_actual') {
+                if ($actual < 1) {
+                    $this->invalid('action', 'Jumlah diterima masih 0. Gunakan Kirim kekurangan untuk mengirim seluruh alokasi.');
                 }
 
-                $allocation->requested_quantity = $quantityToAccept;
+                if ($legacyDeclined) {
+                    // Legacy declined allocations restored the whole amount earlier.
+                    $this->ensureAvailableStock($product, $actual, 'action');
+                    $product->decrement('stock', $actual);
+                } elseif ($actual < $requested) {
+                    $product->increment('stock', $requested - $actual);
+                } elseif ($actual > $requested) {
+                    $extra = $actual - $requested;
+                    $this->ensureAvailableStock($product, $extra, 'action');
+                    $product->decrement('stock', $extra);
+                }
+
+                $allocation->requested_quantity = $actual;
                 $allocation->confirmed_quantity = null;
                 $allocation->status = StockAllocation::STATUS_PENDING;
-                $allocation->resolution_action = $action;
+                $allocation->resolution_action = 'accept_actual';
                 $allocation->resolved_by_user_id = $owner->id;
                 $allocation->resolved_at = now();
                 $allocation->save();
@@ -122,15 +133,17 @@ class StockAllocationWorkflow
             }
 
             if ($action === 'resend') {
-                $shortfall = (int) $allocation->requested_quantity - $actual;
+                $shortfall = $requested - $actual;
                 if ($shortfall <= 0) {
-                    $this->invalid('action', 'Pengiriman ulang hanya berlaku jika jumlah aktual kurang dari alokasi.');
+                    $this->invalid('action', 'Kirim kekurangan hanya berlaku jika jumlah diterima kurang dari alokasi.');
                 }
-                $quantityToReserve = $allocation->status === StockAllocation::STATUS_DECLINED
-                    ? (int) $allocation->requested_quantity
-                    : $shortfall;
-                $this->ensureAvailableStock($product, $quantityToReserve, 'action');
-                $product->decrement('stock', $quantityToReserve);
+
+                // New reports keep the original quantity reserved. Splitting it into
+                // the received part and a resend must not reserve those units twice.
+                if ($legacyDeclined) {
+                    $this->ensureAvailableStock($product, $requested, 'action');
+                    $product->decrement('stock', $requested);
+                }
 
                 if ($actual > 0) {
                     $allocation->requested_quantity = $actual;
@@ -188,14 +201,11 @@ class StockAllocationWorkflow
                 $allocation->status = StockAllocation::STATUS_ACCEPTED;
             } else {
                 $actual = (int) $data['actual_received_quantity'];
-                $product = Product::query()->lockForUpdate()->findOrFail($allocation->product_id);
-                $product->increment('stock', $allocation->requested_quantity);
-
                 $allocation->actual_received_quantity = $actual;
                 $allocation->difference_quantity = $actual - (int) $allocation->requested_quantity;
                 $allocation->decline_reason = trim($data['decline_reason']);
                 $allocation->confirmed_quantity = null;
-                $allocation->status = StockAllocation::STATUS_DECLINED;
+                $allocation->status = StockAllocation::STATUS_NEEDS_REVIEW;
             }
 
             $allocation->reviewed_by_user_id = $employee->id;

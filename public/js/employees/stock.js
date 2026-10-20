@@ -69,6 +69,12 @@ async function transferStock(productId, action) {
     }
 
     if (action === 'pull') {
+        const employeeStock = Number(document.querySelector(`#emp-stock-${productId} [data-stock-value]`)?.textContent.replaceAll('.', '').replaceAll(',', '') ?? 0);
+        if (amount > employeeStock) {
+            showToast('error', 'Stok Tidak Cukup', `Stok pegawai hanya ${employeeStock.toLocaleString()} unit.`);
+            return;
+        }
+
         amount = -amount; // Jika tarik, ubah jumlah menjadi negatif
     }
 
@@ -82,17 +88,22 @@ async function transferStock(productId, action) {
     const spinnerTimer = window.setTimeout(() => setLoading(productId, true), 250);
 
     try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        if (!csrfToken) {
+            throw new Error('Token keamanan tidak ditemukan. Muat ulang halaman lalu coba lagi.');
+        }
+
         const response = await fetch(getTransferUrl(employeeId), {
             method: 'POST', // Metode request
             headers: {
                 'Content-Type': 'application/json', // Tipe konten JSON
                 'Accept': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // Token CSRF
+                'X-CSRF-TOKEN': csrfToken
             },
             body: JSON.stringify({ product_id: productId, amount }) // Data kirim
         });
 
-        const result = await response.json(); // Parse JSON respons
+        const result = await response.json().catch(() => ({})); // Parse JSON respons
 
         if (response.ok && result.success) {
             const masterEl = document.getElementById(`master-stock-${productId}`); // Badge stok master
@@ -109,8 +120,10 @@ async function transferStock(productId, action) {
             }
 
             if (barEl) {
-                const total = result.master_stock + result.employee_stock; // Hitung total stok
-                const barPct = total > 0 ? Math.min(100, Math.round(result.employee_stock / total * 100)) : 0; // Persentase bar
+                const masterStock = Number(result.master_stock);
+                const employeeStock = Number(result.employee_stock);
+                const total = masterStock + employeeStock; // Hitung total stok
+                const barPct = total > 0 ? Math.min(100, Math.round(employeeStock / total * 100)) : 0; // Persentase bar
                 barEl.style.width = barPct + '%'; // Update lebar bar
             }
 
@@ -139,7 +152,7 @@ async function transferStock(productId, action) {
         }
     } catch (err) {
         console.error(err); // Tampilkan error di konsol
-        showToast('error', 'Koneksi Error', 'Gagal menghubungi server. Periksa koneksi Anda.'); // Toast jika fetch gagal
+        showToast('error', 'Transfer Gagal', err.message || 'Gagal menghubungi server. Periksa koneksi Anda.'); // Toast jika fetch gagal
     } finally {
         window.clearTimeout(spinnerTimer);
         setLoading(productId, false); // Matikan loading
@@ -164,6 +177,61 @@ function bindStockTransferButtons() {
     });
 }
 
+function bindAllocationReturnSteppers() {
+    document.querySelectorAll('[data-return-step]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const stepper = button.closest('.allocation-return-stepper');
+            const input = stepper?.querySelector('[data-return-quantity]');
+
+            if (!input) return;
+
+            const min = Number(input.min || 0);
+            const max = Number(input.max || Number.MAX_SAFE_INTEGER);
+            const current = Number(input.value || 0);
+            const change = Number(button.dataset.returnStep || 0);
+            input.value = String(Math.min(max, Math.max(min, current + change)));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+    });
+}
+
+function limitAllocationReviewItems() {
+    document.querySelectorAll('.allocation-review-card .employee-card-body').forEach((body) => {
+        const items = body.querySelectorAll('.allocation-review-item');
+
+        if (items.length <= 2) {
+            body.style.height = '';
+            body.style.maxHeight = '';
+            return;
+        }
+
+        if (!body.getClientRects().length || items[0].getBoundingClientRect().height === 0) return;
+
+        const styles = window.getComputedStyle(body);
+        const verticalPadding = Number.parseFloat(styles.paddingTop) + Number.parseFloat(styles.paddingBottom);
+        const visibleItemsHeight = items[0].getBoundingClientRect().height + items[1].getBoundingClientRect().height;
+        const scrollAreaHeight = `${Math.ceil(visibleItemsHeight + verticalPadding)}px`;
+        body.style.height = scrollAreaHeight;
+        body.style.maxHeight = scrollAreaHeight;
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     bindStockTransferButtons();
+    bindAllocationReturnSteppers();
+    limitAllocationReviewItems();
+
+    let allocationReviewResizeFrame;
+    window.addEventListener('resize', () => {
+        window.cancelAnimationFrame(allocationReviewResizeFrame);
+        allocationReviewResizeFrame = window.requestAnimationFrame(limitAllocationReviewItems);
+    });
+
+    document.querySelectorAll('[data-tab="stock"], [data-open-tab="stock"]').forEach((tabTrigger) => {
+        tabTrigger.addEventListener('click', () => window.requestAnimationFrame(limitAllocationReviewItems));
+    });
+
+    document.querySelectorAll('.allocation-review-card img').forEach((image) => {
+        image.addEventListener('load', limitAllocationReviewItems, { once: true });
+    });
 });
