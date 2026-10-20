@@ -87,6 +87,9 @@ class PemasukanController extends Controller
         // ============================================================
         if ($period === 'all') {
             $periodLaluStart = $periodLaluEnd = null;
+        } elseif ($period === 'custom') {
+            // Rentang bebas tidak disamakan dengan pembanding bulanan preset.
+            $periodLaluStart = $periodLaluEnd = null;
         } elseif ($period === 'today') {
             $periodLaluStart = $now->copy()->subDay()->startOfDay();
             $periodLaluEnd = $now->copy()->subDay()->endOfDay();

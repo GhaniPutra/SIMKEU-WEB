@@ -149,6 +149,11 @@
                     <i class="fas fa-circle-info" aria-hidden="true"></i>
                     Perbandingan periode tidak tersedia untuk semua periode.
                 </p>
+            @elseif($period === 'custom')
+                <p class="comparison-note">
+                    <i class="fas fa-circle-info" aria-hidden="true"></i>
+                    Perbandingan periode tidak tersedia untuk rentang tanggal khusus.
+                </p>
             @else
                 <p class="comparison-note">
                     Periode berjalan {{ $periodStart->translatedFormat('d M Y') }}–{{ $comparisonCurrentEnd->translatedFormat('d M Y') }}

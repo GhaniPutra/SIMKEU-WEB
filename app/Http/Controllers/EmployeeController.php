@@ -148,24 +148,36 @@ class EmployeeController extends Controller
         $trendLabels = [];
         $trendFullLabels = [];
         $trendRevenue = [];
-        if ($analyticsPeriod === 'all') {
+        $customChartUsesMonths = $analyticsPeriod === 'custom'
+            && $periodStart->diffInDays($periodEnd->copy()->startOfDay()) >= 90;
+
+        if ($analyticsPeriod === 'all' || $customChartUsesMonths) {
             $driver = DB::connection()->getDriverName();
             $monthExpression = match ($driver) {
                 'mysql', 'mariadb' => "DATE_FORMAT(transaction_date, '%Y-%m')",
                 'pgsql' => "TO_CHAR(transaction_date, 'YYYY-MM')",
                 default => "strftime('%Y-%m', transaction_date)",
             };
-            $monthlySales = (clone $employeeSales)
+            $monthlySales = (clone $periodSales)
                 ->selectRaw("$monthExpression as month_key, COUNT(*) as transaction_count, COALESCE(SUM(total), 0) as revenue")
                 ->groupByRaw($monthExpression)
                 ->orderBy('month_key')
                 ->get()
                 ->keyBy('month_key');
-            $firstMonth = $monthlySales->keys()->first();
-            if ($firstMonth !== null) {
-                $lastMonth = $monthlySales->keys()->last();
-                for ($date = \Carbon\Carbon::createFromFormat('!Y-m', $firstMonth);
-                    $date->lte(\Carbon\Carbon::createFromFormat('!Y-m', $lastMonth));
+
+            if ($customChartUsesMonths) {
+                $firstMonth = $periodStart->copy()->startOfMonth();
+                $lastMonth = $periodEnd->copy()->startOfMonth();
+            } else {
+                $firstMonthKey = $monthlySales->keys()->first();
+                $lastMonthKey = $monthlySales->keys()->last();
+                $firstMonth = $firstMonthKey !== null ? \Carbon\Carbon::createFromFormat('!Y-m', $firstMonthKey) : null;
+                $lastMonth = $lastMonthKey !== null ? \Carbon\Carbon::createFromFormat('!Y-m', $lastMonthKey) : null;
+            }
+
+            if ($firstMonth && $lastMonth) {
+                for ($date = $firstMonth->copy();
+                    $date->lte($lastMonth);
                     $date->addMonth()) {
                     $key = $date->format('Y-m');
                     $sale = $monthlySales->get($key);

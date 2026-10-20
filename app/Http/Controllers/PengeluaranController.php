@@ -92,6 +92,9 @@ class PengeluaranController extends Controller
         // ============================================================
         if ($period === 'all') {
             $periodLaluStart = $periodLaluEnd = null;
+        } elseif ($period === 'custom') {
+            // Periode custom tidak memakai pembanding preset yang bisa menyesatkan.
+            $periodLaluStart = $periodLaluEnd = null;
         } elseif ($period === 'today') {
             $periodLaluStart = $now->copy()->subDay()->startOfDay();
             $periodLaluEnd = $now->copy()->subDay()->endOfDay();
@@ -123,18 +126,34 @@ class PengeluaranController extends Controller
         // ============================================================
         $chartLabels = [];
         $chartData = [];
-        $chartEnd = $periodEnd?->copy()->min($now)->startOfDay();
+        $customChartUsesMonths = $period === 'custom'
+            && $periodStart->diffInDays($periodEnd->copy()->startOfDay()) >= 90;
+        $chartEnd = $period === 'custom'
+            ? $periodEnd?->copy()->startOfDay()
+            : $periodEnd?->copy()->min($now)->startOfDay();
 
-        if ($period === 'all') {
-            $monthlyTotals = Expense::selectRaw('SUBSTR(expense_date, 1, 7) as expense_month, SUM(amount) as amount')
-                ->whereDate('expense_date', '<=', $now->toDateString())
+        if ($period === 'all' || $customChartUsesMonths) {
+            $monthlyQuery = Expense::query();
+            if ($customChartUsesMonths) {
+                PeriodFilter::apply($monthlyQuery, 'expense_date', $periodStart->toDateString(), $periodEnd->toDateString());
+            }
+            $monthlyTotals = $monthlyQuery
+                ->selectRaw('SUBSTR(expense_date, 1, 7) as expense_month, SUM(amount) as amount')
                 ->groupByRaw('SUBSTR(expense_date, 1, 7)')
                 ->orderBy('expense_month')
                 ->pluck('amount', 'expense_month');
 
-            foreach ($monthlyTotals as $month => $total) {
-                $chartLabels[] = Carbon::createFromFormat('!Y-m', $month)->format('m/Y');
-                $chartData[] = (float) $total;
+            if ($customChartUsesMonths) {
+                for ($month = $periodStart->copy()->startOfMonth(); $month->lte($periodEnd); $month->addMonth()) {
+                    $key = $month->format('Y-m');
+                    $chartLabels[] = $month->format('m/Y');
+                    $chartData[] = (float) ($monthlyTotals[$key] ?? 0);
+                }
+            } else {
+                foreach ($monthlyTotals as $month => $total) {
+                    $chartLabels[] = Carbon::createFromFormat('!Y-m', $month)->format('m/Y');
+                    $chartData[] = (float) $total;
+                }
             }
         } elseif ($period === 'today') {
             $chartLabels[] = 'Hari ini';
@@ -146,13 +165,13 @@ class PengeluaranController extends Controller
                 $periodStart?->toDateString(),
                 $chartEnd?->toDateString()
             )
-                ->selectRaw('expense_date, SUM(amount) as amount')
-                ->groupBy('expense_date')
-                ->orderBy('expense_date')
-                ->pluck('amount', 'expense_date');
+                ->selectRaw('DATE(expense_date) as day_key, SUM(amount) as amount')
+                ->groupByRaw('DATE(expense_date)')
+                ->orderBy('day_key')
+                ->pluck('amount', 'day_key');
         }
 
-        if (in_array($period, ['week', 'month'], true)) {
+        if ($period !== 'all' && $period !== 'today' && ! $customChartUsesMonths) {
             for ($date = $periodStart->copy()->startOfDay(); $chartEnd && $date->lte($chartEnd); $date->addDay()) {
                 $key = $date->toDateString();
                 $chartLabels[] = $period === 'week' ? $date->translatedFormat('D') : $date->format('d/m');
@@ -165,7 +184,9 @@ class PengeluaranController extends Controller
         // agar dibandingkan dengan rentang yang sama pada periode sebelumnya.
         // Untuk semua periode, hanya nominal aktif yang tersedia.
         // ============================================================
-        $comparisonCurrentEnd = $periodEnd?->copy()->min($now)->startOfDay();
+        $comparisonCurrentEnd = $period === 'custom'
+            ? $periodEnd?->copy()->startOfDay()
+            : $periodEnd?->copy()->min($now)->startOfDay();
         $currentKategoriTotals = PeriodFilter::apply(
             Expense::query(),
             'expense_date',

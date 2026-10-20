@@ -3,6 +3,13 @@ import { readFile } from 'node:fs/promises';
 import { runInNewContext } from 'node:vm';
 import test from 'node:test';
 
+async function loadDashboardScripts(context) {
+    const zoomSource = await readFile(new URL('../../public/js/financial-bar-zoom.js', import.meta.url), 'utf8');
+    const dashboardSource = await readFile(new URL('../../public/js/dashboard/dashboard.js', import.meta.url), 'utf8');
+    runInNewContext(zoomSource, context);
+    runInNewContext(dashboardSource, context);
+}
+
 test('keeps the Pemasukan vs Pengeluaran bar gap fixed across periods', async () => {
     let config;
     const listeners = {};
@@ -31,6 +38,7 @@ test('keeps the Pemasukan vs Pengeluaran bar gap fixed across periods', async ()
         }
     };
     const context = {
+        window: {},
         document: {
             documentElement: {},
             getElementById(id) {
@@ -69,8 +77,7 @@ test('keeps the Pemasukan vs Pengeluaran bar gap fixed across periods', async ()
             return chart;
         }
     };
-    const source = await readFile(new URL('../../public/js/dashboard/dashboard.js', import.meta.url), 'utf8');
-    runInNewContext(source, context);
+    await loadDashboardScripts(context);
 
     const gapPlugin = config.plugins.find((plugin) => plugin.id === 'fixed-financial-bar-gap');
     assert.ok(gapPlugin);
@@ -132,6 +139,7 @@ test('zooms for mouse wheel and trackpad pinch, ignores ordinary trackpad scroll
         }
     };
     const context = {
+        window: {},
         document: {
             documentElement: {},
             getElementById(id) {
@@ -166,8 +174,7 @@ test('zooms for mouse wheel and trackpad pinch, ignores ordinary trackpad scroll
             return chartInstance;
         }
     };
-    const source = await readFile(new URL('../../public/js/dashboard/dashboard.js', import.meta.url), 'utf8');
-    runInNewContext(source, context);
+    await loadDashboardScripts(context);
 
     const initialMax = chartInstance.scales.x.max;
     listeners.pointerdown({ pointerId: 0, pointerType: 'mouse', button: 0, clientX: 300 });
@@ -419,6 +426,7 @@ test('uses the Firefox/Linux line-mode wheel heuristic and leaves pixel/page scr
         }
     };
     const context = {
+        window: {},
         document: {
             documentElement: {},
             getElementById(id) {
@@ -453,8 +461,7 @@ test('uses the Firefox/Linux line-mode wheel heuristic and leaves pixel/page scr
             return chartInstance;
         }
     };
-    const source = await readFile(new URL('../../public/js/dashboard/dashboard.js', import.meta.url), 'utf8');
-    runInNewContext(source, context);
+    await loadDashboardScripts(context);
 
     const initialRange = chartInstance.scales.x.max - chartInstance.scales.x.min;
     let mouseWheelPrevented = false;

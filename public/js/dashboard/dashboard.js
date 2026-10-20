@@ -343,13 +343,7 @@ function initFinancialComparisonChart() {
     window.attachFinancialBarZoom(chart, canvas);
 }
 
-function syncPeriodFilter() {
-    const periodSelect = document.getElementById('global-period');
-    if (periodSelect) periodSelect.value = dashboardData.period;
-}
-
 document.addEventListener('DOMContentLoaded', () => {
-    syncPeriodFilter();
     initExpenseCompositionChart();
     initRevenueTrendChart();
     initFinancialComparisonChart();

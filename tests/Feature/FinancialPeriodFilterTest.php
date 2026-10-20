@@ -6,6 +6,7 @@ use App\Models\Expense;
 use App\Models\Sale;
 use App\Models\Store;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -70,6 +71,79 @@ class FinancialPeriodFilterTest extends TestCase
             ->assertOk()
             ->assertViewHas('pengeluaranList', fn ($expenses) => $expenses->total() === 2)
             ->assertViewHas('totalBulanIni', 110);
+    }
+
+    public function test_custom_range_filters_income_and_expense_pages_inclusively(): void
+    {
+        $user = $this->actAsAdmin();
+        $this->createSale($user, 10, Carbon::parse('2026-06-24 23:59:59', 'Asia/Jakarta'), 'tunai');
+        $this->createSale($user, 100, Carbon::parse('2026-06-25 00:00:00', 'Asia/Jakarta'), 'tunai');
+        $this->createSale($user, 200, Carbon::parse('2026-07-05 23:59:59', 'Asia/Jakarta'), 'tunai');
+        $this->createSale($user, 20, Carbon::parse('2026-07-06 00:00:00', 'Asia/Jakarta'), 'tunai');
+        $this->createExpense($user, 10, Carbon::parse('2026-06-24'), 'listrik', 'Di luar rentang');
+        $this->createExpense($user, 25, Carbon::parse('2026-06-25'), 'listrik', 'Awal rentang');
+        $this->createExpense($user, 45, Carbon::parse('2026-07-05'), 'air', 'Akhir rentang');
+        $this->createExpense($user, 20, Carbon::parse('2026-07-06'), 'air', 'Di luar rentang');
+
+        $range = [
+            'period' => 'custom',
+            'start_date' => '2026-06-25',
+            'end_date' => '2026-07-05',
+        ];
+
+        $this->get(route('pemasukan.index', $range))
+            ->assertOk()
+            ->assertViewHas('penjualanList', fn ($sales) => $sales->total() === 2)
+            ->assertViewHas('totalBersih', 300)
+            ->assertViewHas('jumlahTransaksi', 2)
+            ->assertViewHas('periodLabel', '25 Jun 2026 – 5 Jul 2026');
+
+        $expenseResponse = $this->get(route('pengeluaran.index', $range))
+            ->assertOk();
+        $expenseResponse
+            ->assertViewHas('totalBulanIni', 70)
+            ->assertViewHas('jumlahEntri', 2)
+            ->assertViewHas('pengeluaranList', fn ($expenses) => $expenses->total() === 2)
+            ->assertViewHas('periodLabel', '25 Jun 2026 – 5 Jul 2026');
+
+        $this->assertSame(11, count($expenseResponse->viewData('chartLabels')));
+        $this->assertSame('25/06', $expenseResponse->viewData('chartLabels')[0]);
+        $this->assertSame('05/07', $expenseResponse->viewData('chartLabels')[10]);
+        $this->assertSame(70.0, array_sum($expenseResponse->viewData('chartData')));
+        $this->assertNull($expenseResponse->viewData('periodLaluStart'));
+    }
+
+    public function test_long_custom_range_uses_filtered_monthly_expense_and_employee_charts(): void
+    {
+        $admin = $this->actAsAdmin();
+        $this->createExpense($admin, 5, Carbon::parse('2026-01-09'), 'listrik', 'Sebelum rentang');
+        $this->createExpense($admin, 100, Carbon::parse('2026-01-10'), 'listrik', 'Awal rentang');
+        $this->createExpense($admin, 200, Carbon::parse('2026-05-10'), 'air', 'Akhir rentang');
+        $this->createExpense($admin, 7, Carbon::parse('2026-05-11'), 'air', 'Sesudah rentang');
+
+        $range = [
+            'period' => 'custom',
+            'start_date' => '2026-01-10',
+            'end_date' => '2026-05-10',
+        ];
+        $expenseResponse = $this->get(route('pengeluaran.index', $range))->assertOk();
+
+        $expenseResponse
+            ->assertViewHas('totalBulanIni', 300)
+            ->assertViewHas('chartLabels', ['01/2026', '02/2026', '03/2026', '04/2026', '05/2026'])
+            ->assertViewHas('chartData', [100.0, 0.0, 0.0, 0.0, 200.0]);
+
+        $employee = User::factory()->create(['role' => 'pegawai', 'store_id' => $admin->store_id]);
+        $this->createSale($employee, 5, Carbon::parse('2026-01-09 23:59:59', 'Asia/Jakarta'), 'tunai');
+        $this->createSale($employee, 100, Carbon::parse('2026-01-10 00:00:00', 'Asia/Jakarta'), 'tunai');
+        $this->createSale($employee, 200, Carbon::parse('2026-05-10 23:59:59', 'Asia/Jakarta'), 'tunai');
+        $this->createSale($employee, 7, Carbon::parse('2026-05-11 00:00:00', 'Asia/Jakarta'), 'tunai');
+
+        $this->get(route('employees.manage', ['employee' => $employee] + $range))
+            ->assertOk()
+            ->assertViewHas('periodTotals', fn ($totals) => (float) $totals->revenue === 300.0)
+            ->assertViewHas('trendLabels', ['01/2026', '02/2026', '03/2026', '04/2026', '05/2026'])
+            ->assertViewHas('trendRevenue', [100.0, 0.0, 0.0, 0.0, 200.0]);
     }
 
     public function test_employee_sales_dashboard_uses_global_period_and_employee_scope(): void

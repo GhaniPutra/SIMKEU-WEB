@@ -179,25 +179,78 @@
 
         {{-- Filter periode global dan informasi pengguna. --}}
         <div class="topbar-actions">
-            {{-- -------------------------------------------------------
-                 Filter Periode Global
-                 Saat nilai berubah, halaman dashboard akan di-reload
-                 dengan query parameter ?period=<nilai> sehingga controller
-                 dapat memfilter data sesuai periode yang dipilih.
-                 Nilai yang dipilih juga disimpan di localStorage agar
-                 tetap konsisten saat berpindah antar halaman.
-            ------------------------------------------------------- --}}
-            <select
-                class="form-select form-select-sm"
-                id="global-period"
-                style="width:148px; border-radius:6px; font-size:.8rem; border-color:var(--input);"
-                title="Filter periode data dashboard"
-            >
-                <option value="today">Hari Ini</option>
-                <option value="week">Minggu Ini</option>
-                <option value="month">Bulan Ini</option>
-                <option value="all">Semua Periode</option>
-            </select>
+            {{-- Filter periode global memakai query agar semua halaman web konsisten. --}}
+            <div class="period-filter-group" id="global-period-filter" data-timezone="{{ config('app.timezone') }}">
+                <button
+                    class="period-filter-trigger"
+                    id="global-period-trigger"
+                    type="button"
+                    aria-label="Filter periode: {{ $periodLabel ?? 'Bulan Ini' }}"
+                    aria-haspopup="dialog"
+                    aria-expanded="false"
+                    aria-controls="global-period-menu"
+                    title="Filter periode data"
+                >
+                    <i class="fas fa-calendar-days" aria-hidden="true"></i>
+                    <span class="period-filter-label" id="global-period-label">{{ $periodLabel ?? 'Bulan Ini' }}</span>
+                    <i class="fas fa-chevron-down period-filter-chevron" aria-hidden="true"></i>
+                </button>
+                <div
+                    class="period-filter-menu"
+                    id="global-period-menu"
+                    role="dialog"
+                    aria-label="Filter periode data"
+                    hidden
+                >
+                    <section class="period-filter-presets" aria-label="Preset periode">
+                        <p class="period-filter-section-title">Pilih periode</p>
+                        <button class="period-preset" type="button" data-period-preset="all" aria-pressed="false">
+                            <span>Semua Periode</span><i class="fas fa-check" aria-hidden="true"></i>
+                        </button>
+                        <button class="period-preset" type="button" data-period-preset="today" aria-pressed="false">
+                            <span>Hari Ini</span><i class="fas fa-check" aria-hidden="true"></i>
+                        </button>
+                        <button class="period-preset" type="button" data-period-preset="week" aria-pressed="false">
+                            <span>Minggu Ini</span><i class="fas fa-check" aria-hidden="true"></i>
+                        </button>
+                        <button class="period-preset" type="button" data-period-preset="month" aria-pressed="true">
+                            <span>Bulan Ini</span><i class="fas fa-check" aria-hidden="true"></i>
+                        </button>
+                        <div class="period-filter-divider" aria-hidden="true"></div>
+                        <button
+                            class="period-custom-toggle"
+                            id="global-period-custom-toggle"
+                            type="button"
+                            aria-expanded="false"
+                            aria-controls="global-period-calendar-panel"
+                        >
+                            <i class="fas fa-calendar-days" aria-hidden="true"></i>
+                            <span>Rentang Tanggal Kustom</span>
+                        </button>
+                    </section>
+                    <section
+                        class="period-calendar-panel"
+                        id="global-period-calendar-panel"
+                        aria-label="Pilih rentang tanggal kustom"
+                        hidden
+                    >
+                        <div class="period-calendar-toolbar">
+                            <button class="period-calendar-nav" type="button" data-calendar-nav="previous" aria-label="Bulan sebelumnya">
+                                <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                            </button>
+                            <p class="period-calendar-title">Pilih rentang tanggal</p>
+                            <button class="period-calendar-nav" type="button" data-calendar-nav="next" aria-label="Bulan berikutnya">
+                                <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <div class="period-calendars" id="global-period-calendars"></div>
+                        <div class="period-calendar-footer">
+                            <p class="period-calendar-selection" id="global-period-selection" aria-live="polite">Pilih tanggal mulai</p>
+                            <button class="btn btn-primary btn-sm" id="global-period-apply" type="button" disabled>Terapkan</button>
+                        </div>
+                    </section>
+                </div>
+            </div>
 
             @auth
                 @php

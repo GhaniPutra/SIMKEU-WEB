@@ -97,29 +97,80 @@
         // ============================================================
 
         (function initPeriodFilter() {
-            // Ambil elemen pilihan periode.
-            const periodSelect = document.getElementById('global-period');
-            if (!periodSelect) return; // Berhenti jika elemen tidak tersedia.
+            const filter = document.getElementById('global-period-filter');
+            if (!filter) return;
 
-            // -------------------------------------------------------
-            // Samakan prioritas dengan PeriodFilter server: URL, cookie, lalu nilai bawaan.
-            // -------------------------------------------------------
-            const urlParams    = new URLSearchParams(window.location.search); // Baca parameter URL.
-            const supportedPeriods = ['all', 'today', 'week', 'month'];
+            const trigger = document.getElementById('global-period-trigger');
+            const triggerLabel = document.getElementById('global-period-label');
+            const menu = document.getElementById('global-period-menu');
+            const presetButtons = [...menu.querySelectorAll('[data-period-preset]')];
+            const customToggle = document.getElementById('global-period-custom-toggle');
+            const calendarPanel = document.getElementById('global-period-calendar-panel');
+            const calendarContainer = document.getElementById('global-period-calendars');
+            const selectionLabel = document.getElementById('global-period-selection');
+            const applyButton = document.getElementById('global-period-apply');
+            const periodLabels = {
+                all: 'Semua Periode', today: 'Hari Ini', week: 'Minggu Ini', month: 'Bulan Ini'
+            };
+            const supportedPeriods = [...Object.keys(periodLabels), 'custom'];
+            const weekdayNames = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+            const weekdayShortNames = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+
+            const urlParams = new URLSearchParams(window.location.search);
             const periodFromUrl = urlParams.get('period');
-            const cookiePeriod = document.cookie
+            const readCookie = (name) => document.cookie
                 .split('; ')
-                .find((cookie) => cookie.startsWith('dashboardPeriod='))
-                ?.split('=')[1];
+                .find((cookie) => cookie.startsWith(`${name}=`))
+                ?.slice(name.length + 1);
+            const cookiePeriod = readCookie('dashboardPeriod');
             let activePeriod = supportedPeriods.includes(periodFromUrl)
                 ? periodFromUrl
                 : supportedPeriods.includes(cookiePeriod) ? cookiePeriod : 'month';
+            let activeStartDate = urlParams.get('start_date') || readCookie('dashboardStartDate') || '';
+            let activeEndDate = urlParams.get('end_date') || readCookie('dashboardEndDate') || '';
 
-            // Setel pilihan awal sesuai periode aktif.
-            periodSelect.value = activePeriod;
+            const isValidDateValue = (value) => /^\d{4}-\d{2}-\d{2}$/.test(value)
+                && !Number.isNaN(new Date(`${value}T00:00:00Z`).getTime())
+                && new Date(`${value}T00:00:00Z`).toISOString().slice(0, 10) === value;
+            const hasValidRange = (start, end) => isValidDateValue(start)
+                && isValidDateValue(end) && start <= end;
+            const pad = (value) => String(value).padStart(2, '0');
+            const toDateValue = (date) => `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())}`;
+            const dateFromValue = (value) => {
+                const [year, month, day] = value.split('-').map(Number);
+                return new Date(Date.UTC(year, month - 1, day));
+            };
+            const firstOfMonth = (date) => new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
+            const addMonths = (date, amount) => new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + amount, 1));
+            const addDays = (date, amount) => new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + amount));
+            const formatDate = (value, options = { day: 'numeric', month: 'short', year: 'numeric' }) => {
+                if (!isValidDateValue(value)) return '';
+                return new Intl.DateTimeFormat('id-ID', { ...options, timeZone: 'UTC' }).format(dateFromValue(value));
+            };
+            // Tanggal hari ini mengikuti zona waktu aplikasi, bukan zona waktu perangkat.
+            const todayParts = new Intl.DateTimeFormat('en-CA', {
+                timeZone: filter.dataset.timezone || 'Asia/Jakarta',
+                year: 'numeric', month: '2-digit', day: '2-digit'
+            }).formatToParts(new Date()).reduce((parts, part) => {
+                if (part.type !== 'literal') parts[part.type] = part.value;
+                return parts;
+            }, {});
+            const todayValue = `${todayParts.year}-${todayParts.month}-${todayParts.day}`;
 
-            // Simpan periode di cookie agar pilihan berikutnya konsisten dengan server.
-            document.cookie = `dashboardPeriod=${activePeriod}; path=/; max-age=31536000; SameSite=Lax`;
+            // Rentang dari URL yang tidak valid tidak diterapkan; preset aman menjadi pilihan aktif.
+            if (activePeriod === 'custom' && !hasValidRange(activeStartDate, activeEndDate)) {
+                activePeriod = 'month';
+                activeStartDate = '';
+                activeEndDate = '';
+            }
+
+            let draftStartDate = activePeriod === 'custom' ? activeStartDate : '';
+            let draftEndDate = activePeriod === 'custom' ? activeEndDate : '';
+            let calendarCursor = firstOfMonth(
+                activePeriod === 'custom' ? dateFromValue(activeStartDate) : dateFromValue(todayValue)
+            );
+            let calendarExpanded = false;
+            let compactCalendar = window.innerWidth <= 640;
 
             function supportsPeriod(path) {
                 return path === '/' || path === '/dashboard' || path === '/activities'
@@ -128,10 +179,142 @@
                     || /^\/employees\/[^/]+\/(manage|sales-dashboard)$/.test(path);
             }
 
-            // Tambahkan parameter periode ke URL tanpa memuat ulang halaman.
-            if (supportsPeriod(window.location.pathname) && !supportedPeriods.includes(periodFromUrl)) {
-                urlParams.set('period', activePeriod);
-                window.history.replaceState({}, '', `${window.location.pathname}?${urlParams.toString()}`);
+            function applyPeriodToUrl(destination) {
+                destination.searchParams.set('period', activePeriod);
+                if (activePeriod === 'custom' && hasValidRange(activeStartDate, activeEndDate)) {
+                    destination.searchParams.set('start_date', activeStartDate);
+                    destination.searchParams.set('end_date', activeEndDate);
+                } else {
+                    destination.searchParams.delete('start_date');
+                    destination.searchParams.delete('end_date');
+                }
+            }
+
+            function saveActivePeriod() {
+                document.cookie = `dashboardPeriod=${activePeriod}; path=/; max-age=31536000; SameSite=Lax`;
+                if (activePeriod === 'custom') {
+                    document.cookie = `dashboardStartDate=${activeStartDate}; path=/; max-age=31536000; SameSite=Lax`;
+                    document.cookie = `dashboardEndDate=${activeEndDate}; path=/; max-age=31536000; SameSite=Lax`;
+                } else {
+                    document.cookie = 'dashboardStartDate=; path=/; max-age=0; SameSite=Lax';
+                    document.cookie = 'dashboardEndDate=; path=/; max-age=0; SameSite=Lax';
+                }
+            }
+
+            function updateTrigger() {
+                const isCustom = activePeriod === 'custom' && hasValidRange(activeStartDate, activeEndDate);
+                const label = isCustom
+                    ? `${formatDate(activeStartDate)} – ${formatDate(activeEndDate)}`
+                    : periodLabels[activePeriod] || periodLabels.month;
+                triggerLabel.textContent = label;
+                trigger.setAttribute('aria-label', `Filter periode: ${label}`);
+                trigger.title = `Filter periode: ${label}`;
+                presetButtons.forEach((button) => {
+                    button.setAttribute('aria-pressed', String(button.dataset.periodPreset === activePeriod));
+                });
+            }
+
+            function updateCalendarSelection() {
+                const isComplete = hasValidRange(draftStartDate, draftEndDate);
+                applyButton.disabled = !isComplete;
+                if (!draftStartDate) {
+                    selectionLabel.textContent = 'Pilih tanggal mulai';
+                } else if (!draftEndDate) {
+                    selectionLabel.textContent = `Mulai: ${formatDate(draftStartDate)} · Pilih tanggal akhir`;
+                } else {
+                    selectionLabel.textContent = `${formatDate(draftStartDate)} – ${formatDate(draftEndDate)}`;
+                }
+            }
+
+            function setCalendarExpanded(expanded, focusDate = '') {
+                calendarExpanded = expanded;
+                customToggle.setAttribute('aria-expanded', String(expanded));
+                calendarPanel.hidden = !expanded;
+                menu.classList.toggle('has-calendar', expanded);
+                if (expanded) {
+                    updateCalendarSelection();
+                    renderCalendar(focusDate);
+                }
+            }
+
+            function renderCalendar(focusDate = '') {
+                const monthCount = compactCalendar ? 1 : 2;
+                const renderedDates = [];
+                calendarContainer.replaceChildren();
+
+                for (let monthOffset = 0; monthOffset < monthCount; monthOffset += 1) {
+                    const monthDate = addMonths(calendarCursor, monthOffset);
+                    const year = monthDate.getUTCFullYear();
+                    const month = monthDate.getUTCMonth();
+                    const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+                    // Geser indeks hari agar posisi Minggu menjadi kolom terakhir setelah Senin.
+                    const firstWeekday = (monthDate.getUTCDay() + 6) % 7;
+                    const monthSection = document.createElement('div');
+                    monthSection.className = 'period-calendar-month';
+
+                    const monthTitle = document.createElement('p');
+                    monthTitle.className = 'period-calendar-month-title';
+                    monthTitle.textContent = new Intl.DateTimeFormat('id-ID', {
+                        month: 'long', year: 'numeric', timeZone: 'UTC'
+                    }).format(monthDate);
+                    monthSection.appendChild(monthTitle);
+
+                    const weekdays = document.createElement('div');
+                    weekdays.className = 'period-calendar-weekdays';
+                    weekdayShortNames.forEach((name, index) => {
+                        const weekday = document.createElement('span');
+                        weekday.className = 'period-calendar-weekday';
+                        weekday.textContent = name;
+                        weekday.title = weekdayNames[index];
+                        weekday.setAttribute('aria-hidden', 'true');
+                        weekdays.appendChild(weekday);
+                    });
+                    monthSection.appendChild(weekdays);
+
+                    const days = document.createElement('div');
+                    days.className = 'period-calendar-days';
+                    for (let blank = 0; blank < firstWeekday; blank += 1) {
+                        const empty = document.createElement('span');
+                        empty.className = 'period-calendar-empty';
+                        empty.setAttribute('aria-hidden', 'true');
+                        days.appendChild(empty);
+                    }
+
+                    for (let day = 1; day <= daysInMonth; day += 1) {
+                        const date = new Date(Date.UTC(year, month, day));
+                        const value = toDateValue(date);
+                        const dayButton = document.createElement('button');
+                        const isEndpoint = value === draftStartDate || value === draftEndDate;
+                        dayButton.className = 'period-calendar-day';
+                        dayButton.type = 'button';
+                        dayButton.dataset.date = value;
+                        dayButton.textContent = String(day);
+                        dayButton.setAttribute('aria-label', formatDate(value, {
+                            weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+                        }));
+                        dayButton.setAttribute('aria-pressed', String(isEndpoint));
+                        dayButton.tabIndex = -1;
+                        if (value === todayValue) dayButton.classList.add('is-today');
+                        if (draftStartDate && draftEndDate && value > draftStartDate && value < draftEndDate) {
+                            dayButton.classList.add('is-in-range');
+                        }
+                        if (value === draftStartDate) dayButton.classList.add('is-range-start');
+                        if (value === draftEndDate) dayButton.classList.add('is-range-end');
+                        days.appendChild(dayButton);
+                        renderedDates.push(value);
+                    }
+
+                    monthSection.appendChild(days);
+                    calendarContainer.appendChild(monthSection);
+                }
+
+                const preferredDate = focusDate || draftStartDate || todayValue;
+                const focusTarget = renderedDates.includes(preferredDate)
+                    ? preferredDate
+                    : renderedDates[0];
+                const focusButton = [...calendarContainer.querySelectorAll('[data-date]')]
+                    .find((button) => button.dataset.date === focusTarget);
+                if (focusButton) focusButton.tabIndex = 0;
             }
 
             function syncPeriodLinks() {
@@ -141,26 +324,64 @@
                     try {
                         const destination = new URL(link.href, window.location.href);
                         if (destination.origin === window.location.origin && supportsPeriod(destination.pathname)) {
-                            destination.searchParams.set('period', activePeriod);
+                            applyPeriodToUrl(destination);
                             link.href = destination.toString();
                         }
-                    } catch (e) {}
+                    } catch {
+                        // Biarkan tautan dengan URL tidak valid tanpa perubahan.
+                    }
                 });
             }
 
+            function navigateWithActivePeriod() {
+                if (!supportsPeriod(window.location.pathname)) return;
+                const destination = new URL(window.location.href);
+                applyPeriodToUrl(destination);
+                ['page', 'sales_page', 'products_page'].forEach((page) => destination.searchParams.delete(page));
+                window.location.href = destination.toString();
+            }
+
+            function closeMenu(returnFocus = false) {
+                menu.hidden = true;
+                trigger.setAttribute('aria-expanded', 'false');
+                if (returnFocus) trigger.focus();
+            }
+
+            function openMenu() {
+                menu.hidden = false;
+                trigger.setAttribute('aria-expanded', 'true');
+                if (activePeriod === 'custom') {
+                    draftStartDate = activeStartDate;
+                    draftEndDate = activeEndDate;
+                    calendarCursor = firstOfMonth(dateFromValue(activeStartDate));
+                } else {
+                    draftStartDate = '';
+                    draftEndDate = '';
+                }
+                setCalendarExpanded(activePeriod === 'custom');
+                const currentPreset = presetButtons.find((button) => button.dataset.periodPreset === activePeriod);
+                (currentPreset || customToggle).focus();
+            }
+
+            // Sinkronkan periode aktif ke URL dan cookie agar navigasi antarhalaman tetap konsisten.
+            saveActivePeriod();
+            updateTrigger();
+            if (supportsPeriod(window.location.pathname)) {
+                const currentUrl = new URL(window.location.href);
+                applyPeriodToUrl(currentUrl);
+                window.history.replaceState({}, '', `${currentUrl.pathname}${currentUrl.search}${currentUrl.hash}`);
+            }
             syncPeriodLinks();
 
             document.addEventListener('click', (event) => {
                 if (event.defaultPrevented || event.button !== 0
                     || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-
                 const link = event.target instanceof Element ? event.target.closest('a[href]') : null;
-                if (!link || link.target && link.target.toLowerCase() !== '_self'
-                    || link.hasAttribute('download')) return;
+                if (!link || (link.target && link.target.toLowerCase() !== '_self') || link.hasAttribute('download')) return;
 
                 const destination = new URL(link.href, window.location.href);
                 if (destination.origin === window.location.origin && supportsPeriod(destination.pathname)) {
-                    destination.searchParams.set('period', activePeriod);
+                    applyPeriodToUrl(destination);
                     link.href = destination.toString();
                 }
             }, true);
@@ -168,9 +389,23 @@
             document.addEventListener('submit', (event) => {
                 const form = event.target;
                 if (!(form instanceof HTMLFormElement) || form.method.toLowerCase() !== 'get') return;
-
                 const destination = new URL(form.action, window.location.href);
                 if (!supportsPeriod(destination.pathname)) return;
+
+                const syncHiddenInput = (name, value) => {
+                    let input = form.querySelector(`input[name="${name}"]`);
+                    if (activePeriod !== 'custom') {
+                        input?.remove();
+                        return;
+                    }
+                    if (!input) {
+                        input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = name;
+                        form.appendChild(input);
+                    }
+                    input.value = value;
+                };
 
                 let periodInput = form.querySelector('input[name="period"]');
                 if (!periodInput) {
@@ -180,26 +415,124 @@
                     form.appendChild(periodInput);
                 }
                 periodInput.value = activePeriod;
+                syncHiddenInput('start_date', activeStartDate);
+                syncHiddenInput('end_date', activeEndDate);
             }, true);
 
-            // -------------------------------------------------------
-            // Perbarui penyimpanan dan data saat periode pilihan berubah.
-            // -------------------------------------------------------
-            periodSelect.addEventListener('change', function () {
-                const selectedPeriod = this.value; // Periode yang dipilih.
-                activePeriod = selectedPeriod;
+            trigger.addEventListener('click', () => {
+                if (menu.hidden) openMenu();
+                else closeMenu();
+            });
 
-                // Simpan pilihan ke cookie, yang juga menjadi sumber state server.
-                document.cookie = `dashboardPeriod=${selectedPeriod}; path=/; max-age=31536000; SameSite=Lax`;
-                syncPeriodLinks();
+            presetButtons.forEach((button) => {
+                button.addEventListener('click', () => {
+                    activePeriod = button.dataset.periodPreset;
+                    activeStartDate = '';
+                    activeEndDate = '';
+                    draftStartDate = '';
+                    draftEndDate = '';
+                    saveActivePeriod();
+                    updateTrigger();
+                    syncPeriodLinks();
+                    closeMenu();
+                    navigateWithActivePeriod();
+                });
+            });
 
-                // Muat ulang data jika halaman mendukung filter periode.
-                if (supportsPeriod(window.location.pathname)) {
-                    const url = new URL(window.location.href);
-                    url.searchParams.set('period', selectedPeriod);
-                    ['page', 'sales_page', 'products_page'].forEach((page) => url.searchParams.delete(page));
-                    window.location.href = url.toString();
+            customToggle.addEventListener('click', () => {
+                const willExpand = calendarPanel.hidden;
+                if (willExpand && activePeriod === 'custom') {
+                    draftStartDate = activeStartDate;
+                    draftEndDate = activeEndDate;
                 }
+                setCalendarExpanded(willExpand, draftStartDate);
+                if (willExpand) {
+                    const selectedDay = [...calendarContainer.querySelectorAll('[data-date]')]
+                        .find((button) => button.dataset.date === draftStartDate);
+                    (selectedDay || calendarContainer.querySelector('[data-date]'))?.focus();
+                }
+            });
+
+            menu.querySelector('[data-calendar-nav="previous"]').addEventListener('click', () => {
+                calendarCursor = addMonths(calendarCursor, -1);
+                renderCalendar();
+                menu.querySelector('[data-calendar-nav="previous"]').focus();
+            });
+            menu.querySelector('[data-calendar-nav="next"]').addEventListener('click', () => {
+                calendarCursor = addMonths(calendarCursor, 1);
+                renderCalendar();
+                menu.querySelector('[data-calendar-nav="next"]').focus();
+            });
+
+            calendarContainer.addEventListener('click', (event) => {
+                const dayButton = event.target instanceof Element ? event.target.closest('[data-date]') : null;
+                if (!dayButton) return;
+                const selectedDate = dayButton.dataset.date;
+                if (!draftStartDate || draftEndDate || selectedDate < draftStartDate) {
+                    draftStartDate = selectedDate;
+                    draftEndDate = '';
+                } else {
+                    draftEndDate = selectedDate;
+                }
+                updateCalendarSelection();
+                renderCalendar(selectedDate);
+                [...calendarContainer.querySelectorAll('[data-date]')]
+                    .find((button) => button.dataset.date === selectedDate)?.focus();
+            });
+
+            calendarContainer.addEventListener('keydown', (event) => {
+                const dayButton = event.target instanceof Element ? event.target.closest('[data-date]') : null;
+                if (!dayButton) return;
+                const offsets = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
+                let offset = offsets[event.key];
+                if (event.key === 'Home' || event.key === 'End') {
+                    // Home dan End mengikuti awal minggu Senin seperti susunan kalender.
+                    const day = dateFromValue(dayButton.dataset.date).getUTCDay();
+                    offset = event.key === 'Home' ? -((day + 6) % 7) : (6 - ((day + 6) % 7));
+                }
+                if (offset === undefined) return;
+                event.preventDefault();
+
+                const nextDate = toDateValue(addDays(dateFromValue(dayButton.dataset.date), offset));
+                const nextDateMonth = firstOfMonth(dateFromValue(nextDate));
+                const lastVisibleMonth = addMonths(calendarCursor, compactCalendar ? 0 : 1);
+                if (nextDateMonth < calendarCursor || nextDateMonth > lastVisibleMonth) {
+                    calendarCursor = nextDateMonth;
+                }
+                renderCalendar(nextDate);
+                [...calendarContainer.querySelectorAll('[data-date]')]
+                    .find((button) => button.dataset.date === nextDate)?.focus();
+            });
+
+            applyButton.addEventListener('click', () => {
+                if (!hasValidRange(draftStartDate, draftEndDate)) return;
+                activePeriod = 'custom';
+                activeStartDate = draftStartDate;
+                activeEndDate = draftEndDate;
+                saveActivePeriod();
+                updateTrigger();
+                syncPeriodLinks();
+                closeMenu();
+                navigateWithActivePeriod();
+            });
+
+            document.addEventListener('click', (event) => {
+                // Target tanggal dapat terlepas saat kalender dirender ulang sebelum event sampai ke document.
+                const eventPath = typeof event.composedPath === 'function' ? event.composedPath() : [];
+                const clickedInsideFilter = filter.contains(event.target) || eventPath.includes(filter);
+                if (!menu.hidden && !clickedInsideFilter) closeMenu();
+            });
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && !menu.hidden) {
+                    event.preventDefault();
+                    closeMenu(true);
+                }
+            });
+            window.addEventListener('resize', () => {
+                const nextCompactState = window.innerWidth <= 640;
+                if (nextCompactState === compactCalendar) return;
+                compactCalendar = nextCompactState;
+                if (calendarExpanded) renderCalendar();
             });
         })();
 

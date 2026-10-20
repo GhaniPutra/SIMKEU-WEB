@@ -41,6 +41,22 @@ class DashboardTest extends TestCase
         $response->assertSee('trendChart');
     }
 
+    public function test_global_period_filter_has_one_trigger_and_an_embedded_custom_calendar(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $response = $this->get(route('dashboard'))->assertOk();
+        $html = $response->getContent();
+
+        $this->assertSame(1, substr_count($html, 'id="global-period-trigger"'));
+        $this->assertSame(4, substr_count($html, 'data-period-preset='));
+        $this->assertStringContainsString('id="global-period-menu"', $html);
+        $this->assertStringContainsString('id="global-period-calendar-panel"', $html);
+        $this->assertStringNotContainsString('id="global-period-start"', $html);
+        $this->assertStringNotContainsString('id="global-period-end"', $html);
+        $this->assertStringNotContainsString('id="global-period-custom"', $html);
+    }
+
     public function test_dashboard_does_not_show_daily_transaction_banner(): void
     {
         $user = User::factory()->create();
@@ -218,6 +234,151 @@ class DashboardTest extends TestCase
         $this->assertSame(400, $response->viewData('totalRevenueMonth'));
         $this->assertSame(50, $response->viewData('totalExpenseMonth'));
         $this->assertSame(2, $response->viewData('transactionsPeriod'));
+    }
+
+    public function test_presets_end_today_and_week_starts_on_monday(): void
+    {
+        $this->freezeDashboardDate();
+        $user = User::factory()->create();
+        $this->actingAs($user);
+        $this->createSale($user, 11, Carbon::parse('2026-10-11 12:00:00', 'Asia/Jakarta'));
+        $this->createSale($user, 100, Carbon::parse('2026-10-12 09:00:00', 'Asia/Jakarta'));
+        $this->createSale($user, 300, Carbon::parse('2026-10-14 09:00:00', 'Asia/Jakarta'));
+        $this->createSale($user, 500, Carbon::parse('2026-10-15 09:00:00', 'Asia/Jakarta'));
+        $this->createExpense($user, 1, '2026-10-11');
+        $this->createExpense($user, 2, '2026-10-12');
+        $this->createExpense($user, 3, '2026-10-14');
+        $this->createExpense($user, 4, '2026-10-15');
+
+        $this->get(route('dashboard', ['period' => 'month']))
+            ->assertOk()
+            ->assertViewHas('totalRevenueMonth', 411)
+            ->assertViewHas('totalExpenseMonth', 6)
+            ->assertViewHas('transactionsPeriod', 3);
+        $this->get(route('dashboard', ['period' => 'week']))
+            ->assertOk()
+            ->assertViewHas('totalRevenueMonth', 400)
+            ->assertViewHas('totalExpenseMonth', 5)
+            ->assertViewHas('transactionsPeriod', 2);
+        $this->get(route('dashboard', ['period' => 'today']))
+            ->assertOk()
+            ->assertViewHas('totalRevenueMonth', 300)
+            ->assertViewHas('totalExpenseMonth', 3)
+            ->assertViewHas('transactionsPeriod', 1);
+        $this->get(route('dashboard', ['period' => 'all']))
+            ->assertOk()
+            ->assertViewHas('totalRevenueMonth', 911)
+            ->assertViewHas('totalExpenseMonth', 10)
+            ->assertViewHas('transactionsPeriod', 4);
+    }
+
+    public function test_custom_date_ranges_include_both_endpoints_across_month_and_year_boundaries(): void
+    {
+        $this->freezeDashboardDate();
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $this->createSale($user, 10, Carbon::parse('2026-06-24 23:59:59', 'Asia/Jakarta'));
+        $this->createSale($user, 100, Carbon::parse('2026-06-25 00:00:00', 'Asia/Jakarta'));
+        $this->createSale($user, 200, Carbon::parse('2026-07-05 23:59:59', 'Asia/Jakarta'));
+        $this->createSale($user, 20, Carbon::parse('2026-07-06 00:00:00', 'Asia/Jakarta'));
+        $this->createExpense($user, 10, '2026-06-24');
+        $this->createExpense($user, 25, '2026-06-25');
+        $this->createExpense($user, 45, '2026-07-05');
+        $this->createExpense($user, 20, '2026-07-06');
+
+        $monthRangeResponse = $this->get(route('dashboard', [
+            'period' => 'custom',
+            'start_date' => '2026-06-25',
+            'end_date' => '2026-07-05',
+        ]))->assertOk();
+
+        $monthRangeResponse
+            ->assertViewHas('periodLabel', '25 Jun 2026 – 5 Jul 2026')
+            ->assertViewHas('totalRevenueMonth', 300)
+            ->assertViewHas('totalExpenseMonth', 70)
+            ->assertViewHas('transactionsPeriod', 2);
+        $this->assertSame(11, count($monthRangeResponse->viewData('trendLabels')));
+        $this->assertSame('25/06', $monthRangeResponse->viewData('trendLabels')[0]);
+        $this->assertSame('05/07', $monthRangeResponse->viewData('trendLabels')[10]);
+        $this->assertSame(300.0, array_sum($monthRangeResponse->viewData('revenueTrendData')));
+        $this->assertSame(70.0, array_sum($monthRangeResponse->viewData('expenseTrendData')));
+
+        $this->createSale($user, 300, Carbon::parse('2025-12-20 00:00:00', 'Asia/Jakarta'));
+        $this->createSale($user, 400, Carbon::parse('2026-01-10 23:59:59', 'Asia/Jakarta'));
+        $this->createSale($user, 50, Carbon::parse('2026-01-11 00:00:00', 'Asia/Jakarta'));
+        $this->createExpense($user, 30, '2025-12-20');
+        $this->createExpense($user, 40, '2026-01-10');
+        $this->createExpense($user, 50, '2026-01-11');
+
+        $yearRangeResponse = $this->get(route('dashboard', [
+            'period' => 'custom',
+            'start_date' => '2025-12-20',
+            'end_date' => '2026-01-10',
+        ]))->assertOk();
+
+        $yearRangeResponse
+            ->assertViewHas('totalRevenueMonth', 700)
+            ->assertViewHas('totalExpenseMonth', 70)
+            ->assertViewHas('transactionsPeriod', 2);
+        $this->assertCount(22, $yearRangeResponse->viewData('trendLabels'));
+        $this->assertSame(700.0, array_sum($yearRangeResponse->viewData('revenueTrendData')));
+        $this->assertSame(70.0, array_sum($yearRangeResponse->viewData('expenseTrendData')));
+    }
+
+    public function test_long_custom_range_uses_monthly_chart_buckets_and_keeps_empty_months(): void
+    {
+        $this->freezeDashboardDate();
+        $user = User::factory()->create();
+        $this->actingAs($user);
+        $this->createSale($user, 5, Carbon::parse('2026-01-09 23:59:59', 'Asia/Jakarta'));
+        $this->createSale($user, 100, Carbon::parse('2026-01-10 09:00:00', 'Asia/Jakarta'));
+        $this->createSale($user, 200, Carbon::parse('2026-05-10 09:00:00', 'Asia/Jakarta'));
+        $this->createSale($user, 7, Carbon::parse('2026-05-11 00:00:00', 'Asia/Jakarta'));
+
+        $response = $this->get(route('dashboard', [
+            'period' => 'custom',
+            'start_date' => '2026-01-10',
+            'end_date' => '2026-05-10',
+        ]))->assertOk();
+
+        $this->assertSame(['01/2026', '02/2026', '03/2026', '04/2026', '05/2026'], $response->viewData('trendLabels'));
+        $this->assertSame([100.0, 0.0, 0.0, 0.0, 200.0], $response->viewData('revenueTrendData'));
+        $this->assertSame(300, $response->viewData('totalRevenueMonth'));
+    }
+
+    public function test_invalid_custom_range_is_rejected_with_clear_validation_feedback(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $this->from(route('dashboard'))
+            ->get(route('dashboard', [
+                'period' => 'custom',
+                'start_date' => '2026-07-10',
+                'end_date' => '2026-07-05',
+            ]))
+            ->assertRedirect(route('dashboard'))
+            ->assertSessionHasErrors(['end_date']);
+    }
+
+    public function test_empty_custom_range_returns_zero_chart_buckets_without_an_error(): void
+    {
+        $this->freezeDashboardDate();
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $response = $this->get(route('dashboard', [
+            'period' => 'custom',
+            'start_date' => '2026-10-01',
+            'end_date' => '2026-10-03',
+        ]))->assertOk();
+
+        $this->assertSame(0, $response->viewData('totalRevenueMonth'));
+        $this->assertSame(0, $response->viewData('totalExpenseMonth'));
+        $this->assertSame([0.0, 0.0, 0.0], $response->viewData('revenueTrendData'));
+        $this->assertSame([0.0, 0.0, 0.0], $response->viewData('expenseTrendData'));
+        $this->assertSame([], $response->viewData('expenseCategoryData'));
     }
 
     private function freezeDashboardDate(): void

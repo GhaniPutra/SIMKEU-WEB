@@ -100,15 +100,26 @@ class DashboardController extends Controller
         $revenueTrendData = [];
         $expenseTrendData = [];
 
+        // Rentang custom yang panjang diringkas per bulan agar grafik tetap ringan.
+        $customChartUsesMonths = $period === 'custom'
+            && $periodStart->diffInDays($periodEnd->copy()->startOfDay()) >= 90;
+
         // Bentuk data grafik bulanan, harian, atau ringkasan hari ini.
-        if ($period === 'all') {
+        if ($period === 'all' || $customChartUsesMonths) {
             $driver = DB::connection()->getDriverName();
             $saleMonth = match ($driver) {
                 'mysql', 'mariadb' => "DATE_FORMAT(transaction_date, '%Y-%m')",
                 'pgsql' => "TO_CHAR(transaction_date, 'YYYY-MM')",
                 default => "strftime('%Y-%m', transaction_date)",
             };
-            $revenueByMonth = Sale::query()
+            $revenueQuery = Sale::query();
+            $expenseQuery = Expense::query();
+            if ($customChartUsesMonths) {
+                PeriodFilter::apply($revenueQuery, 'transaction_date', $periodStart, $periodEnd);
+                PeriodFilter::apply($expenseQuery, 'expense_date', $periodStart->toDateString(), $periodEnd->toDateString());
+            }
+
+            $revenueByMonth = $revenueQuery
                 ->selectRaw("$saleMonth as month_key, SUM(total) as amount")
                 ->groupByRaw($saleMonth)
                 ->orderBy('month_key')
@@ -118,16 +129,23 @@ class DashboardController extends Controller
                 'pgsql' => "TO_CHAR(expense_date, 'YYYY-MM')",
                 default => "strftime('%Y-%m', expense_date)",
             };
-            $expenseByMonth = Expense::query()
+            $expenseByMonth = $expenseQuery
                 ->selectRaw("$expenseMonth as month_key, SUM(amount) as amount")
                 ->groupByRaw($expenseMonth)
                 ->orderBy('month_key')
                 ->pluck('amount', 'month_key');
-            $months = $revenueByMonth->keys()->merge($expenseByMonth->keys())->unique()->sort()->values();
-            if ($months->isNotEmpty()) {
-                $firstMonth = Carbon::createFromFormat('!Y-m', $months->first());
-                $lastMonth = Carbon::createFromFormat('!Y-m', $months->last());
-                for ($month = $firstMonth; $month->lte($lastMonth); $month->addMonth()) {
+
+            if ($customChartUsesMonths) {
+                $firstMonth = $periodStart->copy()->startOfMonth();
+                $lastMonth = $periodEnd->copy()->startOfMonth();
+            } else {
+                $months = $revenueByMonth->keys()->merge($expenseByMonth->keys())->unique()->sort()->values();
+                $firstMonth = $months->isNotEmpty() ? Carbon::createFromFormat('!Y-m', $months->first()) : null;
+                $lastMonth = $months->isNotEmpty() ? Carbon::createFromFormat('!Y-m', $months->last()) : null;
+            }
+
+            if ($firstMonth && $lastMonth) {
+                for ($month = $firstMonth->copy(); $month->lte($lastMonth); $month->addMonth()) {
                     $key = $month->format('Y-m');
                     $trendLabels[] = $month->format('m/Y');
                     $revenueTrendData[] = (float) ($revenueByMonth[$key] ?? 0);
@@ -143,7 +161,9 @@ class DashboardController extends Controller
             // Rentang grafik harian berakhir pada tanggal hari ini, bukan akhir
             // minggu/bulan kalender, agar tanggal mendatang tidak ikut ditampilkan.
             $chartStart = $periodStart->copy()->startOfDay();
-            $chartEnd = $periodEnd->copy()->min($now)->startOfDay();
+            $chartEnd = $period === 'custom'
+                ? $periodEnd->copy()->startOfDay()
+                : $periodEnd->copy()->min($now)->startOfDay();
             $revenueByDay = PeriodFilter::apply(
                 Sale::query(),
                 'transaction_date',
