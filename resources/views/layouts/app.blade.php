@@ -116,7 +116,7 @@
                 <li class="nav-item"><details {{ $isDistributionOpen ? 'open' : '' }}>
                     <summary class="nav-link {{ $isDistributionOpen ? 'active' : '' }}"><span class="nav-icon"><i class="fas fa-truck-fast"></i></span><span class="nav-label">Distribusi Stok</span><i class="fas fa-chevron-right nav-chevron" aria-hidden="true"></i></summary>
                     <div class="nav-submenu">
-                        <span class="nav-link" aria-disabled="true" title="Halaman akan dikembangkan">Riwayat Distribusi</span>
+                        <a href="{{ route('stock-allocations.history') }}" class="nav-link {{ request()->routeIs('stock-allocations.history') ? 'active' : '' }}" @if(request()->routeIs('stock-allocations.history')) aria-current="page" @endif>Riwayat Distribusi</a>
                     </div>
                 </details></li>
                 @endif
