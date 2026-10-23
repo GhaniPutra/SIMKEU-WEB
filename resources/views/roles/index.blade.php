@@ -134,7 +134,7 @@
 
         <aside class="roles-owner-note">
             <span><i class="fas fa-circle-info"></i></span>
-            <p><strong>Catatan:</strong> pemilik toko selalu memiliki akses penuh. Role bawaan tidak dapat dihapus, tetapi izinnya bisa disesuaikan.</p>
+            <p><strong>Pemilik utama tidak memakai role pegawai</strong> dan selalu memiliki akses penuh. Role di halaman ini hanya mengatur akses akun pegawai. Ubah data diri atau data usaha melalui <a href="{{ route('profile.edit') }}">Profil & Usaha</a>. Role bawaan tidak dapat dihapus, tetapi izinnya bisa disesuaikan.</p>
         </aside>
     </div>
 @endsection

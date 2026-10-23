@@ -249,6 +249,8 @@
 .roles-owner-note > span { color: var(--role-primary); }
 .roles-owner-note p { margin: 0; font-size: .75rem; line-height: 1.6; }
 .roles-owner-note strong { color: var(--role-ink); }
+.roles-owner-note a { color: var(--role-primary); font-weight: 600; text-underline-offset: 3px; }
+.roles-owner-note a:focus-visible { outline: 3px solid rgb(44 116 228 / 28%); outline-offset: 2px; }
 
 /* Role editor */
 .role-editor { display: grid; gap: 18px; }

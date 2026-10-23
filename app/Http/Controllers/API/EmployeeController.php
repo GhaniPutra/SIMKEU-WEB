@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Role;
 use App\Models\Sale;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
@@ -181,7 +182,12 @@ class EmployeeController extends Controller
                 return response()->json(['success' => false, 'message' => 'Akun pemilik tidak dapat dihapus.'], 403);
             }
             $name = $employee->name;
+            $photoPath = $employee->profile_photo_path;
             $employee->delete();
+
+            if ($photoPath) {
+                Storage::disk('public')->delete($photoPath);
+            }
 
             return response()->json([
                 'success' => true,

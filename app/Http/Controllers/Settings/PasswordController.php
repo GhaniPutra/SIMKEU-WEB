@@ -4,18 +4,20 @@ namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\PasswordUpdateRequest;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Inertia\Inertia;
-use Inertia\Response;
+use Illuminate\Http\Request;
 
 class PasswordController extends Controller
 {
     /**
      * Show the user's password settings page.
      */
-    public function edit(): Response
+    public function edit(Request $request): View
     {
-        return Inertia::render('settings/password');
+        return view('settings.profile', [
+            'user' => $request->user(),
+        ]);
     }
 
     /**
@@ -27,6 +29,6 @@ class PasswordController extends Controller
             'password' => $request->password,
         ]);
 
-        return back();
+        return to_route('user-password.edit')->with('success', 'Kata sandi berhasil diperbarui.');
     }
 }

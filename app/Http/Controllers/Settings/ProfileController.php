@@ -5,25 +5,30 @@ namespace App\Http\Controllers\Settings;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\ProfileDeleteRequest;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
-use Illuminate\Auth\MustVerifyEmail;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
-use Inertia\Response;
+use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class ProfileController extends Controller
 {
     /**
      * Show the user's profile settings page.
      */
-    public function edit(Request $request): Response
+    public function edit(Request $request): View
     {
-        return Inertia::render('settings/profile', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail
-                && ! $request->user()->hasVerifiedEmail(),
-            'status' => $request->session()->get('status'),
+        return view('settings.profile', [
+            'user' => $request->user(),
         ]);
+    }
+
+    public function editStore(Request $request): View
+    {
+        abort_unless($request->user()->isOwner() && $request->user()->store_id, 403);
+
+        return view('settings.store', ['store' => $request->user()->store]);
     }
 
     /**
@@ -38,10 +43,62 @@ class ProfileController extends Controller
             $user->email_verified_at = null;
         }
 
-        $user->fill($validated);
-        $user->save();
+        unset($validated['profile_photo'], $validated['remove_profile_photo']);
 
-        return to_route('profile.edit');
+        $oldPhotoPath = $user->profile_photo_path;
+        $newPhotoPath = null;
+
+        if ($request->hasFile('profile_photo')) {
+            $newPhotoPath = $request->file('profile_photo')->store("profile-photos/{$user->id}", 'public');
+
+            if (! $newPhotoPath) {
+                return back()->withErrors(['profile_photo' => 'Foto profil gagal disimpan.'])->withInput();
+            }
+
+            $user->profile_photo_path = $newPhotoPath;
+        } elseif ($request->boolean('remove_profile_photo')) {
+            $user->profile_photo_path = null;
+        }
+
+        $user->fill($validated);
+
+        try {
+            $user->save();
+        } catch (Throwable $exception) {
+            if ($newPhotoPath) {
+                Storage::disk('public')->delete($newPhotoPath);
+            }
+
+            throw $exception;
+        }
+
+        if ($oldPhotoPath && $oldPhotoPath !== $user->profile_photo_path) {
+            Storage::disk('public')->delete($oldPhotoPath);
+        }
+
+        return to_route('profile.edit')->with('success', 'Data diri berhasil diperbarui.');
+    }
+
+    public function updateStore(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        abort_unless($user->isOwner() && $user->store_id, 403);
+
+        $validated = $request->validate([
+            'store_name' => ['required', 'string', 'max:100'],
+            'store_address' => ['nullable', 'string', 'max:2000'],
+            'store_phone' => ['nullable', 'string', 'max:20'],
+        ]);
+
+        $store = $user->store;
+        abort_unless($store, 404);
+        $store->fill([
+            'name' => $validated['store_name'],
+            'address' => $validated['store_address'] ?? null,
+            'phone' => $validated['store_phone'] ?? null,
+        ])->save();
+
+        return to_route('profile.store.edit')->with('success', 'Data usaha berhasil diperbarui.');
     }
 
     /**
@@ -50,10 +107,15 @@ class ProfileController extends Controller
     public function destroy(ProfileDeleteRequest $request): RedirectResponse
     {
         $user = $request->user();
+        $photoPath = $user->profile_photo_path;
 
         Auth::logout();
 
         $user->delete();
+
+        if ($photoPath) {
+            Storage::disk('public')->delete($photoPath);
+        }
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

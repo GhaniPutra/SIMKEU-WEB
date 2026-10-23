@@ -11,6 +11,7 @@ use App\Support\PeriodFilter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class EmployeeController extends Controller
@@ -108,7 +109,13 @@ class EmployeeController extends Controller
     public function destroy(User $employee)
     {
         abort_if($employee->isOwner(), 403, 'Akun pemilik tidak dapat dihapus dari daftar pegawai.');
+        $photoPath = $employee->profile_photo_path;
         $employee->delete();
+
+        if ($photoPath) {
+            Storage::disk('public')->delete($photoPath);
+        }
+
         return redirect()->route('employees.index')->with('success', 'User berhasil dihapus.');
     }
 

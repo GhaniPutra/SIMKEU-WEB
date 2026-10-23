@@ -8,6 +8,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -35,8 +36,12 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $hidden = [
         'password',
+        'profile_photo_path',
         'remember_token',
     ];
+
+    /** @var list<string> */
+    protected $appends = ['avatar'];
 
     /**
      * The attributes that should be cast.
@@ -101,6 +106,13 @@ class User extends Authenticatable implements MustVerifyEmail
         }
 
         return $role?->name ?? 'Pegawai';
+    }
+
+    public function getAvatarAttribute(): ?string
+    {
+        return $this->profile_photo_path
+            ? Storage::disk('public')->url($this->profile_photo_path)
+            : null;
     }
 
     public function canAssignRole(Role $role): bool

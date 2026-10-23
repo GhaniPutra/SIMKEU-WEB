@@ -9,6 +9,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('settings/store', [ProfileController::class, 'editStore'])->name('profile.store.edit');
+    Route::patch('settings/store', [ProfileController::class, 'updateStore'])->name('profile.store.update');
 });
 
 Route::middleware(['auth'])->group(function () {

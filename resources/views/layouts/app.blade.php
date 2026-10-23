@@ -56,6 +56,7 @@
     <link rel="stylesheet" href="{{ asset('css/app-animations.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout/layout-overrides.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout/status-colors.css') }}?v=1">
+    @yield('page-css')
 </head>
 
 <body class="{{ $isAuthPage ? 'auth-page' : '' }} preload-transitions">
@@ -148,7 +149,13 @@
         @auth
             <div class="sidebar-footer">
                 <div class="sidebar-user">
-                    <div class="user-avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</div>
+                    <div class="user-avatar">
+                        @if(Auth::user()->avatar)
+                            <img src="{{ Auth::user()->avatar }}" alt="">
+                        @else
+                            {{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
+                        @endif
+                    </div>
                     <div class="user-info">
                         <div class="user-name">{{ Auth::user()->name }}</div>
                         <div class="user-role">{{ Auth::user()->role_name }}</div>
@@ -319,12 +326,18 @@
 
             @auth
                 {{-- Tampilkan avatar dan nama user yang sedang login --}}
-                <div class="topbar-user">
+                <a href="{{ route('profile.edit') }}" class="topbar-user" aria-label="Buka profil {{ Auth::user()->name }}" title="Profil & Usaha">
                     {{-- Avatar: huruf pertama nama user sebagai inisial --}}
-                    <div class="avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</div>
+                    <div class="avatar">
+                        @if(Auth::user()->avatar)
+                            <img src="{{ Auth::user()->avatar }}" alt="">
+                        @else
+                            {{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
+                        @endif
+                    </div>
                     {{-- Nama user: hanya tampil di layar >= sm (≥576px) --}}
                     <span class="uname d-none d-sm-block">{{ Auth::user()->name }}</span>
-                </div>
+                </a>
             @endauth
         </div>
     </header>

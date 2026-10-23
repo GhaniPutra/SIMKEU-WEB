@@ -1,7 +1,5 @@
-import { Link } from '@inertiajs/react';
 import type { PropsWithChildren } from 'react';
 import Heading from '@/components/heading';
-import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn, toUrl } from '@/lib/utils';
@@ -12,17 +10,17 @@ import { edit as editPassword } from '@/routes/user-password';
 
 const sidebarNavItems: NavItem[] = [
     {
-        title: 'Profile',
+        title: 'Data diri',
         href: edit(),
         icon: null,
     },
     {
-        title: 'Password',
+        title: 'Kata sandi',
         href: editPassword(),
         icon: null,
     },
     {
-        title: 'Appearance',
+        title: 'Tampilan',
         href: editAppearance(),
         icon: null,
     },
@@ -39,8 +37,8 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
     return (
         <div className="px-4 py-6">
             <Heading
-                title="Settings"
-                description="Manage your profile and account settings"
+                title="Pengaturan akun"
+                description="Kelola profil dan keamanan akun Anda"
             />
 
             <div className="flex flex-col lg:flex-row lg:space-x-12">
@@ -50,22 +48,16 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                         aria-label="Settings"
                     >
                         {sidebarNavItems.map((item, index) => (
-                            <Button
+                            <a
                                 key={`${toUrl(item.href)}-${index}`}
-                                size="sm"
-                                variant="ghost"
-                                asChild
-                                className={cn('w-full justify-start', {
+                                href={toUrl(item.href)}
+                                className={cn('flex w-full items-center rounded-md px-3 py-2 text-sm hover:bg-muted', {
                                     'bg-muted': isCurrentOrParentUrl(item.href),
                                 })}
                             >
-                                <Link href={item.href}>
-                                    {item.icon && (
-                                        <item.icon className="h-4 w-4" />
-                                    )}
-                                    {item.title}
-                                </Link>
-                            </Button>
+                                {item.icon && <item.icon className="mr-2 h-4 w-4" />}
+                                {item.title}
+                            </a>
                         ))}
                     </nav>
                 </aside>
