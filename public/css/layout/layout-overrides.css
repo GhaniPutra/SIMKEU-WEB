@@ -61,7 +61,7 @@
         *:not(.finance-detail):not(.finance-detail *):not([class*="icon"]):not(.fa):not([class*="fa-"]):not(.distribution-history__apply):not(.distribution-history__apply *):not(.distribution-history__badge):not(.distribution-history__badge *):not(.distribution-history__empty):not(.status-color):not(.status-color *):not(.status-text):not(.alert-success):not(.alert-success *):not(.alert-warning):not(.alert-warning *):not(.alert-danger):not(.alert-danger *):not(.text-success):not(.text-warning):not(.text-danger):not(.badge-success):not(.badge-warning):not(.badge-danger),
         *:not(.finance-detail):not(.finance-detail *):not([class*="icon"]):not(.fa):not([class*="fa-"]):not(.distribution-history__apply):not(.distribution-history__apply *):not(.distribution-history__badge):not(.distribution-history__badge *):not(.distribution-history__empty):not(.status-color):not(.status-color *):not(.status-text):not(.alert-success):not(.alert-success *):not(.alert-warning):not(.alert-warning *):not(.alert-danger):not(.alert-danger *):not(.text-success):not(.text-warning):not(.text-danger):not(.badge-success):not(.badge-warning):not(.badge-danger)::before,
         *:not(.finance-detail):not(.finance-detail *):not([class*="icon"]):not(.fa):not([class*="fa-"]):not(.distribution-history__apply):not(.distribution-history__apply *):not(.distribution-history__badge):not(.distribution-history__badge *):not(.distribution-history__empty):not(.status-color):not(.status-color *):not(.status-text):not(.alert-success):not(.alert-success *):not(.alert-warning):not(.alert-warning *):not(.alert-danger):not(.alert-danger *):not(.text-success):not(.text-warning):not(.text-danger):not(.badge-success):not(.badge-warning):not(.badge-danger)::after {
-            color: var(--text-primary) !important;
+            color: var(--text-primary);
         }
 
         #main-content .content-card,
@@ -76,7 +76,7 @@
 
         /* Pertahankan warna navigasi sesuai tampilan layout yang ada. */
         ::placeholder {
-            color: var(--text-muted) !important;
+            color: var(--text-muted);
         }
 
         #sidebar,
@@ -97,31 +97,37 @@
         #sidebar *:not([class*="icon"]):not(.fa):not([class*="fa-"]),
         #sidebar *:not([class*="icon"]):not(.fa):not([class*="fa-"])::before,
         #sidebar *:not([class*="icon"]):not(.fa):not([class*="fa-"])::after {
-            color: #1a1a1a !important;
+            color: #1a1a1a;
         }
 
         #topbar,
         #topbar *:not([class*="icon"]):not(.fa):not([class*="fa-"]),
         #topbar *:not([class*="icon"]):not(.fa):not([class*="fa-"])::before,
         #topbar *:not([class*="icon"]):not(.fa):not([class*="fa-"])::after {
-            color: var(--text-primary) !important;
+            color: var(--text-primary);
         }
 
         #topbar .topbar-breadcrumb > span:not(.page-title) {
-            color: var(--text-muted) !important;
+            color: var(--text-muted);
+        }
+
+        #topbar .topbar-user-menu .topbar-user-dropdown form button,
+        #topbar .topbar-user-menu .topbar-user-dropdown form button span,
+        #topbar .topbar-user-menu .topbar-user-dropdown form button i {
+            color: #ff2c48;
         }
 
         #topbar .notification-empty,
         #topbar .notification-empty span {
-            color: var(--text-muted) !important;
+            color: var(--text-muted);
         }
 
         #topbar *:not([class*="icon"]):not(.fa):not([class*="fa-"]).notification-badge {
-            color: #fff !important;
+            color: #fff;
         }
 
         #topbar .form-select:not(:disabled) {
-            color: #374151 !important;
+            color: #374151;
             background-color: #ffffff !important;
         }
 
@@ -135,7 +141,7 @@
         #topbar input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
         #topbar select,
         #topbar textarea {
-            color: #374151 !important;
+            color: #374151;
             background-color: #ffffff !important;
         }
 
@@ -145,7 +151,7 @@
         .modal textarea::placeholder,
         #topbar input::placeholder,
         #topbar textarea::placeholder {
-            color: #8a94a6 !important;
+            color: #8a94a6;
             opacity: 1;
         }
 
@@ -156,7 +162,7 @@
         }
 
         #topbar ::placeholder {
-            color: var(--text-muted) !important;
+            color: var(--text-muted);
         }
 
         #sidebar .sidebar-nav .nav-link:not(.active) .nav-icon,
@@ -171,7 +177,7 @@
 
         #sidebar .sidebar-nav .nav-link.active,
         #sidebar .sidebar-nav .nav-link.active *:not([class*="icon"]):not(.fa):not([class*="fa-"]) {
-            color: var(--primary) !important;
+            color: var(--primary);
         }
 
         #sidebar .sidebar-nav .nav-link:hover .nav-icon,
@@ -204,7 +210,7 @@
             padding: 8px 14px;
             border: 1px solid #d5deea !important;
             border-radius: 6px;
-            color: #52627a !important;
+            color: #52627a;
             background: #f8fafc;
             font-size: .8rem;
             font-weight: 600;
@@ -217,7 +223,7 @@
         #main-content :is(.btn-reset, .category-reset, .stock-reset, .reset-button):not([class*="icon"]):not(.fa):not([class*="fa-"]):hover,
         #main-content :is(.btn-reset, .category-reset, .stock-reset, .reset-button):not([class*="icon"]):not(.fa):not([class*="fa-"]):focus-visible {
             border-color: var(--blue-300) !important;
-            color: var(--blue-800) !important;
+            color: var(--blue-800);
             background: var(--blue-100);
         }
 
@@ -238,7 +244,7 @@
             --bs-btn-active-color: #ffffff;
             --bs-btn-active-bg: var(--red-700);
             --bs-btn-active-border-color: var(--red-700);
-            color: #ffffff !important;
+            color: #ffffff;
             border-color: var(--red-600) !important;
         }
 
@@ -260,7 +266,7 @@
             --bs-btn-active-color: #ffffff;
             --bs-btn-active-bg: var(--green-700);
             --bs-btn-active-border-color: var(--green-700);
-            color: #ffffff !important;
+            color: #ffffff;
             border-color: var(--green-600) !important;
         }
 
@@ -274,7 +280,7 @@
         #main-content .btn-delete,
         #main-content .btn-action.delete,
         #main-content .btn-pull {
-            color: var(--red-600) !important;
+            color: var(--red-600);
             border-color: var(--red-600) !important;
         }
 
@@ -287,7 +293,7 @@
 
         #main-content .btn-stock,
         #main-content .btn-action.stock {
-            color: var(--green-600) !important;
+            color: var(--green-600);
             border-color: var(--green-600) !important;
         }
 
@@ -316,32 +322,32 @@
         #main-content .btn-give,
         #main-content .btn-pull:hover:not(:disabled),
         #main-content .page-item.active .page-link {
-            color: var(--blue-50) !important;
+            color: var(--blue-50);
         }
 
         #main-content .amount-highlight,
         #main-content .amount-highlight *,
         #main-content .employee-avatar,
         #main-content .badge-kategori {
-            color: var(--blue-50) !important;
+            color: var(--blue-50);
         }
 
         #main-content .badge-kategori-listrik {
-            color: var(--yellow-950) !important;
+            color: var(--yellow-950);
         }
 
         #main-content .employee-tabs .employee-tab.active {
             background-color: var(--blue-600) !important;
-            color: var(--blue-50) !important;
+            color: var(--blue-50);
         }
 
         #main-content .employee-tabs .employee-tab.active i {
-            color: var(--blue-50) !important;
+            color: var(--blue-50);
         }
 
         #main-content .employee-tabs .employee-tab.active .tab-count {
             background: rgba(255, 255, 255, .18) !important;
-            color: var(--blue-50) !important;
+            color: var(--blue-50);
         }
 
         #main-content .employee-tabs .employee-tab:not(.active) .tab-count {
@@ -355,7 +361,7 @@
         }
 
         #main-content :is(button:disabled, [aria-disabled="true"], .disabled) :is(i[class*="fa-"], svg) {
-            color: var(--icon-disabled) !important;
+            color: var(--icon-disabled);
         }
 
         #main-content :focus-visible {

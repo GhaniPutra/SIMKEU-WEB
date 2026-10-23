@@ -536,13 +536,13 @@ textarea.form-control {
 .cart-summary-final span {
     font-size: 0.9rem !important;
     font-weight: 700;
-    color: var(--text-primary) !important;
+    color: var(--text-primary);
 }
 
 .cart-summary-final strong {
     font-size: 1.35rem;
     font-weight: 800;
-    color: var(--primary) !important;
+    color: var(--primary);
 }
 
 /* Tombol Submit */

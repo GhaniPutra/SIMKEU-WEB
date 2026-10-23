@@ -9,14 +9,6 @@
 
 @section('content')
     <div class="account-settings-page">
-        <header class="account-settings-heading">
-            <span class="account-settings-heading-icon account-settings-heading-icon--store" aria-hidden="true"><i class="fas fa-store"></i></span>
-            <div>
-                <span class="account-settings-eyebrow">PENGATURAN</span>
-                <h1 class="account-settings-title">DATA USAHA</h1>
-            </div>
-        </header>
-
         <div class="account-settings-layout">
             @include('settings._navigation')
 
@@ -90,6 +82,31 @@
                             <button type="submit" class="account-save-button"><i class="fas fa-check" aria-hidden="true"></i>Simpan data usaha</button>
                         </div>
                     </form>
+                </section>
+
+                <section class="account-profile-card account-store-card" aria-labelledby="stock-closing-title">
+                    <div class="account-profile-body">
+                        <div class="account-section-heading">
+                            <span class="account-section-icon account-section-icon--store" aria-hidden="true"><i class="fas fa-clock"></i></span>
+                            <h2 id="stock-closing-title">Operasional stok</h2>
+                        </div>
+                        <p>Atur waktu penutupan harian untuk pengembalian stok pegawai. Zona waktu: Asia/Jakarta.</p>
+                        @if(session('stock_closing_success'))
+                            <div class="account-profile-alert" role="status"><i class="fas fa-circle-check" aria-hidden="true"></i><span>{{ session('stock_closing_success') }}</span></div>
+                        @endif
+                        <form method="POST" action="{{ route('store.stock-closing-time.update') }}" class="account-form-grid">
+                            @csrf
+                            @method('PATCH')
+                            <div class="account-field">
+                                <label for="stock-closing-time">Jam penutupan stok harian</label>
+                                <input id="stock-closing-time" type="time" name="stock_closing_time" value="{{ old('stock_closing_time', substr($store->stock_closing_time ?? '23:59:00', 0, 5)) }}" required>
+                                @error('stock_closing_time')<small class="account-field-error" role="alert">{{ $message }}</small>@enderror
+                            </div>
+                            <div class="account-form-actions account-field--wide">
+                                <button type="submit" class="account-save-button"><i class="fas fa-check" aria-hidden="true"></i>Simpan jam penutupan</button>
+                            </div>
+                        </form>
+                    </div>
                 </section>
             </div>
         </div>

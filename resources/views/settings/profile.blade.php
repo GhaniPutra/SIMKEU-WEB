@@ -9,14 +9,6 @@
 
 @section('content')
     <div class="account-settings-page">
-        <header class="account-settings-heading">
-            <span class="account-settings-heading-icon" aria-hidden="true"><i class="fas fa-user-gear"></i></span>
-            <div>
-                <span class="account-settings-eyebrow">AKUN</span>
-                <h1 class="account-settings-title">PROFILE</h1>
-            </div>
-        </header>
-
         <div class="account-settings-layout">
             @include('settings._navigation')
 

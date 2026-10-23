@@ -54,7 +54,7 @@
     @yield('css')
     <link rel="stylesheet" href="{{ asset('css/ui-geometry.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app-animations.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/layout/layout-overrides.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/layout/layout-overrides.css') }}?v=2">
     <link rel="stylesheet" href="{{ asset('css/layout/status-colors.css') }}?v=1">
     @yield('page-css')
 </head>
@@ -335,19 +335,43 @@
             <div class="topbar-divider"></div>
 
             @auth
-                {{-- Tampilkan avatar dan nama user yang sedang login --}}
-                <a href="{{ route('profile.edit') }}" class="topbar-user" aria-label="Buka profil {{ Auth::user()->name }}" title="Profil & Usaha">
-                    {{-- Avatar: huruf pertama nama user sebagai inisial --}}
-                    <div class="avatar">
-                        @if(Auth::user()->avatar)
-                            <img src="{{ Auth::user()->avatar }}" alt="">
-                        @else
-                            {{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
-                        @endif
+                <details class="topbar-user-menu">
+                    <summary class="topbar-user" aria-label="Buka menu akun" title="Menu akun">
+                        <span class="avatar" aria-hidden="true">
+                            @if(Auth::user()->avatar)
+                                <img src="{{ Auth::user()->avatar }}" alt="">
+                            @else
+                                {{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
+                            @endif
+                        </span>
+                    </summary>
+                    <div class="topbar-user-dropdown">
+                        <div class="topbar-user-identity">
+                            <span class="avatar" aria-hidden="true">
+                                @if(Auth::user()->avatar)
+                                    <img src="{{ Auth::user()->avatar }}" alt="">
+                                @else
+                                    {{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
+                                @endif
+                            </span>
+                            <span class="topbar-user-identity-copy">
+                                <strong>{{ Auth::user()->name }}</strong>
+                                <small>{{ Auth::user()->role_name }}</small>
+                            </span>
+                        </div>
+                        <nav aria-label="Menu akun">
+                            <a href="{{ route('profile.edit') }}"><i class="far fa-user" aria-hidden="true"></i><span>Profil saya</span></a>
+                            @if(Auth::user()->isOwner())
+                                <a href="{{ route('profile.store.edit') }}"><i class="fas fa-store" aria-hidden="true"></i><span>Data usaha</span></a>
+                            @endif
+                            <a href="{{ route('user-password.edit') }}"><i class="fas fa-key" aria-hidden="true"></i><span>Kata sandi</span></a>
+                        </nav>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit"><i class="fas fa-sign-out-alt" aria-hidden="true"></i><span style="color: #ff2c48">Keluar</span></button>
+                        </form>
                     </div>
-                    {{-- Nama user: hanya tampil di layar >= sm (≥576px) --}}
-                    <span class="uname d-none d-sm-block">{{ Auth::user()->name }}</span>
-                </a>
+                </details>
             @endauth
         </div>
     </header>
@@ -487,6 +511,20 @@
     @yield('js')
     {{-- Perbarui status alokasi stok pada halaman pengelolaan pegawai. --}}
     <script src="{{ asset('js/layout/employee-stock.js') }}"></script>
+    <script>
+        document.addEventListener('click', (event) => {
+            document.querySelectorAll('.topbar-user-menu[open]').forEach((menu) => {
+                if (!menu.contains(event.target)) menu.open = false;
+            });
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key !== 'Escape') return;
+            document.querySelectorAll('.topbar-user-menu[open]').forEach((menu) => {
+                menu.open = false;
+                menu.querySelector('summary')?.focus();
+            });
+        });
+    </script>
 </body>
 
 </html>

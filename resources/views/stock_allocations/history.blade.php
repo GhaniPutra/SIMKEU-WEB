@@ -19,19 +19,6 @@
             <span class="distribution-history__count">{{ number_format($allocations->total()) }} data</span>
         </header>
 
-        @if(auth()->user()?->isOwner())
-            <form method="POST" action="{{ route('store.stock-closing-time.update') }}" class="distribution-history__filters distribution-history__closing-time">
-                @csrf
-                @method('PATCH')
-                <label class="distribution-history__field">
-                    <span>Jam penutupan harian (Asia/Jakarta)</span>
-                    <input type="time" name="stock_closing_time" value="{{ old('stock_closing_time', substr($store->stock_closing_time ?? '23:59:00', 0, 5)) }}" required>
-                </label>
-                <button type="submit" class="distribution-history__apply">Simpan jam tutup</button>
-                @error('stock_closing_time')<span class="distribution-history__error" role="alert">{{ $message }}</span>@enderror
-            </form>
-        @endif
-
         <form method="GET" action="{{ route('stock-allocations.history') }}" class="distribution-history__filters">
             <label class="distribution-history__field">
                 <span>Pegawai</span>

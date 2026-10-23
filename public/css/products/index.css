@@ -410,7 +410,7 @@
 }
 .category-actions { display: flex; gap: 6px; }
 .btn-action.delete:hover { background: var(--red-600); color: var(--surface-light); border-color: var(--red-600); }
-.category-empty-row { padding: 40px !important; text-align: center; color: var(--text-muted) !important; }
+.category-empty-row { padding: 40px !important; text-align: center; color: var(--text-muted); }
 .category-empty-row i { display: block; margin-bottom: 10px; font-size: 1.8rem; opacity: .45; }
 .category-reset { background: var(--blue-600); }
 
@@ -521,12 +521,12 @@
 }
 .category-modal .btn-modal-save {
     border: 1px solid var(--blue-600);
-    color: #fff !important;
+    color: #fff;
     background: var(--blue-600);
     box-shadow: 0 4px 10px rgba(44, 116, 228, .2);
 }
 .category-modal .btn-modal-save i,
-.modal.category-modal .btn-modal-save span { color: #fff !important; }
+.modal.category-modal .btn-modal-save span { color: #fff; }
 .category-modal .btn-modal-save:hover {
     border-color: var(--blue-700);
     background: var(--blue-700);

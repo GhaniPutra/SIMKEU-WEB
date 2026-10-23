@@ -319,7 +319,7 @@
 
     #filterForm button[type="submit"],
     #filterForm button[type="submit"] i {
-        color: #ffffff !important;
+        color: #ffffff;
     }
 
     .content-card-header,

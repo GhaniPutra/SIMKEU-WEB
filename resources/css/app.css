@@ -250,7 +250,7 @@
     }
 
     ::placeholder {
-        color: var(--muted-foreground) !important;
+        color: var(--muted-foreground);
     }
 
     [data-sidebar="sidebar"],
@@ -267,19 +267,19 @@
     [data-sidebar="header"] *::after,
     [class~="border-sidebar-border/80"],
     [class~="border-sidebar-border/80"] * {
-        color: #1a1a1a !important;
+        color: #1a1a1a;
         border-color: #d3d3d3 !important;
     }
 
     [data-sidebar="sidebar"] ::placeholder,
     [data-sidebar="header"] ::placeholder,
     [class~="border-sidebar-border/80"] ::placeholder {
-        color: #1a1a1a !important;
+        color: #1a1a1a;
     }
 
     [data-sidebar="menu-button"]:not([data-active="true"]) svg,
     [data-sidebar="menu-sub-button"]:not([data-active="true"]) svg {
-        color: var(--icon-nav) !important;
+        color: var(--icon-nav);
         stroke: var(--icon-nav);
     }
 
@@ -287,31 +287,31 @@
     [data-sidebar="menu-button"][data-active="true"] *,
     [data-sidebar="menu-sub-button"][data-active="true"],
     [data-sidebar="menu-sub-button"][data-active="true"] * {
-        color: #235fd2 !important;
+        color: #235fd2;
     }
 
     [data-sidebar="menu-button"][data-active="true"] svg,
     [data-sidebar="menu-sub-button"][data-active="true"] svg {
-        color: var(--icon-nav-active) !important;
+        color: var(--icon-nav-active);
         stroke: var(--icon-nav-active);
     }
 
     [data-sidebar] [data-disabled="true"] svg,
     [data-sidebar] [aria-disabled="true"] svg {
-        color: var(--icon-disabled) !important;
+        color: var(--icon-disabled);
         stroke: var(--icon-disabled) !important;
     }
 
     [data-sidebar] [data-logo-icon] {
-        color: var(--logo-color) !important;
+        color: var(--logo-color);
     }
 
     [data-sidebar] .app-logo-mark [data-logo-icon] {
-        color: var(--logo-icon-color) !important;
+        color: var(--logo-icon-color);
     }
 
     [data-sidebar] svg * {
-        color: inherit !important;
+        color: inherit;
     }
 
     .border-transparent {
