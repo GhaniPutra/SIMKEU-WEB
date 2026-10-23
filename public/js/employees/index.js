@@ -1,99 +1,30 @@
-// Script khusus untuk halaman daftar pegawai di folder employees
+document.addEventListener('DOMContentLoaded', () => {
+    const createModal = document.getElementById('employeeCreateModal');
+    if (createModal && createModal.querySelector('.employee-form-errors') && window.bootstrap?.Modal) {
+        window.bootstrap.Modal.getOrCreateInstance(createModal).show();
+    }
 
-// Pasang event listener saat semua elemen DOM telah selesai dimuat
-document.addEventListener('DOMContentLoaded', function () {
-    const employeeRows = document.querySelectorAll('.employee-row-clickable[data-href]');
-    employeeRows.forEach(function (row) {
-        function openRow(event) {
+    document.querySelectorAll('.employee-row-clickable[data-href]').forEach((row) => {
+        row.addEventListener('click', (event) => {
             if (event.target.closest('a, button, form, input, select, textarea, label')) return;
             window.location.href = row.dataset.href;
-        }
+        });
 
-        row.addEventListener('click', openRow);
-        row.addEventListener('keydown', function (event) {
+        row.addEventListener('keydown', (event) => {
             if (event.key !== 'Enter' && event.key !== ' ') return;
+            if (event.target.closest('a, button, form, input, select, textarea, label')) return;
             event.preventDefault();
-            openRow(event);
+            window.location.href = row.dataset.href;
         });
     });
 
-    const modal = document.getElementById('employeeModal');
-    if (!modal) return;
-    const form = document.getElementById('employeeForm');
-    const modalTitle = document.getElementById('employeeModalLabel');
-    const submitButton = form.querySelector('button[type="submit"]');
-    const nameInput = document.getElementById('employeeName');
-    const emailInput = document.getElementById('employeeEmail');
-    const roleInput = document.getElementById('employeeRole');
-    const passwordInput = document.getElementById('employeePassword');
-    const passwordConfirmationInput = document.getElementById('employeePasswordConfirmation');
-
-    function resetModalForm() {
-        form.reset();
-        const createUrl = document.querySelector('[data-bs-target="#employeeModal"][data-mode="create"]')?.dataset.createUrl || '/employees';
-        form.action = createUrl;
-        form.method = 'POST';
-        const methodInput = form.querySelector('input[name="_method"]');
-        if (methodInput) methodInput.remove();
-        modalTitle.innerHTML = '<i class="fas fa-user-plus"></i> Tambah Pegawai';
-        submitButton.innerHTML = '<i class="fas fa-floppy-disk"></i> Simpan';
-        passwordInput.required = true;
-        passwordConfirmationInput.required = true;
-    }
-
-    const deleteButtons = document.querySelectorAll('.delete-form .btn-delete');
-    deleteButtons.forEach(function (button) {
-        button.addEventListener('click', function (event) {
-            event.preventDefault();
-            const confirmed = confirm('Yakin ingin menghapus pegawai ini?');
-            if (confirmed) {
-                const form = button.closest('form');
-                if (form) {
-                    window.SimkeuLoading?.showSubmitLoadingAfterDelay(button);
-                    form.submit();
-                }
+    document.querySelectorAll('.delete-form').forEach((form) => {
+        form.addEventListener('submit', (event) => {
+            if (!window.confirm('Yakin ingin menghapus pegawai ini?')) {
+                event.preventDefault();
+                return;
             }
+            window.SimkeuLoading?.showSubmitLoadingAfterDelay(form.querySelector('button[type="submit"]'));
         });
-    });
-
-    const createButton = document.querySelector('[data-bs-target="#employeeModal"][data-mode="create"]');
-    if (createButton) {
-        createButton.addEventListener('click', resetModalForm);
-    }
-
-    const editButtons = document.querySelectorAll('.employee-edit');
-    editButtons.forEach(function (button) {
-        button.addEventListener('click', function () {
-            const employeeId = button.dataset.id;
-            const name = button.dataset.name;
-            const email = button.dataset.email;
-            const role = button.dataset.role;
-            const updateUrl = button.dataset.updateUrl;
-
-            form.action = updateUrl;
-            form.method = 'POST';
-            let methodInput = form.querySelector('input[name="_method"]');
-            if (!methodInput) {
-                methodInput = document.createElement('input');
-                methodInput.type = 'hidden';
-                methodInput.name = '_method';
-                methodInput.value = 'PUT';
-                form.appendChild(methodInput);
-            }
-
-            nameInput.value = name || '';
-            emailInput.value = email || '';
-            roleInput.value = role || '';
-            passwordInput.value = '';
-            passwordConfirmationInput.value = '';
-            passwordInput.required = false;
-            passwordConfirmationInput.required = false;
-            modalTitle.innerHTML = '<i class="fas fa-user-gear"></i> Edit Pegawai';
-            submitButton.innerHTML = '<i class="fas fa-save"></i> Perbarui';
-        });
-    });
-
-    modal.addEventListener('hidden.bs.modal', function () {
-        resetModalForm();
     });
 });

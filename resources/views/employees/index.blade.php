@@ -9,6 +9,11 @@
     <link rel="stylesheet" href="{{ asset('css/employees/index.css') }}"> {{-- Muat stylesheet khusus halaman index pegawai --}}
 @endsection
 
+@section('page-css')
+    <link rel="stylesheet" href="{{ asset('css/employees/form.css') }}?v=6">
+    <link rel="stylesheet" href="{{ asset('css/settings/profile.css') }}?v=13">
+@endsection
+
 @section('content') {{-- Mulai konten halaman utama --}}
 {{-- Statistik ringkas pegawai --}}
 <div class="kpi-grid"> {{-- Grid untuk kartu statistik --}}
@@ -43,8 +48,8 @@
 <div class="content-card"> {{-- Kartu utama konten daftar pegawai --}}
     <div class="content-card-header"> {{-- Header kartu dengan judul dan tombol --}}
         <div class="content-card-title"><i class="fas fa-table-list"></i> Daftar Pegawai</div> {{-- Judul tabel --}}
-        @if(Auth::user()->hasPermission('employees.create'))<button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#employeeModal" data-mode="create" data-create-url="{{ route('employees.store') }}">
-            <i class="fas fa-plus"></i> Tambah Pegawai
+        @if(Auth::user()->hasPermission('employees.create'))<button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#employeeCreateModal">
+            <i class="fas fa-plus" aria-hidden="true"></i> Tambah Pegawai
         </button>@endif
     </div>
     <div class="content-card-body"> {{-- Badan konten kartu --}}
@@ -105,11 +110,9 @@
                                 </td>
                                 <td>
                                     <div class="table-actions"> {{-- Tombol aksi baris --}}
-                                        @if(!$employee->isOwner() && Auth::user()->hasPermission('employees.update'))<button type="button" class="btn-edit employee-edit" data-bs-toggle="modal" data-bs-target="#employeeModal" data-mode="edit"
-                                                data-id="{{ $employee->id }}" data-name="{{ $employee->name }}" data-email="{{ $employee->email }}"
-                                                data-role="{{ $employee->role_id }}" data-update-url="{{ route('employees.update', $employee) }}">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </button>@endif
+                                        @if(!$employee->isOwner() && Auth::user()->hasPermission('employees.update'))<a href="{{ route('employees.edit', $employee) }}" class="btn-edit">
+                                            <i class="fas fa-edit" aria-hidden="true"></i> Edit
+                                        </a>@endif
                                         @if(!$employee->isOwner() && Auth::user()->hasPermission('employees.delete'))<form action="{{ route('employees.destroy', $employee) }}" method="POST" class="inline-form delete-form">
                                             @csrf {{-- Token CSRF untuk keamanan --}}
                                             @method('DELETE') {{-- Metode DELETE untuk resource --}}
@@ -129,8 +132,8 @@
             <div class="empty-state">
                 <div class="empty-state-icon"><i class="fas fa-inbox"></i></div>
                 <div class="empty-state-text">Belum ada pegawai terdaftar</div>
-                @if(Auth::user()->hasPermission('employees.create'))<button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#employeeModal" data-mode="create" data-create-url="{{ route('employees.store') }}">
-                    <i class="fas fa-plus"></i> Tambah Pegawai Pertama
+                @if(Auth::user()->hasPermission('employees.create'))<button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#employeeCreateModal">
+                    <i class="fas fa-plus" aria-hidden="true"></i> Tambah Pegawai Pertama
                 </button>@endif
             </div>
         @endif
@@ -147,52 +150,39 @@
     @endif
 </div>
 
-@if(Auth::user()->hasPermission('employees.create') || Auth::user()->hasPermission('employees.update'))<div class="modal fade" id="employeeModal" tabindex="-1" aria-labelledby="employeeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form method="POST" id="employeeForm">
-                @csrf
-                <div class="modal-header">
-                    <h2 class="modal-title fs-5" id="employeeModalLabel"><i class="fas fa-user-plus"></i> Tambah Pegawai</h2>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="employeeName" class="form-label">Nama Pegawai</label>
-                        <input id="employeeName" type="text" name="name" class="form-control" required>
+@if(Auth::user()->hasPermission('employees.create'))
+    <div class="modal fade employee-create-modal" id="employeeCreateModal" tabindex="-1" aria-labelledby="employee-create-title" aria-hidden="true">
+        <div class="modal-dialog employee-create-drawer">
+            <div class="modal-content">
+                <form action="{{ route('employees.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <header class="employee-create-modal-header">
+                        <div><span class="employee-page-eyebrow">AKUN BARU</span><h2 id="employee-create-title">Tambah pegawai</h2><p>Buat akun dan atur akses pegawai.</p></div>
+                        <button type="button" class="employee-modal-close" data-bs-dismiss="modal" aria-label="Tutup"><i class="fas fa-xmark" aria-hidden="true"></i></button>
+                    </header>
+                    <div class="modal-body employee-create-modal-body">
+                        <div class="employee-form-page employee-create-modal-form">
+                            @php($employee = null)
+                            @include('employees._form')
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="employeeEmail" class="form-label">Email</label>
-                        <input id="employeeEmail" type="email" name="email" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="employeeRole" class="form-label">Role Akses</label>
-                        <select id="employeeRole" name="role_id" class="form-control" required>
-                            @foreach($assignableRoles as $role)
-                                <option value="{{ $role->id }}">{{ $role->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group password-wrapper">
-                        <label for="employeePassword" class="form-label">Password</label>
-                        <input id="employeePassword" type="password" name="password" class="form-control" placeholder="Minimal 8 karakter" required>
-                    </div>
-                    <div class="form-group password-wrapper">
-                        <label for="employeePasswordConfirmation" class="form-label">Konfirmasi Password</label>
-                        <input id="employeePasswordConfirmation" type="password" name="password_confirmation" class="form-control" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn-modal-save"><i class="fas fa-floppy-disk"></i> Simpan</button>
-                </div>
-            </form>
+                    <footer class="employee-create-modal-footer">
+                        <button type="button" class="employee-button employee-button-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="employee-button employee-button-primary"><i class="fas fa-user-plus" aria-hidden="true"></i> Buat akun pegawai</button>
+                    </footer>
+                </form>
+            </div>
         </div>
     </div>
-</div>@endif
+    <div class="employee-cropper-host">@include('settings._image_cropper')</div>
+@endif
 
 @endsection
 
 @section('js')
     <script src="{{ asset('js/employees/index.js') }}"></script> {{-- Muat skrip khusus halaman index pegawai --}}
+    @if(Auth::user()->hasPermission('employees.create'))
+        <script src="{{ asset('js/settings/image-cropper.js') }}?v=6"></script>
+        <script src="{{ asset('js/employees/form.js') }}?v=1"></script>
+    @endif
 @endsection

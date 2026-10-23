@@ -4,7 +4,7 @@
 @section('page-title', 'PROFILE')
 @section('breadcrumb', 'Akun / PROFILE')
 @section('page-css')
-    <link rel="stylesheet" href="{{ asset('css/settings/profile.css') }}?v=4">
+    <link rel="stylesheet" href="{{ asset('css/settings/profile.css') }}?v=11">
 @endsection
 
 @section('content')
@@ -42,7 +42,7 @@
                                 <label class="account-avatar-action" title="Ganti foto profil">
                                     <i class="fas fa-camera" aria-hidden="true"></i>
                                     <span class="account-sr-only">Ganti foto profil</span>
-                                    <input id="profile-photo" class="account-photo-input" type="file" name="profile_photo" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" aria-label="Pilih foto profil, JPG, PNG, atau WebP, maksimal 2 MB">
+                                    <input id="profile-photo" class="account-photo-input" type="file" name="profile_photo" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" aria-label="Pilih foto profil, JPG, PNG, atau WebP, maksimal 2 MB" data-crop-input data-preview="profile-photo-preview" data-fallback="profile-photo-fallback" data-remove="remove-profile-photo">
                                 </label>
                                 @if($user->avatar)
                                     <label class="account-avatar-action account-avatar-action--remove" title="Hapus foto profil">
@@ -141,54 +141,13 @@
             </div>
         </div>
     </div>
+    @include('settings._image_cropper')
 @endsection
 
 @section('js')
+    <script src="{{ asset('js/settings/image-cropper.js') }}?v=7"></script>
     <script>
         (() => {
-            const input = document.getElementById('profile-photo');
-            const preview = document.getElementById('profile-photo-preview');
-            const fallback = document.getElementById('profile-photo-fallback');
-            const remove = document.getElementById('remove-profile-photo');
-            const currentPhoto = @json($user->avatar);
-            let previewUrl = null;
-
-            const showCurrentPhoto = () => {
-                if (currentPhoto) {
-                    preview.src = currentPhoto;
-                    preview.hidden = false;
-                    fallback.hidden = true;
-                } else {
-                    preview.hidden = true;
-                    fallback.hidden = false;
-                }
-            };
-
-            input?.addEventListener('change', () => {
-                const file = input.files?.[0];
-                if (!file) return;
-
-                if (previewUrl) URL.revokeObjectURL(previewUrl);
-                previewUrl = URL.createObjectURL(file);
-                preview.src = previewUrl;
-                preview.hidden = false;
-                fallback.hidden = true;
-                if (remove?.checked) remove.checked = false;
-            });
-
-            remove?.addEventListener('change', () => {
-                if (remove.checked) {
-                    input.value = '';
-                    if (previewUrl) URL.revokeObjectURL(previewUrl);
-                    previewUrl = null;
-                    showCurrentPhoto();
-                    preview.hidden = true;
-                    fallback.hidden = false;
-                } else {
-                    showCurrentPhoto();
-                }
-            });
-
             document.querySelectorAll('[data-password-toggle]').forEach((button) => {
                 button.addEventListener('click', () => {
                     const field = document.getElementById(button.dataset.passwordToggle);

@@ -65,10 +65,20 @@
         <aside id="sidebar">
         {{-- Identitas aplikasi dan toko. --}}
         @php
-            $storeBrandName = Auth::user()?->store?->name ?? 'SIMKEU';
+            $currentStore = Auth::user()?->store;
+            $storeBrandName = $currentStore?->name ?? 'SIMKEU';
+            $storeBrandLogo = $currentStore?->logo
+                ? \Illuminate\Support\Facades\Storage::disk('public')->url($currentStore->logo)
+                : null;
         @endphp
         <a class="sidebar-brand" href="{{ route('home') }}" title="{{ $storeBrandName }}" aria-label="{{ $storeBrandName }}">
-            <div class="brand-icon" aria-hidden="true"><i class="fas fa-chart-line"></i></div>
+            <div class="brand-icon" aria-hidden="true">
+                @if($storeBrandLogo)
+                            <img src="{{ $storeBrandLogo }}" alt="">
+                @else
+                    <i class="fas fa-chart-line"></i>
+                @endif
+            </div>
             <span class="brand-text">{{ $storeBrandName }}</span>
         </a>
 

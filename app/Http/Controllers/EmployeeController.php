@@ -53,13 +53,14 @@ class EmployeeController extends Controller
             'name' => 'required|string|max:100',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6|confirmed',
+            'profile_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'role_id' => ['required', Rule::exists('roles', 'id')->where('store_id', $request->user()->store_id)],
         ]);
 
         $role = Role::findOrFail($data['role_id']);
         abort_unless($request->user()->canAssignRole($role), 403, 'Role yang dipilih memiliki izin di luar kewenangan Anda.');
 
-        User::create([
+        $employee = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
@@ -68,12 +69,18 @@ class EmployeeController extends Controller
             'store_id' => $request->user()->store_id,
         ]);
 
+        if ($request->hasFile('profile_photo')) {
+            $employee->profile_photo_path = $request->file('profile_photo')->store('profile-photos', 'public');
+            $employee->save();
+        }
+
         return redirect()->route('employees.index')
             ->with('success', 'Pegawai berhasil ditambahkan.');
     }
 
     public function edit(Request $request, User $employee)
     {
+        abort_unless((int) $employee->store_id === (int) $request->user()->store_id, 404);
         abort_if($employee->isOwner(), 403, 'Akun pemilik tidak dapat diubah dari daftar pegawai.');
         $roles = Role::where('store_id', $request->user()->store_id)->orderBy('name')->get()
             ->filter(fn (Role $role) => $request->user()->canAssignRole($role));
@@ -87,9 +94,12 @@ class EmployeeController extends Controller
             'name' => 'required|string|max:100',
             'email' => 'required|email|unique:users,email,' . $employee->id,
             'password' => 'nullable|string|min:6|confirmed',
+            'profile_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'remove_profile_photo' => 'nullable|boolean',
             'role_id' => ['required', Rule::exists('roles', 'id')->where('store_id', $request->user()->store_id)],
         ]);
 
+        abort_unless((int) $employee->store_id === (int) $request->user()->store_id, 404);
         abort_if($employee->isOwner(), 403, 'Akun pemilik tidak dapat diubah dari daftar pegawai.');
         $role = Role::findOrFail($data['role_id']);
         abort_unless($request->user()->canAssignRole($role), 403, 'Role yang dipilih memiliki izin di luar kewenangan Anda.');
@@ -98,16 +108,28 @@ class EmployeeController extends Controller
         $employee->email = $data['email'];
         $employee->role = 'pegawai';
         $employee->role_id = $role->id;
+        $photoToDelete = null;
         if (!empty($data['password'])) {
             $employee->password = Hash::make($data['password']);
         }
+        if ($request->hasFile('profile_photo')) {
+            $photoToDelete = $employee->profile_photo_path;
+            $employee->profile_photo_path = $request->file('profile_photo')->store('profile-photos', 'public');
+        } elseif (!empty($data['remove_profile_photo']) && $employee->profile_photo_path) {
+            $photoToDelete = $employee->profile_photo_path;
+            $employee->profile_photo_path = null;
+        }
         $employee->save();
+        if ($photoToDelete) {
+            Storage::disk('public')->delete($photoToDelete);
+        }
 
         return redirect()->route('employees.index')->with('success', 'Pegawai berhasil diperbarui.');
     }
 
     public function destroy(User $employee)
     {
+        abort_unless((int) $employee->store_id === (int) request()->user()->store_id, 404);
         abort_if($employee->isOwner(), 403, 'Akun pemilik tidak dapat dihapus dari daftar pegawai.');
         $photoPath = $employee->profile_photo_path;
         $employee->delete();

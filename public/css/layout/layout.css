@@ -211,6 +211,15 @@
             font-size: 1rem;
             color: var(--logo-icon-color);
             flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .sidebar-brand .brand-icon img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: var(--topbar-bg);
         }
 
         .sidebar-brand .brand-text {
@@ -517,11 +526,11 @@
             border-bottom: 1px solid var(--topbar-border);
             display: flex;
             align-items: center;
-            padding: 0 24px;
-            gap: 16px;
+            padding: 0 28px;
+            gap: 18px;
             z-index: 1030;
             transition: left var(--transition);
-            box-shadow: var(--shadow-sm);
+            box-shadow: 0 1px 4px rgb(15 23 42 / 4%);
         }
 
         #topbar.sidebar-collapsed {
@@ -540,11 +549,11 @@
         }
 
         .topbar-toggle {
-            background: none;
-            border: none;
-            width: 38px;
-            height: 38px;
-            border-radius: 6px;
+            background: var(--gray-50);
+            border: 1px solid var(--topbar-border);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -562,13 +571,15 @@
 
         .topbar-breadcrumb {
             flex: 1;
-            font-size: 0.875rem;
+            min-width: 0;
+            font-size: 0.78rem;
             color: var(--text-muted);
+            line-height: 1.35;
         }
 
         .topbar-breadcrumb .page-title {
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 1.02rem;
             color: var(--text-primary);
             display: block;
             line-height: 1.2;
@@ -577,7 +588,7 @@
         .topbar-actions {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             margin-left: auto;
         }
 
@@ -920,11 +931,11 @@
         }
 
         .topbar-btn {
-            background: none;
-            border: none;
-            width: 38px;
-            height: 38px;
-            border-radius: 6px;
+            background: var(--gray-50);
+            border: 1px solid var(--topbar-border);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1050,16 +1061,17 @@
 
         .topbar-divider {
             width: 1px;
-            height: 28px;
+            height: 32px;
             background: var(--topbar-border);
         }
 
         .topbar-user {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 4px 10px 4px 4px;
-            border-radius: 6px;
+            gap: 9px;
+            padding: 4px 11px 4px 5px;
+            border: 1px solid transparent;
+            border-radius: 12px;
             cursor: pointer;
             transition: background var(--transition);
             text-decoration: none;
@@ -1068,6 +1080,7 @@
 
         .topbar-user:hover {
             background: var(--topbar-hover);
+            border-color: var(--topbar-border);
         }
 
         .topbar-user:focus-visible {
@@ -1076,10 +1089,10 @@
         }
 
         .topbar-user .avatar {
-            width: 34px;
-            height: 34px;
+            width: 36px;
+            height: 36px;
             background: linear-gradient(135deg, var(--topbar-primary), var(--topbar-accent));
-            border-radius: 5px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1093,6 +1106,16 @@
             font-size: 0.85rem;
             font-weight: 600;
             color: var(--text-primary);
+        }
+
+        @media (max-width: 575px) {
+            #topbar { padding: 0 12px; gap: 10px; }
+            .topbar-breadcrumb { font-size: .68rem; }
+            .topbar-breadcrumb .page-title { font-size: .9rem; }
+            .topbar-actions { gap: 6px; }
+            .topbar-toggle, .topbar-btn { width: 38px; height: 38px; }
+            .topbar-divider { height: 26px; }
+            .topbar-user { padding: 3px; }
         }
 
         /* Area konten halaman dan variasi halaman autentikasi. */

@@ -1,58 +1,36 @@
 @extends('layouts.app')
 
-{{-- Halaman formulir edit data pegawai --}}
 @section('title', 'Edit Pegawai - SIMKEU')
 @section('page-title', 'Edit Pegawai')
-@section('breadcrumb', 'Pengaturan / Pegawai / Edit')
-
-@section('css')
-    {{-- Muat stylesheet khusus halaman edit pegawai --}}
-    <link rel="stylesheet" href="{{ asset('css/employees/edit.css') }}">
-    {{-- Muat stylesheet khusus komponen form pegawai --}}
-    <link rel="stylesheet" href="{{ asset('css/employees/_form.css') }}">
+@section('breadcrumb', 'Pegawai / Edit')
+@section('page-css')
+    <link rel="stylesheet" href="{{ asset('css/employees/form.css') }}?v=3">
+    <link rel="stylesheet" href="{{ asset('css/settings/profile.css') }}?v=14">
 @endsection
 
 @section('content')
-<div class="form-container">
-    {{-- Header halaman dengan ikon dan judul --}}
-    <div class="form-card-header">
-        <div class="form-header-title">
-            <div class="form-icon-wrapper">
-                <i class="fas fa-user-gear"></i>
-            </div>
-            <div>
-                <h1>Edit Pegawai</h1>
-                <p>Perbarui informasi akun, profil, dan hak akses pegawai</p>
-            </div>
-        </div>
-    </div>
+<main class="employee-form-page employee-edit-page">
+    <header class="employee-page-heading">
+        <a class="employee-back-link" href="{{ route('employees.index') }}"><i class="fas fa-arrow-left" aria-hidden="true"></i> Daftar pegawai</a>
+        <span class="employee-page-eyebrow">PENGELOLAAN AKUN</span>
+        <h1>Edit pegawai</h1>
+        <p>Perbarui profil, foto, role akses, atau kata sandi pegawai.</p>
+    </header>
 
-    {{-- Kontainer utama card form --}}
-    <div class="content-card">
-        <div class="content-card-body">
-            <form action="{{ route('employees.update', $employee) }}" method="POST">
-                @method('PUT')
-                {{-- Sertakan form partial yang dipakai bersama antara create dan edit --}}
-                @include('employees._form')
-
-                {{-- Tombol aksi form: batal dan perbarui --}}
-                <div class="form-actions">
-                    <a href="{{ route('employees.index') }}" class="btn-cancel">
-                        <i class="fas fa-times"></i> Batal
-                    </a>
-                    <button type="submit" class="btn-primary">
-                        <i class="fas fa-save"></i> Perbarui
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+    <form class="employee-account-form" action="{{ route('employees.update', $employee) }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+        @include('employees._form')
+        <footer class="employee-form-actions">
+            <a class="employee-button employee-button-secondary" href="{{ route('employees.index') }}">Batal</a>
+            <button class="employee-button employee-button-primary" type="submit"><i class="fas fa-check" aria-hidden="true"></i> Simpan perubahan</button>
+        </footer>
+    </form>
+@include('settings._image_cropper')
+</main>
 @endsection
 
 @section('js')
-    {{-- Muat skrip khusus halaman edit pegawai --}}
-    <script src="{{ asset('js/employees/edit.js') }}"></script>
-    {{-- Muat skrip khusus komponen form pegawai --}}
-    <script src="{{ asset('js/employees/_form.js') }}"></script>
+    <script src="{{ asset('js/settings/image-cropper.js') }}?v=7"></script>
+    <script src="{{ asset('js/employees/form.js') }}?v=2"></script>
 @endsection

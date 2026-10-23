@@ -88,15 +88,47 @@ class ProfileController extends Controller
             'store_name' => ['required', 'string', 'max:100'],
             'store_address' => ['nullable', 'string', 'max:2000'],
             'store_phone' => ['nullable', 'string', 'max:20'],
+            'store_logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'remove_store_logo' => ['nullable', 'boolean'],
         ]);
 
         $store = $user->store;
         abort_unless($store, 404);
+
+        $oldLogoPath = $store->logo;
+        $newLogoPath = null;
+
+        if ($request->hasFile('store_logo')) {
+            $newLogoPath = $request->file('store_logo')->store("store-logos/{$store->id}", 'public');
+
+            if (! $newLogoPath) {
+                return back()->withErrors(['store_logo' => 'Logo toko gagal disimpan.'])->withInput();
+            }
+
+            $store->logo = $newLogoPath;
+        } elseif ($request->boolean('remove_store_logo')) {
+            $store->logo = null;
+        }
+
         $store->fill([
             'name' => $validated['store_name'],
             'address' => $validated['store_address'] ?? null,
             'phone' => $validated['store_phone'] ?? null,
-        ])->save();
+        ]);
+
+        try {
+            $store->save();
+        } catch (Throwable $exception) {
+            if ($newLogoPath) {
+                Storage::disk('public')->delete($newLogoPath);
+            }
+
+            throw $exception;
+        }
+
+        if ($oldLogoPath && $oldLogoPath !== $store->logo) {
+            Storage::disk('public')->delete($oldLogoPath);
+        }
 
         return to_route('profile.store.edit')->with('success', 'Data usaha berhasil diperbarui.');
     }

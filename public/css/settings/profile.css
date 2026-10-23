@@ -260,7 +260,11 @@
 #main-content .account-profile-alert i { color: #348a50 !important; }
 
 #main-content .account-store-cover { min-height: 165px; }
-#main-content .account-store-avatar { position: relative; z-index: 1; display: grid; width: 78px; height: 78px; flex: 0 0 78px; place-items: center; border: 1px solid rgb(255 255 255 / 28%) !important; border-radius: 19px; background: rgb(255 255 255 / 12%); color: #fff !important; font-size: 1.7rem; }
+#main-content .account-store-logo-wrap { position: relative; z-index: 1; width: 78px; height: 78px; flex: 0 0 78px; }
+#main-content .account-store-avatar { display: grid; width: 100%; height: 100%; place-items: center; overflow: hidden; border: 1px solid rgb(255 255 255 / 28%) !important; border-radius: 19px; background: rgb(255 255 255 / 12%); color: #fff !important; font-size: 1.7rem; }
+#main-content .account-store-avatar img { width: 100%; height: 100%; object-fit: contain; background: #fff; }
+#main-content .account-store-avatar [hidden] { display: none !important; }
+#main-content .account-store-logo-wrap .account-avatar-action { right: -7px; bottom: -6px; width: 30px; height: 30px; }
 #main-content .account-store-cover .account-profile-identity h2 { margin-bottom: 10px; }
 #main-content .account-store-cover .account-role-chip { width: max-content; }
 #main-content .account-store-cover .account-role-chip i { color: #f4d18f !important; }
@@ -293,7 +297,8 @@
     #main-content .account-security-card { padding: 19px 17px 21px; }
     #main-content .account-form-grid { grid-template-columns: 1fr; gap: 15px; }
     #main-content .account-field--wide { grid-column: auto; }
-    #main-content .account-store-avatar { width: 59px; height: 59px; flex-basis: 59px; border-radius: 15px; font-size: 1.35rem; }
+    #main-content .account-store-logo-wrap { width: 59px; height: 59px; flex-basis: 59px; }
+    #main-content .account-store-avatar { border-radius: 15px; font-size: 1.35rem; }
     #main-content .account-profile-badges { gap: 6px; }
     #main-content .account-role-chip,
     #main-content .account-verification-chip { font-size: .62rem; }
@@ -304,4 +309,49 @@
     #main-content .account-settings-page *,
     #main-content .account-settings-page *::before,
     #main-content .account-settings-page *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}
+
+#image-cropper-modal:not([open]) { display: none !important; }
+#image-cropper-modal[open] { position: fixed; inset: 0; z-index: 3000; display: grid; width: 100vw; height: 100vh; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 18px; place-items: center; border: 0; background: rgb(15 23 42 / 48%); color: inherit; backdrop-filter: blur(3px); box-sizing: border-box; }
+#image-cropper-modal[open] .image-cropper-dialog { animation: image-cropper-enter 240ms cubic-bezier(.2,.75,.25,1) both; }
+#image-cropper-modal.is-closing[open] { animation: image-cropper-fade-out 220ms ease both; pointer-events: none; }
+#image-cropper-modal.is-closing[open] .image-cropper-dialog { animation: image-cropper-exit 220ms cubic-bezier(.4,0,1,1) both; }
+@keyframes image-cropper-enter { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes image-cropper-exit { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(28px); } }
+@keyframes image-cropper-fade-out { to { background-color: transparent; backdrop-filter: blur(0); } }
+@media (prefers-reduced-motion: reduce) {
+    #image-cropper-modal[open] .image-cropper-dialog,
+    #image-cropper-modal.is-closing[open] { animation-duration: .01ms; }
+}
+#image-cropper-modal::backdrop { background: transparent; }
+#image-cropper-modal .image-cropper-dialog { width: min(460px, 100%); max-height: calc(100dvh - 36px); overflow: auto; border: 1px solid #e4e9f1; border-radius: 16px; background: #fff; color: var(--account-ink); box-shadow: 0 24px 70px rgb(15 23 42 / 22%); }
+#image-cropper-modal .image-cropper-header { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; min-height: 68px; padding: 12px 16px; border-bottom: 1px solid #edf0f5; background: #fff; }
+#image-cropper-modal .image-cropper-header h2 { margin: 0; color: var(--account-ink); font-size: .96rem; font-weight: 700; text-align: center; }
+#image-cropper-modal .image-cropper-header button { min-width: 84px; min-height: 40px; padding: 0 15px; border: 1px solid transparent; border-radius: 9px; font: inherit; font-size: .78rem; font-weight: 650; cursor: pointer; transition: background-color .16s ease, border-color .16s ease, color .16s ease; }
+#image-cropper-modal .image-cropper-cancel { justify-self: start; border-color: #e2e8f0; background: #f8fafc; color: #536176; }
+#image-cropper-modal .image-cropper-cancel:hover { border-color: #cbd5e1; background: #f1f5f9; color: var(--account-ink); }
+#image-cropper-modal .image-cropper-select { justify-self: end; background: var(--account-blue); color: #fff; }
+#image-cropper-modal .image-cropper-select:hover:not(:disabled) { background: var(--account-blue-dark); }
+#image-cropper-modal .image-cropper-select:disabled { opacity: .5; cursor: wait; }
+#image-cropper-modal button:focus-visible,
+#image-cropper-modal input:focus-visible,
+#image-cropper-canvas:focus-visible { outline: 3px solid rgb(36 89 211 / 32%); outline-offset: 2px; }
+#image-cropper-modal .image-cropper-stage { display: grid; place-items: center; padding: 20px; background: #f4f6fa; }
+#image-cropper-canvas { display: block; width: min(320px, calc(100vw - 84px)); height: auto; aspect-ratio: 1; border: 1px solid #d8dee8; border-radius: 8px; cursor: grab; touch-action: none; box-shadow: 0 5px 16px rgb(15 23 42 / 10%); }
+#image-cropper-canvas.is-dragging { cursor: grabbing; }
+#image-cropper-modal .image-cropper-controls { display: grid; grid-template-columns: auto minmax(100px, 1fr) auto; align-items: center; gap: 12px; padding: 17px 22px 20px; background: #fff; }
+#image-cropper-modal .image-cropper-controls p { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; margin: 0 0 2px; color: #718096; font-size: .75rem; }
+#image-cropper-modal .image-cropper-controls p i,
+#image-cropper-modal .image-cropper-controls label { color: var(--account-blue); }
+#image-cropper-modal .image-cropper-controls label { display: grid; width: 32px; height: 32px; place-items: center; }
+#image-cropper-zoom { width: 100%; accent-color: var(--account-blue); cursor: pointer; }
+#image-cropper-modal .image-cropper-zoom-value { min-width: 42px; color: #64748b; font-size: .72rem; font-variant-numeric: tabular-nums; text-align: right; }
+body.image-cropper-open { overflow: hidden; }
+
+@media (prefers-reduced-motion: reduce) {
+    #image-cropper-modal[open] .image-cropper-dialog,
+    #image-cropper-modal.is-closing[open] { animation-duration: .01ms; }
+    #image-cropper-modal *,
+    #image-cropper-modal *::before,
+    #image-cropper-modal *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
