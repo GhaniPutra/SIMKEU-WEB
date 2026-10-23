@@ -424,7 +424,7 @@ body.auth-page #main-content {
 #main-content .auth-submit span,
 #main-content .auth-submit i { color: #fff; }
 #main-content .auth-submit i { transition: transform .18s ease; }
-#main-content .auth-submit:hover { background: var(--blue-700) !important; box-shadow: 0 11px 24px rgba(35, 95, 210, .28) !important; transform: translateY(-1px); }
+#main-content .auth-submit:hover { background: var(--blue-700); box-shadow: 0 11px 24px rgba(35, 95, 210, .28) !important; transform: translateY(-1px); }
 #main-content .auth-submit:hover i { transform: translateX(3px); }
 #main-content .auth-submit:active { transform: translateY(0); }
 #main-content .auth-submit:focus-visible { outline: 3px solid rgba(44, 116, 228, .42) !important; outline-offset: 3px; }

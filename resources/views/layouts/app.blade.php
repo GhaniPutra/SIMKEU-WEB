@@ -57,6 +57,7 @@
     <link rel="stylesheet" href="{{ asset('css/layout/layout-overrides.css') }}?v=2">
     <link rel="stylesheet" href="{{ asset('css/layout/status-colors.css') }}?v=1">
     @yield('page-css')
+    <link rel="stylesheet" href="{{ asset('css/button-colors.css') }}?v=1">
 </head>
 
 <body class="{{ $isAuthPage ? 'auth-page' : '' }} preload-transitions">

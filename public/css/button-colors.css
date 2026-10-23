@@ -1,0 +1,125 @@
+/* Shared semantic button palette. Loaded after page styles so every page uses the same 600 tokens. */
+#main-content :is(button, a, [role="button"]):is(
+    .btn-primary,
+    .btn-add,
+    .btn-submit,
+    .btn-qa-primary,
+    .btn-modal-save,
+    .btn-setup,
+    .btn-login,
+    .btn-register,
+    .auth-submit,
+    .account-save-button:not(.account-save-button--secondary),
+    .role-save-button,
+    .distribution-history__apply
+),
+.modal :is(button, a, [role="button"]):is(.btn-primary, .btn-modal-save) {
+    background-color: var(--blue-600);
+    border-color: var(--blue-600);
+    color: #fff;
+}
+
+#main-content :is(button, a, [role="button"]):is(
+    .btn-primary,
+    .btn-add,
+    .btn-submit,
+    .btn-qa-primary,
+    .btn-modal-save,
+    .btn-setup,
+    .btn-login,
+    .btn-register,
+    .auth-submit,
+    .account-save-button:not(.account-save-button--secondary),
+    .role-save-button,
+    .distribution-history__apply
+):is(:hover, :focus-visible, :active):not(:disabled),
+.modal :is(button, a, [role="button"]):is(.btn-primary, .btn-modal-save):is(:hover, :focus-visible, :active):not(:disabled) {
+    background-color: var(--blue-600);
+    border-color: var(--blue-600);
+    color: #fff;
+}
+
+#main-content :is(button, a, [role="button"]):is(.btn-danger, .btn-qa-danger, .btn-delete.is-solid),
+.modal :is(button, a, [role="button"]):is(.btn-danger, .btn-qa-danger) {
+    background-color: var(--red-600);
+    border-color: var(--red-600);
+    color: #fff;
+}
+
+#main-content :is(button, a, [role="button"]):is(.btn-danger, .btn-qa-danger, .btn-delete.is-solid):is(:hover, :focus-visible, :active):not(:disabled),
+.modal :is(button, a, [role="button"]):is(.btn-danger, .btn-qa-danger):is(:hover, :focus-visible, :active):not(:disabled) {
+    background-color: var(--red-600);
+    border-color: var(--red-600);
+    color: #fff;
+}
+
+#main-content :is(button, a, [role="button"]):is(.btn-success, .btn-qa-success, .account-save-button--secondary),
+.modal :is(button, a, [role="button"]):is(.btn-success, .btn-qa-success) {
+    background-color: var(--green-600);
+    border-color: var(--green-600);
+    color: #fff;
+}
+
+#main-content :is(button, a, [role="button"]):is(.btn-success, .btn-qa-success, .account-save-button--secondary):is(:hover, :focus-visible, :active):not(:disabled),
+.modal :is(button, a, [role="button"]):is(.btn-success, .btn-qa-success):is(:hover, :focus-visible, :active):not(:disabled) {
+    background-color: var(--green-600);
+    border-color: var(--green-600);
+    color: #fff;
+}
+
+/* Outline actions keep their neutral surfaces and use semantic 600 color for the accent. */
+#main-content :is(button, a, [role="button"]):is(.btn-edit, .btn-stock, .btn-action.stock, .btn-delete, .btn-action.delete, .btn-pull),
+.modal :is(button, a, [role="button"]):is(.btn-edit, .btn-stock, .btn-delete) {
+    border-color: var(--blue-600);
+    color: var(--blue-600);
+}
+
+#main-content :is(button, a, [role="button"]):is(.btn-delete, .btn-action.delete, .btn-pull),
+.modal :is(button, a, [role="button"]):is(.btn-delete) {
+    border-color: var(--red-600);
+    color: var(--red-600);
+}
+
+#main-content :is(button, a, [role="button"]):is(.btn-stock, .btn-action.stock) {
+    border-color: var(--green-600);
+    color: var(--green-600);
+}
+
+#main-content :is(button, a, [role="button"]):is(.btn-edit, .btn-action.edit, .role-edit-button):is(:hover, :focus-visible, :active):not(:disabled) {
+    background-color: var(--blue-600);
+    border-color: var(--blue-600);
+    color: #fff;
+}
+
+#main-content .account-avatar-action--remove {
+    background-color: var(--red-600);
+    border-color: var(--red-600);
+}
+
+#main-content .account-avatar-action--remove:hover {
+    background-color: var(--red-600);
+    border-color: var(--red-600);
+}
+
+#main-content :is(button, a, [role="button"]):is(.btn-delete, .btn-action.delete, .btn-pull):is(:hover, :focus-visible, :active):not(:disabled),
+.modal :is(button, a, [role="button"]):is(.btn-delete):is(:hover, :focus-visible, :active):not(:disabled),
+#main-content :is(button, a, [role="button"]).role-delete-button:is(:hover, :focus-visible, :active):not(:disabled) {
+    background-color: var(--red-600);
+    border-color: var(--red-600);
+    color: #fff;
+}
+
+#main-content :is(button, a, [role="button"]):is(.btn-stock, .btn-action.stock):is(:hover, :focus-visible, :active):not(:disabled) {
+    background-color: var(--green-600);
+    border-color: var(--green-600);
+    color: #fff;
+}
+
+#image-cropper-modal .image-cropper-select {
+    background: var(--blue-600);
+    color: #fff;
+}
+
+#image-cropper-modal .image-cropper-select:hover:not(:disabled) {
+    background: var(--blue-600);
+}

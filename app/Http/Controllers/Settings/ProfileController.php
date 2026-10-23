@@ -43,7 +43,11 @@ class ProfileController extends Controller
             $user->email_verified_at = null;
         }
 
-        unset($validated['profile_photo'], $validated['remove_profile_photo']);
+        unset($validated['profile_photo'], $validated['remove_profile_photo'], $validated['password_confirmation']);
+
+        if (blank($validated['password'] ?? null)) {
+            unset($validated['password']);
+        }
 
         $oldPhotoPath = $user->profile_photo_path;
         $newPhotoPath = null;
@@ -76,7 +80,7 @@ class ProfileController extends Controller
             Storage::disk('public')->delete($oldPhotoPath);
         }
 
-        return to_route('profile.edit')->with('success', 'Data diri berhasil diperbarui.');
+        return to_route('profile.edit')->with('success', 'Pengaturan akun berhasil disimpan.');
     }
 
     public function updateStore(Request $request): RedirectResponse
@@ -88,6 +92,7 @@ class ProfileController extends Controller
             'store_name' => ['required', 'string', 'max:100'],
             'store_address' => ['nullable', 'string', 'max:2000'],
             'store_phone' => ['nullable', 'string', 'max:20'],
+            'stock_closing_time' => ['sometimes', 'required', 'date_format:H:i'],
             'store_logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'remove_store_logo' => ['nullable', 'boolean'],
         ]);
@@ -110,11 +115,17 @@ class ProfileController extends Controller
             $store->logo = null;
         }
 
-        $store->fill([
+        $storeData = [
             'name' => $validated['store_name'],
             'address' => $validated['store_address'] ?? null,
             'phone' => $validated['store_phone'] ?? null,
-        ]);
+        ];
+
+        if (array_key_exists('stock_closing_time', $validated)) {
+            $storeData['stock_closing_time'] = $validated['stock_closing_time'];
+        }
+
+        $store->fill($storeData);
 
         try {
             $store->save();

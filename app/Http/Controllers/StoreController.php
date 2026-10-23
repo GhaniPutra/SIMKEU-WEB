@@ -79,6 +79,6 @@ class StoreController extends Controller
         $store->stock_closing_time = $validated['stock_closing_time'];
         $store->save();
 
-        return redirect()->route('profile.store.edit')->with('stock_closing_success', 'Jam penutupan stok berhasil diperbarui.');
+        return redirect()->route('profile.store.edit')->with('success', 'Jam penutupan stok berhasil diperbarui.');
     }
 }
