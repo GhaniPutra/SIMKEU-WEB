@@ -4,8 +4,8 @@
 @section('page-title', 'Role & Izin')
 @section('breadcrumb', 'Pengaturan / Pegawai / Role & Izin')
 
-@section('css')
-    <link rel="stylesheet" href="{{ asset('css/roles/roles.css') }}">
+@section('page-css')
+    <link rel="stylesheet" href="{{ asset('css/roles/roles.css') }}?v=4">
 @endsection
 
 @section('content')
@@ -21,9 +21,9 @@
     <div class="roles-page">
         <section class="roles-intro">
             <div class="roles-intro-copy">
-                <span class="roles-eyebrow"><i class="fas fa-shield-halved"></i> Pengaturan akses</span>
-                <h1>Atur akses tim dengan mudah</h1>
-                <p>Buat role sesuai tanggung jawab, lalu pilih fitur yang boleh digunakan setiap pegawai.</p>
+                <span class="roles-eyebrow"><i class="fas fa-shield-halved" aria-hidden="true"></i> Pengaturan akses</span>
+                <h1>Role dan izin</h1>
+                <p>Kelola akses pegawai berdasarkan tanggung jawabnya.</p>
             </div>
             <a href="{{ route('roles.create') }}" class="roles-primary-button">
                 <i class="fas fa-plus" aria-hidden="true"></i>
@@ -48,10 +48,7 @@
 
         <section class="roles-list-section">
             <div class="roles-section-heading">
-                <div>
-                    <h2>Daftar role</h2>
-                    <p>Atur hak akses dan lihat pegawai yang menggunakan setiap role.</p>
-                </div>
+                <h2>Daftar role</h2>
                 <span class="roles-count-badge">{{ number_format($roles->count()) }} role</span>
             </div>
 
@@ -134,7 +131,7 @@
 
         <aside class="roles-owner-note">
             <span><i class="fas fa-circle-info"></i></span>
-            <p><strong>Pemilik utama tidak memakai role pegawai</strong> dan selalu memiliki akses penuh. Role di halaman ini hanya mengatur akses akun pegawai. Ubah data diri atau data usaha melalui <a href="{{ route('profile.edit') }}">Profil & Usaha</a>. Role bawaan tidak dapat dihapus, tetapi izinnya bisa disesuaikan.</p>
+            <p><strong>Pemilik utama memiliki akses penuh.</strong> Role bawaan dapat disesuaikan, tetapi tidak dapat dihapus. <a href="{{ route('profile.edit') }}">Buka profil</a></p>
         </aside>
     </div>
 @endsection

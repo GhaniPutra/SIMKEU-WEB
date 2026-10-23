@@ -14,15 +14,14 @@
 <div class="role-editor">
     <header class="role-editor-heading">
         <a href="{{ route('roles.index') }}" class="role-back-link"><i class="fas fa-arrow-left"></i> Kembali ke daftar role</a>
-        <span class="roles-eyebrow"><i class="fas fa-shield-halved"></i> Pengaturan akses</span>
+        <span class="roles-eyebrow"><i class="fas fa-shield-halved" aria-hidden="true"></i> Pengaturan akses</span>
         <h1>{{ $role ? 'Ubah role' : 'Buat role baru' }}</h1>
-        <p>{{ $role ? 'Sesuaikan nama dan izin yang dimiliki role ini.' : 'Tentukan nama role dan pilih fitur yang dibutuhkan pegawai.' }}</p>
     </header>
 
     @if($errors->any())
         <div class="role-validation-message" role="alert">
-            <i class="fas fa-circle-exclamation"></i>
-            <div><strong>Periksa kembali isian Anda.</strong><span>Pastikan nama role dan pilihan izin sudah benar.</span></div>
+            <i class="fas fa-circle-exclamation" aria-hidden="true"></i>
+            <div><strong>Periksa isian berikut.</strong><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
         </div>
     @endif
 
@@ -35,19 +34,18 @@
                 <section class="role-editor-panel role-identity-panel">
                     <div class="role-panel-heading">
                         <span class="role-panel-step">1</span>
-                        <div><h2>Identitas role</h2><p>Beri nama sesuai tugas pegawai yang akan menggunakannya.</p></div>
+                        <div><h2>Identitas role</h2></div>
                     </div>
                     <label for="role-name" class="role-field-label">Nama role <span>*</span></label>
                     <input id="role-name" class="role-name-input @error('name') is-invalid @enderror" name="name"
                            value="{{ old('name', $role?->name) }}" maxlength="80" required placeholder="Contoh: Manajer operasional">
                     @error('name')<span class="role-field-error">{{ $message }}</span>@enderror
-                    <div class="role-field-hint">Gunakan nama yang mudah dipahami, misalnya Manajer, Keuangan, atau Gudang.</div>
                 </section>
 
                 <section class="role-editor-panel role-profile-panel">
                     <div class="role-panel-heading">
                         <span class="role-panel-step">2</span>
-                        <div><h2>Pilih pola akses</h2><p>Mulai dari pola yang paling mendekati pekerjaan sehari-hari.</p></div>
+                        <div><h2>Pola akses</h2></div>
                     </div>
 
                     <fieldset class="role-profile-grid">
@@ -70,7 +68,7 @@
                 <section class="role-editor-panel role-permissions-panel">
                     <div class="role-panel-heading role-permissions-heading">
                         <span class="role-panel-step">3</span>
-                        <div><h2>Atur izin</h2><p>Centang tindakan yang boleh dilakukan role ini. Pilihan bisa disesuaikan lagi.</p></div>
+                        <div><h2>Izin</h2></div>
                     </div>
 
                     <div class="role-permission-groups">
@@ -106,20 +104,18 @@
                         <span class="role-summary-label">Pratinjau role</span>
                     </div>
                     <h2 data-role-preview-name>{{ old('name', $role?->name) ?: 'Nama role' }}</h2>
-                    <p class="role-summary-description">Ringkasan pilihan akses role yang sedang Anda atur.</p>
-
                     <div class="role-summary-stat">
-                        <span><i class="fas fa-key"></i> Izin dipilih</span>
+                        <span><i class="fas fa-key" aria-hidden="true"></i> Izin dipilih</span>
                         <strong><span data-total-permissions>0</span></strong>
                     </div>
                     <div class="role-summary-stat">
-                        <span><i class="fas fa-layer-group"></i> Pola akses</span>
+                        <span><i class="fas fa-layer-group" aria-hidden="true"></i> Pola akses</span>
                         <strong class="role-summary-profile" data-selected-profile>{{ $profiles[$currentProfile]['name'] ?? 'Atur sendiri' }}</strong>
                     </div>
 
                     <div class="role-summary-note">
-                        <i class="fas fa-circle-info"></i>
-                        <span>Pemilik toko selalu memiliki akses penuh. Izin role berlaku untuk semua pegawai yang memakai role ini.</span>
+                        <i class="fas fa-circle-info" aria-hidden="true"></i>
+                        <span>Pemilik tetap memiliki akses penuh.</span>
                     </div>
 
                     <button class="role-save-button" type="submit"><i class="fas fa-check"></i> {{ $role ? 'Simpan perubahan' : 'Simpan role' }}</button>

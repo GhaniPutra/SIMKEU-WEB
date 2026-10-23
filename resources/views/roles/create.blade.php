@@ -3,8 +3,8 @@
 @section('page-title', 'Buat Role')
 @section('breadcrumb', 'Pengaturan / Role & Izin / Buat')
 
-@section('css')
-    <link rel="stylesheet" href="{{ asset('css/roles/roles.css') }}">
+@section('page-css')
+    <link rel="stylesheet" href="{{ asset('css/roles/roles.css') }}?v=3">
 @endsection
 
 @section('content')
