@@ -35,8 +35,6 @@
                     <div class="account-photo-copy">
                         <strong id="store-panel-title">{{ $store->name }}</strong>
                         <span>Data usaha</span>
-                        <button class="account-photo-picker" type="button" data-store-logo-trigger><i class="fas fa-arrow-up-from-bracket" aria-hidden="true"></i> Ganti logo</button>
-                        <small>JPG, PNG, WebP · maks. 2 MB</small>
                         <span id="store-logo-help" class="account-sr-only">Format JPG, PNG, atau WebP, maksimal 2 MB.</span>
                         @error('store_logo')<small class="account-field-error" role="alert">{{ $message }}</small>@enderror
                     </div>
@@ -76,7 +74,4 @@
     </div>
     @include('settings._image_cropper')
     <script src="{{ asset('js/settings/image-cropper.js') }}?v=7"></script>
-    <script>
-        document.querySelector('[data-store-logo-trigger]')?.addEventListener('click', () => document.getElementById('store-logo')?.click());
-    </script>
 @endsection

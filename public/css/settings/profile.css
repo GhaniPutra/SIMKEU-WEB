@@ -350,11 +350,9 @@
 .account-profile-redesign .account-profile-avatar-fallback { font-size: 2rem; }
 .account-profile-redesign .account-avatar-action { width: 30px; height: 30px; border-color: #fff; }
 .account-profile-redesign .account-photo-copy { display: grid; justify-items: start; gap: 4px; }
-.account-profile-redesign .account-photo-copy > strong { color: var(--account-ink); font-size: .96rem; font-weight: 700; }
+.account-profile-redesign .account-photo-copy > strong { color: var(--account-ink); font-size: clamp(1.15rem, 2vw, 1.4rem); font-weight: 750; line-height: 1.2; }
 .account-profile-redesign .account-photo-copy > span { color: var(--account-muted); font-size: .78rem; }
 .account-profile-redesign .account-photo-copy > small { color: #68768a; font-size: .72rem; }
-.account-profile-redesign .account-photo-picker { display: inline-flex; min-height: 34px; align-items: center; gap: 7px; margin-top: 5px; padding: 0 11px; border: 1px solid var(--account-border); border-radius: 4px; background: #fff; color: var(--account-ink); font: inherit; font-size: .73rem; font-weight: 600; cursor: pointer; }
-.account-profile-redesign .account-photo-picker:hover { border-color: var(--primary); color: var(--primary); }
 .account-profile-redesign .account-profile-body--compact { padding: 25px 24px 22px; }
 .account-profile-redesign .account-form-grid { gap: 22px 20px; }
 .account-profile-redesign .account-field { gap: 6px; }

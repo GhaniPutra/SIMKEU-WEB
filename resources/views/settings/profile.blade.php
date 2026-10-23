@@ -39,8 +39,6 @@
                         <div class="account-photo-copy">
                             <strong>{{ $user->name }}</strong>
                             <span>{{ $user->role_name }}</span>
-                            <button class="account-photo-picker" type="button" data-photo-trigger><i class="fas fa-arrow-up-from-bracket" aria-hidden="true"></i> Ganti foto</button>
-                            <small>JPG, PNG, WebP · maks. 2 MB</small>
                             @error('profile_photo')<small class="account-field-error" role="alert">{{ $message }}</small>@enderror
                         </div>
                     </div>
@@ -91,8 +89,6 @@
         (() => {
             const root = document.querySelector('[data-account-settings]');
             if (!root) return;
-
-            root.querySelector('[data-photo-trigger]')?.addEventListener('click', () => document.getElementById('profile-photo')?.click());
 
             const newPassword = root.querySelector('#new-password');
             const passwordConfirmation = root.querySelector('#password-confirmation');
