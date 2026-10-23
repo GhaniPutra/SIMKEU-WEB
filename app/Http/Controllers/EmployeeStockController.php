@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\StockAllocation;
+use App\Models\StockMovement;
 use App\Models\User;
 use App\Services\StockAllocationWorkflow;
 use Illuminate\Http\Request;
@@ -159,6 +160,16 @@ class EmployeeStockController extends Controller
             }
 
             $product->increment('stock', $pullAmount);
+
+            StockMovement::create([
+                'store_id' => $owner->store_id,
+                'employee_user_id' => $employee->id,
+                'product_id' => $product->id,
+                'movement_type' => StockMovement::TYPE_MANUAL_WITHDRAWAL,
+                'actor_user_id' => $owner->id,
+                'occurred_at' => now(),
+                'quantity' => $pullAmount,
+            ]);
 
             DB::commit();
 

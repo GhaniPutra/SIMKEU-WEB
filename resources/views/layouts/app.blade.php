@@ -55,6 +55,7 @@
     <link rel="stylesheet" href="{{ asset('css/ui-geometry.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app-animations.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout/layout-overrides.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/layout/status-colors.css') }}?v=1">
 </head>
 
 <body class="{{ $isAuthPage ? 'auth-page' : '' }} preload-transitions">
@@ -87,7 +88,7 @@
                     $isOwner = $user?->isOwner();
                     $isFinanceOpen = request()->routeIs('pemasukan.*', 'pengeluaran.*');
                     $isProductsOpen = request()->routeIs('products.*', 'categories.*');
-                    $isDistributionOpen = request()->routeIs('employees.stock.*');
+                    $isDistributionOpen = request()->routeIs('employees.stock.*', 'stock-allocations.history');
                     $isEmployeesOpen = request()->routeIs('employees.*', 'roles.*') && !$isDistributionOpen;
                 @endphp
 
@@ -114,9 +115,9 @@
 
                 @if($user?->hasPermission('stock_allocations.view'))
                 <li class="nav-item"><details {{ $isDistributionOpen ? 'open' : '' }}>
-                    <summary class="nav-link {{ $isDistributionOpen ? 'active' : '' }}"><span class="nav-icon"><i class="fas fa-truck-fast"></i></span><span class="nav-label">Distribusi Stok</span><i class="fas fa-chevron-right nav-chevron" aria-hidden="true"></i></summary>
+                    <summary class="nav-link {{ $isDistributionOpen ? 'active' : '' }}"><span class="nav-icon"><i class="fas fa-truck-fast"></i></span><span class="nav-label">Pergerakan Stok</span><i class="fas fa-chevron-right nav-chevron" aria-hidden="true"></i></summary>
                     <div class="nav-submenu">
-                        <a href="{{ route('stock-allocations.history') }}" class="nav-link {{ request()->routeIs('stock-allocations.history') ? 'active' : '' }}" @if(request()->routeIs('stock-allocations.history')) aria-current="page" @endif>Riwayat Distribusi</a>
+                        <a href="{{ route('stock-allocations.history') }}" class="nav-link {{ request()->routeIs('stock-allocations.history') ? 'active' : '' }}" @if(request()->routeIs('stock-allocations.history')) aria-current="page" @endif>Riwayat Pergerakan Stok</a>
                     </div>
                 </details></li>
                 @endif
@@ -333,19 +334,19 @@
     <main id="main-content">
         {{-- Halaman autentikasi tidak memiliki navbar; tampilkan pesannya di halaman. --}}
         @if ($isAuthPage && ($message = Session::get('success')))
-            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            <div class="alert alert-success status-color alert-dismissible fade show mb-4" data-status-color="success" role="alert">
                 <i class="fas fa-check-circle me-2"></i> {{ $message }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
         @if ($isAuthPage && ($message = Session::get('error')))
-            <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+            <div class="alert alert-danger status-color alert-dismissible fade show mb-4" data-status-color="danger" role="alert">
                 <i class="fas fa-exclamation-circle me-2"></i> {{ $message }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
         @if ($isAuthPage && $errors->any())
-            <div class="alert alert-warning alert-dismissible fade show mb-4" role="alert">
+            <div class="alert alert-warning status-color alert-dismissible fade show mb-4" data-status-color="warning" role="alert">
                 <i class="fas fa-exclamation-triangle me-2"></i>
                 <strong>Terjadi kesalahan:</strong>
                 <ul class="mb-0 mt-2">

@@ -66,4 +66,19 @@ class StoreController extends Controller
 
         return redirect()->route('dashboard')->with('success', 'Toko berhasil dibuat! Selamat datang di dashboard.');
     }
+
+    public function updateStockClosingTime(Request $request)
+    {
+        abort_unless($request->user()->isOwner() && $request->user()->store_id, 403);
+
+        $validated = $request->validate([
+            'stock_closing_time' => ['required', 'date_format:H:i'],
+        ]);
+
+        $store = Store::query()->findOrFail($request->user()->store_id);
+        $store->stock_closing_time = $validated['stock_closing_time'];
+        $store->save();
+
+        return redirect()->route('stock-allocations.history')->with('success', 'Jam penutupan stok berhasil diperbarui.');
+    }
 }

@@ -1,18 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Riwayat Distribusi - SIMKEU')
-@section('page-title', 'Riwayat Distribusi')
-@section('breadcrumb', 'Beranda / Distribusi Stok / Riwayat Distribusi')
+@section('title', 'Riwayat Pergerakan Stok - SIMKEU')
+@section('page-title', 'Riwayat Pergerakan Stok')
+@section('breadcrumb', 'Beranda / Distribusi Stok / Riwayat Pergerakan Stok')
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/dashboard/dashboard.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/stock_allocations/history.css') }}?v=2">
-    <style>
-        #main-content .distribution-history .distribution-history__apply,
-        #main-content .distribution-history .distribution-history__apply *,
-        #main-content .distribution-history .distribution-history__apply:hover,
-        #main-content .distribution-history .distribution-history__apply:focus-visible { color:#fff !important; }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/stock_allocations/history.css') }}?v=9">
 @endsection
 
 @section('content')
@@ -20,10 +14,23 @@
         <header class="distribution-history__header">
             <div class="distribution-history__heading">
                 <span class="distribution-history__icon" aria-hidden="true"><i class="fas fa-truck-fast"></i></span>
-                <h2 id="distribution-history-title">Riwayat Distribusi Stok</h2>
+                <h2 id="distribution-history-title">Riwayat Pergerakan Stok</h2>
             </div>
             <span class="distribution-history__count">{{ number_format($allocations->total()) }} data</span>
         </header>
+
+        @if(auth()->user()?->isOwner())
+            <form method="POST" action="{{ route('store.stock-closing-time.update') }}" class="distribution-history__filters distribution-history__closing-time">
+                @csrf
+                @method('PATCH')
+                <label class="distribution-history__field">
+                    <span>Jam penutupan harian (Asia/Jakarta)</span>
+                    <input type="time" name="stock_closing_time" value="{{ old('stock_closing_time', substr($store->stock_closing_time ?? '23:59:00', 0, 5)) }}" required>
+                </label>
+                <button type="submit" class="distribution-history__apply">Simpan jam tutup</button>
+                @error('stock_closing_time')<span class="distribution-history__error" role="alert">{{ $message }}</span>@enderror
+            </form>
+        @endif
 
         <form method="GET" action="{{ route('stock-allocations.history') }}" class="distribution-history__filters">
             <label class="distribution-history__field">
@@ -36,6 +43,15 @@
                 </select>
             </label>
             <label class="distribution-history__field">
+                <span>Jenis pergerakan</span>
+                <select name="type">
+                    <option value="">Semua jenis</option>
+                    <option value="allocation" @selected(($filters['type'] ?? '') === 'allocation')>Alokasi</option>
+                    <option value="manual_withdrawal" @selected(($filters['type'] ?? '') === 'manual_withdrawal')>Penarikan manual</option>
+                    <option value="auto_return" @selected(($filters['type'] ?? '') === 'auto_return')>Pengembalian otomatis</option>
+                </select>
+            </label>
+            <label class="distribution-history__field">
                 <span>Status</span>
                 <select name="status">
                     <option value="">Semua status</option>
@@ -45,6 +61,7 @@
                         'needs_review' => 'Perlu tindak lanjut',
                         'declined' => 'Dilaporkan pegawai',
                         'cancelled' => 'Dibatalkan',
+                        'completed' => 'Selesai',
                     ] as $value => $label)
                         <option value="{{ $value }}" @selected(($filters['status'] ?? '') === $value)>{{ $label }}</option>
                     @endforeach
@@ -68,12 +85,13 @@
             <table class="distribution-history__table">
                 <thead>
                     <tr>
-                        <th>Tanggal distribusi</th>
+                        <th>Waktu</th>
                         <th>Pegawai</th>
                         <th>Produk</th>
+                        <th>Jenis</th>
                         <th>Jumlah</th>
                         <th>Status</th>
-                        <th>Dialokasikan oleh</th>
+                        <th>Pelaku</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -85,19 +103,26 @@
                                 'needs_review' => 'Perlu tindak lanjut',
                                 'declined' => 'Dilaporkan pegawai',
                                 'cancelled' => 'Dibatalkan',
+                                'completed' => 'Selesai',
                                 default => $allocation->status,
+                            };
+                            $typeLabel = match ($allocation->movement_type) {
+                                'manual_withdrawal' => 'Penarikan manual',
+                                'auto_return' => 'Pengembalian otomatis',
+                                default => 'Alokasi',
                             };
                         @endphp
                         <tr>
-                            <td>{{ $allocation->created_at?->format('d M Y, H:i') ?? '—' }}</td>
-                            <td>{{ $allocation->employee?->name ?? 'Pegawai tidak tersedia' }}</td>
-                            <td>{{ $allocation->product?->name ?? 'Produk tidak tersedia' }}</td>
-                            <td>{{ number_format((int) $allocation->requested_quantity) }} {{ $allocation->product?->unit }}</td>
-                            <td><span class="distribution-history__badge distribution-history__badge--{{ $allocation->status }}">{{ $status }}</span></td>
-                            <td>{{ $allocation->owner?->name ?? '—' }}</td>
+                            <td>{{ $allocation->occurred_at ? \Illuminate\Support\Carbon::parse($allocation->occurred_at, 'UTC')->timezone('Asia/Jakarta')->format('d M Y, H:i') : '—' }}</td>
+                            <td>{{ $allocation->employee_name ?? 'Pegawai tidak tersedia' }}</td>
+                            <td>{{ $allocation->product_name ?? 'Produk tidak tersedia' }}</td>
+                            <td>{{ $typeLabel }}</td>
+                            <td>{{ number_format((int) $allocation->quantity) }} {{ $allocation->product_unit }}</td>
+                            <td><span class="distribution-history__badge distribution-history__badge--{{ $allocation->status }} status-color" data-status-color="{{ $allocation->status }}">{{ $status }}</span></td>
+                            <td>{{ $allocation->actor_name ?? ($allocation->movement_type === 'auto_return' ? 'Sistem' : '—') }}</td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" class="distribution-history__empty">Belum ada riwayat distribusi yang sesuai.</td></tr>
+                        <tr><td colspan="7" class="distribution-history__empty">Belum ada riwayat pergerakan stok yang sesuai.</td></tr>
                     @endforelse
                 </tbody>
             </table>

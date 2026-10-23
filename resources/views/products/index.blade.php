@@ -238,19 +238,19 @@
                                 <td>
                                     @if($product->stock == 0)
                                         {{-- Stok habis: tampilkan badge abu --}}
-                                        <span class="stock-badge stock-empty">
+                                        <span class="stock-badge stock-empty status-color" data-status-color="empty">
                                             <i class="fas fa-circle-xmark" style="font-size:.65rem;"></i>
                                             Habis
                                         </span>
                                     @elseif($product->stock <= 10)
                                         {{-- Stok rendah: tampilkan badge merah dengan jumlah --}}
-                                        <span class="stock-badge stock-low">
+                                        <span class="stock-badge stock-low status-color" data-status-color="low">
                                             <i class="fas fa-triangle-exclamation" style="font-size:.65rem;"></i>
                                             {{ $product->stock }} {{ $product->unit }}
                                         </span>
                                     @else
                                         {{-- Stok normal: tampilkan badge hijau --}}
-                                        <span class="stock-badge stock-ok">
+                                        <span class="stock-badge stock-ok status-color" data-status-color="normal">
                                             <i class="fas fa-circle-check" style="font-size:.65rem;"></i>
                                             {{ $product->stock }} {{ $product->unit }}
                                         </span>

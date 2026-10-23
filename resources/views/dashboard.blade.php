@@ -77,7 +77,7 @@
                         {{ $periodLabel }}
                     @endif
                     @foreach($alerts as $alert)
-                        <span class="kpi-alert-note" role="status" aria-label="{{ $alert['message'] }}">
+                        <span class="kpi-alert-note status-color" data-status-color="danger" role="status" aria-label="{{ $alert['message'] }}">
                             <i class="fas fa-circle-exclamation" aria-hidden="true"></i>
                             Melebihi pemasukan
                         </span>
@@ -256,10 +256,10 @@
                                                 @endif
                                             </span>
                                         </div>
-                                        <span class="dashboard-allocation-status status-{{ $allocation['status'] }}">{{ $allocation['statusLabel'] }}</span>
+                                        <span class="dashboard-allocation-status status-{{ $allocation['status'] }} status-color" data-status-color="{{ $allocation['status'] }}">{{ $allocation['statusLabel'] }}</span>
                                     </li>
                                 @empty
-                                    <li class="dashboard-allocation-clear"><i class="fas fa-circle-check" aria-hidden="true"></i> Semua alokasi sudah ditindaklanjuti.</li>
+                                    <li class="dashboard-allocation-clear status-text" data-status-color="success"><i class="fas fa-circle-check" aria-hidden="true"></i> Semua alokasi sudah ditindaklanjuti.</li>
                                 @endforelse
                             </ul>
                         </div>
@@ -276,17 +276,17 @@
                         </div>
                         <div class="content-card-body dashboard-stock-summary-body">
                             <div class="dashboard-stock-count {{ $lowStockCount > 0 ? 'has-low-stock' : 'stock-is-healthy' }}">
-                                <strong>{{ number_format($lowStockCount) }}</strong>
+                                <strong class="status-text" data-status-color="{{ $lowStockCount > 0 ? 'warning' : 'success' }}">{{ number_format($lowStockCount) }}</strong>
                                 <span>produk stok rendah <small>(≤ {{ $lowStockThreshold }})</small></span>
                             </div>
                             <ul class="dashboard-stock-list" tabindex="0" aria-label="Daftar produk stok rendah">
                                 @forelse($lowStockProducts as $product)
                                     <li>
                                         <a href="{{ route('products.index', ['search' => $product->name, 'period' => $period]) }}">{{ $product->name }}</a>
-                                        <span class="dashboard-stock-quantity {{ $product->stock <= 0 ? 'is-empty' : '' }}">{{ number_format($product->stock) }} {{ $product->unit }}</span>
+                                        <span class="dashboard-stock-quantity {{ $product->stock <= 0 ? 'is-empty' : '' }} {{ $product->stock <= 0 ? 'status-text' : '' }}" @if($product->stock <= 0) data-status-color="danger" @endif>{{ number_format($product->stock) }} {{ $product->unit }}</span>
                                     </li>
                                 @empty
-                                    <li class="dashboard-stock-clear"><i class="fas fa-circle-check" aria-hidden="true"></i> Tidak ada produk yang perlu diperiksa.</li>
+                            <li class="dashboard-stock-clear status-text" data-status-color="success"><i class="fas fa-circle-check" aria-hidden="true"></i> Tidak ada produk yang perlu diperiksa.</li>
                                 @endforelse
                             </ul>
                             @if($lowStockCount > $lowStockProducts->count())
@@ -335,7 +335,7 @@
 
     @else
         {{-- Belum login --}}
-        <div class="alert alert-warning d-flex align-items-center gap-2">
+        <div class="alert alert-warning status-color d-flex align-items-center gap-2" data-status-color="warning">
             <i class="fas fa-exclamation-triangle"></i>
             Anda harus login terlebih dahulu.
             <a href="{{ route('login') }}" class="ms-2 fw-bold">Login di sini</a>

@@ -111,7 +111,7 @@ Dashboard Penjualan Pegawai - SIMKEU
                                 <td>{{ $sale->saleItems->sum('quantity') }}</td>
                                 <td>Rp {{ number_format($sale->total, 0, ',', '.') }}</td>
                                 <td>
-                                    <span class="role-badge status-complete">Selesai</span>
+                                    <span class="role-badge status-complete status-color" data-status-color="completed">Selesai</span>
                                 </td>
                             </tr>
                         @endforeach

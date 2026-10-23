@@ -177,7 +177,7 @@
                             <span>{{ $kat['label'] }}</span>
                         </div>
                         @if($kat['previous'] !== null)
-                            <span class="comparison-status comparison-status--{{ $kat['statusClass'] }}">
+                            <span class="comparison-status comparison-status--{{ $kat['statusClass'] }} status-color" data-status-color="{{ $kat['statusClass'] }}">
                                 <i class="fas {{ $kat['statusIcon'] }}" aria-hidden="true"></i>
                                 {{ $kat['status'] }}
                                 @if($kat['percentage'] !== null)

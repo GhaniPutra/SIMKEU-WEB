@@ -26,7 +26,7 @@
     </div>
 
     @if ($errors->any())
-        <div class="alert alert-danger fade-up" role="alert">
+        <div class="alert alert-danger status-color fade-up" data-status-color="danger" role="alert">
             <strong>Periksa kembali input Anda:</strong>
             <ul class="mb-0 mt-2">
                 @foreach ($errors->all() as $error)

@@ -58,9 +58,9 @@
         }
 
         /* Biarkan halaman detail keuangan memakai hierarki warna desainnya sendiri. */
-        *:not(.finance-detail):not(.finance-detail *):not([class*="icon"]):not(.fa):not([class*="fa-"]),
-        *:not(.finance-detail):not(.finance-detail *):not([class*="icon"]):not(.fa):not([class*="fa-"])::before,
-        *:not(.finance-detail):not(.finance-detail *):not([class*="icon"]):not(.fa):not([class*="fa-"])::after {
+        *:not(.finance-detail):not(.finance-detail *):not([class*="icon"]):not(.fa):not([class*="fa-"]):not(.distribution-history__apply):not(.distribution-history__apply *):not(.distribution-history__badge):not(.distribution-history__badge *):not(.distribution-history__empty):not(.status-color):not(.status-color *):not(.status-text):not(.alert-success):not(.alert-success *):not(.alert-warning):not(.alert-warning *):not(.alert-danger):not(.alert-danger *):not(.text-success):not(.text-warning):not(.text-danger):not(.badge-success):not(.badge-warning):not(.badge-danger),
+        *:not(.finance-detail):not(.finance-detail *):not([class*="icon"]):not(.fa):not([class*="fa-"]):not(.distribution-history__apply):not(.distribution-history__apply *):not(.distribution-history__badge):not(.distribution-history__badge *):not(.distribution-history__empty):not(.status-color):not(.status-color *):not(.status-text):not(.alert-success):not(.alert-success *):not(.alert-warning):not(.alert-warning *):not(.alert-danger):not(.alert-danger *):not(.text-success):not(.text-warning):not(.text-danger):not(.badge-success):not(.badge-warning):not(.badge-danger)::before,
+        *:not(.finance-detail):not(.finance-detail *):not([class*="icon"]):not(.fa):not([class*="fa-"]):not(.distribution-history__apply):not(.distribution-history__apply *):not(.distribution-history__badge):not(.distribution-history__badge *):not(.distribution-history__empty):not(.status-color):not(.status-color *):not(.status-text):not(.alert-success):not(.alert-success *):not(.alert-warning):not(.alert-warning *):not(.alert-danger):not(.alert-danger *):not(.text-success):not(.text-warning):not(.text-danger):not(.badge-success):not(.badge-warning):not(.badge-danger)::after {
             color: var(--text-primary) !important;
         }
 
@@ -193,30 +193,6 @@
         #sidebar .sidebar-nav .nav-link[aria-disabled="true"] .nav-chevron {
             color: var(--icon-disabled);
         }
-
-        #main-content .alert-success,
-        #main-content .alert-success *,
-        #main-content .text-success,
-        #main-content .badge-success {
-            color: var(--success) !important;
-        }
-        #main-content .stock-ok { color: var(--green-700) !important; }
-
-        #main-content .alert-warning,
-        #main-content .alert-warning *,
-        #main-content .text-warning,
-        #main-content .badge-warning {
-            color: var(--warning) !important;
-        }
-        #main-content .stock-low { color: var(--yellow-700) !important; }
-
-        #main-content .alert-danger,
-        #main-content .alert-danger *,
-        #main-content .text-danger,
-        #main-content .badge-danger {
-            color: var(--danger) !important;
-        }
-        #main-content .stock-empty { color: var(--red-700) !important; }
 
         /* Tombol Reset memakai tampilan sekunder yang seragam di semua halaman. */
         #main-content :is(.btn-reset, .category-reset, .stock-reset, .reset-button):not([class*="icon"]):not(.fa):not([class*="fa-"]) {

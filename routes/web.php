@@ -96,6 +96,7 @@ Route::middleware(['auth'])->group(function () {
     // Route setup toko (harus di dalam auth)
     Route::get('/store/setup', [StoreController::class, 'setup'])->name('store.setup');
     Route::post('/store/setup', [StoreController::class, 'store'])->name('store.store');
+    Route::patch('/store/stock-closing-time', [StoreController::class, 'updateStockClosingTime'])->name('store.stock-closing-time.update');
 
     // Route dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('permission:dashboard.view,dashboard.mobile.view')->name('dashboard');

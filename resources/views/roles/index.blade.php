@@ -74,9 +74,9 @@
                             <div class="role-card-top">
                                 <span class="role-card-icon"><i class="fas fa-user-shield"></i></span>
                                 @if($role->is_system)
-                                    <span class="role-status role-status-default"><i class="fas fa-lock"></i> Bawaan</span>
+                                    <span class="role-status role-status-default status-color" data-status-color="default"><i class="fas fa-lock"></i> Bawaan</span>
                                 @else
-                                    <span class="role-status role-status-custom">Role khusus</span>
+                                    <span class="role-status role-status-custom status-color" data-status-color="custom">Role khusus</span>
                                 @endif
                             </div>
 

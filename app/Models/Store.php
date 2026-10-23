@@ -19,6 +19,7 @@ class Store extends Model
         'address',
         'phone',
         'logo',
+        'stock_closing_time',
     ];
 
     /**

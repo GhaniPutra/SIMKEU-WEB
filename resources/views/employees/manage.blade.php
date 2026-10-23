@@ -136,7 +136,7 @@
                                 <strong>{{ $product->name }}</strong>
                                 <span>{{ $product->unit ?: 'Unit' }}</span>
                             </div>
-                            <span class="stock-status {{ $employeeStock <= 0 ? 'status-empty' : 'status-low' }}">
+                            <span class="stock-status status-color {{ $employeeStock <= 0 ? 'status-empty' : 'status-low' }}" data-status-color="{{ $employeeStock <= 0 ? 'empty' : 'low' }}">
                                 {{ $employeeStock <= 0 ? 'Kosong' : 'Rendah' }} · {{ $employeeStock }}
                             </span>
                         </div>
@@ -187,7 +187,7 @@
 
     <section class="employee-tab-panel {{ $activeTab === 'stock' ? 'active' : '' }}" id="tab-stock" role="tabpanel" aria-labelledby="tab-button-stock" tabindex="0">
         @if(session('success'))
-            <div class="employee-card" role="status"><div class="employee-card-body">{{ session('success') }}</div></div>
+            <div class="employee-card" role="status"><div class="employee-card-body status-text" data-status-color="success">{{ session('success') }}</div></div>
         @endif
         @if($allocationsNeedingReview->isNotEmpty())
             <div class="employee-card allocation-review-card">
@@ -310,7 +310,7 @@
                         <h2>Kondisi stok pegawai</h2>
                         <p>{{ number_format($allocatedProductCount) }} produk sudah dialokasikan</p>
                     </div>
-                    <span class="stock-health-alert {{ $stockIssueCount > 0 ? 'has-issues' : 'all-clear' }}">
+                    <span class="stock-health-alert status-color {{ $stockIssueCount > 0 ? 'has-issues' : 'all-clear' }}" data-status-color="{{ $stockIssueCount > 0 ? 'warning' : 'success' }}">
                         <i class="fas fa-{{ $stockIssueCount > 0 ? 'triangle-exclamation' : 'circle-check' }}" aria-hidden="true"></i>
                         {{ number_format($stockIssueCount) }} perlu perhatian
                     </span>
@@ -327,15 +327,15 @@
                 @endif
 
                 <div class="stock-health-breakdown">
-                    <a class="stock-health-item status-empty" href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock', 'period' => $analyticsPeriod, 'stock_status' => 'empty']) }}">
+                    <a class="stock-health-item status-empty status-color" data-status-color="empty" href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock', 'period' => $analyticsPeriod, 'stock_status' => 'empty']) }}">
                         <span class="stock-health-item-label"><i class="fas fa-circle-xmark" aria-hidden="true"></i> Kosong</span>
                         <strong>{{ number_format($emptyStockCount) }} <small>produk</small></strong>
                     </a>
-                    <a class="stock-health-item status-low" href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock', 'period' => $analyticsPeriod, 'stock_status' => 'low']) }}">
+                    <a class="stock-health-item status-low status-color" data-status-color="low" href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock', 'period' => $analyticsPeriod, 'stock_status' => 'low']) }}">
                         <span class="stock-health-item-label"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i> Rendah</span>
                         <strong>{{ number_format($lowStockCount) }} <small>produk</small></strong>
                     </a>
-                    <a class="stock-health-item status-normal" href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock', 'period' => $analyticsPeriod, 'stock_status' => 'normal']) }}">
+                    <a class="stock-health-item status-normal status-color" data-status-color="normal" href="{{ route('employees.manage', ['employee' => $employee, 'tab' => 'stock', 'period' => $analyticsPeriod, 'stock_status' => 'normal']) }}">
                         <span class="stock-health-item-label"><i class="fas fa-circle-check" aria-hidden="true"></i> Cukup</span>
                         <strong>{{ number_format($normalStockCount) }} <small>produk</small></strong>
                     </a>
@@ -361,8 +361,8 @@
         <div class="employee-card">
             <div class="employee-card-header stock-card-header">
                 <div>
-                    <h2><i class="fas fa-boxes-stacked"></i> Alokasi & Pemantauan Stok</h2>
-                    <p>Stok gudang dan pegawai ditampilkan terpisah. Alokasi tambahan menunggu konfirmasi pegawai; stok rendah: 1–{{ $lowStockThreshold }} unit.</p>
+                    <h2><i class="fas fa-boxes-stacked"></i> Saldo Stok Pegawai</h2>
+                    <p>Saldo gudang dan saldo aktif pegawai ditampilkan terpisah. Alokasi baru menambah saldo pegawai setelah diterima; batas stok rendah: 1–{{ $lowStockThreshold }} unit.</p>
                 </div>
                 <span class="stock-result-count">{{ $products->total() }} produk</span>
             </div>
@@ -420,9 +420,9 @@
                                                @if(!in_array((int) $product->id, $pendingProductIds, true)) hidden @endif></i>
                                         </span>
                                         @if($masterStock <= 0)
-                                            <span class="stock-status status-empty">Kosong</span>
+                                            <span class="stock-status status-empty status-color" data-status-color="empty">Kosong</span>
                                         @elseif($masterStock <= $lowStockThreshold)
-                                            <span class="stock-status status-low">Rendah</span>
+                                            <span class="stock-status status-low status-color" data-status-color="low">Rendah</span>
                                         @endif
                                     </td>
                                     <td>
@@ -430,13 +430,13 @@
                                             <span data-stock-value>{{ $isEmployeeStockAllocated ? number_format($employeeStock) : '—' }}</span>
                                         </span>
                                         @if(!$isEmployeeStockAllocated)
-                                            <span class="stock-status status-unallocated" id="employee-stock-status-{{ $product->id }}">Belum dialokasikan</span>
+                                            <span class="stock-status status-unallocated status-color" data-status-color="unallocated" id="employee-stock-status-{{ $product->id }}">Belum dialokasikan</span>
                                         @elseif($employeeStock <= 0)
-                                            <span class="stock-status status-empty" id="employee-stock-status-{{ $product->id }}">Kosong</span>
+                                            <span class="stock-status status-empty status-color" data-status-color="empty" id="employee-stock-status-{{ $product->id }}">Kosong</span>
                                         @elseif($employeeStock <= $lowStockThreshold)
-                                            <span class="stock-status status-low" id="employee-stock-status-{{ $product->id }}">Rendah</span>
+                                            <span class="stock-status status-low status-color" data-status-color="low" id="employee-stock-status-{{ $product->id }}">Rendah</span>
                                         @else
-                                            <span class="stock-status status-normal" id="employee-stock-status-{{ $product->id }}">Normal</span>
+                                            <span class="stock-status status-normal status-color" data-status-color="normal" id="employee-stock-status-{{ $product->id }}">Normal</span>
                                         @endif
                                     </td>
                                     <td><input type="number" id="amount-{{ $product->id }}" class="stock-quantity" min="1" step="1" value="1" aria-label="Jumlah transfer {{ $product->name }}"></td>

@@ -1,0 +1,73 @@
+/* Shared status colors: pair each surface with a legible foreground token. */
+.status-color[data-status-color="success"],
+.status-color[data-status-color="normal"],
+.status-color[data-status-color="ok"],
+.status-color[data-status-color="accepted"],
+.status-color[data-status-color="up"] {
+    background-color: var(--green-50);
+    color: var(--green-700);
+}
+
+.status-color[data-status-color="warning"],
+.status-color[data-status-color="pending"],
+.status-color[data-status-color="low"] {
+    background-color: var(--yellow-50);
+    color: var(--yellow-800);
+}
+
+.status-color[data-status-color="needs_review"] {
+    background-color: var(--yellow-100);
+    color: var(--yellow-950);
+}
+
+.status-color[data-status-color="danger"],
+.status-color[data-status-color="empty"],
+.status-color[data-status-color="declined"],
+.status-color[data-status-color="down"] {
+    background-color: var(--red-50);
+    color: var(--red-700);
+}
+
+.status-color[data-status-color="neutral"],
+.status-color[data-status-color="unallocated"],
+.status-color[data-status-color="cancelled"],
+.status-color[data-status-color="default"] {
+    background-color: var(--grey-100);
+    color: var(--grey-700);
+}
+
+.status-color[data-status-color="info"],
+.status-color[data-status-color="completed"],
+.status-color[data-status-color="custom"] {
+    background-color: var(--blue-50);
+    color: var(--blue-800);
+}
+
+/* Preserve semantic text colors for Bootstrap utility/status components. */
+#main-content .text-success { color: var(--green-700); }
+#main-content .text-warning { color: var(--yellow-800); }
+#main-content .text-danger { color: var(--red-700); }
+
+#main-content .badge-success { background-color: var(--green-50); color: var(--green-700); }
+#main-content .badge-warning { background-color: var(--yellow-50); color: var(--yellow-800); }
+#main-content .badge-danger { background-color: var(--red-50); color: var(--red-700); }
+
+#main-content .status-text[data-status-color="success"],
+#main-content .status-text[data-status-color="normal"],
+#main-content .status-text[data-status-color="ok"],
+#main-content .status-text[data-status-color="accepted"],
+#main-content .status-text[data-status-color="up"] { color: var(--green-700); }
+#main-content .status-text[data-status-color="warning"],
+#main-content .status-text[data-status-color="pending"],
+#main-content .status-text[data-status-color="low"] { color: var(--yellow-800); }
+#main-content .status-text[data-status-color="danger"],
+#main-content .status-text[data-status-color="empty"],
+#main-content .status-text[data-status-color="declined"],
+#main-content .status-text[data-status-color="down"] { color: var(--red-700); }
+#main-content .status-text[data-status-color="neutral"],
+#main-content .status-text[data-status-color="unallocated"],
+#main-content .status-text[data-status-color="cancelled"],
+#main-content .status-text[data-status-color="default"] { color: var(--grey-700); }
+#main-content .status-text[data-status-color="info"],
+#main-content .status-text[data-status-color="completed"],
+#main-content .status-text[data-status-color="custom"] { color: var(--blue-800); }

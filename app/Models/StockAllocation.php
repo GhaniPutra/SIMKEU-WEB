@@ -15,6 +15,7 @@ class StockAllocation extends Model
     public const STATUS_NEEDS_REVIEW = 'needs_review';
     public const STATUS_CANCELLED = 'cancelled';
 
+
     protected $fillable = [
         'owner_user_id',
         'employee_user_id',
