@@ -637,3 +637,45 @@
         padding-inline: 18px !important;
     }
 }
+
+/* Penyegaran visual tabel Daftar Pegawai */
+.content-card:has(.data-table) { border-color: #e4e9f1; border-radius: 12px; }
+.content-card:has(.data-table) .content-card-header { padding: 17px 20px; }
+.content-card:has(.data-table) .content-card-title { font-size: .92rem; }
+.content-card:has(.data-table) .toolbar { gap: 9px; padding: 13px 20px; background: #fff; }
+.content-card:has(.data-table) .toolbar-search input,
+.content-card:has(.data-table) .toolbar select { min-height: 40px; border-radius: 8px; background: #fbfcfe; }
+.content-card:has(.data-table) .table-scroll { scrollbar-color: #cbd5e1 #f8fafc; scrollbar-width: thin; }
+.content-card:has(.data-table) .data-table { min-width: 700px; border-collapse: separate; border-spacing: 0; font-size: .82rem; }
+.content-card:has(.data-table) .data-table thead th { padding: 13px 18px; border-bottom: 1px solid #e7ebf2; background: #f8fafc; color: #748197; font-size: .66rem; font-weight: 700; letter-spacing: .075em; }
+.content-card:has(.data-table) .data-table tbody td { padding: 14px 18px; border-bottom: 1px solid #edf0f5; color: #46566e; vertical-align: middle; }
+.content-card:has(.data-table) .data-table tbody tr { transition: background-color .16s ease; }
+.content-card:has(.data-table) .data-table tbody tr:hover { background: #f7f9fd; }
+.content-card:has(.data-table) .data-table tbody tr:focus-visible { outline: 2px solid #7898e7; outline-offset: -2px; }
+.content-card:has(.data-table) .data-table tbody td:first-child { color: #8995a8; font-size: .75rem; font-variant-numeric: tabular-nums; }
+.content-card:has(.data-table) .data-table tbody td strong { color: #263852; font-weight: 700; }
+.content-card:has(.data-table) .employee-table-person { display: flex; min-width: 0; align-items: center; gap: 10px; }
+.content-card:has(.data-table) .employee-table-person strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.content-card:has(.data-table) .employee-table-avatar { display: grid; width: 38px; height: 38px; flex: 0 0 38px; place-items: center; overflow: hidden; border: 1px solid #e1e7f0; border-radius: 50%; background: #edf2fb; color: #315ca8; font-size: .82rem; font-weight: 700; }
+.content-card:has(.data-table) .employee-table-avatar img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.content-card:has(.data-table) .role-badge { padding: 5px 9px; border: 1px solid #e0e8f8; border-radius: 999px; background: #f1f5fd; color: #435c91; font-size: .7rem; font-weight: 650; letter-spacing: 0; }
+.content-card:has(.data-table) .role-admin { border-color: #d9e5fa; background: #edf3ff; color: #315ca8; }
+.content-card:has(.data-table) .table-actions { gap: 6px; }
+.content-card:has(.data-table) .btn-edit,
+.content-card:has(.data-table) .btn-delete { min-height: 33px; justify-content: center; padding: 6px 10px; border-radius: 7px; font-size: .72rem; transition: color .16s ease, background-color .16s ease, border-color .16s ease; }
+.content-card:has(.data-table) .btn-edit { border-color: #dce5f5; background: #fff; color: #315ca8; }
+.content-card:has(.data-table) .btn-edit:hover { border-color: #315ca8; background: #315ca8; color: #fff; }
+.content-card:has(.data-table) .btn-delete { border-color: #f0d9dc; background: #fff; color: #a6404a; }
+.content-card:has(.data-table) .btn-delete:hover { border-color: #a6404a; background: #a6404a; color: #fff; }
+.content-card:has(.data-table) .btn-edit:focus-visible,
+.content-card:has(.data-table) .btn-delete:focus-visible { outline: 3px solid rgb(49 92 168 / 22%); outline-offset: 2px; }
+.content-card:has(.data-table) .pagination-wrapper { padding: 13px 20px; background: #fcfdff; }
+
+@media (max-width: 575px) {
+    .content-card:has(.data-table) .content-card-header,
+    .content-card:has(.data-table) .toolbar,
+    .content-card:has(.data-table) .pagination-wrapper { padding-inline: 14px; }
+    .content-card:has(.data-table) .data-table thead th,
+    .content-card:has(.data-table) .data-table tbody td { padding-inline: 13px; }
+    .content-card:has(.data-table) .employee-table-avatar { width: 34px; height: 34px; flex-basis: 34px; }
+}

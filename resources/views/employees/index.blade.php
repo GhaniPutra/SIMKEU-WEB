@@ -6,7 +6,7 @@
 @section('breadcrumb', 'Pengaturan / Pegawai') {{-- Jejak navigasi breadcrumb --}}
 
 @section('css')
-    <link rel="stylesheet" href="{{ asset('css/employees/index.css') }}"> {{-- Muat stylesheet khusus halaman index pegawai --}}
+    <link rel="stylesheet" href="{{ asset('css/employees/index.css') }}?v=3"> {{-- Muat stylesheet khusus halaman index pegawai --}}
 @endsection
 
 @section('page-css')
@@ -102,7 +102,16 @@
                                 data-href="{{ $employee->isOwner() ? route('employees.index') : (Auth::user()->hasPermission('employees.sales.view') ? route('employees.manage', $employee) : (Auth::user()->hasPermission('employees.update') ? route('employees.edit', $employee) : '#')) }}">
                                 <td>{{ $loop->iteration + ($employees->currentPage()-1)*$employees->perPage() }}</td> {{-- Nomor urut tabel --}}
                                 <td>
-                                    <strong>{{ $employee->name }}</strong>
+                                    <div class="employee-table-person">
+                                        <span class="employee-table-avatar" aria-hidden="true">
+                                            @if($employee->avatar)
+                                                <img src="{{ $employee->avatar }}" alt="" loading="lazy">
+                                            @else
+                                                {{ mb_strtoupper(mb_substr($employee->name, 0, 1)) }}
+                                            @endif
+                                        </span>
+                                        <strong>{{ $employee->name }}</strong>
+                                    </div>
                                 </td>
                                 <td>{{ $employee->email }}</td> {{-- Email pegawai --}}
                                 <td class="role-column">
