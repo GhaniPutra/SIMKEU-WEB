@@ -70,7 +70,7 @@ jam tutup usaha (default 23.59 zona waktu `Asia/Jakarta`).
 
 Akses aplikasi di: `http://localhost:8000`.
 
-Jika server dijalankan sendiri dengan `php artisan serve`, jalankan scheduler di
+Jika server dijalankan sendiri dengan `pphp artisan serve --host=0.0.0.0 --port=8000`, jalankan scheduler di
 terminal kedua:
 
 ```bash
