@@ -46,7 +46,6 @@ operasional yang sebenarnya.
 ### 5. Instal dependensi frontend
 
 ```bash
-composer install
 npm install
 ```
 
@@ -56,13 +55,27 @@ npm install
 npm run build
 ```
 
-### 7. Jalankan server lokal
+### 7. Jalankan aplikasi untuk pengembangan lokal
 
 ```bash
-php artisan serve --host=0.0.0.0 --port=8000
+composer run dev
 ```
 
-Akses aplikasi di: `http://localhost:8000`
+Perintah ini menjalankan server Laravel pada `0.0.0.0:8000`, Vite, queue, log,
+dan Laravel Scheduler bersamaan. Alamat ini juga dapat dipakai perangkat lain
+di jaringan yang sama untuk mengakses web/API. Biarkan terminal tetap berjalan
+selama aplikasi digunakan. Scheduler
+memeriksa tugas setiap menit, termasuk pengembalian otomatis stok pegawai pada
+jam tutup usaha (default 23.59 zona waktu `Asia/Jakarta`).
+
+Akses aplikasi di: `http://localhost:8000`.
+
+Jika server dijalankan sendiri dengan `php artisan serve`, jalankan scheduler di
+terminal kedua:
+
+```bash
+php artisan schedule:work
+```
 
 ## Lisensi
 
