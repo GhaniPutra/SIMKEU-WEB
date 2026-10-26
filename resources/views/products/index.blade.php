@@ -38,7 +38,7 @@
          KPI CARDS — Ringkasan statistik stok utama
          Data dikirim dari ProductController::index()
     ============================================================ --}}
-    <div class="kpi-grid">
+    <div class="kpi-grid" data-realtime-fragment="inventory-kpis" data-realtime-resource="inventory">
 
         {{-- Kartu: Total Produk --}}
         <div class="kpi-card primary fade-up">
@@ -179,7 +179,7 @@
                         </tr>
                     </thead>
 
-                    <tbody>
+                    <tbody data-realtime-fragment="inventory-table" data-realtime-resource="inventory">
                         {{-- ================================================
                              Tampilkan pesan jika tidak ada produk ditemukan
                         ================================================ --}}

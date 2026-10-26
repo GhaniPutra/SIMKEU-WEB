@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\StoreDataChanged;
 use App\Models\Product;
 use App\Models\StockAllocation;
 use App\Models\User;
@@ -17,7 +18,7 @@ class StockAllocationWorkflow
             || $owner->hasPermission('stock_allocations.transfer');
         abort_unless($canAllocate && $owner->store_id && $employee->store_id === $owner->store_id && $employee->role === 'pegawai', 403);
 
-        return DB::transaction(function () use ($owner, $employee, $productId, $quantity) {
+        $allocation = DB::transaction(function () use ($owner, $employee, $productId, $quantity) {
             $product = Product::query()->lockForUpdate()->findOrFail($productId);
             $this->ensureAvailableStock($product, $quantity);
 
@@ -31,6 +32,10 @@ class StockAllocationWorkflow
                 'status' => StockAllocation::STATUS_PENDING,
             ]);
         });
+
+        StoreDataChanged::dispatch((int) $owner->store_id, ['stock-allocations', 'inventory']);
+
+        return $allocation;
     }
 
     public function reviewByEmployee(User $employee, int $allocationId, array $data): StockAllocation
@@ -40,7 +45,7 @@ class StockAllocationWorkflow
 
     public function followUpByOwner(User $owner, int $allocationId, array $data): array
     {
-        return DB::transaction(function () use ($owner, $allocationId, $data) {
+        $result = DB::transaction(function () use ($owner, $allocationId, $data) {
             $allocation = StockAllocation::query()->lockForUpdate()->findOrFail($allocationId);
             $this->ensureOwner($owner, $allocation);
 
@@ -176,11 +181,15 @@ class StockAllocationWorkflow
 
             $this->invalid('action', 'Tindak lanjut alokasi tidak dikenal.');
         });
+
+        StoreDataChanged::dispatch((int) $owner->store_id, ['stock-allocations', 'inventory']);
+
+        return $result;
     }
 
     private function reviewPending(User $employee, int $allocationId, array $data): StockAllocation
     {
-        return DB::transaction(function () use ($employee, $allocationId, $data) {
+        $allocation = DB::transaction(function () use ($employee, $allocationId, $data) {
             $allocation = StockAllocation::query()->lockForUpdate()->findOrFail($allocationId);
             $this->ensureEmployee($employee, $allocation);
 
@@ -214,6 +223,10 @@ class StockAllocationWorkflow
 
             return $allocation;
         });
+
+        StoreDataChanged::dispatch((int) $employee->store_id, ['stock-allocations', 'inventory']);
+
+        return $allocation;
     }
 
     private function creditEmployeeStock(int $employeeId, int $productId, int $quantity): void

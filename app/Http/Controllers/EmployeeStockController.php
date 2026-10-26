@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\StoreDataChanged;
 use App\Models\Product;
 use App\Models\StockAllocation;
 use App\Models\StockMovement;
@@ -172,6 +173,7 @@ class EmployeeStockController extends Controller
             ]);
 
             DB::commit();
+            StoreDataChanged::dispatch((int) $owner->store_id, ['inventory']);
 
             $updatedEmployeeProduct = $employee->products()->where('product_id', $product->id)->first();
             $newEmployeeStock = $updatedEmployeeProduct ? $updatedEmployeeProduct->pivot->stock : 0;

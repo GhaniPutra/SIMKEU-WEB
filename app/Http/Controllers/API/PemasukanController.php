@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Events\StoreDataChanged;
 use App\Http\Controllers\Controller;
 use App\Models\Sale;
 use App\Models\SaleItem;
@@ -143,44 +144,46 @@ class PemasukanController extends Controller
             // Nilai diskon/pajak yang dikirim merupakan nominal aktual transaksi.
             // Rincian item tetap ditandai tidak tersedia karena endpoint ini
             // hanya menerima nilai diskon dan pajak pada tingkat transaksi.
-            $sale = Sale::create([
-                'user_id' => auth()->id(),
-                'invoice_number' => 'INV-' . now()->format('YmdHis'),
-                'transaction_date' => now(),
-                'payment_method' => $validated['payment_method'],
-                'subtotal' => $subtotal,
-                'discount' => $discount,
-                'tax' => $tax,
-                'total' => round($subtotal - $discount + $tax, 2),
-                'notes' => $validated['notes'] ?? null,
-            ]);
-
-            // Buat item penjualan
-            foreach ($validated['items'] as $index => $item) {
-                $itemTotal = $itemSubtotals[$index];
-
-                SaleItem::create([
-                    'sale_id' => $sale->id,
-                    'product_id' => $item['product_id'],
-                    'quantity' => $item['quantity'],
-                    'price_at_sale' => $item['price'],
-                    'subtotal' => $itemTotal,
-                    'discount' => null,
-                    'tax' => null,
+            $sale = DB::transaction(function () use ($validated, $itemSubtotals, $subtotal, $discount, $tax) {
+                $sale = Sale::create([
+                    'user_id' => auth()->id(),
+                    'invoice_number' => 'INV-' . now()->format('YmdHis'),
+                    'transaction_date' => now(),
+                    'payment_method' => $validated['payment_method'],
+                    'subtotal' => $subtotal,
+                    'discount' => $discount,
+                    'tax' => $tax,
+                    'total' => round($subtotal - $discount + $tax, 2),
+                    'notes' => $validated['notes'] ?? null,
                 ]);
 
-                // Kurangi stok produk
-                $product = Product::find($item['product_id']);
-                $product->update(['stock' => $product->stock - $item['quantity']]);
-            }
+                foreach ($validated['items'] as $index => $item) {
+                    $itemTotal = $itemSubtotals[$index];
 
-            // Reuse the normalized item total and preserve the requested header amounts.
-            $sale->update([
-                'subtotal' => $subtotal,
-                'total' => round($subtotal - $discount + $tax, 2),
-            ]);
+                    SaleItem::create([
+                        'sale_id' => $sale->id,
+                        'product_id' => $item['product_id'],
+                        'quantity' => $item['quantity'],
+                        'price_at_sale' => $item['price'],
+                        'subtotal' => $itemTotal,
+                        'discount' => null,
+                        'tax' => null,
+                    ]);
+
+                    $product = Product::find($item['product_id']);
+                    $product->update(['stock' => $product->stock - $item['quantity']]);
+                }
+
+                $sale->update([
+                    'subtotal' => $subtotal,
+                    'total' => round($subtotal - $discount + $tax, 2),
+                ]);
+
+                return $sale;
+            });
 
             $sale->load(['user', 'saleItems.product']);
+            StoreDataChanged::dispatch($request->user()->store_id, ['sales', 'inventory']);
 
             return response()->json([
                 'success' => true,

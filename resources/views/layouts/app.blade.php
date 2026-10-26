@@ -312,7 +312,9 @@
                                 </div>
                             @endforeach
                             @foreach ($storedNotifications as $notification)
-                                @php($notificationData = $notification->data)
+                                @php
+                                    $notificationData = $notification->data;
+                                @endphp
                                 <div class="notification-item notification-{{ $notificationData['type'] ?? 'info' }} {{ $notification->read_at ? '' : 'notification-unread' }}" data-notification-id="{{ $notification->id }}">
                                     <strong>{{ $notificationData['title'] ?? 'Notifikasi' }}</strong>
                                     <span>{{ $notificationData['message'] ?? '' }}</span>
@@ -526,6 +528,32 @@
             });
         });
     </script>
+    @php
+        $realtimeUser = auth()->user();
+    @endphp
+    @if($realtimeUser?->store_id)
+        @php
+            $realtimeResources = collect([
+                'sales' => collect(['sales.view', 'sales.mobile.view', 'dashboard.view', 'dashboard.mobile.view'])
+                    ->contains(fn ($permission) => $realtimeUser->hasPermission($permission)),
+                'expenses' => collect(['expenses.view', 'expenses.mobile.view', 'dashboard.view', 'dashboard.mobile.view'])
+                    ->contains(fn ($permission) => $realtimeUser->hasPermission($permission)),
+                'inventory' => collect(['products.view', 'products.mobile.view', 'products.stock.add', 'products.stock.update', 'products.stock.adjust', 'pos.mobile.use', 'stock_allocations.view', 'stock_allocations.create', 'stock_allocations.confirm', 'stock_allocations.review', 'stock_allocations.transfer'])
+                    ->contains(fn ($permission) => $realtimeUser->hasPermission($permission)),
+                'stock-allocations' => collect(['stock_allocations.view', 'stock_allocations.create', 'stock_allocations.confirm', 'stock_allocations.review', 'stock_allocations.transfer'])
+                    ->contains(fn ($permission) => $realtimeUser->hasPermission($permission)),
+                'employees' => collect(['employees.view', 'employees.create', 'employees.update', 'employees.delete'])
+                    ->contains(fn ($permission) => $realtimeUser->hasPermission($permission)),
+            ])->filter()->keys()->values();
+        @endphp
+        <script>
+            window.SimkeuRealtimeConfig = {
+                storeId: @json($realtimeUser->store_id),
+                resources: @json($realtimeResources),
+            };
+        </script>
+        @vite('resources/js/realtime.js')
+    @endif
 </body>
 
 </html>

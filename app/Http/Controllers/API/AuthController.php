@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Events\StoreDataChanged;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Store;
@@ -117,6 +118,14 @@ class AuthController extends Controller
                 ], 401);
             }
 
+            $user->loadMissing('accessRole');
+            $role = $user->accessRole;
+            $user->setAttribute('permissions', $user->isOwner()
+                ? RolePermissions::all()
+                : (($role && (int) $role->store_id === (int) $user->store_id)
+                    ? ($role->permissions ?? [])
+                    : ($user->role_id === null ? RolePermissions::legacyEmployee() : [])));
+
             // Generate API token menggunakan Sanctum
             $token = $user->createToken('api-token')->plainTextToken;
 
@@ -214,6 +223,7 @@ class AuthController extends Controller
 
             // Update user
             $user->update($validated);
+            StoreDataChanged::dispatch((int) $user->store_id, ['employees']);
 
             return response()->json([
                 'success' => true,

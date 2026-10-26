@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Events\StoreDataChanged;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Category;
@@ -108,6 +109,7 @@ class ProductController extends Controller
             // Buat produk baru
             $product = Product::create($validated);
             $product->load('category');
+            StoreDataChanged::dispatch($request->user()->store_id, ['inventory']);
 
             return response()->json([
                 'success' => true,
@@ -166,6 +168,7 @@ class ProductController extends Controller
                 $lockedProduct->update($validated);
                 return $lockedProduct->load('category');
             });
+            StoreDataChanged::dispatch($request->user()->store_id, ['inventory']);
 
             return response()->json([
                 'success' => true,
@@ -195,7 +198,9 @@ class ProductController extends Controller
     {
         try {
             $productName = $product->name;
+            $storeId = $product->store_id;
             $product->delete();
+            StoreDataChanged::dispatch($storeId, ['inventory']);
 
             return response()->json([
                 'success' => true,
@@ -284,6 +289,7 @@ class ProductController extends Controller
             }
 
             [$product, $previousStock, $newStock] = $result;
+            StoreDataChanged::dispatch($request->user()->store_id, ['inventory']);
 
             return response()->json([
                 'success' => true,

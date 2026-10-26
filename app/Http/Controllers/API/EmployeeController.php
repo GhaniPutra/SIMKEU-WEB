@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Events\StoreDataChanged;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Role;
@@ -102,6 +103,7 @@ class EmployeeController extends Controller
                 'role_id' => $role->id,
                 'store_id' => $request->user()->store_id,
             ]);
+            StoreDataChanged::dispatch($request->user()->store_id, ['employees']);
 
             return response()->json([
                 'success' => true,
@@ -150,6 +152,7 @@ class EmployeeController extends Controller
 
             // Update karyawan
             $employee->update($validated);
+            StoreDataChanged::dispatch($request->user()->store_id, ['employees']);
 
             return response()->json([
                 'success' => true,
@@ -183,11 +186,13 @@ class EmployeeController extends Controller
             }
             $name = $employee->name;
             $photoPath = $employee->profile_photo_path;
+            $storeId = $employee->store_id;
             $employee->delete();
 
             if ($photoPath) {
                 Storage::disk('public')->delete($photoPath);
             }
+            StoreDataChanged::dispatch($storeId, ['employees']);
 
             return response()->json([
                 'success' => true,

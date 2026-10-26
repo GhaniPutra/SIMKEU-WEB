@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Broadcast;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\CategoryController;
@@ -24,6 +25,8 @@ Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 // Middleware sanctum akan memastikan user authenticated dengan token
 // ====================================
 Route::middleware(['auth:sanctum', EnsureStoreIsConfigured::class])->group(function () {
+    Broadcast::routes(['middleware' => ['api']]);
+
     // ====================================
     // Authentication Routes
     // ====================================

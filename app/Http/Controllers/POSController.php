@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\StoreDataChanged;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -119,6 +120,7 @@ class POSController extends Controller
                 }
             }
         });
+        StoreDataChanged::dispatch($request->user()->store_id, ['sales', 'inventory']);
 
         // Redirect kembali ke halaman POS dengan pesan sukses
         return redirect()->route('pos.index')

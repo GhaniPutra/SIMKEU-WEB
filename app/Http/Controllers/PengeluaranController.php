@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\StoreDataChanged;
 // ============================================================
 // Import class-class yang dibutuhkan controller ini
 // ============================================================
@@ -338,6 +339,7 @@ class PengeluaranController extends Controller
             'category'     => $validated['category'],
             'description'  => $validated['description'] ?? null,
         ]);
+        StoreDataChanged::dispatch($request->user()->store_id, ['expenses']);
 
         // Redirect kembali ke halaman daftar pengeluaran dengan pesan sukses
         return redirect()->route($request->user()->hasPermission('expenses.view') ? 'pengeluaran.index' : 'pengeluaran.create')

@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     tooltip: {
                         ...tooltipDefaults,
                         callbacks: {
-                            title: (items) => trendLabels[items[0].dataIndex],
+                            title: (items) => items[0].label,
                             label: (ctx) => `Pengeluaran: Rp ${ctx.parsed.y.toLocaleString('id-ID')}`
                         }
                     }

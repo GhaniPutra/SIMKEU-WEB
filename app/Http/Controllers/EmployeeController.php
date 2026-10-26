@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\StoreDataChanged;
 use App\Models\Product;
 use App\Models\Role;
 use App\Models\Sale;
@@ -73,6 +74,7 @@ class EmployeeController extends Controller
             $employee->profile_photo_path = $request->file('profile_photo')->store('profile-photos', 'public');
             $employee->save();
         }
+        StoreDataChanged::dispatch($request->user()->store_id, ['employees']);
 
         return redirect()->route('employees.index')
             ->with('success', 'Pegawai berhasil ditambahkan.');
@@ -123,6 +125,7 @@ class EmployeeController extends Controller
         if ($photoToDelete) {
             Storage::disk('public')->delete($photoToDelete);
         }
+        StoreDataChanged::dispatch($request->user()->store_id, ['employees']);
 
         return redirect()->route('employees.index')->with('success', 'Pegawai berhasil diperbarui.');
     }
@@ -132,11 +135,13 @@ class EmployeeController extends Controller
         abort_unless((int) $employee->store_id === (int) request()->user()->store_id, 404);
         abort_if($employee->isOwner(), 403, 'Akun pemilik tidak dapat dihapus dari daftar pegawai.');
         $photoPath = $employee->profile_photo_path;
+        $storeId = $employee->store_id;
         $employee->delete();
 
         if ($photoPath) {
             Storage::disk('public')->delete($photoPath);
         }
+        StoreDataChanged::dispatch($storeId, ['employees']);
 
         return redirect()->route('employees.index')->with('success', 'User berhasil dihapus.');
     }

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Events\StoreDataChanged;
 use App\Models\StockMovement;
 use App\Models\Store;
 use App\Models\User;
@@ -38,14 +39,15 @@ class CloseEmployeeStock extends Command
                 ->orderBy('employee_product.product_id')
                 ->get();
 
+            $storeChanged = false;
             foreach ($balances as $balance) {
-                DB::transaction(function () use ($store, $balance, $now): void {
+                $changed = DB::transaction(function () use ($store, $balance, $now): bool {
                     $employee = User::query()->where('store_id', $store->id)->find($balance->user_id);
                     $product = DB::table('products')->where('store_id', $store->id)->where('id', $balance->product_id)->lockForUpdate()->first();
                     $pivot = DB::table('product_user')->where('user_id', $balance->user_id)->where('product_id', $balance->product_id)->lockForUpdate()->first();
 
                     if (! $employee || ! $product || ! $pivot || (int) $pivot->stock <= 0) {
-                        return;
+                        return false;
                     }
 
                     $closingDate = $now->toDateString();
@@ -57,7 +59,7 @@ class CloseEmployeeStock extends Command
                         ->whereDate('closing_date', $closingDate)
                         ->exists();
                     if ($alreadyReturned) {
-                        return;
+                        return false;
                     }
 
                     $quantity = (int) $pivot->stock;
@@ -74,7 +76,14 @@ class CloseEmployeeStock extends Command
                         'closing_date' => $closingDate,
                         'quantity' => $quantity,
                     ]);
+                    return true;
                 }, 3);
+
+                $storeChanged = $storeChanged || $changed;
+            }
+
+            if ($storeChanged) {
+                StoreDataChanged::dispatch($store->id, ['inventory']);
             }
         });
 

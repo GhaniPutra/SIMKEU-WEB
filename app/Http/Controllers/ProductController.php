@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\StoreDataChanged;
 use App\Models\Category; // Model kategori produk
 use App\Models\Product;  // Model produk utama
 use Illuminate\Http\Request;
@@ -173,6 +174,7 @@ class ProductController extends Controller
 
         // Buat produk baru di database dengan data yang sudah divalidasi
         Product::create($data);
+        StoreDataChanged::dispatch($request->user()->store_id, ['inventory']);
 
         // Redirect ke halaman daftar produk dengan pesan sukses
         return redirect()->route($request->user()->hasPermission('products.view') ? 'products.index' : 'products.create')
@@ -242,6 +244,7 @@ class ProductController extends Controller
 
         // Update data produk di database dengan data yang sudah divalidasi
         $product->update($data);
+        StoreDataChanged::dispatch($request->user()->store_id, ['inventory']);
 
         // Redirect ke halaman daftar produk dengan pesan sukses
         return redirect()->route('products.index')->with('success', 'Produk berhasil diperbarui.');
@@ -260,7 +263,9 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         // Hapus produk dari database
+        $storeId = $product->store_id;
         $product->delete();
+        StoreDataChanged::dispatch($storeId, ['inventory']);
 
         // Redirect kembali ke halaman daftar produk dengan pesan sukses
         return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus.');
@@ -307,6 +312,7 @@ class ProductController extends Controller
         if ($newStock === null) {
             return redirect()->back()->with('error', 'Stok tidak mencukupi. Pengurangan melebihi stok yang tersedia.');
         }
+        StoreDataChanged::dispatch($request->user()->store_id, ['inventory']);
 
         // Tentukan keterangan aksi: penambahan atau pengurangan
         $action = $data['adjustment'] > 0

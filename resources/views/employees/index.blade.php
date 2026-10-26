@@ -16,7 +16,7 @@
 
 @section('content') {{-- Mulai konten halaman utama --}}
 {{-- Statistik ringkas pegawai --}}
-<div class="kpi-grid"> {{-- Grid untuk kartu statistik --}}
+<div class="kpi-grid" data-realtime-fragment="employees-kpis" data-realtime-resource="employees"> {{-- Grid untuk kartu statistik --}}
     <div class="kpi-card primary fade-up"> {{-- Kartu total user --}}
         <div class="kpi-top"> {{-- Baris atas kartu --}}
             <span class="kpi-icon"><i class="fas fa-users"></i></span>
@@ -95,7 +95,7 @@
                             <th width="25%">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody data-realtime-fragment="employees-table" data-realtime-resource="employees">
                         @foreach($employees as $employee) {{-- Iterasi setiap pegawai --}}
                             <tr class="employee-row-clickable" tabindex="0"
                                 aria-label="{{ $employee->role_name }}: {{ $employee->name }}"

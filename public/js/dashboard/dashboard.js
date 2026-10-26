@@ -36,8 +36,58 @@ function formatRupiah(value) {
 
 function chartEmptyState(canvas, message) {
     if (!canvas) return;
+    canvas.hidden = true;
+    if (canvas.nextElementSibling?.classList.contains('chart-empty-state')) {
+        canvas.nextElementSibling.textContent = message;
+        return;
+    }
     canvas.insertAdjacentHTML('afterend', `<p class="chart-empty-state">${message}</p>`);
-    canvas.remove();
+}
+
+function showChart(canvas) {
+    canvas.hidden = false;
+    if (canvas.nextElementSibling?.classList.contains('chart-empty-state')) {
+        canvas.nextElementSibling.remove();
+    }
+}
+
+function renderExpenseLegend() {
+    const legend = document.getElementById('expenseCompositionLegend');
+    if (!legend) return;
+
+    const total = dashboardData.expenseCategoryData.reduce((sum, amount) => sum + amount, 0);
+    if (total <= 0) {
+        const emptyState = document.createElement('p');
+        emptyState.className = 'chart-empty-state';
+        emptyState.textContent = 'Belum ada rincian kategori.';
+        legend.replaceChildren(emptyState);
+        return;
+    }
+
+    legend.replaceChildren(...dashboardData.expenseCategoryLabels.map((label, index) => {
+        const amount = Number(dashboardData.expenseCategoryData[index] || 0);
+        const item = document.createElement('div');
+        item.className = 'dashboard-expense-legend-item';
+
+        const dot = document.createElement('span');
+        dot.className = 'dashboard-expense-legend-dot';
+        dot.style.backgroundColor = dashboardData.expenseCategoryColors[index] || '#94a3b8';
+
+        const name = document.createElement('span');
+        name.className = 'dashboard-expense-legend-name';
+        name.textContent = label;
+
+        const value = document.createElement('span');
+        value.className = 'dashboard-expense-legend-value';
+        value.textContent = formatRupiah(amount);
+
+        const percentage = document.createElement('span');
+        percentage.className = 'dashboard-expense-legend-percent';
+        percentage.textContent = `${((amount / total) * 100).toLocaleString('id-ID', { maximumFractionDigits: 1 })}% dari pengeluaran`;
+
+        item.append(dot, name, value, percentage);
+        return item;
+    }));
 }
 
 const FINANCIAL_BAR_GAP_PX = 3;
@@ -62,47 +112,14 @@ function initExpenseCompositionChart() {
 
     const { expenseCategoryLabels, expenseCategoryData, expenseCategoryColors, periodLabel } = dashboardData;
     const totalExpenses = expenseCategoryData.reduce((total, amount) => total + amount, 0);
-    const legend = document.getElementById('expenseCompositionLegend');
 
     if (totalExpenses <= 0) {
         chartEmptyState(canvas, `Belum ada pengeluaran pada ${periodLabel.toLowerCase()}.`);
-        if (legend) {
-            const emptyState = document.createElement('p');
-            emptyState.className = 'chart-empty-state';
-            emptyState.textContent = 'Belum ada rincian kategori.';
-            legend.replaceChildren(emptyState);
-        }
+        renderExpenseLegend();
         return;
     }
-
-    if (legend) {
-        const legendItems = expenseCategoryLabels.map((label, index) => {
-            const amount = Number(expenseCategoryData[index] || 0);
-            const item = document.createElement('div');
-            item.className = 'dashboard-expense-legend-item';
-
-            const dot = document.createElement('span');
-            dot.className = 'dashboard-expense-legend-dot';
-            dot.style.backgroundColor = expenseCategoryColors[index] || '#94a3b8';
-
-            const name = document.createElement('span');
-            name.className = 'dashboard-expense-legend-name';
-            name.textContent = label;
-
-            const value = document.createElement('span');
-            value.className = 'dashboard-expense-legend-value';
-            value.textContent = formatRupiah(amount);
-
-            const percentage = document.createElement('span');
-            percentage.className = 'dashboard-expense-legend-percent';
-            percentage.textContent = `${((amount / totalExpenses) * 100).toLocaleString('id-ID', { maximumFractionDigits: 1 })}% dari pengeluaran`;
-
-            item.append(dot, name, value, percentage);
-            return item;
-        });
-
-        legend.replaceChildren(...legendItems);
-    }
+    showChart(canvas);
+    renderExpenseLegend();
 
     const centerTotalPlugin = {
         id: 'expenseCenterTotal',
@@ -119,7 +136,8 @@ function initExpenseCompositionChart() {
             ctx.textBaseline = 'middle';
             ctx.fillStyle = cardStyle.getPropertyValue('--text-primary').trim() || '#192b52';
             ctx.font = `700 ${totalFontSize}px Poppins, sans-serif`;
-            ctx.fillText(formatRupiah(totalExpenses), centerX, centerY - 8, chartArea.width * 0.82);
+            const total = chart.data.datasets[0].data.reduce((sum, amount) => sum + Number(amount || 0), 0);
+            ctx.fillText(formatRupiah(total), centerX, centerY - 8, chartArea.width * 0.82);
             ctx.fillStyle = cardStyle.getPropertyValue('--text-muted').trim() || '#718096';
             ctx.font = '11px Poppins, sans-serif';
             ctx.fillText('Total Pengeluaran', centerX, centerY + 11, chartArea.width * 0.82);
@@ -169,6 +187,7 @@ function initRevenueTrendChart() {
         chartEmptyState(canvas, `Belum ada pemasukan pada ${periodLabel.toLowerCase()}.`);
         return;
     }
+    showChart(canvas);
 
     const context = canvas.getContext('2d');
     const gradient = context.createLinearGradient(0, 0, 0, 320);
@@ -241,6 +260,7 @@ function initFinancialComparisonChart() {
         chartEmptyState(canvas, `Belum ada data keuangan pada ${periodLabel.toLowerCase()}.`);
         return;
     }
+    showChart(canvas);
 
     const categoryPercentage = getFinancialBarCategoryPercentage(trendLabels.length);
     const barPercentage = 0.7;
@@ -342,6 +362,45 @@ function initFinancialComparisonChart() {
 
     window.attachFinancialBarZoom(chart, canvas);
 }
+
+window.SimkeuDashboardRefresh = (data) => {
+    Object.assign(dashboardData, data);
+    renderExpenseLegend();
+
+    const update = (id, labels, datasets) => {
+        const canvas = document.getElementById(id);
+        const chart = canvas && Chart.getChart(canvas);
+        if (!chart) {
+            if (canvas) {
+                if (id === 'expenseCompositionChart') initExpenseCompositionChart();
+                if (id === 'revenueTrendChart') initRevenueTrendChart();
+                if (id === 'financialComparisonChart') initFinancialComparisonChart();
+            }
+            return;
+        }
+
+        canvas.hidden = false;
+        if (canvas.nextElementSibling?.classList.contains('chart-empty-state')) {
+            canvas.nextElementSibling.remove();
+        }
+        chart.data.labels = labels;
+        datasets.forEach((dataset, index) => {
+            chart.data.datasets[index].data = dataset.data;
+            if (dataset.backgroundColor) chart.data.datasets[index].backgroundColor = dataset.backgroundColor;
+        });
+        chart.update('none');
+    };
+
+    update('expenseCompositionChart', dashboardData.expenseCategoryLabels, [{
+        data: dashboardData.expenseCategoryData,
+        backgroundColor: dashboardData.expenseCategoryColors,
+    }]);
+    update('revenueTrendChart', dashboardData.trendLabels, [{ data: dashboardData.revenueData }]);
+    update('financialComparisonChart', dashboardData.trendLabels, [
+        { data: dashboardData.revenueData },
+        { data: dashboardData.expenseData },
+    ]);
+};
 
 document.addEventListener('DOMContentLoaded', () => {
     initExpenseCompositionChart();

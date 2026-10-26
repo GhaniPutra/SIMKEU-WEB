@@ -38,7 +38,7 @@
         {{-- ============================================================
         KARTU INDIKATOR UTAMA
         ============================================================ --}}
-        <div class="kpi-grid">
+        <div class="kpi-grid" data-realtime-fragment="dashboard-kpis" data-realtime-resource="sales,expenses">
             {{-- Pendapatan --}}
             <div class="kpi-card success fade-up">
                 <div class="kpi-top">

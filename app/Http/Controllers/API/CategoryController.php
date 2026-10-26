@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Events\StoreDataChanged;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -54,6 +55,7 @@ class CategoryController extends Controller
     {
         try {
             $category->loadCount('products');
+            StoreDataChanged::dispatch($request->user()->store_id, ['inventory']);
 
             return response()->json([
                 'success' => true,
@@ -89,6 +91,7 @@ class CategoryController extends Controller
             // Buat kategori baru
             $category = Category::create($validated);
             $category->loadCount('products');
+            StoreDataChanged::dispatch($request->user()->store_id, ['inventory']);
 
             return response()->json([
                 'success' => true,
@@ -158,9 +161,11 @@ class CategoryController extends Controller
     {
         try {
             $name = $category->name;
+            $storeId = $category->store_id;
             $productCount = $category->products()->count();
 
             $category->delete();
+            StoreDataChanged::dispatch($storeId, ['inventory']);
 
             return response()->json([
                 'success' => true,

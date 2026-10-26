@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\StoreDataChanged;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -64,6 +65,7 @@ class CategoryController extends Controller
 
         // Simpan kategori baru ke database
         Category::create($data);
+        StoreDataChanged::dispatch($request->user()->store_id, ['inventory']);
 
         return $this->redirectToCategories($request)
             ->with('success', "Kategori \"{$data['name']}\" berhasil ditambahkan.");
@@ -94,6 +96,7 @@ class CategoryController extends Controller
 
         // Update data kategori dengan data yang sudah divalidasi
         $category->update($data);
+        StoreDataChanged::dispatch($request->user()->store_id, ['inventory']);
 
         return $this->redirectToCategories($request)
             ->with('success', "Kategori \"{$category->name}\" berhasil diperbarui.");
@@ -114,10 +117,12 @@ class CategoryController extends Controller
     public function destroy(Request $request, Category $category)
     {
         $name = $category->name;
+        $storeId = $category->store_id;
         $productCount = $category->products()->count();
 
         // Hapus kategori (produk terkait will set null pada category_id secara otomatis)
         $category->delete();
+        StoreDataChanged::dispatch($storeId, ['inventory']);
 
         $message = "Kategori \"{$name}\" berhasil dihapus.";
         if ($productCount > 0) {

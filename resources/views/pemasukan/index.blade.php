@@ -486,7 +486,7 @@
 {{-- ============================================================
      KPI CARDS — Kartu ringkasan statistik pemasukan periode terpilih
 ============================================================ --}}
-<div class="kpi-grid">
+<div class="kpi-grid" data-realtime-fragment="sales-kpis" data-realtime-resource="sales">
 
     {{-- ---- Kartu Total Pemasukan Bersih ---- --}}
     <div class="kpi-card primary fade-up">
@@ -677,7 +677,7 @@
                     <th class="text-center">Aksi</th>   {{-- Tombol detail --}}
                 </tr>
             </thead>
-            <tbody>
+            <tbody data-realtime-fragment="sales-table" data-realtime-resource="sales">
                 {{-- Loop setiap transaksi penjualan --}}
                 @forelse($penjualanList as $sale)
                 <tr>
@@ -873,7 +873,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     tooltip: {
                         ...tooltipDefaults,
                         callbacks: {
-                            title: (items) => productLabels[items[0].dataIndex],
+                            title: (items) => items[0].label,
                             label: (ctx) => 'Penjualan: Rp ' + ctx.parsed.x.toLocaleString('id-ID'),
                             afterLabel: (ctx) => 'Terjual: ' + (productUnits[ctx.dataIndex] ?? 0).toLocaleString('id-ID') + ' unit'
                         }
@@ -895,7 +895,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         ticks: {
                             font: { size: 10, family: 'Poppins' },
                             callback: (value) => {
-                                const label = productLabels[value] ?? '';
+                                const label = this.chart.data.labels[value] ?? '';
                                 return label.length > 24 ? `${label.slice(0, 21)}…` : label;
                             }
                         }

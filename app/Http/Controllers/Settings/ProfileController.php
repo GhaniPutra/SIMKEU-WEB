@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Settings;
 
+use App\Events\StoreDataChanged;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\ProfileDeleteRequest;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
@@ -79,6 +80,7 @@ class ProfileController extends Controller
         if ($oldPhotoPath && $oldPhotoPath !== $user->profile_photo_path) {
             Storage::disk('public')->delete($oldPhotoPath);
         }
+        StoreDataChanged::dispatch((int) $user->store_id, ['employees']);
 
         return to_route('profile.edit')->with('success', 'Pengaturan akun berhasil disimpan.');
     }

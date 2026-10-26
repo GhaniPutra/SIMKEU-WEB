@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Events\StoreDataChanged;
 use App\Http\Controllers\Controller;
 use App\Models\Sale;
 use App\Models\SaleItem;
@@ -150,6 +151,7 @@ class POSController extends Controller
             });
 
             $sale->load(['user', 'saleItems.product']);
+            StoreDataChanged::dispatch($request->user()->store_id, ['sales', 'inventory']);
 
             return response()->json([
                 'success' => true,
@@ -212,21 +214,25 @@ class POSController extends Controller
             // API completion values are final transaction-level amounts. When a
             // tax override no longer matches the item snapshots, mark the
             // per-item tax breakdown as unavailable instead of showing stale data.
-            if (array_key_exists('tax', $validated)) {
-                $itemTax = (float) $sale->saleItems()->sum('tax');
-                if (abs($itemTax - (float) $validated['tax']) >= 0.005) {
-                    $sale->saleItems()->update(['tax' => null]);
+            $sale = DB::transaction(function () use ($sale, $validated) {
+                if (array_key_exists('tax', $validated)) {
+                    $itemTax = (float) $sale->saleItems()->sum('tax');
+                    if (abs($itemTax - (float) $validated['tax']) >= 0.005) {
+                        $sale->saleItems()->update(['tax' => null]);
+                    }
                 }
-            }
 
-            $sale->fill($validated);
-            $sale->total = round(
-                (float) $sale->subtotal - (float) $sale->discount + (float) $sale->tax,
-                2
-            );
-            $sale->save();
+                $sale->fill($validated);
+                $sale->total = round(
+                    (float) $sale->subtotal - (float) $sale->discount + (float) $sale->tax,
+                    2
+                );
+                $sale->save();
+                return $sale;
+            });
 
             $sale->load(['user', 'saleItems.product']);
+            StoreDataChanged::dispatch($request->user()->store_id, ['sales']);
 
             return response()->json([
                 'success' => true,

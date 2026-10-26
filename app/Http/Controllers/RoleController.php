@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\StoreDataChanged;
 use App\Models\Role;
 use App\Support\RolePermissions;
 use Illuminate\Http\Request;
@@ -40,6 +41,7 @@ class RoleController extends Controller
             'name' => $data['name'],
             'permissions' => $data['permissions'] ?? [],
         ]);
+        StoreDataChanged::dispatch($request->user()->store_id, ['employees']);
 
         return redirect()->route('roles.index')->with('success', 'Role berhasil dibuat.');
     }
@@ -60,6 +62,7 @@ class RoleController extends Controller
             'name' => $data['name'],
             'permissions' => $data['permissions'] ?? [],
         ]);
+        StoreDataChanged::dispatch($request->user()->store_id, ['employees']);
 
         return redirect()->route('roles.index')->with('success', 'Role berhasil diperbarui.');
     }
@@ -74,7 +77,9 @@ class RoleController extends Controller
             return back()->with('error', 'Role masih digunakan. Pindahkan pegawai ke role lain sebelum menghapusnya.');
         }
 
+        $storeId = $role->store_id;
         $role->delete();
+        StoreDataChanged::dispatch($storeId, ['employees']);
 
         return redirect()->route('roles.index')->with('success', 'Role berhasil dihapus.');
     }

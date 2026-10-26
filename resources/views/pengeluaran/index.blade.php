@@ -29,7 +29,7 @@
 {{-- ============================================================
      KPI CARDS — Ringkasan statistik pengeluaran bulan ini
 ============================================================ --}}
-<div class="kpi-grid">
+<div class="kpi-grid" data-realtime-fragment="expenses-kpis" data-realtime-resource="expenses">
 
     {{-- ---- Kartu Total Pengeluaran ---- --}}
     <div class="kpi-card danger fade-up">
@@ -281,7 +281,7 @@
                     <th class="text-center">Aksi</th> {{-- Tombol detail --}}
                 </tr>
             </thead>
-            <tbody>
+            <tbody data-realtime-fragment="expenses-table" data-realtime-resource="expenses">
                 {{-- Loop setiap entri pengeluaran --}}
                 @forelse($pengeluaranList as $expense)
                 <tr>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Events\StoreDataChanged;
 use App\Http\Controllers\Controller;
 use App\Models\Expense;
 use App\Models\Product;
@@ -109,6 +110,7 @@ class PengeluaranController extends Controller
             }
 
             $expense->load('user');
+            StoreDataChanged::dispatch($request->user()->store_id, ['expenses']);
 
             return response()->json([
                 'success' => true,
@@ -195,6 +197,7 @@ class PengeluaranController extends Controller
             // Update pengeluaran
             $expense->update($validated);
             $expense->load('user');
+            StoreDataChanged::dispatch($request->user()->store_id, ['expenses']);
 
             return response()->json([
                 'success' => true,
@@ -232,7 +235,9 @@ class PengeluaranController extends Controller
 
             $category = $expense->category;
             $amount = $expense->amount;
+            $storeId = $expense->store_id;
             $expense->delete();
+            StoreDataChanged::dispatch($storeId, ['expenses']);
 
             return response()->json([
                 'success' => true,
