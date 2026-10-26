@@ -110,7 +110,6 @@ class PengeluaranController extends Controller
             }
 
             $expense->load('user');
-            StoreDataChanged::dispatch($request->user()->store_id, ['expenses']);
 
             return response()->json([
                 'success' => true,
@@ -151,6 +150,7 @@ class PengeluaranController extends Controller
             ]);
 
             $expense->load('user');
+            StoreDataChanged::dispatch($request->user()->store_id, ['expenses']);
 
             return response()->json([
                 'success' => true,
